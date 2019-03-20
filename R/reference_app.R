@@ -1,11 +1,11 @@
 #########################################
-#### A Shiny App for UCSC Xena #########
-########################################
-##### LICENSE: MIT @Openbiox
+# 本代码保持最原始的状态，以便于开发过程
+# 中的任何时候可以进行参考，请勿改动
+#########################################
 
 
 # Dependencies check ------------------------------------------------------
-pkgs <- c("shiny", "argonR", "argonDash", "magrittr", "UCSCXenaTools")
+pkgs <- c("shiny", "argonR", "argonDash", "magrittr")
 for (pkg in pkgs){
   if (!require(pkg, character.only = TRUE)) {
     message("Installing dependencies ", "\'", pkg, "\'...")
@@ -15,8 +15,13 @@ for (pkg in pkgs){
 # Clean variable
 rm(pkgs)
 
-# Here data goes
-#data("XenaData", package = "UCSCXenaTools")
+# Packages loading --------------------------------------------------------
+
+library(shiny)
+library(argonR)
+library(argonDash)
+library(magrittr)
+
 
 # Global definition -------------------------------------------------------
 
@@ -40,24 +45,47 @@ tabText3 <- "Raw denim you probably haven't heard of them jean shorts Austin.
 # UI ----------------------------------------------------------------------
 
 ui = argonDashPage(
-  title = "Xena Shiny",
-  author = "Openbiox Xena Shiny Team",
-  description = "A shiny app for UCSC Xena",
+  title = "Argon Dashboard Demo",
+  author = "David",
+  description = "Argon Dash Test",
   sidebar = argonDashSidebar(
     vertical = TRUE,
     skin = "light",
     background = "white",
     size = "md",
     side = "left",
-    id = "xena_sidebar",
-    brand_url = "https://github.com/openbiox",
-    brand_logo = "https://github.com/openbiox/XenaShiny/images/openbiox-logo.png",
+    id = "my_sidebar",
+    brand_url = "http://www.google.com",
+    brand_logo = "https://demos.creative-tim.com/argon-design-system/assets/img/brand/blue.png",
+    dropdownMenus = argonDropNav(
+      title = "Dropdown Menu", 
+      src = "https://demos.creative-tim.com/argon-dashboard/assets/img/theme/team-4-800x800.jpg", 
+      orientation = "right",
+      argonDropNavTitle(title = "Welcome!"),
+      argonDropNavItem(
+        title = "Item 1", 
+        src = "https://www.google.com", 
+        icon = "single-02"
+      ),
+      argonDropNavItem(
+        title = "Item 2", 
+        src = NULL, 
+        icon = "settings-gear-65"
+      ),
+      argonDropNavDivider(),
+      argonDropNavItem(
+        title = "Item 3", 
+        src = "#", 
+        icon = "calendar-grid-58"
+      )
+    ),
+    argonSidebarHeader(title = "Main Menu"),
     argonSidebarMenu(
       argonSidebarItem(
-        tabName = "home",
+        tabName = "cards",
         icon = "tv-2",
         icon_color = "primary",
-        "Home"
+        "Cards"
       ),
       argonSidebarItem(
         tabName = "tabs",
@@ -77,7 +105,6 @@ ui = argonDashPage(
         icon_color = "success",
         "Images"
       ),
-
       argonSidebarItem(
         tabName = "badges",
         icon = "ui-04",
@@ -91,6 +118,12 @@ ui = argonDashPage(
         "Progress"
       ),
       argonSidebarItem(
+        tabName = "profile",
+        icon = "spaceship",
+        icon_color = "info",
+        "Profile"
+      ),
+      argonSidebarItem(
         tabName = "effects",
         icon = "atom",
         icon_color = "black",
@@ -101,19 +134,60 @@ ui = argonDashPage(
         icon = "credit-card",
         icon_color = "grey",
         "Sections"
-      ),
-      argonSidebarItem(
-        tabName = "developers",
-        icon = "spaceship",
-        icon_color = "info",
-        "Developers"
       )
+    ),
+    argonSidebarDivider(),
+    argonSidebarHeader(title = "Other Items")
+  ),
+  navbar = argonDashNavbar(
+    argonDropNav(
+      title = "Dropdown Menu", 
+      src = "https://demos.creative-tim.com/argon-dashboard/assets/img/theme/team-4-800x800.jpg", 
+      orientation = "right",
+      argonDropNavTitle(title = "Welcome!"),
+      argonDropNavItem(
+        title = "Item 1", 
+        src = "https://www.google.com", 
+        icon = "single-02"
+      ),
+      argonDropNavItem(
+        title = "Item 2", 
+        src = NULL, 
+        icon = "settings-gear-65"
+      ),
+      argonDropNavDivider(),
+      argonDropNavItem(
+        title = "Item 3", 
+        src = "#", 
+        icon = "calendar-grid-58"
+      )
+    )
+  ), 
+  header = argonDashHeader(
+    gradient = TRUE,
+    color = "primary",
+    separator = TRUE,
+    separator_color = "secondary",
+    argonCard(
+      title = "Argon Card",
+      src = "http://www.google.com",
+      hover_lift = TRUE,
+      shadow = TRUE,
+      shadow_size = NULL,
+      hover_shadow = FALSE,
+      border_level = 0,
+      icon = "atom",
+      status = "primary",
+      background_color = NULL,
+      gradient = FALSE, 
+      floating = FALSE,
+      "This is the content"
     )
   ),
   body = argonDashBody(
     argonTabItems(
       argonTabItem(
-        tabName = "home",
+        tabName = "cards",
         argonRow(
           argonCard(
             width = 12,
@@ -137,6 +211,81 @@ ui = argonDashPage(
               ),
               argonColumn(width = 6, plotOutput("distPlot"))
             )
+          ),
+          br(), br(),
+          argonCard(
+            width = 12,
+            title = "Argon Card",
+            src = NULL,
+            hover_lift = TRUE,
+            shadow = TRUE,
+            shadow_size = NULL,
+            hover_shadow = FALSE,
+            border_level = 0,
+            icon = "atom",
+            status = "primary",
+            background_color = NULL,
+            gradient = FALSE, 
+            floating = FALSE,
+            argonRow(
+              argonColumn(
+                width = 6,
+                radioButtons(
+                  "dist", 
+                  "Distribution type:",
+                  c("Normal" = "norm",
+                    "Uniform" = "unif",
+                    "Log-normal" = "lnorm",
+                    "Exponential" = "exp")
+                )
+              ),
+              argonColumn(width = 6, plotOutput("plot"))
+            )
+          ) 
+        ),
+        br(),
+        argonRow(
+          argonInfoCard(
+            value = "350,897", 
+            title = "TRAFFIC", 
+            stat = 3.48, 
+            stat_icon = "arrow-up",
+            description = "Since last month", 
+            icon = "chart-bar", 
+            icon_background = "danger",
+            hover_lift = TRUE
+          ),
+          argonInfoCard(
+            value = "2,356", 
+            title = "NEW USERS", 
+            stat = -3.48, 
+            stat_icon = "arrow-down",
+            description = "Since last week", 
+            icon = "chart-pie", 
+            icon_background = "warning",
+            shadow = TRUE
+          ),
+          argonInfoCard(
+            value = "924", 
+            title = "SALES", 
+            stat = -1.10, 
+            stat_icon = "arrow-down",
+            description = "Since yesterday", 
+            icon = "users", 
+            icon_background = "yellow",
+            background_color = "default"
+          ),
+          argonInfoCard(
+            value = "49,65%", 
+            title = "PERFORMANCE", 
+            stat = 12, 
+            stat_icon = "arrow-up",
+            description = "Since last month", 
+            icon = "percent", 
+            icon_background = "info",
+            gradient = TRUE,
+            background_color = "orange",
+            hover_lift = TRUE
           )
         )
       ),
@@ -307,6 +456,78 @@ ui = argonDashPage(
         argonProgress(value = 90, status = "warning", text = argonIcon("atom"))
       ),
       argonTabItem(
+        tabName = "profile",
+        argonRow(
+          argonColumn(
+            width = 3,
+            argonUser(
+              title = "Ryan Tompson",
+              subtitle = "Web Developer",
+              src = "https://demos.creative-tim.com/argon-design-system/assets/img/theme/team-1-800x800.jpg"
+            )
+          ),
+          argonColumn(
+            width = 3,
+            argonUser(
+              title = "Romina Hadid",
+              subtitle = "Marketing Strategist",
+              src = "https://demos.creative-tim.com/argon-design-system/assets/img/theme/team-2-800x800.jpg"
+            )
+          ),
+          argonColumn(
+            width = 3,
+            argonUser(
+              title = "Alexander Smith",
+              subtitle = "UI/UX Designer",
+              src = "https://demos.creative-tim.com/argon-design-system/assets/img/theme/team-3-800x800.jpg"
+            )
+          ),
+          argonColumn(
+            width = 3,
+            argonUser(
+              title = "John Doe",
+              subtitle = "Founder and CEO",
+              src = "https://demos.creative-tim.com/argon-design-system/assets/img/theme/team-4-800x800.jpg"
+            )
+          )
+        ),
+        br(), br(),
+        argonRow(
+          argonColumn(
+            width = 12,
+            argonProfile(
+              title = "John",
+              subtitle = "Japan, Kagoshima",
+              src = "https://demos.creative-tim.com/argon-design-system/assets/img/theme/team-1-800x800.jpg",
+              url = "https://www.google.com",
+              url_1 = "https://www.google.com",
+              url_2 = "https://www.google.com",
+              stats = argonProfileStats(
+                argonProfileStat(
+                  value = 22,
+                  description = "Friends"
+                ),
+                argonProfileStat(
+                  value = 10,
+                  description = "Photos"
+                ),
+                argonProfileStat(
+                  value = 89,
+                  description = "Comments"
+                )
+              ),
+              "An artist of considerable range, Ryan — 
+                  the name taken by Melbourne-raised, 
+                  Brooklyn-based Nick Murphy — writes, 
+                  performs and records all of his own music, 
+                  giving it a warm, intimate feel with a solid 
+                  groove structure. An artist of considerable 
+                  range."
+            )
+          )
+        )
+      ),
+      argonTabItem(
         tabName = "effects",
         argonRow(
           argonColumn(
@@ -382,53 +603,15 @@ ui = argonDashPage(
           argonH1("Header with mask", display = 1) %>% argonTextColor(color = "white"),
           argonLead("This is the content.") %>% argonTextColor(color = "white")
         )
-      ),
-      argonTabItem(
-        tabName = "developers",
-        argonRow(
-          argonColumn(
-            width = 3,
-            argonUser(
-              title = "Shixiang Wang",
-              subtitle = "Ph.D. student at ShianghaiTech. University",
-              src = "https://avatars1.githubusercontent.com/u/25057508?s=460&v=4"
-            )
-          ),
-          argonColumn(
-            width = 3,
-            argonUser(
-              title = "Fei Zhao",
-              subtitle = "Focus on Bioinformatics and Epigenetics",
-              src = "https://avatars2.githubusercontent.com/u/17489298?s=460&v=4"
-            )
-          ),
-          argonColumn(
-            width = 3,
-            argonUser(
-              title = "Yi Xiong",
-              subtitle = "Clinical Medicine major Xiangya hospital, Central South University",
-              src = "https://avatars1.githubusercontent.com/u/28949856?s=460&v=4"
-            )
-          ),
-          argonColumn(
-            width = 3,
-            argonUser(
-              title = "Longfei Zhao",
-              subtitle = "Bioinformatian",
-              src = "https://avatars2.githubusercontent.com/u/37660840?s=460&v=4"
-            )
-          )
-        )
       )
     )
   ),
   footer = argonDashFooter(
-    copyrights = "MIT @ Openbiox Xena Shiny Team, 2019",
-    src = "https://github.com/openbiox/XenaShiny",
+    copyrights = "@Divad Nojnarg, 2018",
+    src = "https://github.com/DivadNojnarg",
     argonFooterMenu(
-      argonFooterItem("Openbiox", src = "https://github.com/openbiox"),
-      argonFooterItem("UCSC Xena", src = "http://xena.ucsc.edu/"), 
-      argonFooterItem("UCSCXenaTools", src = "https://github.com/ShixiangWang/UCSCXenaTools")
+      argonFooterItem("RinteRface", src = "https://github.com/RinteRface"),
+      argonFooterItem("argon", src = "https://demos.creative-tim.com/argon-design-system/index.html")
     )
   )
 )
