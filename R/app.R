@@ -5,7 +5,8 @@
 
 
 # Dependencies check ------------------------------------------------------
-pkgs <- c("shiny", "argonR", "argonDash", "magrittr", "UCSCXenaTools")
+pkgs <- c("shiny", "argonR", "argonDash", "magrittr", "UCSCXenaTools",
+          "ECharts2Shiny")
 for (pkg in pkgs){
   if (!require(pkg, character.only = TRUE)) {
     message("Installing dependencies ", "\'", pkg, "\'...")
@@ -16,7 +17,16 @@ for (pkg in pkgs){
 rm(pkgs)
 
 # Here data goes
-#data("XenaData", package = "UCSCXenaTools")
+data("XenaData", package = "UCSCXenaTools")
+
+library(dplyr)
+library(tidyr)
+library(tibble)
+dat = XenaData %>% 
+  group_by(XenaHostNames, XenaCohorts) %>% 
+  summarise(N = n()) %>% 
+  spread(key = XenaCohorts, value = N) %>% 
+  column_to_rownames("XenaHostNames")
 
 # Global definition -------------------------------------------------------
 
@@ -118,24 +128,15 @@ ui = argonDashPage(
           argonCard(
             width = 12,
             src = NULL,
-            icon = "ui-04",
             status = "success",
             shadow = TRUE,
             border_level = 2,
             hover_shadow = TRUE,
-            title = "Shiny Inputs",
+            title = "Summary Info",
             argonRow(
-              argonColumn(
-                width = 6,
-                sliderInput(
-                  "obs", 
-                  "Number of observations:",
-                  min = 0, 
-                  max = 1000, 
-                  value = 500
-                )
-              ),
-              argonColumn(width = 6, plotOutput("distPlot"))
+              loadEChartsLibrary(),
+              tags$div(id="test", style="width:80%;height:300px;"),
+              deliverChart(div_id = "test")
             )
           )
         )
@@ -441,16 +442,12 @@ server = function(input, output) {
     hist(rnorm(input$obs))
   })
   
-  output$plot <- renderPlot({
-    dist <- switch(input$dist,
-                   norm = rnorm,
-                   unif = runif,
-                   lnorm = rlnorm,
-                   exp = rexp,
-                   rnorm)
-    
-    hist(dist(500))
-  })
+  # Call functions from ECharts2Shiny to render charts
+  renderBarChart(div_id = "test", 
+                 grid_left = '3%',
+                 stack_plot = TRUE,
+                 show.legend = FALSE,
+                 data = dat)
 }
 
 
