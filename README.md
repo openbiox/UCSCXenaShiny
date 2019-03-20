@@ -3,9 +3,6 @@
 
 # XenaShiny <img src="https://github.com/openbiox/openbiox-wiki/blob/master/static/img/logo-long.png" align="right" width="200"/>
 
-<img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Life cycle: experimental">
-<img src="https://img.shields.io/github/repo-size/openbiox/XenaShiny.svg" alt="Repo size"/>
-<img src="https://img.shields.io/github/issues/openbiox/XenaShiny.svg" alt="issues"/>
 [![emoji-log](https://cdn.rawgit.com/ahmadawais/stuff/ca97874/emoji-log/non-flat-round.svg)](https://github.com/ahmadawais/Emoji-Log/)
 
 The goal of XenaShiny is to provide a web app for downloading, analyzing
