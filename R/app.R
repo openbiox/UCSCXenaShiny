@@ -61,7 +61,7 @@ ui = argonDashPage(
     side = "left",
     id = "xena_sidebar",
     brand_url = "https://github.com/openbiox",
-    brand_logo = "https://github.com/openbiox/XenaShiny/blob/master/images/openbiox-logo.png?raw=true",
+    brand_logo = "https://github.com/openbiox/XenaShiny/blob/master/images/xena_shiny-logo.png?raw=true",
     argonSidebarMenu(
       argonSidebarItem(
         tabName = "home",
