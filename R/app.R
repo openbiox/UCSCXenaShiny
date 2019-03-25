@@ -6,7 +6,7 @@
 
 # Dependencies check ------------------------------------------------------
 pkgs <- c("shiny", "argonR", "argonDash", "magrittr", "UCSCXenaTools",
-          "ECharts2Shiny")
+          "echarts4r")
 for (pkg in pkgs){
   if (!require(pkg, character.only = TRUE)) {
     message("Installing dependencies ", "\'", pkg, "\'...")
@@ -16,36 +16,10 @@ for (pkg in pkgs){
 # Clean variable
 rm(pkgs)
 
-# Here data goes
-data("XenaData", package = "UCSCXenaTools")
-
-library(dplyr)
-library(tidyr)
-library(tibble)
-dat = XenaData %>% 
-  group_by(XenaHostNames, XenaCohorts) %>% 
-  summarise(N = n()) %>% 
-  spread(key = XenaCohorts, value = N) %>% 
-  column_to_rownames("XenaHostNames")
-
 # Global definition -------------------------------------------------------
 
-tabText1 <- "Raw denim you probably haven't heard of them jean shorts Austin. 
-            Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache 
-            cliche tempor, williamsburg carles vegan helvetica. Reprehenderit 
-            butcher retro keffiyeh dreamcatcher synth. Raw denim you probably 
-            haven't heard of them jean shorts Austin. Nesciunt tofu stumptown 
-            aliqua, retro synth master cleanse"
-
-tabText2 <- "Cosby sweater eu banh mi, qui irure terry richardson ex squid. 
-            Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan 
-            american apparel, butcher voluptate nisi qui."
-
-tabText3 <- "Raw denim you probably haven't heard of them jean shorts Austin. 
-            Nesciunt tofu stumptown aliqua, retro synth master cleanse. 
-            Mustache cliche tempor, williamsburg carles vegan helvetica. 
-            Reprehenderit butcher retro keffiyeh dreamcatcher synth"
-
+# Here data goes
+data("XenaData", package = "UCSCXenaTools")
 
 # UI ----------------------------------------------------------------------
 
@@ -70,35 +44,10 @@ ui = argonDashPage(
         "Home"
       ),
       argonSidebarItem(
-        tabName = "tabs",
+        tabName = "repo",
         icon = "planet",
         icon_color = "warning",
-        "Tabs"
-      ),
-      argonSidebarItem(
-        tabName = "alerts",
-        icon = "bullet-list-67",
-        icon_color = "danger",
-        "Alerts"
-      ),
-      argonSidebarItem(
-        tabName = "images",
-        icon = "circle-08",
-        icon_color = "success",
-        "Images"
-      ),
-
-      argonSidebarItem(
-        tabName = "badges",
-        icon = "ui-04",
-        icon_color = "pink",
-        "Badges"
-      ),
-      argonSidebarItem(
-        tabName = "progress",
-        icon = "pin-3",
-        icon_color = "yellow",
-        "Progress"
+        "Repository"
       ),
       argonSidebarItem(
         tabName = "developers",
@@ -111,29 +60,24 @@ ui = argonDashPage(
   body = argonDashBody(
     argonTabItems(
       argonTabItem(
+        # Home Page
         tabName = "home",
-        # render plots
-        loadEChartsLibrary(),
-        tags$div(id="test", style="width:80%;height:300px;"),
-        deliverChart(div_id = "test")
+        argonRow(
+          argonColumn(
+            width = 6,
+            sliderInput(
+              "obs", 
+              "Number of observations:",
+              min = 0, 
+              max = 1000, 
+              value = 500
+            )
+          ),
+          argonColumn(width = 6, plotOutput("distPlot"))
+        )
       ),
       argonTabItem(
-        tabName = "tabs"
-      ),
-      argonTabItem(
-        tabName = "alerts"
-      ),
-      argonTabItem(
-        tabName = "images"
-      ),
-      argonTabItem(
-        tabName = "badges"
-      ),
-      argonTabItem(
-        tabName = "progress",
-        argonProgress(value = 10, status = "danger", text = "Custom Text"),
-        argonProgress(value = 40, status = "info", text = NULL),
-        argonProgress(value = 90, status = "warning", text = argonIcon("atom"))
+        tabName = "repo"
       ),
       argonTabItem(
         tabName = "developers",
@@ -192,13 +136,6 @@ server = function(input, output) {
   output$distPlot <- renderPlot({
     hist(rnorm(input$obs))
   })
-  
-  # Call functions from ECharts2Shiny to render charts
-  renderBarChart(div_id = "test", 
-                 grid_left = '3%',
-                 stack_plot = TRUE,
-                 show.legend = FALSE,
-                 data = dat)
 }
 
 
