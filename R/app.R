@@ -3,6 +3,8 @@
 ########################################
 ##### LICENSE: MIT @Openbiox
 
+#使用开发版本argonDash
+#devtools::install_github("RinteRface/argonDash")
 
 # Dependencies check ------------------------------------------------------
 pkgs <- c("shiny", "argonR", "argonDash", "magrittr", "UCSCXenaTools",
