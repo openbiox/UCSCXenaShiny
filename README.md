@@ -18,6 +18,8 @@ filtered, explored and downloaded.
   - Fei Zhao
   - Yi Xiong
   - Longfei Zhao
+  - Yi Li
+  - Kai GU
 
 ## LICENSE
 
