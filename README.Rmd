@@ -22,6 +22,8 @@ The goal of XenaShiny is to provide a web app for downloading, analyzing and vis
 * Fei Zhao
 * Yi Xiong
 * Longfei Zhao
+* Yin Li
+* Kai Gu
 
 ## LICENSE
 
