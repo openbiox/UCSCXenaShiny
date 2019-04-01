@@ -24,7 +24,7 @@ rm(pkgs)
 
 # Here data goes
 data("XenaData", package = "UCSCXenaTools")
-View(XenaData)
+#View(XenaData)
 
 # xena_all = XenaData %>% XenaGenerate()
 # XenaInfo = list()
@@ -48,35 +48,43 @@ View(XenaData)
 # XenaInfo$all_samples = NULL
 # save(XenaInfo, file = "data/XenaInfo.RData")
 
-load(file = "data/XenaInfo.RData")
+load(file = "~/Repo/XenaShiny/data/XenaInfo.RData")
 
 # UI ----------------------------------------------------------------------
 
-ui = navbarPage(
-  shinythemes::themeSelector(),  # <--- Add this somewhere in the UI
-  
-  tabPanel(title="Home"),
-  tabPanel(title="Repository",
-           sidebarPanel(
-             textInput("txt", "Text input:", "text here"),
-             sliderInput("slider", "Slider input:", 1, 100, 30),
-             actionButton("action", "Button"),
-             actionButton("action2", "Button2", class = "btn-primary")
-           ),
-           mainPanel(
-             tabsetPanel(
-               tabPanel("Tab 1"),
-               tabPanel("Tab 2")
-             )
-           )
-  ),
-  tabPanel(title="Developers")
+ui <- fluidPage(theme = shinytheme("spacelab"),
+                navbarPage('XenaShiny',
+                           tabPanel(title = "Home"), 
+                           tabPanel(title = 'Repository',
+                                    sidebarLayout(
+                                      sidebarPanel(
+                                        selectInput('side',
+                                                    'Select',
+                                                    choices = c('ab'='ab',
+                                                                'bc'='bc','cd'='cd'),selected = 'ab')
+                                      ),
+                                      mainPanel(textOutput(outputId = 'w'))
+                                    )),
+                           navbarMenu(title = 'Analyses',
+                                      tabPanel('a'),
+                                      tabPanel('b'),
+                                      tabPanel('b')
+                           ),
+                           tabPanel(title = 'About',
+                                    includeMarkdown("https://raw.githubusercontent.com/openbiox/XenaShiny/master/README.md"))
+                )
 )
 
 
 # Server ------------------------------------------------------------------
 
-server = function(input, output) {}
+server <- function(input, output, session) {
+  output$w <- renderText({
+    req(input$side)
+    r <- input$side
+    paste('www',r)
+  })
+}
 
 
 # Run web app -------------------------------------------------------------
