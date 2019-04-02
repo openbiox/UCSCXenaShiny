@@ -2,7 +2,8 @@
 #### A Shiny App for UCSC Xena #########
 ########################################
 ##### LICENSE: MIT @Openbiox
-
+#setwd("~/Repo/XenaShiny/R")  # Shiny use .R as work directory
+                             # so set this when not run app
 
 # Dependencies check ------------------------------------------------------
 
@@ -10,7 +11,7 @@
 # remotes::install_github("ShixiangWang/UCSCXenaTools", build_vignettes = TRUE)
 
 pkgs <- c("shiny", "shinythemes", "UCSCXenaTools",
-          "echarts4r")
+          "echarts4r", "DT")
 for (pkg in pkgs){
   if (!require(pkg, character.only = TRUE)) {
     message("Installing dependencies ", "\'", pkg, "\'...")
@@ -24,6 +25,10 @@ rm(pkgs)
 
 # Here data goes
 data("XenaData", package = "UCSCXenaTools")
+xena_table <- XenaData[, c("XenaDatasets","XenaHostNames", "XenaCohorts",
+                           "SampleCount", "DataSubtype", "Label")]
+xena_table$SampleCount <- as.integer(xena_table$SampleCount)
+colnames(xena_table)[c(1:3)] <- c("Dataset ID", "Hub", "Cohort")
 #View(XenaData)
 
 # xena_all = XenaData %>% XenaGenerate()
@@ -48,7 +53,7 @@ data("XenaData", package = "UCSCXenaTools")
 # XenaInfo$all_samples = NULL
 # save(XenaInfo, file = "data/XenaInfo.RData")
 
-load(file = "~/Repo/XenaShiny/data/XenaInfo.RData")
+load(file = "data/XenaInfo.RData")
 
 # UI ----------------------------------------------------------------------
 
@@ -63,7 +68,7 @@ ui <- fluidPage(theme = shinytheme("spacelab"),
                                                     choices = c('ab'='ab',
                                                                 'bc'='bc','cd'='cd'),selected = 'ab')
                                       ),
-                                      mainPanel(textOutput(outputId = 'w'))
+                                      mainPanel(DT::dataTableOutput("xena_table"))
                                     )),
                            navbarMenu(title = 'Analyses',
                                       tabPanel('a'),
@@ -71,8 +76,14 @@ ui <- fluidPage(theme = shinytheme("spacelab"),
                                       tabPanel('b')
                            ),
                            tabPanel(title = 'About',
-                                    includeMarkdown("https://raw.githubusercontent.com/openbiox/XenaShiny/master/README.md"))
-                )
+                                    includeMarkdown("md/about.md")),
+                           tags$footer(HTML("Openbiox &copy; MIT"), align = "center", style = "
+                            position:absolute;
+                            bottom:0;
+                            width:100%;
+                            height:50px;   /* Height of the footer */
+                            padding: 10px;
+                            z-index: 1000;"))
 )
 
 
@@ -84,6 +95,7 @@ server <- function(input, output, session) {
     r <- input$side
     paste('www',r)
   })
+  output$xena_table <- DT::renderDataTable(DT::datatable(xena_table))
 }
 
 
