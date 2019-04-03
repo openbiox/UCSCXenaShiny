@@ -73,12 +73,11 @@ fun_download <- function(datasets, destdir=tempdir(),
 
 # UI ----------------------------------------------------------------------
 
-ui = navbarPage(
+ui <- navbarPage(
   shinythemes::themeSelector(),  # <--- Add this somewhere in the UI
-  
   tabPanel(title="Home",
-           icon = icon("home") #create icon http://shiny.rstudio.com/reference/shiny/latest/icon.html
-           ),
+           icon = icon("home") # create icon http://shiny.rstudio.com/reference/shiny/latest/icon.html
+  ),
   tabPanel(title="Repository",
            icon = icon("database"),
            sidebarPanel(
@@ -87,13 +86,12 @@ ui = navbarPage(
              actionButton("action", "Button"),
              actionButton("action2", "Button2", class = "btn-primary")
            ),
-           mainPanel(
-             tabsetPanel(
-               tabPanel("Tab 1"),
-               tabPanel("Tab 2")
-             )
-           )
+           mainPanel(DT::dataTableOutput("xena_table"))
   ),
+  navbarMenu(title = 'Analyses',
+             tabPanel('a'),
+             tabPanel('b'),
+             tabPanel('b')),
   tabPanel(title="Developers",
            icon = icon("user-friends"),
            fluidPage(
@@ -105,7 +103,7 @@ ui = navbarPage(
                  tags$div(class = "card bg-info text-dark center-block",
                           style="width:400px",
                           tags$img(class="card-img-top  img-circle img-responsive center-block",
-                                   src="people.png",alt="Card image"),
+                                   src="https://avatars2.githubusercontent.com/u/25057508?s=60&v=4",alt="Card image"),
                           tags$div(class="card-body",
                                    tags$h4(class="card-title","Shixiang Wang"),
                                    tags$p(class="card-text","Some information displayed"),
@@ -118,7 +116,7 @@ ui = navbarPage(
                  tags$div(class = "card bg-info text-dark center-block",
                           style="width:400px",
                           tags$img(class="card-img-top  img-circle img-responsive center-block",
-                                   src="people.png",alt="Card image"),
+                                   src="https://avatars3.githubusercontent.com/u/17489298?s=60&v=4",alt="Card image"),
                           tags$div(class="card-body",
                                    tags$h4(class="card-title","Fei Zhao"),
                                    tags$p(class="card-text","Some information displayed"),
@@ -131,7 +129,7 @@ ui = navbarPage(
                  tags$div(class = "card bg-info text-dark center-block",
                           style="width:400px",
                           tags$img(class="card-img-top  img-circle img-responsive center-block",
-                                   src="people.png",alt="Card image"),
+                                   src="https://avatars1.githubusercontent.com/u/28949856?s=60&v=4",alt="Card image"),
                           tags$div(class="card-body",
                                    tags$h4(class="card-title","Yi Xiong"),
                                    tags$p(class="card-text","Some information displayed"),
@@ -147,7 +145,7 @@ ui = navbarPage(
                  tags$div(class = "card bg-info text-dark center-block",
                           style="width:400px",
                           tags$img(class="card-img-top  img-circle img-responsive center-block",
-                                   src="people.png",alt="Card image"),
+                                   src="https://avatars3.githubusercontent.com/u/37660840?s=60&v=4",alt="Card image"),
                           tags$div(class="card-body",
                                    tags$h4(class="card-title","Longfei Zhao"),
                                    tags$p(class="card-text","Some information displayed")
@@ -161,7 +159,7 @@ ui = navbarPage(
                  tags$div(class = "card bg-info text-dark center-block",
                           style="width:400px",
                           tags$img(class="card-img-top  img-circle img-responsive center-block",
-                                   src="people.png",alt="Card image"),
+                                   src="https://avatars1.githubusercontent.com/u/38618580?s=60&v=4",alt="Card image"),
                           tags$div(class="card-body",
                                    tags$h4(class="card-title","Yin Li"),
                                    tags$p(class="card-text","Some information displayed"),
@@ -174,49 +172,26 @@ ui = navbarPage(
                  tags$div(class = "card bg-info text-dark center-block",
                           style="width:400px",
                           tags$img(class="card-img-top  img-circle img-responsive center-block",
-                                   src="people.png",alt="Card image"),
+                                   src="https://avatars3.githubusercontent.com/u/22772592?s=60&v=4",alt="Card image"),
                           tags$div(class="card-body",
                                    tags$h4(class="card-title","Kai Gu"),
                                    tags$p(class="card-text","Some information displayed"),
                                    tags$a(href="#",class="card-link","See Profile")
-                                   )
                           )
+                 )
                )
              )
            )
-  )
-
- 
-# ui <- fluidPage(theme = shinytheme("spacelab"),
-#                 navbarPage('XenaShiny',
-#                            tabPanel(title = "Home"), 
-#                            tabPanel(title = 'Repository',
-#                                     sidebarLayout(
-#                                       sidebarPanel(
-#                                         selectInput('side',
-#                                                     'Select',
-#                                                     choices = c('ab'='ab',
-#                                                                 'bc'='bc','cd'='cd'),selected = 'ab')
-#                                       ),
-#                                       mainPanel(DT::dataTableOutput("xena_table"))
-#                                     )),
-#                            navbarMenu(title = 'Analyses',
-#                                       tabPanel('a'),
-#                                       tabPanel('b'),
-#                                       tabPanel('b')
-#                            ),
-#                            tabPanel(title = 'About',
-#                                     includeMarkdown("md/about.md")),
-#                            tags$footer(HTML("Openbiox &copy; MIT"), align = "center", style = "
-#                             position:absolute;
-#                             bottom:0;
-#                             width:100%;
-#                             height:50px;   /* Height of the footer */
-#                             padding: 10px;
-#                             z-index: 1000;"))
+  ),
+  tags$footer(HTML("Openbiox &copy; MIT"), align = "center", style = "
+                            position:absolute;
+                            bottom:0;
+                            width:100%;
+                            height:50px;   /* Height of the footer */
+                            padding: 10px;
+                            z-index: 1000;")
 )
-
-
+ 
 # Server ------------------------------------------------------------------
 
 server <- function(input, output, session) {
