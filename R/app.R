@@ -59,13 +59,13 @@ load(file = "data/XenaInfo.RData")
 
 # Functions ---------------------------------------------------------------
 fun_download <- function(datasets, destdir=tempdir(), 
-                         keep_structure = FALSE, force = FALSE, ...) {
+                         keep_structure = TRUE, force = FALSE, ...) {
   # keep_structure 设置为TRUE时，因为数据集ID带'/'，下载的多个数据集会放到不同的文件夹中
   # 设置为FALSE将会把'/'替换为'__'
   dplyr::filter(UCSCXenaTools::XenaData, XenaDatasets %in% datasets) %>% 
     UCSCXenaTools::XenaGenerate() %>% 
     UCSCXenaTools::XenaQuery() %>% 
-    UCSCXenaTools::XenaDownload(destdir = destdir, trans_slash = keep_structure, force = force, ...)
+    UCSCXenaTools::XenaDownload(destdir = destdir, trans_slash = !keep_structure, force = force, ...)
 }
 
 # test
