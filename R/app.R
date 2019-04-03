@@ -55,6 +55,22 @@ colnames(xena_table)[c(1:3)] <- c("Dataset ID", "Hub", "Cohort")
 
 load(file = "data/XenaInfo.RData")
 
+
+
+# Functions ---------------------------------------------------------------
+fun_download <- function(datasets, destdir=tempdir(), 
+                         keep_structure = FALSE, force = FALSE, ...) {
+  # keep_structure 设置为TRUE时，因为数据集ID带'/'，下载的多个数据集会放到不同的文件夹中
+  # 设置为FALSE将会把'/'替换为'__'
+  dplyr::filter(UCSCXenaTools::XenaData, XenaDatasets %in% datasets) %>% 
+    UCSCXenaTools::XenaGenerate() %>% 
+    UCSCXenaTools::XenaQuery() %>% 
+    UCSCXenaTools::XenaDownload(destdir = destdir, trans_slash = keep_structure, force = force, ...)
+}
+
+# test
+#fun_download("TCGA.LUAD.sampleMap/LUAD_clinicalMatrix")
+
 # UI ----------------------------------------------------------------------
 
 ui <- fluidPage(theme = shinytheme("spacelab"),
