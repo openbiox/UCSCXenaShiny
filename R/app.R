@@ -26,8 +26,11 @@ data("XenaData", package = "UCSCXenaTools")
 ui = navbarPage(
   shinythemes::themeSelector(),  # <--- Add this somewhere in the UI
   
-  tabPanel(title="Home"),
+  tabPanel(title="Home",
+           icon = icon("home") #create icon http://shiny.rstudio.com/reference/shiny/latest/icon.html
+           ),
   tabPanel(title="Repository",
+           icon = icon("database"),
            sidebarPanel(
              textInput("txt", "Text input:", "text here"),
              sliderInput("slider", "Slider input:", 1, 100, 30),
@@ -41,7 +44,97 @@ ui = navbarPage(
              )
            )
   ),
-  tabPanel(title="Developers")
+  tabPanel(title="Developers",
+           icon = icon("user-friends"),
+           fluidPage(
+             #titlePanel("Developers"),
+             fluidRow(
+               class ="text-center center-block",
+               column(
+                 4,
+                 tags$div(class = "card bg-info text-dark center-block",
+                          style="width:400px",
+                          tags$img(class="card-img-top  img-circle img-responsive center-block",
+                                   src="people.png",alt="Card image"),
+                          tags$div(class="card-body",
+                                   tags$h4(class="card-title","Shixiang Wang"),
+                                   tags$p(class="card-text","Some information displayed"),
+                                   tags$a(href="#",class="card-link","See Profile")
+                          )
+                 )
+               ),
+               column(
+                 4,
+                 tags$div(class = "card bg-info text-dark center-block",
+                          style="width:400px",
+                          tags$img(class="card-img-top  img-circle img-responsive center-block",
+                                   src="people.png",alt="Card image"),
+                          tags$div(class="card-body",
+                                   tags$h4(class="card-title","Fei Zhao"),
+                                   tags$p(class="card-text","Some information displayed"),
+                                   tags$a(href="#",class="card-link","See Profile")
+                          )
+                 )
+               ),
+               column(
+                 4,
+                 tags$div(class = "card bg-info text-dark center-block",
+                          style="width:400px",
+                          tags$img(class="card-img-top  img-circle img-responsive center-block",
+                                   src="people.png",alt="Card image"),
+                          tags$div(class="card-body",
+                                   tags$h4(class="card-title","Yi Xiong"),
+                                   tags$p(class="card-text","Some information displayed"),
+                                   tags$a(href="#",class="card-link","See Profile")
+                          )
+                 )
+               )),
+             tags$br(),
+             fluidRow(
+               class ="text-center center-block",
+               column(
+                 4,
+                 tags$div(class = "card bg-info text-dark center-block",
+                          style="width:400px",
+                          tags$img(class="card-img-top  img-circle img-responsive center-block",
+                                   src="people.png",alt="Card image"),
+                          tags$div(class="card-body",
+                                   tags$h4(class="card-title","Longfei Zhao"),
+                                   tags$p(class="card-text","Some information displayed")
+                          ),
+                          tags$div(class="card-footer",
+                                   tags$a(href="#",class="card-link","See Profile"))
+                 )
+               ),
+               column(
+                 4,
+                 tags$div(class = "card bg-info text-dark center-block",
+                          style="width:400px",
+                          tags$img(class="card-img-top  img-circle img-responsive center-block",
+                                   src="people.png",alt="Card image"),
+                          tags$div(class="card-body",
+                                   tags$h4(class="card-title","Yin Li"),
+                                   tags$p(class="card-text","Some information displayed"),
+                                   tags$a(href="#",class="card-link","See Profile")
+                          )
+                 )
+               ),
+               column(
+                 4,
+                 tags$div(class = "card bg-info text-dark center-block",
+                          style="width:400px",
+                          tags$img(class="card-img-top  img-circle img-responsive center-block",
+                                   src="people.png",alt="Card image"),
+                          tags$div(class="card-body",
+                                   tags$h4(class="card-title","Kai Gu"),
+                                   tags$p(class="card-text","Some information displayed"),
+                                   tags$a(href="#",class="card-link","See Profile")
+                                   )
+                          )
+               )
+             )
+           )
+  )
 )
 
 
