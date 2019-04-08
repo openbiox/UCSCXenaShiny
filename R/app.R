@@ -55,10 +55,11 @@ colnames(xena_table)[c(1:3)] <- c("Dataset ID", "Hub", "Cohort")
 # XenaInfo$n_cohorts = length(cohorts(xena_all))
 # XenaInfo$n_datasets = length(datasets(xena_all))
 # XenaInfo$all_samples = NULL
+# XenaInfo$n_subtypes = length(names(table(XenaData$DataSubtype)))
+# XenaInfo$n_origin = length(names(table(XenaData$AnatomicalOrigin)))
 # save(XenaInfo, file = "data/XenaInfo.RData")
 
 load(file = "data/XenaInfo.RData")
-
 
 
 # Functions ---------------------------------------------------------------
