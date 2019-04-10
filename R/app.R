@@ -82,7 +82,7 @@ library(shinyjs)
 
 ui <- tagList(
   shinyjs::useShinyjs(),
-  
+
   navbarPage(
     title = "",
     # shinythemes::themeSelector(),  # <--- Add this somewhere in the UI
@@ -93,7 +93,7 @@ ui <- tagList(
     tabPanel(
       title = "Repository",
       icon = icon("database"),
-      
+
       sidebarLayout(
         sidebarPanel(
           hr(),
@@ -101,46 +101,56 @@ ui <- tagList(
           tags$div(
             id = "hubs_info",
             style = "padding: 0px 5px 1px",
-            checkboxGroupInput("hubs_text", NULL, choiceNames = c("UCSC Public Hub", "TCGA Hub",
-                                                              "GDC Xena Hub", "ICGC Xena Hub",
-                                                              "Pan-Cancer Atlas Hub", "GA4GH (TOIL) Hub",
-                                                              "Treehouse Hub", "PCAWG Hub",
-                                                              "ATAC-seq Hub", "Singel Cell Xena hub"),
-                               choiceValues = c("publicHub", "tcgaHub", "gdcHub", "icgcHub", "pancanAtlasHub",
-                                                "toilHub", "treehouseHub", "pcawgHub", "atacseqHub", "singlecellHub"))
+            checkboxGroupInput("hubs_text", NULL,
+              choiceNames = c(
+                "UCSC Public", "TCGA",
+                "GDC", "ICGC",
+                "Pan-Cancer Atlas", "TOIL",
+                "Treehouse", "PCAWG",
+                "ATAC-seq", "Single Cell"
+              ),
+              choiceValues = c(
+                "publicHub", "tcgaHub", "gdcHub", "icgcHub", "pancanAtlasHub",
+                "toilHub", "treehouseHub", "pcawgHub", "atacseqHub", "singlecellHub"
+              )
+            )
           ),
-          
+
           hr(),
           actionLink("cohorts", "Cohorts Name :", icon = icon("arrow-circle-right"), style = "font-size:125%"),
           tags$div(
             id = "cohorts_info",
             style = "padding: 8px 1px 0px",
-            textInput("cohorts_text", NULL, width = "80%", placeholder = "Breast", value = NULL)
+            textInput("cohorts_text", NULL, width = "80%", placeholder = "e.g. Breast", value = NULL)
           ),
-          
+
+
           hr(),
-          actionLink("subtype", "Data subtype :", icon = icon("arrow-circle-right"), style = "font-size:125%"),
-          tags$div(
-            id = "subtype_info",
-            style = "padding: 8px 1px 0px",
-            textInput("subtype_text", NULL, width = "80%", placeholder = "gene expression", value = NULL)
-          ),
-          
-          hr(),
-          actionLink("type", "Type :", icon = icon("arrow-circle-right"), style = "font-size:125%"),
+          actionLink("type", "Data Type :", icon = icon("arrow-circle-right"), style = "font-size:125%"),
           tags$div(
             id = "type_info",
             style = "padding: 0px 5px 1px",
-            checkboxGroupInput("type_text", NULL, choices  = c("genomicMatrix", "clinicalMatrix", "genomicSegment", "mutationVector"))
+            checkboxGroupInput("type_text", NULL, 
+                               choiceNames = c("Clinical/phenotype", "Feature (e.g. gene, proble) by sample matrix",
+                                               "Genomic segments", "Mutations"), 
+                               choiceValues = c("clinicalMatrix", "genomicMatrix", "genomicSegment", "mutationVector"))
+          ),
+
+          hr(),
+          actionLink("subtype", "Data Subtype :", icon = icon("arrow-circle-right"), style = "font-size:125%"),
+          tags$div(
+            id = "subtype_info",
+            style = "padding: 8px 1px 0px",
+            textInput("subtype_text", NULL, width = "80%", placeholder = "e.g. gene expression", value = NULL)
           )
         ),
-        
+
         mainPanel(
           DT::dataTableOutput("xena_table")
         )
       )
     ),
-    
+
     navbarMenu(
       title = "Modules",
       icon = icon("buromobelexperte"),
@@ -148,7 +158,7 @@ ui <- tagList(
       tabPanel("module 1"),
       tabPanel("module 3")
     ),
-    
+
     navbarMenu(
       title = "Pipelines",
       icon = icon("angle-double-down"),
@@ -156,6 +166,16 @@ ui <- tagList(
       tabPanel("pipeline 2"),
       tabPanel("pipeline 3")
     ),
+    
+    navbarMenu(
+      title = "Help",
+      icon = icon("question-circle"),
+      tabPanel("Term List"),
+      tabPanel("Repository Selections"),
+      tabPanel("Help 2"),
+      tabPanel("Help 3")
+    ),
+    
     tabPanel(
       title = "Developers",
       icon = icon("user-friends"),
@@ -276,8 +296,8 @@ ui <- tagList(
       )
     ),
     footer = tags$footer(tags$a(href = "https://github.com/openbiox", "Openbiox"),
-                         HTML(" &copy; "), tags$a(href = "https://github.com/openbiox/XenaShiny/blob/master/LICENSE", "MIT"),
-                         align = "center", style = "
+      HTML(" &copy; "), tags$a(href = "https://github.com/openbiox/XenaShiny/blob/master/LICENSE", "MIT"),
+      align = "center", style = "
                             position:relative;
                             bottom:0;
                             width:100%;
@@ -306,10 +326,10 @@ server <- function(input, output, session) {
   observeEvent(input$type, {
     toggle("type_info")
   })
-  
-  
+
+
   observe({
-    s = input$xena_table_rows_selected
+    s <- input$xena_table_rows_selected
     if (length(s)) {
       showModal(
         modalDialog(
@@ -322,43 +342,60 @@ server <- function(input, output, session) {
       )
     }
   })
-  
+
+  # 这里使用正则表达式进行匹配的输入条件增加多个输入的支持，即用户可以选择使用
+  # ,或者;对条件分割
   dataset <- reactive({
     res <- XenaData
-    if (!is.null(input$hubs_text)){
+    if (!is.null(input$hubs_text)) {
       # print(input$hubs_text)
       res <- dplyr::filter(res, XenaHostNames %in% input$hubs_text)
     }
-    if (!is.null(input$cohorts_text)){
+    if (!is.null(input$cohorts_text)) {
       res <- dplyr::filter(res, grepl(input$cohorts_text, XenaCohorts, ignore.case = TRUE))
     }
-    if (!is.null(input$subtype_text)){
+    if (!is.null(input$subtype_text)) {
       res <- dplyr::filter(res, grepl(input$subtype_text, DataSubtype, ignore.case = TRUE))
     }
-    if (!is.null(input$type_text)){
+    if (!is.null(input$type_text)) {
       res <- dplyr::filter(res, Type %in% input$type_text)
     }
     return(res)
   })
-  
-  output$xena_table <- DT::renderDataTable(dataset()[,c("XenaDatasets", "XenaHostNames", "XenaCohorts","SampleCount", "DataSubtype", "Label")], selection = 'single')
-  
+
+  output$xena_table <- DT::renderDataTable(dataset()[, c("XenaDatasets",
+                                                         "XenaHostNames", 
+                                                         "XenaCohorts", 
+                                                         "SampleCount", 
+                                                         "DataSubtype",
+                                                         "Label")], 
+                                           selection = "single", colnames=c("Dataset", "Hub", "Cohort", "Samples", "Subtype", "Label"))
+
   selected_database <- reactive({
     s <- input$xena_table_rows_selected
     if (length(s)) {
-      return(dataset()[s,])
+      return(dataset()[s, ])
     }
   })
+
+  
+  # 我们不在详细信息这里提供下载功能
+  # 而是利用Xena API提供我们已知的所有信息
+  # 举例：
+  # .p_dataset_metadata("https://ucscpublic.xenahubs.net", "chin2006_public/chin2006Exp_genomicMatrix")
+  # 上面代码可以获取数据集的元信息，和下面链接看到的一致
+  # https://xenabrowser.net/datapages/?dataset=chin2006_public%2Fchin2006Exp_genomicMatrix&host=https%3A%2F%2Fucscpublic.xenahubs.net&removeHub=https%3A%2F%2Fxena.treehouse.gi.ucsc.edu%3A443
+  # 返回的是一个数据框，pmtext和text需要使用json解析，使用函数jsonlite::parse_json
   
   url <- reactive({
     data <- selected_database()
     xe <- XenaGenerate(subset = XenaDatasets == data$XenaDatasets)
-    xe_query = XenaQuery(xe)
+    xe_query <- XenaQuery(xe)
     return(xe_query$url)
   })
-  
-  output$detail_info <- renderDT(selected_database(), options = list(dom = 't', scrollX = TRUE))
-  
+
+  output$detail_info <- renderDT(selected_database(), options = list(dom = "t", scrollX = TRUE))
+
   output$w <- renderText({
     req(input$side)
     r <- input$side
