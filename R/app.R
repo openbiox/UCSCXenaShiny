@@ -137,18 +137,10 @@ ui <- tagList(
         
         mainPanel(
           DT::dataTableOutput("xena_table")
-          # verbatimTextOutput('x1')
         )
       )
-      
-      # sidebarPanel(
-      #   textInput("txt", "Text input:", "text here"),
-      #   sliderInput("slider", "Slider input:", 1, 100, 30),
-      #   actionButton("action", "Button"),
-      #   actionButton("action2", "Button2", class = "btn-primary")
-      # ),
-      # mainPanel(DT::dataTableOutput("xena_table"))
     ),
+    
     navbarMenu(
       title = "Modules",
       icon = icon("buromobelexperte"),
@@ -156,6 +148,7 @@ ui <- tagList(
       tabPanel("module 1"),
       tabPanel("module 3")
     ),
+    
     navbarMenu(
       title = "Pipelines",
       icon = icon("angle-double-down"),
@@ -325,7 +318,6 @@ server <- function(input, output, session) {
           DTOutput("detail_info"),
           hr(),
           tags$p(tags$span("Please click link to download: ", style = "font-size:110%; padding:0px 5px"), tags$a(href = url(), "Target dataset"))
-          
         )
       )
     }
@@ -344,7 +336,7 @@ server <- function(input, output, session) {
       res <- dplyr::filter(res, grepl(input$subtype_text, DataSubtype, ignore.case = TRUE))
     }
     if (!is.null(input$type_text)){
-      res <- dplyr::filter(res, grepl(input$type_text, Type, ignore.case = TRUE))
+      res <- dplyr::filter(res, Type %in% input$type_text)
     }
     return(res)
   })
