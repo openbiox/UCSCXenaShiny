@@ -295,8 +295,9 @@ ui <- tagList(
         )
       )
     ),
-    footer = tags$footer(tags$a(href = "https://github.com/openbiox", "Openbiox"),
-      HTML(" &copy; "), tags$a(href = "https://github.com/openbiox/XenaShiny/blob/master/LICENSE", "MIT"),
+    footer = tags$footer(HTML("Copyright &copy; 2019&nbsp;&nbsp;&nbsp;&nbsp;"), tags$a(href = "https://github.com/openbiox", "Openbiox"),
+                         HTML("- A community-driven bioinformatics innovation collaboration group in China |"),
+      tags$a(href = "https://github.com/openbiox/XenaShiny/blob/master/LICENSE", "MIT License"),
       align = "center", style = "
                             position:relative;
                             bottom:0;
