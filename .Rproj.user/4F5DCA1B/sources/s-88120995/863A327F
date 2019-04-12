@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1555073208468.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2732770006",
+    "id" : "863A327F",
+    "lastKnownWriteTime" : 1555073256,
+    "last_content_update" : 1555073256270,
+    "path" : "E:/bioinformatics/UCSCXenaTools/XenaShiny/App.R",
+    "project_path" : "App.R",
+    "properties" : {
+        "cursorPosition" : "347,33",
+        "scrollLine" : "333",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
