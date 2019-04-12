@@ -35,7 +35,13 @@ plot_dat <- XenaData %>%
   group_by(XenaHostNames) %>%
   mutate(Sample_percent = N/sum(N))
 
-#----------------UI---------------------------------------
+plot_dat_new <- XenaData %>%
+  mutate(SampleCount = as.numeric(SampleCount)) %>%
+  group_by(XenaHostNames, XenaCohorts) %>%
+  summarise(SampleCount_sum = sum(SampleCount, na.rm = T)) %>%
+  group_by(XenaHostNames) %>%
+  mutate(SampleCount_percent = SampleCount_sum/sum(SampleCount_sum))
+
 ui <- navbarPage(
   theme = shinythemes::shinytheme("cosmo"),
   title = "XenaShiny",
@@ -147,10 +153,14 @@ ui <- navbarPage(
         ),
         column(
           6,
-          # tags$div(
-          #   tags$h4("plot")
-          # ),
-          plotlyOutput("Xenasummary")
+          tags$div(
+            tags$h4("Xena Summary"),
+            verticalLayout(
+              plotlyOutput("Xenasummary1"),
+              tags$br(),
+              plotlyOutput("Xenasummary")
+            )
+          )
         )
       ),
       tags$br(),
@@ -293,6 +303,8 @@ ui <- navbarPage(
 
 
 
+
+
 server = function(input, output){
   output$Xenasummary <- renderPlotly({
     p = plot_dat %>% 
@@ -300,19 +312,37 @@ server = function(input, output){
       ggplot(aes(x = XenaHostNames, y = Sample_percent, fill = XenaCohorts, text = N)) +
       geom_bar(stat = 'identity',width = 0.8, color = "black") + 
       coord_flip() +
-      labs(y = "Dataset Numbers", x = "") +
+      labs(y = "", x = "") +
       theme_bw(base_size = 15) + #去除背景色
-      theme(panel.grid =element_blank()) + 
-      theme(panel.border = element_blank()) +
-      theme(axis.line = element_line(colour = "black")) +
-      scale_color_manual(values = c("black")) +
+      theme(panel.grid =element_blank()) + #去除网格线
+      theme(panel.border = element_blank()) + #去除外层边框
+      theme(axis.line = element_line(colour = "black")) + #沿坐标轴显示直线
+      theme(axis.line.x = element_blank(), axis.ticks.x = element_blank(), axis.text.x = element_blank()) + #去除x轴
       guides(fill = F) +
-      guides(color = F)
+      guides(color = F) +
+      ggtitle("Cohort Numbers")
     
     ggplotly(p, tooltip = c("XenaHostNames", "XenaCohorts", "N")) %>% layout(showlegend = FALSE)
+  })
+  output$Xenasummary1 <- renderPlotly({
+    p = plot_dat_new %>% 
+      #  filter(XenaHostNames == "gdcHub") %>%
+      ggplot(aes(x = XenaHostNames, y = SampleCount_percent, fill = XenaCohorts, text = SampleCount_sum)) +
+      geom_bar(stat = 'identity',width = 0.8, color = "black") + 
+      coord_flip() +
+      labs(y = "", x = "") +
+      theme_bw(base_size = 15) + #去除背景色
+      theme(panel.grid =element_blank()) + #去除网格线
+      theme(panel.border = element_blank()) + #去除外层边框
+      theme(axis.line = element_line(colour = "black")) + #沿坐标轴显示直线
+      theme(axis.line.x = element_blank(), axis.ticks.x = element_blank(), axis.text.x = element_blank()) + #去除x轴
+      guides(fill = F) +
+      guides(color = F) +
+      ggtitle("Sample Numbers")
+    
+    ggplotly(p, tooltip = c("XenaHostNames", "XenaCohorts", "SampleCount_sum")) %>% layout(showlegend = FALSE)
     
   })
 }
-
 
 shinyApp(ui = ui, server = server)
