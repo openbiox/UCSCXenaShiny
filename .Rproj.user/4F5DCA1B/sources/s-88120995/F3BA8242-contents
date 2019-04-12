@@ -1,0 +1,39 @@
+library(shiny)
+library(plotly)
+library(tidyverse)
+library(plotly)
+data("XenaData", package = "UCSCXenaTools")
+
+plot_dat <- XenaData %>%
+  group_by(XenaHostNames, XenaCohorts) %>%
+  summarise(N = n())  %>%
+  group_by(XenaHostNames) %>%
+  mutate(Sample_percent = N/sum(N))
+
+ui <- fluidPage(
+  plotlyOutput("plot")
+)
+
+server <- function(input, output) {
+  
+  # renderPlotly() also understands ggplot2 objects!
+  output$plot <- renderPlotly({
+    p = plot_dat %>% 
+      #  filter(XenaHostNames == "gdcHub") %>%
+      ggplot(aes(x = XenaHostNames, y = Sample_percent, fill = XenaCohorts, text = N)) +
+      geom_bar(stat = 'identity',width = 0.8, color = "black") + 
+      coord_flip() +
+      labs(y = "Dataset Numbers", x = "") +
+      theme_bw(base_size = 15) + #去除背景色
+      theme(panel.grid =element_blank()) + 
+      theme(panel.border = element_blank()) +
+      theme(axis.line = element_line(colour = "black")) +
+      scale_color_manual(values = c("black")) +
+      guides(fill = F) +
+      guides(color = F)
+    ggplotly(p, tooltip = c("XenaHostNames", "XenaCohorts", "N")) %>% layout(showlegend = FALSE)
+
+  })
+}
+
+shinyApp(ui, server)

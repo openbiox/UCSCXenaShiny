@@ -1,0 +1,97 @@
+#
+library("UCSCXenaTools")
+library(ggplot2)
+library(tidyverse)
+library(plotly)
+unique(XenaData$XenaHostNames)
+XenaData_TCGA = XenaData %>%
+  dplyr::filter(XenaHostNames %in% c("tcgaHub"))
+
+unique(XenaData_TCGA$DataSubtype)
+# xena_all = XenaData %>% XenaGenerate()
+# XenaInfo = list()
+# samps = list()
+# for (i in 1:nrow(XenaData)) {
+#   s = XenaData[i, ] %>% XenaGenerate() %>% samples(by = "datasets", how = "any")
+#   message("Processing #", i)
+#   samps[[i]] = s[[1]]
+# }
+# rm(s)
+# names(samps) = XenaData$XenaDatasets
+# saveRDS(samps, file = "data/XenaSamples.rds")
+# samps <- XenaSamples
+# all_chr = purrr::map_lgl(samps, is.character)
+# XenaInfo$all_samples = purrr::reduce(samps[as.integer(which(all_chr))], union)
+# #XenaInfo$all_samples = Reduce(union, samps)
+# XenaInfo$n_samples = length(XenaInfo$all_samples)
+# XenaInfo$n_hubs = length(hosts(xena_all))
+# XenaInfo$n_cohorts = length(cohorts(xena_all))
+# XenaInfo$n_datasets = length(datasets(xena_all))
+# XenaInfo$all_samples = NULL
+# save(XenaInfo, file = "data/XenaInfo.RData")
+XenaData_TCGA_sum = XenaData_TCGA %>% 
+  dplyr::group_by(XenaCohorts) %>% 
+  dplyr::mutate(SampleCount = as.numeric(SampleCount)) %>%
+  filter(!is.na(SampleCount)) %>%
+  dplyr::summarise(SampleCount_sum = sum(SampleCount))
+
+  
+library(plotly)
+plot_ly(data = XenaData_TCGA_sum, x = ~XenaCohorts, y = ~ SampleCount_sum, type = 'bar')
+
+#
+dat = XenaData %>% 
+  group_by(XenaHostNames, XenaCohorts) %>% 
+  summarise(N = n()) %>% 
+  spread(key = XenaCohorts, value = N) %>% 
+  column_to_rownames("XenaHostNames") 
+# XenaData %>%
+#   group_by(XenaHostNames, XenaCohorts) %>%
+#   summarise(N = n()) %>%
+#   spread(key = XenaCohorts, value = N) %>% 
+#   column_to_rownames("XenaHostNames")
+
+plot_dat <- XenaData %>%
+  group_by(XenaHostNames, XenaCohorts) %>%
+  mutate(SampleCount = as.numeric(SampleCount)) %>%
+  summarise(N = n(), Sample_sum = sum(SampleCount, na.rm = T)) %>%
+  group_by(XenaHostNames) %>%
+  mutate(Sample_percent = N/sum(N))
+
+plot_dat_new = plot_dat %>%
+  group_by(XenaHostNames) %>%
+  summarise(Sample_sum = sum(Sample_sum, na.rm = T)) %>%
+  rename("Sample_Count"="Sample_sum")
+sum(plot_dat_new$Sample_Count)
+plot_ly(plot_dat_new, x = ~XenaHostNames, y = ~Sample_Count, type = "bar")
+
+p = plot_dat %>% 
+#  filter(XenaHostNames == "gdcHub") %>%
+  ggplot(aes(x = XenaHostNames, y = Sample_percent, fill = XenaCohorts, text = N)) +
+  geom_bar(stat = 'identity',width = 0.8, color = "black") + 
+  coord_flip() +
+  labs(y = "Dataset Numbers", x = "") +
+  theme_bw(base_size = 15) + #去除背景色
+  theme(panel.grid =element_blank()) + 
+  theme(panel.border = element_blank()) +
+  theme(axis.line = element_line(colour = "black")) +
+  scale_color_manual(values = c("black")) +
+  guides(fill = F) +
+  guides(color = F) +
+  ggtitle("Xena Summary")
+
+p
+
+ggplotly(p, tooltip = c("XenaHostNames", "XenaCohorts", "N")) %>% layout(showlegend = FALSE)
+
+plot_dat = plot_dat %>% filter(XenaHostNames == "gdcHub")
+
+# ggplot(plot_dat, aes(x = XenaCohorts, y = N, fill = XenaCohorts)) +
+#   geom_bar(stat = 'identity',width = 0.8) +
+#   coord_flip() +
+#   labs(y = "Dataset Numbers", x = "XenaCohorts") +
+#   theme_bw(base_size = 15) +
+#   theme(panel.grid =element_blank()) +
+#   theme(panel.border = element_blank()) +
+#   theme(axis.line = element_line(colour = "black"))
+plot_ly(plot_dat, y = ~XenaCohorts, x = ~N, type = "bar")

@@ -35,13 +35,7 @@ plot_dat <- XenaData %>%
   group_by(XenaHostNames) %>%
   mutate(Sample_percent = N/sum(N))
 
-plot_dat_new <- XenaData %>%
-  mutate(SampleCount = as.numeric(SampleCount)) %>%
-  group_by(XenaHostNames, XenaCohorts) %>%
-  summarise(SampleCount_sum = sum(SampleCount, na.rm = T)) %>%
-  group_by(XenaHostNames) %>%
-  mutate(SampleCount_percent = SampleCount_sum/sum(SampleCount_sum))
-
+#----------------UI---------------------------------------
 ui <- navbarPage(
   theme = shinythemes::shinytheme("cosmo"),
   title = "XenaShiny",
@@ -153,14 +147,10 @@ ui <- navbarPage(
         ),
         column(
           6,
-          tags$div(
-            tags$h4("Xena Summary"),
-            verticalLayout(
-              plotlyOutput("Xenasummary1"),
-              tags$br(),
-              plotlyOutput("Xenasummary")
-            )
-          )
+          # tags$div(
+          #   tags$h4("plot")
+          # ),
+          plotlyOutput("Xenasummary")
         )
       ),
       tags$br(),
@@ -303,3 +293,26 @@ ui <- navbarPage(
 
 
 
+server = function(input, output){
+  output$Xenasummary <- renderPlotly({
+    p = plot_dat %>% 
+      #  filter(XenaHostNames == "gdcHub") %>%
+      ggplot(aes(x = XenaHostNames, y = Sample_percent, fill = XenaCohorts, text = N)) +
+      geom_bar(stat = 'identity',width = 0.8, color = "black") + 
+      coord_flip() +
+      labs(y = "Dataset Numbers", x = "") +
+      theme_bw(base_size = 15) + #去除背景色
+      theme(panel.grid =element_blank()) + 
+      theme(panel.border = element_blank()) +
+      theme(axis.line = element_line(colour = "black")) +
+      scale_color_manual(values = c("black")) +
+      guides(fill = F) +
+      guides(color = F)
+    
+    ggplotly(p, tooltip = c("XenaHostNames", "XenaCohorts", "N")) %>% layout(showlegend = FALSE)
+    
+  })
+}
+
+
+shinyApp(ui = ui, server = server)
