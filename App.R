@@ -319,7 +319,7 @@ server <- function(input, output) {
   output$Xenasummary <- renderPlotly({
     p <- plot_dat %>%
       #  filter(XenaHostNames == "gdcHub") %>%
-      ggplot(aes(x = XenaHostNames, y = Sample_percent, fill = XenaCohorts, text = N)) +
+      ggplot(aes(x = XenaHostNames, y = Sample_percent, fill = XenaCohorts, text = sprintf("XenaHostNames: %s<br>XenaCohorts: %s<br>Cohort Numbers: %s", XenaHostNames, XenaCohorts, N))) +
       geom_bar(stat = "identity", width = 0.8, color = "black") +
       coord_flip() +
       labs(y = "", x = "") +
@@ -332,12 +332,12 @@ server <- function(input, output) {
       guides(color = F) +
       ggtitle("Cohort Numbers")
 
-    ggplotly(p, tooltip = c("XenaHostNames", "XenaCohorts", "N")) %>% layout(showlegend = FALSE)
+    ggplotly(p,tooltip = c("text")) %>% layout(showlegend = FALSE)
   })
   output$Xenasummary1 <- renderPlotly({
     p <- plot_dat_new %>%
       #  filter(XenaHostNames == "gdcHub") %>%
-      ggplot(aes(x = XenaHostNames, y = SampleCount_percent, fill = XenaCohorts, text = SampleCount_sum)) +
+      ggplot(aes(x = XenaHostNames, y = SampleCount_percent, fill = XenaCohorts, text = sprintf("XenaHostNames: %s<br>XenaCohorts: %s<br>Sample Numbers: %s", XenaHostNames, XenaCohorts, SampleCount_sum))) +
       geom_bar(stat = "identity", width = 0.8, color = "black") +
       coord_flip() +
       labs(y = "", x = "") +
@@ -349,7 +349,7 @@ server <- function(input, output) {
       guides(fill = F) +
       guides(color = F) +
       ggtitle("Sample Numbers")
-    ggplotly(p, tooltip = c("XenaHostNames", "XenaCohorts", "SampleCount_sum")) %>% layout(showlegend = FALSE)
+    ggplotly(p, tooltip = c("text")) %>% layout(showlegend = FALSE)
   })
 }
 
