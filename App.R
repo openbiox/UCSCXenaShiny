@@ -11,7 +11,7 @@
 
 pkgs <- c(
   "shiny", "shinythemes", "UCSCXenaTools",
-  "echarts4r", "DT", "shinyjs", "tidyverse", "plotly"
+  "echarts4r", "DT", "shinyjs", "tidyverse", "plotly","RColorBrewer"
 )
 for (pkg in pkgs) {
   if (!require(pkg, character.only = TRUE)) {
@@ -48,7 +48,7 @@ plot_dat <- XenaData %>%
   group_by(XenaHostNames) %>%
   mutate(Sample_percent = N/sum(N)) %>%
   group_by(XenaHostNames) %>%
-  mutate(N = sort(N, decreasing = T)) %>%
+#  mutate(N = sort(N, decreasing = T)) %>%
   mutate(Sample_percent = N / sum(N))
 
 # Sample count need to be corrected in the future
@@ -59,9 +59,14 @@ plot_dat_new <- XenaData %>%
   group_by(XenaHostNames) %>%
   mutate(SampleCount_percent = SampleCount_sum/sum(SampleCount_sum)) %>%
   group_by(XenaHostNames) %>%
-  mutate(SampleCount_sum = sort(SampleCount_sum, decreasing = T)) %>%
+#  mutate(SampleCount_sum = sort(SampleCount_sum, decreasing = T)) %>%
   mutate(SampleCount_percent = SampleCount_sum / sum(SampleCount_sum))
 
+#global color
+brewer.pal(10, "Spectral")
+mycolor = c(brewer.pal(12, "Paired"))
+#need at least 140 colors for summary plot
+mycolor = rep(mycolor,15)
 
 # Functions ---------------------------------------------------------------
 
@@ -457,7 +462,8 @@ server <- function(input, output, session) {
       theme(axis.line = element_line(colour = "black")) + # 沿坐标轴显示直线
       theme(axis.line.x = element_blank(), axis.ticks.x = element_blank(), axis.text.x = element_blank()) + # 去除x轴
       guides(fill = F) +
-      guides(color = F) 
+      guides(color = F) +
+      scale_fill_manual(values = mycolor)
     
     ggplotly(p, tooltip = c("fill" ,"label")) %>% layout(showlegend = FALSE)
   })
@@ -476,7 +482,8 @@ server <- function(input, output, session) {
       theme(axis.line = element_line(colour = "black")) + # 沿坐标轴显示直线
       theme(axis.line.x = element_blank(), axis.ticks.x = element_blank(), axis.text.x = element_blank()) + # 去除x轴
       guides(fill = F) +
-      guides(color = F) 
+      guides(color = F) + 
+      scale_fill_manual(values = mycolor)
     ggplotly(p, tooltip = c("fill","label")) %>% layout(showlegend = FALSE)
   })
   
