@@ -42,30 +42,9 @@ Samples_number <- XenaInfo$n_samples
 Primary_sites_number <- XenaInfo$n_origin
 Data_subtypes_number <- XenaInfo$n_subtypes
 
-plot_dat <- XenaData %>%
-  group_by(XenaHostNames, XenaCohorts) %>%
-  summarise(N = n()) %>%
-  group_by(XenaHostNames) %>%
-  mutate(Sample_percent = N/sum(N)) %>%
-  group_by(XenaHostNames) %>%
-#  mutate(N = sort(N, decreasing = T)) %>%
-  mutate(Sample_percent = N / sum(N))
-
-# Sample count need to be corrected in the future
-plot_dat_new <- XenaData %>%
-  mutate(SampleCount = as.numeric(SampleCount)) %>%
-  group_by(XenaHostNames, XenaCohorts) %>%
-  summarise(SampleCount_sum = sum(SampleCount, na.rm = T)) %>%
-  group_by(XenaHostNames) %>%
-  mutate(SampleCount_percent = SampleCount_sum/sum(SampleCount_sum)) %>%
-  group_by(XenaHostNames) %>%
-#  mutate(SampleCount_sum = sort(SampleCount_sum, decreasing = T)) %>%
-  mutate(SampleCount_percent = SampleCount_sum / sum(SampleCount_sum))
-
-#global color
-brewer.pal(10, "Spectral")
+# global color
 mycolor = c(brewer.pal(12, "Paired"))
-#need at least 140 colors for summary plot
+# need at least 140 colors for summary plot
 mycolor = rep(mycolor,15)
 
 # Functions ---------------------------------------------------------------
@@ -448,7 +427,7 @@ server <- function(input, output, session) {
 
 # Server - Home -----------------------------------------------------------
   output$Xenasummary <- renderPlotly({
-    p <- plot_dat %>%
+    p <- dat_datasets %>%
       #  filter(XenaHostNames == "gdcHub") %>%
       rename(Hub=XenaHostNames, Percent=Sample_percent,
              Cohort=XenaCohorts, DatasetCount = N) %>% 
@@ -468,7 +447,7 @@ server <- function(input, output, session) {
     ggplotly(p, tooltip = c("fill" ,"label")) %>% layout(showlegend = FALSE)
   })
   output$Xenasummary1 <- renderPlotly({
-    p <- plot_dat_new %>%
+    p <- dat_samples %>%
       #  filter(XenaHostNames == "gdcHub") %>%
       rename(Hub=XenaHostNames, Percent=SampleCount_percent, 
              Cohort=XenaCohorts, SampleCount = SampleCount_sum) %>% 
