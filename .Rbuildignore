@@ -1,4 +1,7 @@
+^LICENSE\.md$
 ^data-raw$
 ^appveyor\.yml$
 ^\.travis\.yml$
 ^README\.Rmd$
+^.*\.Rproj$
+^\.Rproj\.user$
