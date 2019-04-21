@@ -9,6 +9,8 @@
 status](https://travis-ci.org/openbiox/XenaShiny.svg?branch=master)](https://travis-ci.org/openbiox/XenaShiny)
 [![AppVeyor build
 status](https://ci.appveyor.com/api/projects/status/github/openbiox/XenaShiny?branch=master&svg=true)](https://ci.appveyor.com/project/openbiox/XenaShiny)
+[![Coverage
+status](https://codecov.io/gh/openbiox/XenaShiny/branch/master/graph/badge.svg)](https://codecov.io/github/openbiox/XenaShiny?branch=master)
 
 The goal of **xenashiny** is to provide a web app for downloading,
 analyzing and visulizing datasets from [UCSC
