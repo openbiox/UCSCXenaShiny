@@ -1,14 +1,24 @@
-Package: XenaShiny
+Package: xenashiny
 Title: A Shiny App for UCSC Xena Database
 Version: 0.0.0.9000
 Authors@R: 
     c(
     person("Shixiang", "Wang", email = "w_shixiang@163.com",
-           role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9855-7357")))
+           role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9855-7357")),
+    person("Yi", "Xiong", email = "xxx@163.com",
+           role = c("aut"), comment = c(ORCID = "0000-0001-xxxx-xxxx")),
+    person("Longfei", "Zhao", email = "xxx@163.com",
+           role = c("aut"), comment = c(ORCID = "0000-0001-xxxx-xxxx")),
+    person("Kai", "Gu", email = "xxx@163.com",
+           role = c("aut"), comment = c(ORCID = "0000-0001-xxxx-xxxx")),
+    person("Yin", "Li", email = "xxx@163.com",
+           role = c("aut"), comment = c(ORCID = "0000-0001-xxxx-xxxx")),
+    person("Fei", "Zhao", email = "xxx@163.com",
+           role = c("aut"), comment = c(ORCID = "0000-0001-xxxx-xxxx"))
+           )
 Description: Provides a web app for downloading, analyzing and visulizing datasets
   from [UCSC Xena](https://xenabrowser.net/datapages/), which is a collection of 
-  UCSC-hosted public databases such as TCGA, ICGC, TARGET, GTEx, CCLE, and others. 
-  Databases are normalized so they can be combined, linked, filtered, explored and downloaded.
+  UCSC-hosted public databases such as TCGA, ICGC, TARGET, GTEx, CCLE, and others.
 URL: https://github.com/openbiox/XenaShiny
 BugReports: https://github.com/openbiox/XenaShiny/issues
 Depends: R (>= 3.5)
@@ -21,7 +31,8 @@ Imports:
     dplyr,
     ggplot2,
     plotly,
-    RColorBrewer
+    RColorBrewer,
+    magrittr
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
