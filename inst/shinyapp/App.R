@@ -30,9 +30,9 @@ fun_download <- function(datasets, destdir = tempdir(),
 
 ui <- tagList(
   shinyjs::useShinyjs(),
-  
   navbarPage(
-    title = "",
+    title=div(
+      img(src="xena_shiny-logo_white.png",height = 49.6,style="margin:-20px -15px -15px -15px")),
     # shinythemes::themeSelector(),  # <--- Add this somewhere in the UI
     
     # Home page ---------------------------------------------------------------
@@ -44,13 +44,6 @@ ui <- tagList(
           tags$link(rel = "stylesheet", type = "text/css", href = "bootstrap4.css")
         ),
         fluidRow(
-          column(
-            12,
-            tags$div(
-              class = "center-block text-center bg-primary",
-              tags$img(src = "xena_shiny-logo.png", alt = "logo", style = "width: 20%")
-            )
-          ),
           column(
             6,
             tags$div(
@@ -163,9 +156,9 @@ ui <- tagList(
         ),
         tags$br(),
         tags$div(
-          class = "text-center ",
+          class = "text-center",
           tags$div(
-            class = "bg-primary",
+            class = "bg-dark text-white",
             tags$p("The goal of XenaShiny is to provide a web app for downloading, analyzing and visulizing datasets from UCSC Xena, which is a collection of UCSC-hosted public databases such as TCGA, ICGC, TARGET, GTEx, CCLE, and others. Databases are normalized so they can be combined, linked, filtered, explored and downloaded.")
           )
         )

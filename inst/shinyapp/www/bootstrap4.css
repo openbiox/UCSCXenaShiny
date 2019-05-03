@@ -258,7 +258,8 @@
     width: 100%;
   }
 }
-bg-primary {
+
+.bg-primary {
   background-color: #007bff !important;
 }
 
@@ -329,7 +330,7 @@ button.bg-light:focus {
 }
 
 .bg-dark {
-  background-color: #343a40 !important;
+  background-color: #333333 !important;
 }
 
 a.bg-dark:hover, a.bg-dark:focus,
@@ -344,4 +345,9 @@ button.bg-dark:focus {
 
 .bg-transparent {
   background-color: transparent !important;
+}
+
+
+.text-white {
+  color: #fff !important;
 }
