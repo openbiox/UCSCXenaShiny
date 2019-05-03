@@ -32,7 +32,8 @@ Imports:
     ggplot2,
     plotly,
     RColorBrewer,
-    magrittr
+    magrittr,
+    shinyBS
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

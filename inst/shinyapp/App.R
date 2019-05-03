@@ -1,5 +1,7 @@
 # Prepare -----------------------------------------------------------------
 library(shiny)
+library(UCSCXenaTools)
+library(shinyBS)
 
 Data_hubs_number <- XenaInfo[["n_hubs"]]
 Cohorts_number <- XenaInfo[["n_cohorts"]]
@@ -168,14 +170,40 @@ ui <- tagList(
       title = "Repository",
       icon = icon("database"),
       
-      sidebarLayout(
-        sidebarPanel(
-          hr(),
-          actionLink("hubs", "Active Data Hubs :", icon = icon("arrow-circle-right"), style = "font-size:125%"),
+      # Set checkbox css
+      tags$head(
+        tags$style(
+          HTML(
+            ".checkbox-inline { 
+            margin-left: 0px;
+            margin-right: 10px;
+            }
+            .checkbox-inline+.checkbox-inline {
+            margin-left: 0px;
+            margin-right: 10px;
+            }
+            .shiny-notification {
+            position:fixed;
+            top: calc(50% + 120px);;
+            left: calc(50% + 250px);;
+            }
+            "
+          )
+        ) 
+      ),
+      
+      fluidPage(
+        br(),
+        
+        column(
+          width = 3,
           tags$div(
             id = "hubs_info",
-            style = "padding: 0px 5px 1px",
-            checkboxGroupInput("hubs_text", NULL,
+            # style = "padding: 0px 5px 1px;border: 1px solid #EEE;border-radius: 3px;margin-bottom: 20px;",
+            style = "padding: 0px 5px 1px;margin-bottom: 0px;",
+            checkboxGroupInput("hubs_text", h4("Active Data Hubs :", style = "font-size: 1.2em;font-weight: bold;margin-bottom: 5px;margin-top: 0;"), 
+                               inline = TRUE,
+                               width = "80%",
                                choiceNames = c(
                                  "UCSC Public", "TCGA",
                                  "GDC", "ICGC",
@@ -187,43 +215,63 @@ ui <- tagList(
                                  "publicHub", "tcgaHub", "gdcHub", "icgcHub", "pancanAtlasHub",
                                  "toilHub", "treehouseHub", "pcawgHub", "atacseqHub", "singlecellHub"
                                )
-            )
+            ),
+            # add popover on UI
+            shinyBS::bsPopover("hubs_text", title = "Tips", content = "待补充................", placement = "right", options = list(container = "body"))
+            # bsTooltip("hubs_text", "The wait times will be broken into this many equally spaced bins",
+            #           "right", options = list(container = "body"))
           ),
           
-          hr(),
-          actionLink("cohorts", "Cohorts Name :", icon = icon("arrow-circle-right"), style = "font-size:125%"),
           tags$div(
             id = "cohorts_info",
-            style = "padding: 8px 1px 0px",
-            textInput("cohorts_text", NULL, width = "80%", placeholder = "e.g. Breast", value = NULL)
+            style = "padding: 8px 1px 0px;margin-bottom: 25px;",
+            tags$style(type='text/css','#cohorts_text {height: 35px;}'),
+            textInput("cohorts_text", h4("Cohorts Name :", style = "font-size: 1.2em;font-weight: bold;margin-bottom: 5px;margin-top: 0;"), 
+                      width = "80%", placeholder = "e.g. Breast", value = NULL),
+            shinyBS::bsPopover("cohorts_text", title = "Tips", content = "待补充................", placement = "right", options = list(container = "body"))
           ),
           
-          
-          hr(),
-          actionLink("type", "Data Type :", icon = icon("arrow-circle-right"), style = "font-size:125%"),
           tags$div(
             id = "type_info",
-            style = "padding: 0px 5px 1px",
-            checkboxGroupInput("type_text", NULL,
-                               choiceNames = c(
-                                 "Clinical/phenotype", "Feature (e.g. gene, proble) by sample matrix",
-                                 "Genomic segments", "Mutations"
-                               ),
+            style = "padding: 0px 5px 1px;margin-bottom: 0px;",
+            checkboxGroupInput("type_text", h4("Data Type :", style = "font-size: 1.2em;font-weight: bold;margin-bottom: 5px;margin-top: 0;"),
+                               choiceNames = c("Clinical/phenotype", "Feature (e.g. gene, proble) by sample matrix",
+                                               "Genomic segments", "Mutations"), 
                                choiceValues = c("clinicalMatrix", "genomicMatrix", "genomicSegment", "mutationVector")
-            )
+            ),
+            shinyBS::bsPopover("type_text", title = "Tips", content = "待补充................", placement = "right", options = list(container = "body"))
           ),
           
-          hr(),
-          actionLink("subtype", "Data Subtype :", icon = icon("arrow-circle-right"), style = "font-size:125%"),
           tags$div(
             id = "subtype_info",
-            style = "padding: 8px 1px 0px",
-            textInput("subtype_text", NULL, width = "80%", placeholder = "e.g. gene expression", value = NULL)
+            style = "padding: 8px 1px 0px;margin-bottom: 25px;",
+            tags$style(type='text/css','#subtype_text {height: 35px;}'),
+            textInput("subtype_text", h4("Data Subtype :", style = "font-size: 1.2em;font-weight: bold;margin-bottom: 5px;margin-top: 0;"), 
+                      width = "80%", placeholder = "e.g. gene expression", value = NULL),
+            shinyBS::bsPopover("subtype_text", title = "Tips", content = "待补充................", placement = "right", options = list(container = "body"))
           )
         ),
         
-        mainPanel(
-          DT::dataTableOutput("xena_table")
+        column(
+          width = 9,
+          DT::dataTableOutput("xena_table"),
+          
+          hr(),
+          
+          actionButton(inputId = "show_met", label = "Show Metadata", icon = icon("database"), style = "margin-bottom: 10px; margin-left: 25px;"),
+          actionButton(inputId = "req_data", label = "Request Data", icon = icon("file"), style = "margin-bottom: 10px; margin-left: 75px;"),
+          
+          br(),
+          
+          shinyjs::hidden(
+            tags$div(
+              id = "show_data",
+              h4("Data:", style = "font-size: 1.2em;font-weight: bold;margin-bottom: 5px;margin-top: 0;"),
+              tableOutput(
+                "table"
+              )
+            )
+          )
         )
       )
     ),
@@ -444,66 +492,40 @@ server <- function(input, output, session) {
   
   # Server - Repository -----------------------------------------------------
   
-  observeEvent(input$hubs, {
-    shinyjs::toggle("hubs_info")
-  })
-  observeEvent(input$cohorts, {
-    shinyjs::toggle("cohorts_info")
-  })
-  observeEvent(input$subtype, {
-    shinyjs::toggle("subtype_info")
-  })
-  observeEvent(input$type, {
-    shinyjs::toggle("type_info")
-  })
-  
-  
-  observe({
-    s <- input$xena_table_rows_selected
-    if (length(s)) {
-      showModal(
-        modalDialog(
-          title = "Detail information...",
-          size = "l",
-          DT::DTOutput("detail_info"),
-          hr(),
-          tags$p(tags$span("Please click link to download: ", style = "font-size:110%; padding:0px 5px"), tags$a(href = url(), "Target dataset"))
-        )
-      )
-    }
-  })
-  
   # 这里使用正则表达式进行匹配的输入条件增加多个输入的支持，即用户可以选择使用
   # ,或者;对条件分割
+  # **已修改**，使用‘;’分隔符进行多条件筛选
   dataset <- reactive({
-    res <- UCSCXenaTools::XenaData
+    res <- XenaData
+    
     if (!is.null(input$hubs_text)) {
-      # print(input$hubs_text)
       res <- dplyr::filter(res, XenaHostNames %in% input$hubs_text)
     }
-    if (!is.null(input$cohorts_text)) {
-      res <- dplyr::filter(res, grepl(input$cohorts_text, XenaCohorts, ignore.case = TRUE))
+    if (!is.null(input$cohorts_text) & input$cohorts_text != "") {
+      ids <- sub(";", "|", input$cohorts_text)
+      res <- dplyr::filter(res, grepl(ids, XenaCohorts, ignore.case = TRUE))
     }
-    if (!is.null(input$subtype_text)) {
-      res <- dplyr::filter(res, grepl(input$subtype_text, DataSubtype, ignore.case = TRUE))
+    if (!is.null(input$subtype_text) & input$subtype_text != "") {
+      ids <- sub(";", "|", input$subtype_text)
+      res <- dplyr::filter(res, grepl(ids, DataSubtype, ignore.case = TRUE))
     }
     if (!is.null(input$type_text)) {
       res <- dplyr::filter(res, Type %in% input$type_text)
     }
+    
     return(res)
   })
   
-  output$xena_table <- DT::renderDT(dataset()[, c(
-    "XenaDatasets",
-    "XenaHostNames",
-    "XenaCohorts",
-    "SampleCount",
-    "DataSubtype",
-    "Label"
-  )],
-  selection = "single", colnames = c("Dataset", "Hub", "Cohort", "Samples", "Subtype", "Label")
-  )
+  # Show database information in repository page
+  output$xena_table <- DT::renderDataTable(dataset()[, c("XenaDatasets",
+                                                         "XenaHostNames",
+                                                         "XenaCohorts",
+                                                         "SampleCount",
+                                                         "DataSubtype",
+                                                         "Label")],
+                                           colnames=c("Dataset", "Hub", "Cohort", "Samples", "Subtype", "Label"))
   
+  # Keep selected database
   selected_database <- reactive({
     s <- input$xena_table_rows_selected
     if (length(s)) {
@@ -511,6 +533,73 @@ server <- function(input, output, session) {
     }
   })
   
+  query_url <- reactive({
+    s <- input$xena_table_rows_selected
+    if (!is.null(s)){
+      data <- selected_database()
+      xe <- UCSCXenaTools::XenaGenerate(subset = XenaDatasets %in% data$XenaDatasets)
+      xe_query <- UCSCXenaTools::XenaQuery(xe)
+      return(xe_query)
+    }
+  })
+  
+  # Show download url for selected database
+  observe({
+    s <- input$xena_table_rows_selected
+    if (!is.null(s)){
+      data <- selected_database()
+      
+      output$table <- renderTable({
+        data.frame(ID = 1:length(s), XenaCohorts = data$XenaCohorts, Label = data$Label, URL = unlist(lapply(query_url()$url, function(x){as.character(tags$a(href = x, x))})))
+      }, sanitize.text.function = function(x) x)
+      
+      shinyjs::show("show_data")
+    }else{
+      shinyjs::hide("show_data")
+    }
+  })
+  
+  # Dialog for showing selected data information
+  observeEvent(input$show_met, {
+    s <- input$xena_table_rows_selected
+    if (length(s)) {
+      showModal(
+        modalDialog(
+          title = "Detail information...",
+          size = "l",
+          DT::DTOutput("detail_info")
+        )
+      )
+    }
+  })
+  
+  # Dialog for some operations of request data
+  observeEvent(input$req_data, {
+    s <- input$xena_table_rows_selected
+    if (length(s)) {
+      showModal(
+        modalDialog(
+          title = "Submitted database...",
+          size = "l",
+          DT::DTOutput(
+            "table_query"
+          ),
+          
+          hr(),
+          
+          actionButton(inputId = "load", label = "Load Data", icon = icon("upload"), style = "margin-bottom: 10px; margin-right: 75px;"),
+          shinyBS::bsPopover("load", title = "Tips", content = "待补充................", placement = "bottom", options = list(container = "body")),
+          downloadButton(outputId  = "download", label = "Download Data", icon = icon("download"), style = "margin-bottom: 10px;"),
+          shinyBS::bsPopover("download", title = "Tips", content = "待补充................", placement = "bottom", options = list(container = "body"))
+        )
+      )
+      
+      # data <- selected_database()
+      # xe <- UCSCXenaTools::XenaGenerate(subset = XenaDatasets %in% data$XenaDatasets)
+      # xe_query <- UCSCXenaTools::XenaQuery(xe)
+      output$table_query <- DT::renderDT(query_url(), options = list(dom = "t", scrollX = TRUE))
+    }
+  })
   
   # 我们不在详细信息这里提供下载功能
   # 而是利用Xena API提供我们已知的所有信息
@@ -519,15 +608,87 @@ server <- function(input, output, session) {
   # 上面代码可以获取数据集的元信息，和下面链接看到的一致
   # https://xenabrowser.net/datapages/?dataset=chin2006_public%2Fchin2006Exp_genomicMatrix&host=https%3A%2F%2Fucscpublic.xenahubs.net&removeHub=https%3A%2F%2Fxena.treehouse.gi.ucsc.edu%3A443
   # 返回的是一个数据框，pmtext和text需要使用json解析，使用函数jsonlite::parse_json
+  # **已修改**
   
-  url <- reactive({
-    data <- selected_database()
-    xe <- UCSCXenaTools::XenaGenerate(subset = XenaDatasets == data$XenaDatasets)
-    xe_query <- UCSCXenaTools::XenaQuery(xe)
-    return(xe_query$url)
+  observeEvent(input$show_met, {
+    s <- input$xena_table_rows_selected
+    if (length(s)){
+      m <- matrix(NA, nrow = length(s), ncol = 11)
+      
+      j = 0
+      for (i in s) {
+        j <- j + 1
+        temp <- .p_dataset_metadata(as.character(dataset()[i, "XenaHosts"]), as.character(dataset()[i, "XenaDatasets"]))
+        # temp <- .p_dataset_metadata(as.character(XenaData[i, "XenaHosts"]), as.character(XenaData[i, "XenaDatasets"]))
+        
+        title <- temp$longtitle
+        dataset_ID <- temp$name
+        samples <- temp$count
+        
+        if (is.na(temp$pmtext)){
+          version <- NA
+        }else{
+          version <- jsonlite::parse_json(temp$pmtext)$version
+        }
+        
+        cohort <- jsonlite::parse_json(temp$text)$cohort
+        type_of_data <- jsonlite::parse_json(temp$text)$dataSubType
+        ID_Mapping <- paste0("https://ucscpublic.xenahubs.net/download/", jsonlite::parse_json(temp$text)$probeMap)
+        
+        publication <- jsonlite::parse_json(temp$text)$articletitle
+        if (is.null(publication)) publication <- NA 
+        
+        citation <- jsonlite::parse_json(temp$text)$citation
+        if (is.null(citation)) citation <- NA 
+        
+        authorChin <- jsonlite::parse_json(temp$text)$dataproducer
+        if (is.null(authorChin)) authorChin <- NA
+        
+        raw_data <- jsonlite::parse_json(temp$text)$url
+        if (is.null(raw_data)) raw_data <- NA
+        
+        m[j,] <- c(cohort, title, dataset_ID, samples, version, type_of_data, ID_Mapping, publication, citation, authorChin, raw_data)
+      }
+      
+      m <- as.data.frame(m)
+      names(m) <- c("cohort", "title", "dataset ID", "samples", "version", "type of data", "ID/Gene Mapping", "publication", "citation", "authorChin", "raw data")
+    }
+    output$detail_info <- DT::renderDT(m, options = list(dom = "t", scrollX = TRUE))
   })
   
-  output$detail_info <- DT::renderDT(selected_database(), options = list(dom = "t", scrollX = TRUE))
+  
+  # Download request data by XenaDownload function
+  observeEvent(input$load, {
+    progress <- shiny::Progress$new()
+    on.exit(progress$close())
+    progress$set(message = "Begin to download files, Please wait...", value = 0)
+    
+    UCSCXenaTools::XenaDownload(query_url())
+    
+    progress$set(message = "Over...", value = 1)
+  })
+  
+  # Prepare request data by XenaPrepare function
+  request_data <- eventReactive(input$load, {
+    xe_download <- UCSCXenaTools::XenaDownload(query_url())
+    return(UCSCXenaTools::XenaPrepare(xe_download))
+  })
+  
+  # observeEvent(input$load, {
+  #   print(request_data())
+  # })
+  
+  # Download buttom of request data with zip compress
+  output$download <- downloadHandler(
+    filename = "database.zip",
+    contentType = "application/zip",
+    content = function(file){
+      xe_download <- UCSCXenaTools::XenaDownload(query_url())
+      zip::zip(zipfile = paste0(tempdir(), "/target_database.zip"), files = xe_download$destfiles, recurse = F)
+      file.copy(paste0(tempdir(), "/target_database.zip"), file)
+      file.remove(paste0(tempdir(), "/target_database.zip"))
+    }
+  )
   
   output$w <- renderText({
     req(input$side)
