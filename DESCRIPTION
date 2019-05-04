@@ -34,6 +34,7 @@ Imports:
     RColorBrewer,
     magrittr,
     shinyBS,
+    utils,
     zip
 License: MIT + file LICENSE
 Encoding: UTF-8
