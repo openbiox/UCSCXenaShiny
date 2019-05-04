@@ -11,7 +11,7 @@ Authors@R:
            role = c("aut"), comment = c(ORCID = "0000-0002-6277-0137")),
     person("Kai", "Gu", email = "xxx@163.com",
            role = c("aut"), comment = c(ORCID = "0000-0001-xxxx-xxxx")),
-    person("Yin", "Li", email = "xxx@163.com",
+    person("Yin", "Li", email = "yinli18@fudan.edu.cn",
            role = c("aut"), comment = c(ORCID = "0000-0001-xxxx-xxxx")),
     person("Fei", "Zhao", email = "xxx@163.com",
            role = c("aut"), comment = c(ORCID = "0000-0001-xxxx-xxxx"))
