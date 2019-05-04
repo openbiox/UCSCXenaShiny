@@ -202,7 +202,7 @@ ui <- tagList(
             # style = "padding: 0px 5px 1px;border: 1px solid #EEE;border-radius: 3px;margin-bottom: 20px;",
             style = "padding: 0px 5px 1px;margin-bottom: 0px;",
             checkboxGroupInput("hubs_text", h4("Active Data Hubs :", style = "font-size: 1.2em;font-weight: bold;margin-bottom: 5px;margin-top: 0;"), 
-                               inline = TRUE,
+                               #inline = TRUE,
                                width = "80%",
                                choiceNames = c(
                                  "UCSC Public", "TCGA",

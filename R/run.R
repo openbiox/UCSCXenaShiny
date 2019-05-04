@@ -14,9 +14,9 @@ xena_table <- XenaData[, c(
 xena_table$SampleCount <- as.integer(xena_table$SampleCount)
 colnames(xena_table)[c(1:3)] <- c("Dataset ID", "Hub", "Cohort")
 
-data("dat_datasets", package = "xenashiny", envir = environment())
-data("dat_samples", package = "xenashiny", envir = environment())
-data("XenaInfo", package = "xenashiny", envir = environment())
+data("dat_datasets", package = "UCSCXenaShiny", envir = environment())
+data("dat_samples", package = "UCSCXenaShiny", envir = environment())
+data("XenaInfo", package = "UCSCXenaShiny", envir = environment())
 
 
 #' Run Xena Shiny App
@@ -28,7 +28,7 @@ data("XenaInfo", package = "xenashiny", envir = environment())
 #' @examples 
 #' \donttest{app_run()}
 app_run <- function() {
-  shiny::shinyAppFile(system.file("shinyapp", "App.R", package = "xenashiny"))
+  shiny::shinyAppFile(system.file("shinyapp", "App.R", package = "UCSCXenaShiny"))
 }
 
 # Global variables --------------------------------------------------------

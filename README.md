@@ -12,7 +12,7 @@ status](https://ci.appveyor.com/api/projects/status/github/openbiox/XenaShiny?br
 [![Coverage
 status](https://codecov.io/gh/openbiox/XenaShiny/branch/master/graph/badge.svg)](https://codecov.io/github/openbiox/XenaShiny?branch=master)
 
-The goal of **xenashiny** is to provide a web app for downloading,
+The goal of **UCSCXenaShiny** is to provide a web app for downloading,
 analyzing and visulizing datasets from [UCSC
 Xena](https://xenabrowser.net/datapages/), which is a collection of
 UCSC-hosted public databases such as TCGA, ICGC, TARGET, GTEx, CCLE, and
@@ -21,7 +21,7 @@ filtered, explored and downloaded.
 
 ## Installation
 
-You can install the development version of **xenashiny** from Github
+You can install the development version of **UCSCXenaShiny** from Github
 with:
 
 ``` r
@@ -33,7 +33,7 @@ remotes::install_github("openbiox/XenaShiny")
 First load package:
 
 ``` r
-library(xenashiny)
+library(UCSCXenaShiny)
 ```
 
 Then run the following command in console:
