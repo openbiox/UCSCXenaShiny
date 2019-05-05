@@ -312,7 +312,10 @@ ui <- tagList(
     navbarMenu(
       title = "Help",
       icon = icon("question-circle"),
-      tabPanel("News"),
+      tabPanel("News", 
+               fluidPage(
+                 includeMarkdown("../../NEWS.md")
+               )),
       tabPanel("Usages"),
       tabPanel("Term List")
     ),
