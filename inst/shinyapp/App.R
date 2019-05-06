@@ -24,8 +24,7 @@ ui <- tagList(
     title = div(
       img(src = "xena_shiny-logo_white.png", height = 49.6, style = "margin:-20px -15px -15px -15px")
     ),
-
-    # Home page ---------------------------------------------------------------
+    # Home page ==================================================
     tabPanel(
       title = "Home",
       icon = icon("home"), # create icon http://shiny.rstudio.com/reference/shiny/latest/icon.html
@@ -157,7 +156,7 @@ ui <- tagList(
       )
     ),
 
-    # Repository page --------------------------------------------------------
+    # Repository page ====================
     tabPanel(
       title = "Repository",
       icon = icon("database"),
@@ -293,7 +292,7 @@ ui <- tagList(
       )
     ),
 
-    # Modules page ------------------------------------------------------------
+    # Modules page ======================
     navbarMenu(
       title = "Modules",
       icon = icon("buromobelexperte"),
@@ -302,7 +301,7 @@ ui <- tagList(
       tabPanel("module 3")
     ),
 
-    # Pipelines page ----------------------------------------------------------
+    # Pipelines page =====================
     navbarMenu(
       title = "Pipelines",
       icon = icon("angle-double-down"),
@@ -456,10 +455,10 @@ ui <- tagList(
   )
 )
 
-# Server ------------------------------------------------------------------
+# Server Part ---------------------------------------------------------------
 server <- function(input, output, session) {
 
-  # Server - Home -----------------------------------------------------------
+  # Home ===========================
   output$Xenasummary <- plotly::renderPlotly({
     p <- dat_datasets %>%
       #  filter(XenaHostNames == "gdcHub") %>%
@@ -513,7 +512,7 @@ server <- function(input, output, session) {
   })
 
 
-  # Server - Repository -----------------------------------------------------
+  # Repository ======================
 
   # separator is ;
   dataset <- reactive({
