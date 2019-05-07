@@ -13,8 +13,8 @@ Authors@R:
            role = c("aut"), comment = c(ORCID = "0000-0002-0177-0774")),
     person("Yin", "Li", email = "yinli18@fudan.edu.cn",
            role = c("aut")),
-    person("Fei", "Zhao", email = "xxx@163.com",
-           role = c("aut"), comment = c(ORCID = "0000-0001-xxxx-xxxx"))
+    person("Fei", "Zhao", email = "zhaofei415@mails.ucas.edu.cn",
+           role = c("aut"))
            )
 Description: Provides a web app for downloading, analyzing and visulizing datasets
   from UCSC Xena, which is a collection of 
