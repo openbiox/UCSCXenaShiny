@@ -18,6 +18,12 @@ The goal of **UCSCXenaShiny** is to provide a web app for downloading, analyzing
 
 ## Installation
 
+You can install stable release of **UCSCXenaShiny** from CRAN with:
+
+```{r, eval = FALSE}
+install.packages("UCSCXenaShiny")
+```
+
 You can install the development version of **UCSCXenaShiny** from Github with:
 
 ```{r, eval=FALSE}

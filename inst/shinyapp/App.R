@@ -3,6 +3,19 @@ library(shiny)
 library(UCSCXenaTools)
 library(shinyBS)
 
+# Here data goes
+data("XenaData", package = "UCSCXenaTools", envir = environment())
+xena_table <- XenaData[, c(
+  "XenaDatasets", "XenaHostNames", "XenaCohorts",
+  "SampleCount", "DataSubtype", "Label"
+)]
+xena_table$SampleCount <- as.integer(xena_table$SampleCount)
+colnames(xena_table)[c(1:3)] <- c("Dataset ID", "Hub", "Cohort")
+
+data("dat_datasets", package = "UCSCXenaShiny", envir = environment())
+data("dat_samples", package = "UCSCXenaShiny", envir = environment())
+data("XenaInfo", package = "UCSCXenaShiny", envir = environment())
+
 Data_hubs_number <- XenaInfo[["n_hubs"]]
 Cohorts_number <- XenaInfo[["n_cohorts"]]
 Datasets_number <- XenaInfo[["n_datasets"]]
@@ -313,7 +326,7 @@ ui <- tagList(
       icon = icon("question-circle"),
       tabPanel("News", 
                fluidPage(
-                 includeMarkdown("../../NEWS.md")
+                 includeMarkdown(system.file("NEWS.md", package = "UCSCXenaShiny", mustWork = TRUE))
                )),
       tabPanel("Usages"),
       tabPanel("Term List")
@@ -458,6 +471,8 @@ ui <- tagList(
 # Server Part ---------------------------------------------------------------
 server <- function(input, output, session) {
 
+  cat("Shiny app run successfully! Enjoy it!\n")
+  cat("               --  Xena shiny team\n")
   # Home ===========================
   output$Xenasummary <- plotly::renderPlotly({
     p <- dat_datasets %>%

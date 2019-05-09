@@ -1,6 +1,6 @@
 Package: UCSCXenaShiny
 Title: A Shiny App for UCSC Xena Database
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: 
     c(
     person("Shixiang", "Wang", email = "w_shixiang@163.com",
@@ -42,4 +42,5 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1
 Suggests: 
-    covr
+    covr,
+    testthat (>= 2.1.0)

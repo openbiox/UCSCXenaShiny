@@ -24,6 +24,12 @@ filtered, explored and downloaded.
 
 ## Installation
 
+You can install stable release of **UCSCXenaShiny** from CRAN with:
+
+``` r
+install.packages("UCSCXenaShiny")
+```
+
 You can install the development version of **UCSCXenaShiny** from Github
 with:
 
