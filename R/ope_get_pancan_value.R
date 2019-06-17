@@ -7,6 +7,9 @@ available_hosts = function() {
 get_pancan_value <- function(identifier, subtype=NULL, dataset=NULL, host=available_hosts(), 
                              samples = NULL) {
   stopifnot(length(identifier) == 1)
+  if (!requireNamespace("UCSCXenaTools", quietly = TRUE)) 
+    stop("Package 'UCSCXenaTools' is not installed.")
+  attachNamespace("UCSCXenaTools")
   host = match.arg(host)
   
   data = UCSCXenaTools::XenaData
@@ -26,5 +29,22 @@ get_pancan_value <- function(identifier, subtype=NULL, dataset=NULL, host=availa
   res = fetch_dense_values(data[["XenaHosts"]], data[["XenaDatasets"]], 
                            identifiers = identifier, samples = samples,
                            check = FALSE, use_probeMap = TRUE)
-  as.numeric(res)
+  res2 = res
+  names(res2) = colnames(res)
+  res2
+}
+
+get_pancan_gene_value <- function(identifier, host = "toilHub") {
+  host = match.arg(host)
+  if (host == "toilHub") {
+    dataset = "TcgaTargetGtex_rsem_isoform_tpm"
+    expression = get_pancan_value(identifier, dataset = dataset, host = host)
+    unit = "log2(tpm+0.001)"
+  }
+  msg = paste0("More info about dataset please run following commands:\n",
+               "  library(UCSCXenaTools)\n",
+               "  XenaGenerate(subset = XenaDatasets == \"", dataset, "\") %>% XenaBrowse()")
+  message(msg)
+  res = list(expression=expression, unit=unit)
+  res
 }
