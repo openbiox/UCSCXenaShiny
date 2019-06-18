@@ -12,5 +12,5 @@ Generate from data-raw
 Summary info of UCSC Xena
 }
 \examples{
-data(XenaInfo)
+data("XenaInfo")
 }

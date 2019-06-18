@@ -9,7 +9,8 @@ get_pancan_value <- function(identifier, subtype=NULL, dataset=NULL, host=availa
   stopifnot(length(identifier) == 1)
   if (!requireNamespace("UCSCXenaTools", quietly = TRUE)) 
     stop("Package 'UCSCXenaTools' is not installed.")
-  attachNamespace("UCSCXenaTools")
+  if (!"UCSCXenaTools" %in% .packages())
+    attachNamespace("UCSCXenaTools")
   host = match.arg(host)
   
   data = UCSCXenaTools::XenaData
