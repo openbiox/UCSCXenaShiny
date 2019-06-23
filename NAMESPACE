@@ -2,5 +2,8 @@
 
 export("%>%")
 export(app_run)
+export(available_hosts)
+export(get_pancan_gene_value)
+export(get_pancan_value)
 importFrom(magrittr,"%>%")
 importFrom(shiny,shinyAppFile)
