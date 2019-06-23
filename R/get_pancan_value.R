@@ -28,8 +28,8 @@ available_hosts = function() {
 #' @return a named vector or `list`
 #'
 #' @examples
-#' # Fetch TP53 expression value from pan-cancer dataset
 #' \donttest{
+#' # Fetch TP53 expression value from pan-cancer dataset
 #' t1 = get_pancan_value("TP53", 
 #'            dataset = "TcgaTargetGtex_rsem_isoform_tpm", 
 #'            host = "toilHub")
@@ -61,7 +61,7 @@ get_pancan_value <- function(identifier, subtype=NULL, dataset=NULL, host=availa
     stop("No dataset or more than one dataset is determined by input")
   }
   
-  res = fetch_dense_values(data[["XenaHosts"]], data[["XenaDatasets"]], 
+  res = UCSCXenaTools::fetch_dense_values(data[["XenaHosts"]], data[["XenaDatasets"]], 
                            identifiers = identifier, samples = samples,
                            check = FALSE, use_probeMap = TRUE)
   res2 = res[1, ]
@@ -85,3 +85,10 @@ get_pancan_gene_value <- function(identifier, host = "toilHub") {
   res = list(expression=expression, unit=unit)
   res
 }
+
+
+utils::globalVariables(
+  c("XenaHostNames",
+    "DataSubtype",
+    "XenaDatasets")
+)
