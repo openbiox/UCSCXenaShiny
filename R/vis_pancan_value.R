@@ -31,7 +31,7 @@ vis_toil_gene = function(data, x = "primary_site",
 #' @return a `ggplot` object
 #' @export
 data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
-vis_toil_TvsN <- function(Gene = "TP53"){
+vis_toil_TvsN = function(Gene = "TP53"){
   t1 = get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
   t2 = t1 %>% as.data.frame() %>% dplyr::rename("tpm"=".") %>% tibble::rownames_to_column(var = "sample") %>% dplyr::inner_join(tcga_gtex,by="sample")
   tcga_gtex = t2[,c(3,5,2)]
