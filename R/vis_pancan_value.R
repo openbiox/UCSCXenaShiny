@@ -53,12 +53,12 @@ vis_toil_TvsN = function(Gene = "TP53"){
   pv$sigcode <- cut(pv$pvalue, c(0, 0.001, 0.01, 0.05, 0.1, 1), 
                     labels=c('***', '**', '*', '.', ' '))
   ###
-  p <- ggplot(tcga_gtex_withNormal, aes(tissue, tpm, fill=type2)) + 
-    geom_boxplot() + 
-    geom_text(aes(tissue, y=max(tcga_gtex_withNormal$tpm) * 1.1, 
+  p <- ggplot2::ggplot(tcga_gtex_withNormal, aes(tissue, tpm, fill=type2)) + 
+    ggplot2::geom_boxplot() + 
+    ggplot2::geom_text(aes(tissue, y=max(tcga_gtex_withNormal$tpm) * 1.1, 
                   label=pv$sigcode),
               data=pv, inherit.aes=F) +
-    xlab(NULL)+ylab("Relative expression (log2)")
-  p <- p + geom_boxplot(data = tcga_gtex_MESO)+geom_boxplot(data = tcga_gtex_UVM)
+    ggplot2::xlab(NULL)+ggplot2::ylab("Relative expression (log2)")
+  p <- p + ggplot2::geom_boxplot(data = tcga_gtex_MESO)+ ggplot2::geom_boxplot(data = tcga_gtex_UVM)
   print(p)
 }
