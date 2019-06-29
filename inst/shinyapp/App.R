@@ -309,9 +309,21 @@ ui <- tagList(
     navbarMenu(
       title = "Modules",
       icon = icon("buromobelexperte"),
-      tabPanel("Import"),
-      tabPanel("Export"),
-      tabPanel("module 3")
+      tabPanel("Import & Export"),
+      tabPanel("Data Tidy"),
+      tabPanel("General Analysis"),
+      tabPanel("Genomic Analysis"),
+      tabPanel("Visualization", 
+               fluidPage(
+                 fluidRow(
+                   helpText("The data query may take a long time, please be patient..."),
+                   column(
+                      12,
+                      tabPanel("Gene Pan-cancer Expression",
+                        plotOutput("vis_toil_gene"))
+                   )
+                 )
+               ))
     ),
 
     # Pipelines page =====================
@@ -736,6 +748,13 @@ server <- function(input, output, session) {
     }
   )
 
+
+# Modules -----------------------------------------------------------------
+  toil_df = ope_toil_gene()
+  output$vis_toil_gene = renderPlot({
+    vis_toil_gene(toil_df)
+  })
+  
   output$w <- renderText({
     req(input$side)
     r <- input$side

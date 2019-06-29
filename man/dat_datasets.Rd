@@ -12,5 +12,5 @@ Generate from data-raw
 Number of datasets in each cohort
 }
 \examples{
-data(dat_datasets)
+data("dat_datasets")
 }
