@@ -58,7 +58,13 @@ vis_toil_TvsN = function(Gene = "TP53"){
     ggplot2::geom_text(aes(tissue, y=max(tcga_gtex_withNormal$tpm) * 1.1, 
                   label=pv$sigcode),
               data=pv, inherit.aes=F) +
-    ggplot2::xlab(NULL)+ggplot2::ylab("Relative expression (log2)")
+    ggplot2::xlab(NULL)+ggplot2::ylab(paste0(Gene," expression (TPM)")) + 
+  ggplot2::theme_set(theme_set(theme_classic(base_size=20)))+
+  ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5)) + #x轴label倾斜45度
+  ggplot2::guides(fill = guide_legend(title = NULL)) + 
+  ggplot2::theme(legend.background = element_blank(), #移除整体边框
+        #图例的左下角置于绘图区域的左下角
+        legend.position=c(0,0),legend.justification = c(0,0))
   p <- p + ggplot2::geom_boxplot(data = tcga_gtex_MESO)+ ggplot2::geom_boxplot(data = tcga_gtex_UVM)
   print(p)
 }
