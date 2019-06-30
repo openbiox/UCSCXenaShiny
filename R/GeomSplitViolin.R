@@ -1,5 +1,4 @@
-#' Visualize Violin plot
-#' @export
+# Visualize Violin plot
 GeomSplitViolin <- ggproto("GeomSplitViolin", GeomViolin,
   draw_group = function(self, data, ..., draw_quantiles = NULL) {
     # Original function by Jan Gleixner (@jan-glx)
@@ -23,8 +22,7 @@ GeomSplitViolin <- ggproto("GeomSplitViolin", GeomViolin,
     }
   }
 )
-#' Visualize Violin plot
-#' @export
+# Visualize Violin plot
 create_quantile_segment_frame <- function(data, draw_quantiles, split = FALSE, grp = NULL) {
   dens <- cumsum(data$density) / sum(data$density)
   ecdf <- stats::approxfun(dens, data$y)
@@ -44,8 +42,7 @@ create_quantile_segment_frame <- function(data, draw_quantiles, split = FALSE, g
     )
   }
 }
-#' Visualize Violin plot
-#' @export
+# Visualize Violin plot
 geom_split_violin <- function(mapping = NULL, data = NULL, stat = "ydensity", position = "identity", ...,
                               draw_quantiles = NULL, trim = TRUE, scale = "area", na.rm = FALSE,
                               show.legend = NA, inherit.aes = TRUE) {
