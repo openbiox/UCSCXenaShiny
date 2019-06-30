@@ -46,3 +46,11 @@ NULL
 #' @examples
 #' data("toil_surv")
 NULL
+
+#' Toil Hub: merged TCGA GTEX selected phenotypes
+#' @docType data
+#' @name tcga_gtex_sampleinfo
+#' @format A [data.frame]
+#' @examples
+#' data("tcga_gtex_sampleinfo")
+NULL
