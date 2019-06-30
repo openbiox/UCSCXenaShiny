@@ -6,13 +6,15 @@
 
 
 #' Run Xena Shiny App
-#' 
+#'
 #' @importFrom shiny shinyAppFile
 #' @return NULL
 #' @export
 #'
-#' @examples 
-#' \donttest{app_run()}
+#' @examples
+#' \donttest{
+#' app_run()
+#' }
 app_run <- function() {
   shiny::shinyAppFile(system.file("shinyapp", "App.R", package = "UCSCXenaShiny"))
 }
@@ -22,6 +24,5 @@ app_run <- function() {
 #   Fix problem caused by 'no visible binding for global variable'
 
 utils::globalVariables(
-  c("XenaData"
-  )
+  c("XenaData")
 )

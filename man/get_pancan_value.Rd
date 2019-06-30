@@ -40,9 +40,11 @@ Identifier includes gene/probe etc.
 \examples{
 \donttest{
 # Fetch TP53 expression value from pan-cancer dataset
-t1 = get_pancan_value("TP53", 
-           dataset = "TcgaTargetGtex_rsem_isoform_tpm", 
-           host = "toilHub")
-t2 = get_pancan_gene_value("TP53")
+t1 <- get_pancan_value("TP53",
+  dataset = "TcgaTargetGtex_rsem_isoform_tpm",
+  host = "toilHub"
+)
+t2 <- get_pancan_gene_value("TP53")
 }
+
 }

@@ -18,7 +18,7 @@ Obtain toilHub info for single gene
 }
 \examples{
 \donttest{
-t = ope_toil_gene()
+t <- ope_toil_gene()
 t
 }
 }

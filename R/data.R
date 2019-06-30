@@ -6,7 +6,8 @@
 #' @name dat_datasets
 #' @format A [data.frame]
 #' @source Generate from data-raw
-#' @examples data("dat_datasets")
+#' @examples
+#' data("dat_datasets")
 NULL
 
 #' Number of samples in each cohort
@@ -14,7 +15,8 @@ NULL
 #' @name dat_samples
 #' @format A [data.frame]
 #' @source Generate from data-raw
-#' @examples data("dat_samples")
+#' @examples
+#' data("dat_samples")
 NULL
 
 #' Summary info of UCSC Xena
@@ -22,7 +24,8 @@ NULL
 #' @name XenaInfo
 #' @format A [list]
 #' @source Generate from data-raw
-#' @examples data("XenaInfo")
+#' @examples
+#' data("XenaInfo")
 NULL
 
 #' Toil Hub: TCGA TARGET GTEX selected phenotypes
@@ -30,7 +33,8 @@ NULL
 #' @name toil_info
 #' @format A [data.frame]
 #' @source Generate from data-raw
-#' @examples data("toil_info")
+#' @examples
+#' data("toil_info")
 NULL
 
 
@@ -39,6 +43,6 @@ NULL
 #' @name toil_surv
 #' @format A [data.frame]
 #' @source Generate from data-raw
-#' @examples data("toil_surv")
+#' @examples
+#' data("toil_surv")
 NULL
-

@@ -10,5 +10,7 @@ app_run()
 Run Xena Shiny App
 }
 \examples{
-\donttest{app_run()}
+\donttest{
+app_run()
+}
 }
