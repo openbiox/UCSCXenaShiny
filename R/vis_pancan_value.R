@@ -26,6 +26,9 @@ vis_toil_gene = function(data, x = "primary_site",
 #' Visualize single gene expression from toil data hub
 #' @import ggplot2 dplyr tibble
 #' @param Gene Gene symbal for comparision
+#' @param Mode Boxplot or Violinplot to represent data
+#' @param Show.P.value TRUE or FALSE whether to count P value, count P value will spend much time
+#' @param Show.P.label TRUE or FALSE present p value with number or label '* ** ***'
 #' @return a `ggplot` object
 #' @export
 data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
