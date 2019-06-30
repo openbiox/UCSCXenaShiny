@@ -25,17 +25,20 @@ vis_toil_gene = function(data, x = "primary_site",
 # Visualize Pan-cancer tpm (Tumor (TCGA) vs normal (GTEX))
 #' Visualize single gene expression from toil data hub
 #' @import ggplot2 dplyr tibble
+#' @inheritParams ggpubr::compare_means
 #' @param Gene Gene symbal for comparision
 #' @param Mode Boxplot or Violinplot to represent data
-#' @param Show.P.value TRUE or FALSE whether to count P value, count P value will spend much time
-#' @param Show.P.label TRUE or FALSE present p value with number or label '* ** ***'
+#' @param Show.P.value TRUE or FALSE whether to count P value
+#' @param Method default method is wilcox.test
+#' @param Show.P.label TRUE or FALSE present p value with number or label '* ** *** ****'
 #' @param values the color to fill tumor or normal
 #' @return a `ggplot` object
 #' @example vis_toil_TvsN(Gene = "TP53", Mode = "Violinplot", Show.P.value = F, Show.P.label = F)
 #' @example vis_toil_TvsN(Gene = "TP53", Mode = "Boxplot", Show.P.value = F, Show.P.label = F)
 #' @export
-data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
-vis_toil_TvsN = function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, Show.P.label = TRUE, values = c("#DF2020", "#DDDF21")){
+#' 
+vis_toil_TvsN = function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test",values = c("#DF2020", "#DDDF21")){
+  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
   t1 = get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
   t2 = t1 %>% as.data.frame() %>% dplyr::rename("tpm"=".") %>% tibble::rownames_to_column(var = "sample") %>% dplyr::inner_join(tcga_gtex,by="sample")
   tumorlist <- unique(tcga_gtex[tcga_gtex$type2=="tumor",]$tissue)
@@ -50,14 +53,16 @@ vis_toil_TvsN = function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, S
   ## 用one way anova计算 p value
   if(Show.P.value == TRUE){
     message("Counting P value")
-    pvalues <- sapply(tcga_gtex_withNormal$tissue, function(x) {
-      res <- aov(tpm ~ type2, data = subset(tcga_gtex_withNormal, tissue == x))
-      summary(res)[[1]]$'Pr(>F)'[1] #
-    })
-    pv <- data.frame(tissue = tcga_gtex_withNormal$tissue, pvalue = pvalues)
+    # pvalues <- sapply(tcga_gtex_withNormal$tissue, function(x) {
+    #   res <- aov(tpm ~ type2, data = subset(tcga_gtex_withNormal, tissue == x))
+    #   summary(res)[[1]]$'Pr(>F)'[1] #
+    # })
+    # pv <- data.frame(tissue = tcga_gtex_withNormal$tissue, pvalue = pvalues)
     ## Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-    pv$sigcode <- cut(pv$pvalue, c(0, 0.001, 0.01, 0.05, 0.1, 1), 
-                      labels=c('***', '**', '*', '.', ' '))
+    # pv$sigcode <- cut(pv$pvalue, c(0, 0.001, 0.01, 0.05, 0.1, 1), 
+    #                   labels=c('***', '**', '*', '.', ' '))
+    pv = tcga_gtex_withNormal %>% ggpubr::compare_means(tpm ~ type2, data = ., method = Method,group.by = "tissue" )
+    pv = pv %>% select(tissue,p,p.signif,p.adj)
     message("Counting P value finished")
   }
   if(Mode == "Boxplot"){
@@ -74,12 +79,12 @@ vis_toil_TvsN = function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, S
     p <- p + ggplot2::geom_boxplot(data = tcga_gtex_MESO)+ ggplot2::geom_boxplot(data = tcga_gtex_UVM)
     if(Show.P.value == TRUE & Show.P.label == TRUE){
       p <- p + ggplot2::geom_text(aes(tissue, y=max(tcga_gtex_withNormal$tpm)*1.1, 
-                                          label=pv$sigcode),
+                                          label=pv$p.signif),
                                       data=pv, inherit.aes=F)
     }
     if(Show.P.value == TRUE & Show.P.label == FALSE){
       p <- p + ggplot2::geom_text(aes(tissue, y=max(tcga_gtex_withNormal$tpm)*1.1, 
-                                      label=paste("p = ",round(pvalue, 2))),
+                                      label=paste("p = ",round(p, 2))),
                                   data=pv, inherit.aes=F)
     }
     print(p)
@@ -125,13 +130,13 @@ vis_toil_TvsN = function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, S
                         position ="identity") +
       scale_x_discrete(limits = levels(tcga_gtex$tissue))
     if(Show.P.value == TRUE & Show.P.label == TRUE){
-      p <- p + ggplot2::geom_text(aes(tissue, y=max(tcga_gtex_withNormal$tpm) + 1, 
-                                      label=pv$sigcode),
+      p <- p + ggplot2::geom_text(aes(tissue, y=max(tcga_gtex_withNormal$tpm)*1.1, 
+                                      label=pv$p.signif),
                                   data=pv, inherit.aes=F)
     }
     if(Show.P.value == TRUE & Show.P.label == FALSE){
-      p <- p + ggplot2::geom_text(aes(tissue, y=max(tcga_gtex_withNormal$tpm) + 1, 
-                                      label=paste("p = ",round(pvalue, 2))),
+      p <- p + ggplot2::geom_text(aes(tissue, y=max(tcga_gtex_withNormal$tpm)*1.1, 
+                                      label=paste("p = ",round(p, 2))),
                                   data=pv, inherit.aes=F)
     }
     print(p)
