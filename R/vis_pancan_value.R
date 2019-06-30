@@ -44,6 +44,7 @@ vis_toil_gene <- function(data, x = "primary_site",
 vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21")) {
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
   t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
+  tcga_gtex = tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE) 
   t2 <- t1 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
