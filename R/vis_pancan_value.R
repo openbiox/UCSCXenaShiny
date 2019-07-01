@@ -44,7 +44,7 @@ vis_toil_gene <- function(data, x = "primary_site",
 vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21")) {
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
   t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
-  tcga_gtex = tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE) 
+  tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
   t2 <- t1 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
@@ -53,7 +53,7 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
   tumorlist <- unique(tcga_gtex[tcga_gtex$type2 == "tumor", ]$tissue)
   normallist <- unique(tcga_gtex[tcga_gtex$type2 == "normal", ]$tissue)
   withoutNormal <- setdiff(tumorlist, normallist)
-  tcga_gtex <- t2 %>% dplyr::select("tpm", "tissue", "type2","sample")
+  tcga_gtex <- t2 %>% dplyr::select("tpm", "tissue", "type2", "sample")
   tcga_gtex$type2 <- factor(tcga_gtex$type2, levels = c("tumor", "normal"))
   tcga_gtex_withNormal <- tcga_gtex[!(tcga_gtex$tissue %in% withoutNormal), ]
   tcga_gtex_MESO <- tcga_gtex[tcga_gtex$tissue == "MESO", ]
@@ -72,7 +72,7 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
     ## Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
     # pv$sigcode <- cut(pv$pvalue, c(0, 0.001, 0.01, 0.05, 0.1, 1),
     #                   labels=c('***', '**', '*', '.', ' '))
-    pv <- tcga_gtex_withNormal %>% 
+    pv <- tcga_gtex_withNormal %>%
       ggpubr::compare_means(tpm ~ type2, data = ., method = Method, group.by = "tissue")
     pv <- pv %>% select(tissue, p, p.signif, p.adj)
     message("Counting P value finished")
@@ -90,7 +90,7 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
         legend.position = c(0, 0), legend.justification = c(0, 0)
       ) +
       ggplot2::scale_fill_manual(values = values)
-    p <- p + ggplot2::geom_boxplot(data = tcga_gtex_MESO) + 
+    p <- p + ggplot2::geom_boxplot(data = tcga_gtex_MESO) +
       ggplot2::geom_boxplot(data = tcga_gtex_UVM)
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       p <- p + ggplot2::geom_text(aes(tissue,
@@ -178,10 +178,12 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
 }
 
 utils::globalVariables(
-  c(".",
-    "tissue", 
+  c(
+    ".",
+    "tissue",
     "tpm",
     "type2",
     "p.signif",
-    "p.adj")
+    "p.adj"
+  )
 )
