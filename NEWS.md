@@ -1,3 +1,7 @@
+# UCSCXenaShiny 0.1.2
+
+* Added functions to obtain and visualize pancan distribution of single gene using Toil hub.
+
 # UCSCXenaShiny 0.1.1
 
 * Used **testthat** package
