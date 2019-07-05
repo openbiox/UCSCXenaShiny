@@ -24,6 +24,7 @@ GeomSplitViolin <- ggproto("GeomSplitViolin", GeomViolin,
 )
 # Visualize Violin plot
 create_quantile_segment_frame <- function(data, draw_quantiles, split = FALSE, grp = NULL) {
+  interleave <- 'ggplot2' %:::% 'interleave'
   dens <- cumsum(data$density) / sum(data$density)
   ecdf <- stats::approxfun(dens, data$y)
   ys <- ecdf(draw_quantiles)
@@ -32,12 +33,12 @@ create_quantile_segment_frame <- function(data, draw_quantiles, split = FALSE, g
   violin.xs <- (stats::approxfun(data$y, data$x))(ys)
   if (grp %% 2 == 0) {
     data.frame(
-      x = ggplot2:::interleave(violin.xs, violin.xmaxvs),
+      x = interleave(violin.xs, violin.xmaxvs),
       y = rep(ys, each = 2), group = rep(ys, each = 2)
     )
   } else {
     data.frame(
-      x = ggplot2:::interleave(violin.xminvs, violin.xs),
+      x = interleave(violin.xminvs, violin.xs),
       y = rep(ys, each = 2), group = rep(ys, each = 2)
     )
   }
