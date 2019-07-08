@@ -655,6 +655,12 @@ server <- function(input, output, session) {
             title = "Tips",
             content = "Download zipped data to local",
             placement = "bottom", options = list(container = "body")
+          ),
+          downloadButton(outputId = "total_url", label = "URLs List", icon = icon("download"), style = "margin-bottom: 10px; margin-left: 75px;"),
+          shinyBS::bsPopover("total_url",
+                             title = "Tips",
+                             content = "Download list of target urls",
+                             placement = "bottom", options = list(container = "body")
           )
         )
       )
@@ -713,6 +719,15 @@ server <- function(input, output, session) {
     }
     output$detail_info <- DT::renderDT(m, options = list(dom = "t", scrollX = TRUE))
   })
+  
+  # Download list of urls
+  output$total_url <- downloadHandler(
+    filename = "urls.txt",
+    contentType = "text/txt",
+    content = function(file) {
+      write.table(file = file, paste0("wget ", query_url()$url), row.names = F, col.names = F, quote = F)
+    }
+  )
 
 
   # Download request data by XenaDownload function
