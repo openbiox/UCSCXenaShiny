@@ -1,4 +1,3 @@
-# 可视化 Pan-cancer 值
 #' Visualize single gene expression from toil data hub
 #' @inheritParams ggpubr::ggboxplot
 #' @param angle.x angle for x lab
@@ -61,17 +60,8 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
   if (Show.P.value == FALSE) {
     Show.P.label <- FALSE
   }
-  ## 用one way anova计算 p value
   if (Show.P.value == TRUE) {
     message("Counting P value")
-    # pvalues <- sapply(tcga_gtex_withNormal$tissue, function(x) {
-    #   res <- aov(tpm ~ type2, data = subset(tcga_gtex_withNormal, tissue == x))
-    #   summary(res)[[1]]$'Pr(>F)'[1] #
-    # })
-    # pv <- data.frame(tissue = tcga_gtex_withNormal$tissue, pvalue = pvalues)
-    ## Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-    # pv$sigcode <- cut(pv$pvalue, c(0, 0.001, 0.01, 0.05, 0.1, 1),
-    #                   labels=c('***', '**', '*', '.', ' '))
     pv <- tcga_gtex_withNormal %>%
       ggpubr::compare_means(tpm ~ type2, data = ., method = Method, group.by = "tissue")
     pv <- pv %>% select(tissue, p, p.signif, p.adj)
@@ -82,11 +72,10 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
       ggplot2::geom_boxplot() +
       ggplot2::xlab(NULL) + ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
       ggplot2::theme_set(theme_set(theme_classic(base_size = 20))) +
-      ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5)) + # x轴label倾斜45度
+      ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5)) +
       ggplot2::guides(fill = guide_legend(title = NULL)) +
       ggplot2::theme(
-        legend.background = element_blank(), # 移除整体边框
-        # 图例的左下角置于绘图区域的左下角
+        legend.background = element_blank(),
         legend.position = c(0, 0), legend.justification = c(0, 0)
       ) +
       ggplot2::scale_fill_manual(values = values)
@@ -111,36 +100,33 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
     print(p)
   }
   if (Mode == "Violinplot") {
-    # p <- ggplot(tcga_gtex_withNormal, aes(x = tissue, y = tpm, fill = type2)) + geom_split_violin()
-    p <- ggplot2::ggplot(tcga_gtex_withNormal, aes(x = tissue, y = tpm, fill = type2)) + # x对应肿瘤的类型，y对应表达量，fill填充对应组织的类型
+    p <- ggplot2::ggplot(tcga_gtex_withNormal, aes(x = tissue, y = tpm, fill = type2)) + 
       geom_split_violin(
-        draw_quantiles = c(0.25, 0.5, 0.75), # 画4分位线
-        trim = T, # 是否修剪小提琴图的密度曲线
-        linetype = "solid", # 周围线的轮廓
-        color = "black", # 周围线颜色
+        draw_quantiles = c(0.25, 0.5, 0.75), 
+        trim = T, 
+        linetype = "solid",
+        color = "black",
         size = 0.2,
         na.rm = T,
         position = "identity"
-      ) + # 周围线粗细
+      ) + 
       ggplot2::ylab(paste0(Gene, " expression (TPM)")) + xlab("") +
-      # ylim(-4,9) +
       ggplot2::scale_fill_manual(values = values) +
       ggplot2::theme_set(theme_set(theme_classic(base_size = 20))) +
-      ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5)) + # x轴label倾斜45度
+      ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5)) +
       ggplot2::guides(fill = guide_legend(title = NULL)) +
       ggplot2::theme(
-        legend.background = element_blank(), # 移除整体边框
-        # 图例的左下角置于绘图区域的左下角
+        legend.background = element_blank(), 
         legend.position = c(0, 0), legend.justification = c(0, 0)
       )
 
     p + geom_split_violin(
       data = tcga_gtex_MESO,
       mapping = aes(x = tissue, y = tpm, fill = type2),
-      draw_quantiles = c(0.25, 0.5, 0.75), # 画4分位线
-      trim = T, # 是否修剪小提琴图的密度曲线
-      linetype = "solid", # 周围线的轮廓
-      color = "black", # 周围线颜色
+      draw_quantiles = c(0.25, 0.5, 0.75),
+      trim = T,
+      linetype = "solid",
+      color = "black",
       size = 0.2,
       na.rm = T,
       position = "identity"
@@ -148,10 +134,10 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
       geom_split_violin(
         data = tcga_gtex_UVM,
         mapping = aes(x = tissue, y = tpm, fill = type2),
-        draw_quantiles = c(0.25, 0.5, 0.75), # 画4分位线
-        trim = T, # 是否修剪小提琴图的密度曲线
-        linetype = "solid", # 周围线的轮廓
-        color = "black", # 周围线颜色
+        draw_quantiles = c(0.25, 0.5, 0.75),
+        trim = T,
+        linetype = "solid",
+        color = "black",
         size = 0.2,
         na.rm = T,
         position = "identity"

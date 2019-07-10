@@ -1,5 +1,3 @@
-# 获取某特征（基因、转录本等）在Pancan中的表达量
-
 #' Show available hosts
 #'
 #' @return hosts

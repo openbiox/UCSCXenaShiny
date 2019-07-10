@@ -1,5 +1,3 @@
-# Pan-cancer 数据的分组，用于可视化
-
 #' Obtain toilHub info for single gene
 #'
 #' @inheritParams get_pancan_value
