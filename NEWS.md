@@ -1,6 +1,7 @@
 # UCSCXenaShiny 0.1.2
 
 * Added functions to obtain and visualize pancan distribution of single gene using Toil hub.
+* Added feature to query dataset urls, so datasets can be downloaded by Shell `wget` command.
 
 # UCSCXenaShiny 0.1.1
 
