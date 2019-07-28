@@ -1,6 +1,6 @@
 Package: UCSCXenaShiny
 Title: A Shiny App for UCSC Xena Database
-Version: 0.2.0
+Version: 0.2.0.9000
 Authors@R: 
     c(
     person("Shixiang", "Wang", email = "w_shixiang@163.com",
@@ -16,6 +16,7 @@ Authors@R:
     person("Fei", "Zhao", email = "zhaofei415@mails.ucas.edu.cn",
            role = c("aut"))
            )
+Maintainer: Kai Gu <gukai1212@163.com>
 Description: Provides a web app for downloading, analyzing and visualizing datasets
   from UCSC Xena, which is a collection of 
   UCSC-hosted public databases such as TCGA, ICGC, TARGET, GTEx, CCLE, and others.

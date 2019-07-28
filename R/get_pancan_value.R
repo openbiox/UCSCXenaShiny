@@ -6,7 +6,8 @@
 #' @examples
 #' available_hosts()
 available_hosts <- function() {
-  UCSCXenaTools:::.xena_hosts %>% as.character()
+  .xena_hosts <- "UCSCXenaTools" %:::% ".xena_hosts"
+  .xena_hosts %>% as.character()
 }
 
 

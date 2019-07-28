@@ -1,3 +1,12 @@
+# UCSCXenaShiny 0.3.0
+
+* Switched maintainer to Kai Gu
+* Fixed checking note
+
+# UCSCXenaShiny 0.2.0
+
+* Added option to download a text file containing URLs of selected datasets
+
 # UCSCXenaShiny 0.1.2
 
 * Added functions to obtain and visualize pancan distribution of single gene using Toil hub.
