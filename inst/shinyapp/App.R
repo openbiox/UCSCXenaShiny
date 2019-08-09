@@ -51,6 +51,12 @@ ui <- tagList(
             tags$div(
               column(
                 12,
+                shinyWidgets::searchInput(inputId = "Pancan_search", 
+                                          label = NULL,
+                                          btnSearch = icon("search"), 
+                                          btnReset = icon("remove"), 
+                                          placeholder = 'Enter a gene symbol to show its pan-can distribution, e.g. TP53',
+                                          width = "80%"),
                 tags$h2("Data Portal Summary"),
                 tags$b(paste0("XenaShiny version ", packageVersion("UCSCXenaShiny"))),
                 tags$br(),
@@ -140,6 +146,8 @@ ui <- tagList(
           ),
           column(
             6,
+            tags$br(),
+            tags$br(),
             tags$br(),
             tags$br(),
             tags$br(),
