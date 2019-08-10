@@ -28,8 +28,8 @@ mycolor <- rep(mycolor, 15)
 
 
 # Put modules here --------------------------------------------------------
-modules_path = system.file("inst", "shinyapp", "modules", package = "UCSCXenaShiny", mustWork = TRUE)
-modules_file = dir(modules_path, pattern = "\\.R$", full.names = TRUE)
+modules_path <- system.file("inst", "shinyapp", "modules", package = "UCSCXenaShiny", mustWork = TRUE)
+modules_file <- dir(modules_path, pattern = "\\.R$", full.names = TRUE)
 source(modules_file)
 
 
@@ -320,19 +320,21 @@ ui <- tagList(
       tabPanel("Data Tidy"),
       tabPanel("General Analysis"),
       tabPanel("Genomic Analysis"),
-      tabPanel("Visualization"
-               # ,
-               # fluidPage(
-               #   fluidRow(
-               #     helpText("The data query may take a long time, please be patient..."),
-               #     column(
-               #       12,
-               #       tabPanel("Gene Pan-cancer Expression",
-               #                plotOutput("vis_toil_gene"))
-               #     )
-               #   )
-               # )
-               )),
+      tabPanel(
+        "Visualization"
+        # ,
+        # fluidPage(
+        #   fluidRow(
+        #     helpText("The data query may take a long time, please be patient..."),
+        #     column(
+        #       12,
+        #       tabPanel("Gene Pan-cancer Expression",
+        #                plotOutput("vis_toil_gene"))
+        #     )
+        #   )
+        # )
+      )
+    ),
 
     # Pipelines page =====================
     navbarMenu(
@@ -344,10 +346,12 @@ ui <- tagList(
     navbarMenu(
       title = "Help",
       icon = icon("question-circle"),
-      tabPanel("News", 
-               fluidPage(
-                 includeMarkdown(system.file("NEWS.md", package = "UCSCXenaShiny", mustWork = TRUE))
-               )),
+      tabPanel(
+        "News",
+        fluidPage(
+          includeMarkdown(system.file("NEWS.md", package = "UCSCXenaShiny", mustWork = TRUE))
+        )
+      ),
       tabPanel("Usages"),
       tabPanel("Term List")
     ),
@@ -490,7 +494,6 @@ ui <- tagList(
 
 # Server Part ---------------------------------------------------------------
 server <- function(input, output, session) {
-
   cat("Shiny app run successfully! Enjoy it!\n")
   cat("               --  Xena shiny team\n")
   # Home ===========================
@@ -666,9 +669,9 @@ server <- function(input, output, session) {
           ),
           downloadButton(outputId = "total_url", label = "URLs List", icon = icon("download"), style = "margin-bottom: 10px; margin-left: 75px;"),
           shinyBS::bsPopover("total_url",
-                             title = "Tips",
-                             content = "Download list of target urls",
-                             placement = "bottom", options = list(container = "body")
+            title = "Tips",
+            content = "Download list of target urls",
+            placement = "bottom", options = list(container = "body")
           )
         )
       )
@@ -727,7 +730,7 @@ server <- function(input, output, session) {
     }
     output$detail_info <- DT::renderDT(m, options = list(dom = "t", scrollX = TRUE))
   })
-  
+
   # Download list of urls
   output$total_url <- downloadHandler(
     filename = "urls.txt",
@@ -772,12 +775,12 @@ server <- function(input, output, session) {
   )
 
 
-# Modules -----------------------------------------------------------------
+  # Modules -----------------------------------------------------------------
   # toil_df = ope_toil_gene()
   # output$vis_toil_gene = renderPlot({
   #   vis_toil_gene(toil_df)
   # })
-  
+
   output$w <- renderText({
     req(input$side)
     r <- input$side
