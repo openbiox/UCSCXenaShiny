@@ -1,9 +1,9 @@
-# Prepare -----------------------------------------------------------------
+# Load necessary packages ----------------------------------
 library(shiny)
 library(UCSCXenaTools)
 library(shinyBS)
 
-# Here data goes
+# Put data here -----------------------------------------------------------
 data("XenaData", package = "UCSCXenaTools", envir = environment())
 xena_table <- XenaData[, c(
   "XenaDatasets", "XenaHostNames", "XenaCohorts",
@@ -11,11 +11,9 @@ xena_table <- XenaData[, c(
 )]
 xena_table$SampleCount <- as.integer(xena_table$SampleCount)
 colnames(xena_table)[c(1:3)] <- c("Dataset ID", "Hub", "Cohort")
-
 data("dat_datasets", package = "UCSCXenaShiny", envir = environment())
 data("dat_samples", package = "UCSCXenaShiny", envir = environment())
 data("XenaInfo", package = "UCSCXenaShiny", envir = environment())
-
 Data_hubs_number <- XenaInfo[["n_hubs"]]
 Cohorts_number <- XenaInfo[["n_cohorts"]]
 Datasets_number <- XenaInfo[["n_datasets"]]
@@ -27,6 +25,12 @@ Data_subtypes_number <- XenaInfo[["n_subtypes"]]
 mycolor <- c(RColorBrewer::brewer.pal(12, "Paired"))
 # need at least 140 colors for summary plot
 mycolor <- rep(mycolor, 15)
+
+
+# Put modules here --------------------------------------------------------
+modules_path = system.file("inst", "shinyapp", "modules", package = "UCSCXenaShiny", mustWork = TRUE)
+modules_file = dir(modules_path, pattern = "\\.R$", full.names = TRUE)
+source(modules_file)
 
 
 # UI part ----------------------------------------------------------------------
@@ -51,12 +55,7 @@ ui <- tagList(
             tags$div(
               column(
                 12,
-                shinyWidgets::searchInput(inputId = "Pancan_search", 
-                                          label = NULL,
-                                          btnSearch = icon("search"), 
-                                          btnReset = icon("remove"), 
-                                          placeholder = 'Enter a gene symbol to show its pan-can distribution, e.g. TP53',
-                                          width = "80%"),
+                ui.search_box_homepage("Pancan_search"),
                 tags$h2("Data Portal Summary"),
                 tags$b(paste0("XenaShiny version ", packageVersion("UCSCXenaShiny"))),
                 tags$br(),
