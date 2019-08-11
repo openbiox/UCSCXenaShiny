@@ -1,6 +1,6 @@
 ui.home_search_box <- function(id) {
   ns <- NS(id)
-  
+
   shinyWidgets::searchInput(
     inputId = ns("Pancan_search"),
     label = NULL,
@@ -11,14 +11,7 @@ ui.home_search_box <- function(id) {
   )
 }
 
-# xx_mod <- function(input, output, session){
-#   output$plot1 <- renderPlot({
-#     plot(iris)
-#   })
-# }
-
 server.home_search_box <- function(input, output, session) {
-  
   observeEvent(input$Pancan_search, {
     if (nchar(input$Pancan_search) >= 1) {
       showModal(
@@ -29,8 +22,9 @@ server.home_search_box <- function(input, output, session) {
           # DT::DTOutput(
           #   "table_query"
           # )
-        ))
-      output$gene_pancan_dist = renderText("Yes, it works!")
-      }
-    })
+        )
+      )
+      output$gene_pancan_dist <- renderText("Yes, it works!")
+    }
+  })
 }
