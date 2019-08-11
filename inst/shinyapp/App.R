@@ -55,7 +55,7 @@ ui <- tagList(
             tags$div(
               column(
                 12,
-                ui.search_box_homepage("Pancan_search"),
+                ui.home_search_box("homepage_pancan_search"),
                 tags$h2("Data Portal Summary"),
                 tags$b(paste0("XenaShiny version ", packageVersion("UCSCXenaShiny"))),
                 tags$br(),
@@ -497,6 +497,8 @@ server <- function(input, output, session) {
   cat("Shiny app run successfully! Enjoy it!\n")
   cat("               --  Xena shiny team\n")
   # Home ===========================
+  res <- callModule(server.home_search_box, "homepage_pancan_search")
+  
   output$Xenasummary <- plotly::renderPlotly({
     p <- dat_datasets %>%
       #  filter(XenaHostNames == "gdcHub") %>%
