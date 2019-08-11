@@ -23,6 +23,6 @@ app_run <- function() {
 # This is used for passing package checks
 #   Fix problem caused by 'no visible binding for global variable'
 
-utils::globalVariables(
-  c("XenaData")
-)
+# utils::globalVariables(
+#   c("XenaData")
+# )
