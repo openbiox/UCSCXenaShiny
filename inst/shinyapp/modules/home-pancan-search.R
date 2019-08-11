@@ -12,19 +12,38 @@ ui.home_search_box <- function(id) {
 }
 
 server.home_search_box <- function(input, output, session) {
+  ns <- session$ns
   observeEvent(input$Pancan_search, {
     if (nchar(input$Pancan_search) >= 1) {
       showModal(
         modalDialog(
           title = paste("Pancan distribution of gene", input$Pancan_search),
           size = "l",
-          textOutput("gene_pancan_dist")
-          # DT::DTOutput(
-          #   "table_query"
-          # )
+          fluidRow(
+            h5("The data query may take some time based on your network. Wait until a plot shows..."),
+            column(3, 
+                   pickerInput(ns("pdist_mode"), "Mode", 
+                               choices = c("Boxplot", "Violinplot"),
+                               selected = "Boxplot"),
+                   prettyCheckbox("pdist_show_p_value", "Show P value", icon = icon("check")),
+                   prettyCheckbox("pdist_show_p_label", "Show P label", icon = icon("check")),
+                   actionButton("pdist_show_button", "Show!")),
+            column(9, plotOutput(ns("gene_pancan_dist"))),
+            h6("Note the unit is log2(tpm+0.001)")
+          )
         )
       )
-      output$gene_pancan_dist <- renderText("Yes, it works!")
-    }
-  })
+      print(input$pdist_mode)
+      pdist_mode <- eventReactive(input$pdist_show_button, {
+        input$pdist_mode
+        print(input$pdist_mode)
+      })
+      
+      output$gene_pancan_dist <- renderPlot(
+        {
+          vis_toil_TvsN(Gene = input$Pancan_search,
+                        Mode = pdist_mode(), Show.P.value = F, Show.P.label = F)
+        }
+      )
+  }})
 }
