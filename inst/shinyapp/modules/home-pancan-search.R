@@ -12,19 +12,20 @@ ui.home_search_box <- function(id) {
 }
 
 server.home_search_box <- function(input, output, session) {
+  ns = session$ns
   observeEvent(input$Pancan_search, {
     if (nchar(input$Pancan_search) >= 1) {
       showModal(
         modalDialog(
           title = paste("Pancan distribution of gene", input$Pancan_search),
           size = "l",
-          textOutput("gene_pancan_dist")
+          textOutput(ns("gene_pancan_dist"))
           # DT::DTOutput(
           #   "table_query"
           # )
         )
       )
-      output$gene_pancan_dist <- renderText("Yes, it works!")
+      output$gene_pancan_dist <- renderText("Sorry, this feature is under development!")
     }
   })
 }
