@@ -42,6 +42,7 @@ vis_toil_gene <- function(data, x = "primary_site",
 #'
 vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21")) {
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
+  dir.create(file.path(tempdir(), "UCSCXenaShiny"), recursive = TRUE, showWarnings = FALSE)
   tmpfile <- file.path(tempdir(), "UCSCXenaShiny", "toil_TvsN.rds")
   if (file.exists(tmpfile)) {
     t1 <- readRDS(tmpfile)

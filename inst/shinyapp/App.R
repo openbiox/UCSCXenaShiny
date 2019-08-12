@@ -34,20 +34,20 @@ mycolor <- rep(mycolor, 15)
 
 
 # Put modules here --------------------------------------------------------
-modules_path <- system.file("inst", "shinyapp", "modules", package = "UCSCXenaShiny", mustWork = TRUE)
+modules_path <- system.file("shinyapp", "modules", package = "UCSCXenaShiny", mustWork = TRUE)
 modules_file <- dir(modules_path, pattern = "\\.R$", full.names = TRUE)
 sapply(modules_file, function(x, y) source(x, local = y), y = environment())
 
 
 # Put page UIs here -----------------------------------------------------
-pages_path <- system.file("inst", "shinyapp", "ui", package = "UCSCXenaShiny", mustWork = TRUE)
+pages_path <- system.file("shinyapp", "ui", package = "UCSCXenaShiny", mustWork = TRUE)
 pages_file <- dir(pages_path, pattern = "\\.R$", full.names = TRUE)
 sapply(pages_file, function(x, y) source(x, local = y), y = environment())
 
 
 # Obtain path to individual server code parts ----------------------------
 server_file = function(x) {
-  server_path = system.file("inst", "shinyapp", "server", 
+  server_path = system.file("shinyapp", "server", 
                             package = "UCSCXenaShiny", mustWork = TRUE)
   file.path(server_path, x)
 }

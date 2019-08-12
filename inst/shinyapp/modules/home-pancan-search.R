@@ -19,30 +19,39 @@ server.home_search_box <- function(input, output, session) {
         modalDialog(
           title = paste("Pancan distribution of gene", input$Pancan_search),
           size = "l",
-          fluidRow(
-            h5("The data query may take some time based on your network. Wait until a plot shows..."),
-            column(3, 
-                   pickerInput(ns("pdist_mode"), "Mode", 
-                               choices = c("Boxplot", "Violinplot"),
-                               selected = "Boxplot"),
-                   prettyCheckbox("pdist_show_p_value", "Show P value", icon = icon("check")),
-                   prettyCheckbox("pdist_show_p_label", "Show P label", icon = icon("check")),
-                   actionButton("pdist_show_button", "Show!")),
-            column(9, plotOutput(ns("gene_pancan_dist"))),
-            h6("Note the unit is log2(tpm+0.001)")
+          fluidPage(
+            fluidRow(
+              column(3, pickerInput(ns("pdist_mode"), "Mode", 
+                                    choices = c("Boxplot", "Violinplot"),
+                                    selected = "Boxplot", width = "fit")),
+              column(3, prettyCheckbox(ns("pdist_show_p_value"), "Show P value", 
+                                       icon = icon("check"))),
+              column(3, prettyCheckbox(ns("pdist_show_p_label"), "Show P label", 
+                                       icon = icon("check"))),
+              column(3, actionButton(ns("pdist_show_button"), "Show!"))
+            ),
+            column(12,
+                   plotOutput(ns("gene_pancan_dist"))),
+            column(12,
+                   h4("NOTEs:"),
+                   h5("The data query may take some time based on your network. Wait until a plot shows..."),
+                   h5("The unit is log2(tpm+0.001)"))
+            
           )
         )
       )
-      print(input$pdist_mode)
-      pdist_mode <- eventReactive(input$pdist_show_button, {
-        input$pdist_mode
-        print(input$pdist_mode)
-      })
+
+      # pdist_mode <- eventReactive(input$pdist_show_button, {
+      #   input$pdist_mode
+      #   print(input$pdist_mode)
+      # })
       
       output$gene_pancan_dist <- renderPlot(
         {
           vis_toil_TvsN(Gene = input$Pancan_search,
-                        Mode = pdist_mode(), Show.P.value = F, Show.P.label = F)
+                        Mode = input$pdist_mode, 
+                        Show.P.value = input$pdist_show_p_value, 
+                        Show.P.label = input$pdist_show_p_label)
         }
       )
   }})
