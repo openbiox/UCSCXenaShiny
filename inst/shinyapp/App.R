@@ -82,6 +82,7 @@ server <- function(input, output, session) {
   # inst/shinyapp/server
   source(server_file("home.R"), local = TRUE)
   source(server_file("repository.R"), local = TRUE)
+  source(server_file("modules.R"), local = TRUE)
 
 }
 

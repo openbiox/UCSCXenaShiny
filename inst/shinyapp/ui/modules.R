@@ -7,18 +7,8 @@ ui.page_modules <- function() {
     tabPanel("General Analysis"),
     tabPanel("Genomic Analysis"),
     tabPanel(
-      "Visualization"
-      # ,
-      # fluidPage(
-      #   fluidRow(
-      #     helpText("The data query may take a long time, please be patient..."),
-      #     column(
-      #       12,
-      #       tabPanel("Gene Pan-cancer Expression",
-      #                plotOutput("vis_toil_gene"))
-      #     )
-      #   )
-      # )
+      "Visualization",
+      ui.modules_pancan_dist("module_gene_pancan_dist")   
     )
   )
 }
