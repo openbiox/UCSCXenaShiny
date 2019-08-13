@@ -1,4 +1,4 @@
-res <- callModule(server.home_search_box, "homepage_pancan_search")
+callModule(server.home_search_box, "homepage_pancan_search")
 
 output$Xenasummary <- plotly::renderPlotly({
   p <- dat_datasets %>%
