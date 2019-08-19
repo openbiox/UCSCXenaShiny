@@ -1,10 +1,10 @@
 Package: UCSCXenaShiny
 Title: A Shiny App for UCSC Xena Database
-Version: 0.2.0.9000
+Version: 0.3.0.9000
 Authors@R: 
     c(person(given = "Shixiang",
              family = "Wang",
-             role = c("aut", "cre"),
+             role = c("aut"),
              email = "w_shixiang@163.com",
              comment = c(ORCID = "0000-0001-9855-7357")),
       person(given = "Yi",
@@ -19,7 +19,7 @@ Authors@R:
              comment = c(ORCID = "0000-0002-6277-0137")),
       person(given = "Kai",
              family = "Gu",
-             role = "aut",
+             role = c("aut", "cre"),
              email = "gukai1212@163.com",
              comment = c(ORCID = "0000-0002-0177-0774")),
       person(given = "Yin",
