@@ -1,13 +1,14 @@
 # Load necessary packages ----------------------------------
-library(dplyr)
-library(ggplot2)
-library(ggpubr)
-library(plotly)
-library(UCSCXenaTools)
-library(shiny)
-library(shinyBS)
-library(shinyjs)
-library(shinyWidgets)
+require(dplyr)
+require(ggplot2)
+require(ggpubr)
+require(plotly)
+require(UCSCXenaTools)
+require(UCSCXenaShiny)
+require(shiny)
+require(shinyBS)
+require(shinyjs)
+require(shinyWidgets)
 
 # Put data here -----------------------------------------------------------
 data("XenaData", package = "UCSCXenaTools", envir = environment())
