@@ -1,6 +1,6 @@
 Package: UCSCXenaShiny
 Title: A Shiny App for UCSC Xena Database
-Version: 0.3.0
+Version: 0.3.0.9000
 Authors@R: 
     c(person(given = "Shixiang",
              family = "Wang",
