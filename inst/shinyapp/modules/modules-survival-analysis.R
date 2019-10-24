@@ -98,7 +98,7 @@ server.modules_sur_plot <- function(input, output, session) {
     sur_get(input$dataset,input$gene_input)
   })
   filter_dat <- eventReactive(input$go,{
-    req(input$age,input$sex,input$stage)
+    #req(input$age,input$sex,input$stage)
     dat_filter(data=sur_dat_pre(),age=input$age,
                gender=input$sex,stage=input$stage)
   })
@@ -123,7 +123,7 @@ server.modules_sur_plot <- function(input, output, session) {
         text = "Data is too little to analysis (<10).",
         type = "error"
       )
-      stop()
+      NULL
     }else{
       progress <- shiny::Progress$new()
       progress$set(message = "Preparing data", value = 30)
