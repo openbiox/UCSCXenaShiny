@@ -9,6 +9,8 @@ require(shiny)
 require(shinyBS)
 require(shinyjs)
 require(shinyWidgets)
+require(survival)
+require(survminer)
 
 # Put data here -----------------------------------------------------------
 data("XenaData", package = "UCSCXenaTools", envir = environment())
