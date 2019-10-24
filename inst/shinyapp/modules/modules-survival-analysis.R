@@ -33,15 +33,13 @@ ui.modules_sur_plot<- function(id) {
             value = c(20, 100)
           ),
           checkboxGroupInput(ns("sex"), "Sex",
-            choiceNames = c("Female", "Male", "Unknown"),
-            choiceValues = c("FEMALE", "MALE", NA),
-            selected = c("FEMALE", "MALE", NA)
-            # inline = T
+                             choices = c("Female"="FEMALE", "Male"="MALE", "Unknown"="Unknown"),
+                             selected = c("FEMALE", "MALE","Unknown" )
+                             # inline = T
           ),
           checkboxGroupInput(ns("stage"), "Stage",
-            choiceNames = c("I", "II", "III", "IV", "Unknown"),
-            choiceValues = c("I", "II", "III", "IV", NA),
-            selected = c("I", "II", "III", "IV", NA)
+                             choices = c("I", "II", "III", "IV","Unknown"),
+                             selected = c("I", "II", "III", "IV", "Unknown")
             # inline = T
           ),
           radioButtons(ns("cut_off_mode"), "Cut off mode", c("Auto", "Custom"), ),
@@ -144,7 +142,11 @@ sur_get <- function(TCGA_cohort, gene) {
     XenaQuery() %>%
     XenaDownload() %>%
     XenaPrepare()
-
+  
+  if(!("pathologic_stage") %in% names(cli) ){
+    cli$pathologic_stage=NA
+    }
+    
   gx <- luad_cohort %>%
     dplyr::filter(DataSubtype == "gene expression RNAseq") %>%
     {
@@ -168,13 +170,16 @@ sur_get <- function(TCGA_cohort, gene) {
     gene_expression = as.numeric(gd)
   ) %>%
     left_join(cli, by = "sampleID") %>%
-    dplyr::filter(sample_type == "Primary Tumor", !is.na(OS)) %>%
+    dplyr::filter(sample_type == names(which.max(table(sample_type))), 
+                  !is.na(OS)) %>%
     dplyr::select(sampleID, gene_expression,
       time = OS.time, status = OS,
       gender, age = age_at_initial_pathologic_diagnosis,
       stage = pathologic_stage
     ) %>%
-    dplyr::mutate(stage = gsub("[(Stage)ABC ]*", "", stage))
+    dplyr::mutate(stage = gsub("[(Stage)ABC ]*", "", stage)) %>% 
+    dplyr::mutate(stage=ifelse(is.na(stage),"Unknown",stage),
+                  gender=ifelse(is.na(gender),"Unknown", gender)) 
   return(merged_data)
 }
 ## Data filter
