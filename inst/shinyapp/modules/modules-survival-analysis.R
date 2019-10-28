@@ -2,7 +2,7 @@ ui.modules_sur_plot<- function(id) {
   ns <- NS(id)
 
   fluidPage(
-    titlePanel("Surviva analysis"),
+    titlePanel("Module: surviva analysis"),
     fluidRow(
       column(3, wellPanel(
         selectInput(ns("dataset"), "Choose a dataset:",
@@ -23,21 +23,25 @@ ui.modules_sur_plot<- function(id) {
           btnReset = icon("remove"),
           width = "100%"
         ),
-        textOutput(ns("pre_re"))
-      )),
+        textOutput(ns("pre_re")),
+        h4("NOTEs:"),
+        h5("1. Not all dataset have clinical/pathological stages, so, in this case, the stage option is disabled."),
+        h5("2. The default option <Auto> will return the best p value, if you do not want to do so please choose <Custom>.")
+      )
+      ),
       column(3, wellPanel(
         conditionalPanel(
           condition = "input.gene_input_search >= '1'",ns=ns,
           sliderInput(ns("age"), "Age",
             min = 0, max = 100,
-            value = c(20, 100)
+            value = c(0, 100)
           ),
           checkboxGroupInput(ns("sex"), "Sex",
                              choices = c("Female"="FEMALE", "Male"="MALE", "Unknown"="Unknown"),
                              selected = c("FEMALE", "MALE","Unknown" )
                              # inline = T
           ),
-          checkboxGroupInput(ns("stage"), "Stage",
+          checkboxGroupInput(ns("stage"), "Clinical/Pathological stage",
                              choices = c("I", "II", "III", "IV","Unknown"),
                              selected = c("I", "II", "III", "IV", "Unknown")
             # inline = T
@@ -59,9 +63,7 @@ ui.modules_sur_plot<- function(id) {
         )
       )),
       column(6,
-        wellPanel(
           plotOutput(ns("surplot"))
-        )
       )
     )
   )
