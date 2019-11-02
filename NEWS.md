@@ -1,6 +1,7 @@
 # UCSCXenaShiny 0.4.0
 
 * Fixed the error 'could not find function vis_toil_TvsN' when showing pancan distribution
+* Added survival analysis module
 
 # UCSCXenaShiny 0.3.0
 
