@@ -3,3 +3,6 @@
 .RData
 .Ruserdata
 .DS_Store
+UCSCXenaShiny.Rcheck/
+UCSCXenaShiny*.tar.gz
+UCSCXenaShiny*.tgz

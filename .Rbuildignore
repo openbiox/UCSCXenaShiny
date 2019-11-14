@@ -8,3 +8,6 @@
 ^\.Rproj\.user$
 ^CRAN-RELEASE$
 ^\.github$
+^UCSCXenaShiny\.Rcheck$
+^UCSCXenaShiny.*\.tar\.gz$
+^UCSCXenaShiny.*\.tgz$
