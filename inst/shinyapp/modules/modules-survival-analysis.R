@@ -143,7 +143,14 @@ sur_get <- function(TCGA_cohort, gene) {
     XenaGenerate() %>%
     XenaQuery() %>%
     XenaDownload() %>%
-    XenaPrepare()
+    XenaPrepare() 
+
+  cli <- merge(cli[[grep("survival.txt.gz",names(cli))]],
+               cli[[grep("clinicalMatrix",names(cli))]],
+               by.x="sample",
+               by.y="sampleID",
+               all=FALSE) %>% 
+    dplyr::rename(sampleID=sample)
   
   if(!("pathologic_stage") %in% names(cli) ){
     cli$pathologic_stage=NA
@@ -173,7 +180,8 @@ sur_get <- function(TCGA_cohort, gene) {
   ) %>%
     left_join(cli, by = "sampleID") %>%
     dplyr::filter(sample_type == names(which.max(table(sample_type))), 
-                  !is.na(OS)) %>%
+                  !is.na(OS),
+                  !is.na(OS.time)) %>%
     dplyr::select(sampleID, gene_expression,
       time = OS.time, status = OS,
       gender, age = age_at_initial_pathologic_diagnosis,
