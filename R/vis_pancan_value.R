@@ -35,8 +35,8 @@ vis_toil_gene <- function(data, x = "primary_site",
 #' @return a `ggplot` object
 #' @examples
 #' \donttest{
-#' vis_toil_TvsN(Gene = "TP53", Mode = "Violinplot", Show.P.value = F, Show.P.label = F)
-#' vis_toil_TvsN(Gene = "TP53", Mode = "Boxplot", Show.P.value = F, Show.P.label = F)
+#' p <- vis_toil_TvsN(Gene = "TP53", Mode = "Violinplot", Show.P.value = F, Show.P.label = F)
+#' p <- vis_toil_TvsN(Gene = "TP53", Mode = "Boxplot", Show.P.value = F, Show.P.label = F)
 #' }
 #' @export
 #'
