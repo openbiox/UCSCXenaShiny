@@ -174,6 +174,7 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
     }
     print(p)
   }
+  return(p)
 }
 
 utils::globalVariables(
