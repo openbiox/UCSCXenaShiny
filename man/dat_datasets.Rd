@@ -4,7 +4,9 @@
 \name{dat_datasets}
 \alias{dat_datasets}
 \title{Number of datasets in each cohort}
-\format{A \link{data.frame}}
+\format{
+A \link{data.frame}
+}
 \source{
 Generate from data-raw
 }

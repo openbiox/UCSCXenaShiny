@@ -5,8 +5,13 @@
 \alias{get_pancan_gene_value}
 \title{Fetch identifier value from pan-cancer dataset}
 \usage{
-get_pancan_value(identifier, subtype = NULL, dataset = NULL,
-  host = available_hosts(), samples = NULL)
+get_pancan_value(
+  identifier,
+  subtype = NULL,
+  dataset = NULL,
+  host = available_hosts(),
+  samples = NULL
+)
 
 get_pancan_gene_value(identifier, host = "toilHub")
 }

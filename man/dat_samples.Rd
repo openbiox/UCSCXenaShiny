@@ -4,7 +4,9 @@
 \name{dat_samples}
 \alias{dat_samples}
 \title{Number of samples in each cohort}
-\format{A \link{data.frame}}
+\format{
+A \link{data.frame}
+}
 \source{
 Generate from data-raw
 }

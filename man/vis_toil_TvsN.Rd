@@ -4,9 +4,14 @@
 \alias{vis_toil_TvsN}
 \title{Visualize single gene expression from toil data hub}
 \usage{
-vis_toil_TvsN(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE,
-  Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020",
-  "#DDDF21"))
+vis_toil_TvsN(
+  Gene = "TP53",
+  Mode = "Boxplot",
+  Show.P.value = TRUE,
+  Show.P.label = TRUE,
+  Method = "wilcox.test",
+  values = c("#DF2020", "#DDDF21")
+)
 }
 \arguments{
 \item{Gene}{Gene symbal for comparision}
@@ -29,7 +34,7 @@ Visualize single gene expression from toil data hub
 }
 \examples{
 \donttest{
-vis_toil_TvsN(Gene = "TP53", Mode = "Violinplot", Show.P.value = F, Show.P.label = F)
-vis_toil_TvsN(Gene = "TP53", Mode = "Boxplot", Show.P.value = F, Show.P.label = F)
+p <- vis_toil_TvsN(Gene = "TP53", Mode = "Violinplot", Show.P.value = F, Show.P.label = F)
+p <- vis_toil_TvsN(Gene = "TP53", Mode = "Boxplot", Show.P.value = F, Show.P.label = F)
 }
 }

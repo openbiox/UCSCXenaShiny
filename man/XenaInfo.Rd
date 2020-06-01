@@ -4,7 +4,9 @@
 \name{XenaInfo}
 \alias{XenaInfo}
 \title{Summary info of UCSC Xena}
-\format{A \link{list}}
+\format{
+A \link{list}
+}
 \source{
 Generate from data-raw
 }

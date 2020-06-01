@@ -4,7 +4,9 @@
 \name{tcga_gtex}
 \alias{tcga_gtex}
 \title{Toil Hub: merged TCGA GTEX selected phenotypes}
-\format{A \link{data.frame}}
+\format{
+A \link{data.frame}
+}
 \description{
 Toil Hub: merged TCGA GTEX selected phenotypes
 }

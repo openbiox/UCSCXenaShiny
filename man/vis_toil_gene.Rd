@@ -4,10 +4,19 @@
 \alias{vis_toil_gene}
 \title{Visualize single gene expression from toil data hub}
 \usage{
-vis_toil_gene(data, x = "primary_site", y = "expression",
-  color = "sample_type", palette = "jco", xlab = "Primary site",
-  ylab = "Expression", title = NULL, facet.by = NULL, angle.x = 45,
-  ...)
+vis_toil_gene(
+  data,
+  x = "primary_site",
+  y = "expression",
+  color = "sample_type",
+  palette = "jco",
+  xlab = "Primary site",
+  ylab = "Expression",
+  title = NULL,
+  facet.by = NULL,
+  angle.x = 45,
+  ...
+)
 }
 \arguments{
 \item{data}{a data frame}

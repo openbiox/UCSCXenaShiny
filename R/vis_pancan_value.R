@@ -25,7 +25,6 @@ vis_toil_gene <- function(data, x = "primary_site",
 # Visualize Pan-cancer tpm (Tumor (TCGA) vs normal (GTEX))
 #' Visualize single gene expression from toil data hub
 #' @import ggplot2 dplyr tibble
-#' @inheritParams ggpubr::compare_means
 #' @param Gene Gene symbal for comparision
 #' @param Mode Boxplot or Violinplot to represent data
 #' @param Show.P.value TRUE or FALSE whether to count P value
@@ -48,12 +47,12 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
     t1 <- readRDS(tmpfile)
     if (attr(t1, "gene") != Gene) {
       t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
-      attr(t1, "gene") <- Gene 
+      attr(t1, "gene") <- Gene
       saveRDS(t1, file = tmpfile)
     }
   } else {
     t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
-    attr(t1, "gene") <- Gene 
+    attr(t1, "gene") <- Gene
     saveRDS(t1, file = tmpfile)
   }
   tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
@@ -83,7 +82,8 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
   if (Mode == "Boxplot") {
     p <- ggplot2::ggplot(tcga_gtex_withNormal, aes(tissue, tpm, fill = type2)) +
       ggplot2::geom_boxplot() +
-      ggplot2::xlab(NULL) + ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
+      ggplot2::xlab(NULL) +
+      ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
       ggplot2::theme_set(theme_set(theme_classic(base_size = 20))) +
       ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5)) +
       ggplot2::guides(fill = guide_legend(title = NULL)) +
@@ -123,7 +123,8 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
         na.rm = T,
         position = "identity"
       ) +
-      ggplot2::ylab(paste0(Gene, " expression (TPM)")) + xlab("") +
+      ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
+      xlab("") +
       ggplot2::scale_fill_manual(values = values) +
       ggplot2::theme_set(theme_set(theme_classic(base_size = 20))) +
       ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5)) +

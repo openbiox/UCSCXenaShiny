@@ -4,7 +4,9 @@
 \name{toil_surv}
 \alias{toil_surv}
 \title{Toil Hub: TCGA survival data}
-\format{A \link{data.frame}}
+\format{
+A \link{data.frame}
+}
 \source{
 Generate from data-raw
 }

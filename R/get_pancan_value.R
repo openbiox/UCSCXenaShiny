@@ -35,7 +35,7 @@ available_hosts <- function() {
 #' )
 #' t2 <- get_pancan_gene_value("TP53")
 #' }
-#' 
+#'
 #' @export
 #' @describeIn get_pancan_value Fetch identifier value from pan-cancer dataset
 get_pancan_value <- function(identifier, subtype = NULL, dataset = NULL, host = available_hosts(),

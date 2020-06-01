@@ -4,7 +4,9 @@
 \name{toil_info}
 \alias{toil_info}
 \title{Toil Hub: TCGA TARGET GTEX selected phenotypes}
-\format{A \link{data.frame}}
+\format{
+A \link{data.frame}
+}
 \source{
 Generate from data-raw
 }
