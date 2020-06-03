@@ -1,3 +1,7 @@
+# UCSCXenaShiny 0.5.0
+
+* Supported returning ggplot object.
+
 # UCSCXenaShiny 0.4.1
 
 * Fixed the survival plot error due to recent updates of UCSC Xena, handled by longfei

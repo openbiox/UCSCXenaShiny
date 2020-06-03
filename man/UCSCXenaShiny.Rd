@@ -4,3 +4,6 @@
 \name{UCSCXenaShiny}
 \alias{UCSCXenaShiny}
 \title{Xena Shiny App}
+\description{
+A Shiny App for UCSC Xena Data Hubs.
+}
