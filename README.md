@@ -7,13 +7,6 @@
 status](https://www.r-pkg.org/badges/version/UCSCXenaShiny)](https://cran.r-project.org/package=UCSCXenaShiny)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/UCSCXenaShiny?color=orange)](https://cran.r-project.org/package=UCSCXenaShiny)
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![emoji-log](https://cdn.rawgit.com/ahmadawais/stuff/ca97874/emoji-log/non-flat-round.svg)](https://github.com/ahmadawais/Emoji-Log/)
-[![Travis build
-status](https://travis-ci.org/openbiox/XenaShiny.svg?branch=master)](https://travis-ci.org/openbiox/XenaShiny)
-[![AppVeyor build
-status](https://ci.appveyor.com/api/projects/status/github/openbiox/XenaShiny?branch=master&svg=true)](https://ci.appveyor.com/project/openbiox/XenaShiny)
-[![Coverage
-status](https://codecov.io/gh/openbiox/XenaShiny/branch/master/graph/badge.svg)](https://codecov.io/github/openbiox/XenaShiny?branch=master)
 
 The goal of **UCSCXenaShiny** is to provide a web app for downloading,
 analyzing and visulizing datasets from [UCSC

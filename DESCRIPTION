@@ -36,8 +36,8 @@ Description: Provides a web app for downloading, analyzing and
     UCSC-hosted public databases such as TCGA, ICGC, TARGET, GTEx, CCLE,
     and others.
 License: MIT + file LICENSE
-URL: https://github.com/openbiox/XenaShiny
-BugReports: https://github.com/openbiox/XenaShiny/issues
+URL: https://github.com/openbiox/UCSCXenaShiny
+BugReports: https://github.com/openbiox/UCSCXenaShiny/issues
 Depends: 
     R (>= 3.5)
 Imports: 
