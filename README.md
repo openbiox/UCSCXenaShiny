@@ -47,12 +47,12 @@ app_run()
 
 ## :writing\_hand: Author
 
-  - Shixiang Wang
-  - Yi Xiong
-  - Longfei Zhao
-  - Kai Gu
-  - Yin Li
-  - Fei Zhao
+  - [Shixiang Wang](https://github.com/ShixiangWang)
+  - [Yi Xiong](https://github.com/Byronxy)
+  - [Longfei Zhao](https://github.com/longfei8533)
+  - [Kai Gu](https://github.com/kaigu1990)
+  - [Yin Li](https://github.com/yinlisssss)
+  - [Fei Zhao](https://github.com/fei0810)
 
 ## :page\_with\_curl: LICENSE
 
