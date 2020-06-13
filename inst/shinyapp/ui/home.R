@@ -124,14 +124,14 @@ ui.page_home <- function() {
           )
         )
       ),
-      tags$br(),
-      tags$div(
-        class = "text-center",
-        tags$div(
-          class = "bg-dark text-white",
-          tags$p("The goal of XenaShiny is to provide a web app for downloading, analyzing and visulizing datasets from UCSC Xena, which is a collection of UCSC-hosted public databases such as TCGA, ICGC, TARGET, GTEx, CCLE, and others. Databases are normalized so they can be combined, linked, filtered, explored and downloaded.")
-        )
-      )
+      tags$br()
+      # tags$div(
+      #   class = "text-center",
+      #   tags$div(
+      #     class = "bg-dark text-white",
+      #     tags$p("The goal of XenaShiny is to provide a web app for downloading, analyzing and visualizing datasets from UCSC Xena hubs.")
+      #   )
+      # )
     )
   )
 }
