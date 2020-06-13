@@ -11,3 +11,4 @@
 ^UCSCXenaShiny\.Rcheck$
 ^UCSCXenaShiny.*\.tar\.gz$
 ^UCSCXenaShiny.*\.tgz$
+^modules_apps$

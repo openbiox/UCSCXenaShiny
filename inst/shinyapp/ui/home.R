@@ -14,9 +14,11 @@ ui.page_home <- function() {
               12,
               ui.home_search_box("homepage_pancan_search"),
               tags$h2("Data Portal Summary"),
-              tags$b(paste0("XenaShiny version ", packageVersion("UCSCXenaShiny"))),
+              tags$b(paste0("V", packageVersion("UCSCXenaShiny"),
+                            " based on ",
+                            "UCSCXenaTools v", packageVersion("UCSCXenaTools"))),
               tags$br(),
-              tags$a(href = "https://xenabrowser.net/datapages/", "Data are controled by UCSC Xena"),
+              tags$a(href = "https://xenabrowser.net/datapages/", "Data source"),
               tags$hr(),
               tags$div(
                 class = "card-deck text-center block-center",
@@ -110,14 +112,14 @@ ui.page_home <- function() {
           tags$br(),
           tabsetPanel(
             tabPanel(
-              "Sample Distribution",
+              "Cohort number",
               tags$br(),
               plotly::plotlyOutput("Xenasummary1", height = "100%")
             ),
             tabPanel(
-              "Dataset Distribution",
+              "Dataset number",
               tags$br(),
-              plotly::plotlyOutput("Xenasummary", height = "100%")
+              plotly::plotlyOutput("Xenasummary2", height = "100%")
             )
           )
         )

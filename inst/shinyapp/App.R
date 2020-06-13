@@ -20,15 +20,19 @@ xena_table <- XenaData[, c(
 )]
 xena_table$SampleCount <- as.integer(xena_table$SampleCount)
 colnames(xena_table)[c(1:3)] <- c("Dataset ID", "Hub", "Cohort")
-data("dat_datasets", package = "UCSCXenaShiny", envir = environment())
-data("dat_samples", package = "UCSCXenaShiny", envir = environment())
-data("XenaInfo", package = "UCSCXenaShiny", envir = environment())
-Data_hubs_number <- XenaInfo[["n_hubs"]]
-Cohorts_number <- XenaInfo[["n_cohorts"]]
-Datasets_number <- XenaInfo[["n_datasets"]]
-Samples_number <- XenaInfo[["n_samples"]]
-Primary_sites_number <- XenaInfo[["n_origin"]]
-Data_subtypes_number <- XenaInfo[["n_subtypes"]]
+
+## data summary
+Data_hubs_number <- length(unique(xena_table$Hub))
+Cohorts_number <- length(unique(xena_table$Cohort))
+Datasets_number <- length(unique(xena_table$`Dataset ID`))
+Samples_number <- "~2,000,000"
+Primary_sites_number <- "~37"
+Data_subtypes_number <- "~45"
+Xena_summary <- dplyr::group_by(xena_table, Hub) %>% 
+  dplyr::summarise(
+    n_cohort = length(unique(.data$Cohort)),
+    n_dataset = length(unique(.data$`Dataset ID`))
+  )
 
 # global color
 mycolor <- c(RColorBrewer::brewer.pal(12, "Paired"))
