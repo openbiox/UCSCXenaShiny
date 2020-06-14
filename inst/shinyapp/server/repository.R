@@ -96,30 +96,28 @@ observeEvent(input$req_data, {
   if (length(s)) {
     showModal(
       modalDialog(
-        title = "Submitted database...",
+        title = "Submitted datasets:",
         size = "l",
         DT::DTOutput(
           "table_query"
         ),
-
         hr(),
-
-        actionButton(inputId = "load", label = "Load Data", icon = icon("upload"), style = "margin-bottom: 10px; margin-right: 75px;"),
-        shinyBS::bsPopover("load",
-          title = "Tips",
-          content = "Directly load data into R for analyses provided by modules or pipelines",
-          placement = "bottom", options = list(container = "body")
-        ),
-        downloadButton(outputId = "download", label = "Download Data", icon = icon("download"), style = "margin-bottom: 10px;"),
+        # actionButton(inputId = "load", label = "Load Data", icon = icon("upload"), style = "margin-bottom: 10px; margin-right: 75px;"),
+        # shinyBS::bsPopover("load",
+        #   title = "Tips",
+        #   content = "Directly load data into R for analyses provided by modules or pipelines",
+        #   placement = "bottom", options = list(container = "body")
+        # ),
+        downloadButton(outputId = "download", label = "Download data directly", icon = icon("download"), style = "margin-bottom: 10px;"),
         shinyBS::bsPopover("download",
           title = "Tips",
           content = "Download zipped data to local",
           placement = "bottom", options = list(container = "body")
         ),
-        downloadButton(outputId = "total_url", label = "URLs List", icon = icon("download"), style = "margin-bottom: 10px; margin-left: 75px;"),
+        downloadButton(outputId = "total_url", label = "Batch download in terminal", icon = icon("download"), style = "margin-bottom: 10px; margin-left: 50px;"),
         shinyBS::bsPopover("total_url",
           title = "Tips",
-          content = "Download list of target urls",
+          content = "Download wget commands to download requested datasets.",
           placement = "bottom", options = list(container = "body")
         )
       )
@@ -182,10 +180,16 @@ observeEvent(input$show_met, {
 
 # Download list of urls
 output$total_url <- downloadHandler(
-  filename = "urls.txt",
+  filename = paste0(Sys.Date(), "-commands.sh"),
   contentType = "text/txt",
   content = function(file) {
-    write.table(file = file, paste0("wget ", query_url()$url), row.names = F, col.names = F, quote = F)
+    write.table(file = file, 
+                c(
+                  "#!/usr/bin/env bash",
+                  paste("#Usage: run bash", paste0(Sys.Date(), "-commands.sh"), "in your terminal under a desired directory"),
+                  paste0("wget -c ", query_url()$url)
+                ),
+                row.names = F, col.names = F, quote = F)
   }
 )
 
