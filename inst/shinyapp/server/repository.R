@@ -27,9 +27,10 @@ output$xena_table <- DT::renderDataTable(dataset()[, c(
   "XenaCohorts",
   "SampleCount",
   "DataSubtype",
-  "Label"
+  "Label",
+  "Unit"
 )],
-colnames = c("Dataset", "Hub", "Cohort", "Samples", "Subtype", "Label")
+colnames = c("Dataset", "Hub", "Cohort", "Samples", "Subtype", "Label", "Unit")
 )
 
 # Keep selected database

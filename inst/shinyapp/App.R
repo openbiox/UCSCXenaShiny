@@ -1,4 +1,5 @@
 # Load necessary packages ----------------------------------
+require(magrittr)
 require(dplyr)
 require(ggplot2)
 require(ggpubr)
@@ -16,7 +17,7 @@ require(survminer)
 data("XenaData", package = "UCSCXenaTools", envir = environment())
 xena_table <- XenaData[, c(
   "XenaDatasets", "XenaHostNames", "XenaCohorts",
-  "SampleCount", "DataSubtype", "Label"
+  "SampleCount", "DataSubtype", "Label", "Unit"
 )]
 xena_table$SampleCount <- as.integer(xena_table$SampleCount)
 colnames(xena_table)[c(1:3)] <- c("Dataset ID", "Hub", "Cohort")
