@@ -1,7 +1,7 @@
 # separator is ;
 dataset <- reactive({
   res <- XenaData
-  
+
   if (!is.null(input$hubs_text)) {
     res <- dplyr::filter(res, XenaHostNames %in% input$hubs_text)
   }
@@ -16,7 +16,7 @@ dataset <- reactive({
   if (!is.null(input$type_text)) {
     res <- dplyr::filter(res, Type %in% input$type_text)
   }
-  
+
   return(res)
 })
 
@@ -55,18 +55,21 @@ observe({
   s <- input$xena_table_rows_selected
   if (!is.null(s)) {
     data <- selected_database()
-    
-    output$table <- renderTable({
-      data.frame(
-        ID = 1:length(s),
-        XenaCohorts = data$XenaCohorts,
-        Label = data$Label,
-        URL = unlist(lapply(query_url()$url, function(x) {
-          as.character(tags$a(href = x, x))
-        }))
-      )
-    }, sanitize.text.function = function(x) x)
-    
+
+    output$table <- renderTable(
+      {
+        data.frame(
+          ID = 1:length(s),
+          XenaCohorts = data$XenaCohorts,
+          Label = data$Label,
+          URL = unlist(lapply(query_url()$url, function(x) {
+            as.character(tags$a(href = x, x))
+          }))
+        )
+      },
+      sanitize.text.function = function(x) x
+    )
+
     shinyjs::show("show_data")
   } else {
     shinyjs::hide("show_data")
@@ -98,30 +101,30 @@ observeEvent(input$req_data, {
         DT::DTOutput(
           "table_query"
         ),
-        
+
         hr(),
-        
+
         actionButton(inputId = "load", label = "Load Data", icon = icon("upload"), style = "margin-bottom: 10px; margin-right: 75px;"),
         shinyBS::bsPopover("load",
-                           title = "Tips",
-                           content = "Directly load data into R for analyses provided by modules or pipelines",
-                           placement = "bottom", options = list(container = "body")
+          title = "Tips",
+          content = "Directly load data into R for analyses provided by modules or pipelines",
+          placement = "bottom", options = list(container = "body")
         ),
         downloadButton(outputId = "download", label = "Download Data", icon = icon("download"), style = "margin-bottom: 10px;"),
         shinyBS::bsPopover("download",
-                           title = "Tips",
-                           content = "Download zipped data to local",
-                           placement = "bottom", options = list(container = "body")
+          title = "Tips",
+          content = "Download zipped data to local",
+          placement = "bottom", options = list(container = "body")
         ),
         downloadButton(outputId = "total_url", label = "URLs List", icon = icon("download"), style = "margin-bottom: 10px; margin-left: 75px;"),
         shinyBS::bsPopover("total_url",
-                           title = "Tips",
-                           content = "Download list of target urls",
-                           placement = "bottom", options = list(container = "body")
+          title = "Tips",
+          content = "Download list of target urls",
+          placement = "bottom", options = list(container = "body")
         )
       )
     )
-    
+
     output$table_query <- DT::renderDT(query_url(), options = list(dom = "t", scrollX = TRUE))
   }
 })
@@ -131,43 +134,43 @@ observeEvent(input$show_met, {
   s <- input$xena_table_rows_selected
   if (length(s)) {
     m <- matrix(NA, nrow = length(s), ncol = 11)
-    
+
     j <- 0
     for (i in s) {
       j <- j + 1
       temp <- .p_dataset_metadata(as.character(dataset()[i, "XenaHosts"]), as.character(dataset()[i, "XenaDatasets"]))
-      
+
       title <- temp$longtitle
       dataset_ID <- temp$name
       samples <- temp$count
-      
+
       if (is.na(temp$pmtext)) {
         version <- NA
       } else {
         version <- jsonlite::parse_json(temp$pmtext)$version
       }
-      
+
       cohort <- jsonlite::parse_json(temp$text)$cohort
       type_of_data <- jsonlite::parse_json(temp$text)$dataSubType
-      
+
       pm <- jsonlite::parse_json(temp$text)$probeMap
       ID_Mapping <- ifelse(is.null(pm), NA, file.path(as.character(dataset()[i, "XenaHosts"]), "download", pm))
-      
+
       publication <- jsonlite::parse_json(temp$text)$articletitle
       if (is.null(publication)) publication <- NA
-      
+
       citation <- jsonlite::parse_json(temp$text)$citation
       if (is.null(citation)) citation <- NA
-      
+
       authorChin <- jsonlite::parse_json(temp$text)$dataproducer
       if (is.null(authorChin)) authorChin <- NA
-      
+
       raw_data <- jsonlite::parse_json(temp$text)$url
       if (is.null(raw_data)) raw_data <- NA
-      
+
       m[j, ] <- c(cohort, title, dataset_ID, samples, version, type_of_data, ID_Mapping, publication, citation, authorChin, raw_data)
     }
-    
+
     m <- as.data.frame(m)
     names(m) <- c(
       "Cohort", "Title", "Dataset ID", "Samples", "Version", "Type of data",
@@ -192,9 +195,9 @@ observeEvent(input$load, {
   progress <- shiny::Progress$new()
   on.exit(progress$close())
   progress$set(message = "Begin to download files, Please wait...", value = 0)
-  
+
   UCSCXenaTools::XenaDownload(query_url())
-  
+
   progress$set(message = "Over...", value = 1)
 })
 

@@ -28,7 +28,7 @@ Datasets_number <- length(unique(xena_table$`Dataset ID`))
 Samples_number <- "~2,000,000"
 Primary_sites_number <- "~37"
 Data_subtypes_number <- "~45"
-Xena_summary <- dplyr::group_by(xena_table, Hub) %>% 
+Xena_summary <- dplyr::group_by(xena_table, Hub) %>%
   dplyr::summarise(
     n_cohort = length(unique(.data$Cohort)),
     n_dataset = length(unique(.data$`Dataset ID`))
@@ -53,9 +53,10 @@ sapply(pages_file, function(x, y) source(x, local = y), y = environment())
 
 
 # Obtain path to individual server code parts ----------------------------
-server_file = function(x) {
-  server_path = system.file("shinyapp", "server", 
-                            package = "UCSCXenaShiny", mustWork = TRUE)
+server_file <- function(x) {
+  server_path <- system.file("shinyapp", "server",
+    package = "UCSCXenaShiny", mustWork = TRUE
+  )
   file.path(server_path, x)
 }
 
@@ -85,12 +86,11 @@ ui <- tagList(
 server <- function(input, output, session) {
   message("Shiny app run successfully! Enjoy it!\n")
   message("               --  Xena shiny team\n")
-  
+
   # inst/shinyapp/server
   source(server_file("home.R"), local = TRUE)
   source(server_file("repository.R"), local = TRUE)
   source(server_file("modules.R"), local = TRUE)
-
 }
 
 # Run web app -------------------------------------------------------------

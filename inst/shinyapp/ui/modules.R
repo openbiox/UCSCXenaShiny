@@ -9,10 +9,10 @@ ui.page_modules <- function() {
     tabPanel(
       "Visualization",
       ui.modules_pancan_dist("module_gene_pancan_dist")
-      ),
+    ),
     tabPanel(
       "Survival analysis",
-      ui.modules_sur_plot("modules_sur_plot")   
+      ui.modules_sur_plot("modules_sur_plot")
     )
   )
 }

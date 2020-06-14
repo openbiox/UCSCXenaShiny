@@ -14,9 +14,11 @@ ui.page_home <- function() {
               12,
               ui.home_search_box("homepage_pancan_search"),
               tags$h2("Data Portal Summary"),
-              tags$b(paste0("V", packageVersion("UCSCXenaShiny"),
-                            " based on ",
-                            "UCSCXenaTools v", packageVersion("UCSCXenaTools"))),
+              tags$b(paste0(
+                "V", packageVersion("UCSCXenaShiny"),
+                " based on ",
+                "UCSCXenaTools v", packageVersion("UCSCXenaTools")
+              )),
               tags$br(),
               tags$a(href = "https://xenabrowser.net/datapages/", "Data source"),
               tags$hr(),
