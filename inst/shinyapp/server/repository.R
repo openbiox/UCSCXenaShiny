@@ -132,49 +132,19 @@ observeEvent(input$req_data, {
 observeEvent(input$show_met, {
   s <- input$xena_table_rows_selected
   if (length(s)) {
-    m <- matrix(NA, nrow = length(s), ncol = 11)
+    m <- purrr::map2(dataset()$XenaHosts[s], dataset()$XenaDatasets[s], function(x, y) {
+      temp <- .p_dataset_metadata(x, y)
+      json_data <- jsonlite::parse_json(temp$text)
+      message("Metadata for ", y, " is queried.")
+      json_data <- purrr::map(json_data, ~ifelse(length(.) > 0, paste(., collapse = ","), .))
+      json_data <- tibble::enframe(json_data)
+      json_data$value = unlist(json_data$value)
+      json_data
+    })
+    m <- purrr::reduce(m, dplyr::full_join, by = "name")
+    message("Metadata are loaded!")
+    colnames(m) <- c("Metadata", paste0("dataset", 1:(ncol(m)-1L)))
 
-    j <- 0
-    for (i in s) {
-      j <- j + 1
-      temp <- .p_dataset_metadata(as.character(dataset()[i, "XenaHosts"]), as.character(dataset()[i, "XenaDatasets"]))
-
-      title <- temp$longtitle
-      dataset_ID <- temp$name
-      samples <- temp$count
-
-      if (is.na(temp$pmtext)) {
-        version <- NA
-      } else {
-        version <- jsonlite::parse_json(temp$pmtext)$version
-      }
-
-      cohort <- jsonlite::parse_json(temp$text)$cohort
-      type_of_data <- jsonlite::parse_json(temp$text)$dataSubType
-
-      pm <- jsonlite::parse_json(temp$text)$probeMap
-      ID_Mapping <- ifelse(is.null(pm), NA, file.path(as.character(dataset()[i, "XenaHosts"]), "download", pm))
-
-      publication <- jsonlite::parse_json(temp$text)$articletitle
-      if (is.null(publication)) publication <- NA
-
-      citation <- jsonlite::parse_json(temp$text)$citation
-      if (is.null(citation)) citation <- NA
-
-      authorChin <- jsonlite::parse_json(temp$text)$dataproducer
-      if (is.null(authorChin)) authorChin <- NA
-
-      raw_data <- jsonlite::parse_json(temp$text)$url
-      if (is.null(raw_data)) raw_data <- NA
-
-      m[j, ] <- c(cohort, title, dataset_ID, samples, version, type_of_data, ID_Mapping, publication, citation, authorChin, raw_data)
-    }
-
-    m <- as.data.frame(m)
-    names(m) <- c(
-      "Cohort", "Title", "Dataset ID", "Samples", "Version", "Type of data",
-      "ID/Gene Mapping", "Publication", "Citation", "Data producer", "Raw data"
-    )
   }
   output$detail_info <- DT::renderDT(m, options = list(dom = "t", scrollX = TRUE))
 })
