@@ -32,8 +32,7 @@ Data_subtypes_number <- "~45"
 Xena_summary <- dplyr::group_by(xena_table, Hub) %>%
   dplyr::summarise(
     n_cohort = length(unique(.data$Cohort)),
-    n_dataset = length(unique(.data$`Dataset ID`))
-  )
+    n_dataset = length(unique(.data$`Dataset ID`)), .groups = "drop")
 
 # global color
 mycolor <- c(RColorBrewer::brewer.pal(12, "Paired"))
