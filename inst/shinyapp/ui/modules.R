@@ -2,7 +2,9 @@ ui.page_modules <- function() {
   navbarMenu(
     title = "Modules",
     icon = icon("buromobelexperte"),
-    tabPanel("Import & Export"),
+    tabPanel(
+      "Import & Export",
+      ui.file_upload("module_file_upload", test = TRUE)),
     tabPanel("Data Tidy"),
     tabPanel("General Analysis"),
     tabPanel("Genomic Analysis"),
