@@ -23,7 +23,7 @@ ui.page_repository <- function() {
     
     sidebarLayout(
       sidebarPanel(
-        titlePanel("Dataset Filters"),
+        titlePanel(p("Dataset Filters",style = "font-family: Georgia, serif;font-size: 30px;letter-spacing: 2px;color: #C2C2C2;")),
         fluidPage(
           tags$div(
             id = "hubs_info",
@@ -52,9 +52,11 @@ ui.page_repository <- function() {
             )
             # bsTooltip("hubs_text", "The wait times will be broken into this many equally spaced bins",
             #           "right", options = list(container = "body"))
-          ),
-          
-          tags$div(
+          )
+        )
+        ,
+          fluidPage(
+            tags$div(
             id = "cohorts_info",
             style = "padding: 8px 1px 0px;margin-bottom: 25px;",
             tags$style(type = "text/css", "#cohorts_text {height: 35px;}"),
@@ -66,42 +68,45 @@ ui.page_repository <- function() {
                                content = "Cohort is a dataset set from independent study/site",
                                placement = "right", options = list(container = "body")
             )
-          ),
-          
-          tags$div(
-            id = "type_info",
-            style = "padding: 0px 5px 1px;margin-bottom: 0px;",
-            checkboxGroupInput("type_text", h4("Data Type :", style = "font-size: 1.2em;font-weight: bold;margin-bottom: 5px;margin-top: 0;"),
-                               choiceNames = c(
-                                 "Phenotype", "Feature by sample matrix",
-                                 "Genomic segments", "Mutations"
-                               ),
-                               choiceValues = c("clinicalMatrix", "genomicMatrix", "genomicSegment", "mutationVector")
-            ),
-            shinyBS::bsPopover("type_text",
-                               title = "Tips",
-                               content = "Data type divide datasets into 4 basic categories: Phenotype for clinical or other phenotype data; Feature by sample matrix for gene/probe expression matrix; Genomic segments for copy number records; Mutations for mutation annotations",
-                               placement = "right", options = list(container = "body")
-            )
-          ),
-          
-          tags$div(
-            id = "subtype_info",
-            style = "padding: 8px 1px 0px;margin-bottom: 25px;",
-            tags$style(type = "text/css", "#subtype_text {height: 35px;}"),
-            textInput("subtype_text", h4("Data Subtype :", style = "font-size: 1.2em;font-weight: bold;margin-bottom: 5px;margin-top: 0;"),
-                      width = "80%", placeholder = "e.g. gene expression (separator is ;)", value = NULL
-            ),
-            shinyBS::bsPopover("subtype_text",
-                               title = "Tips",
-                               content = paste0(
-                                 "Available options: ",
-                                 unique(XenaData$DataSubtype) %>% paste(collapse = ";")
-                               ),
-                               placement = "right", options = list(container = "body")
-            )
           )
-        ), width = 3
+          
+          ),
+          fluidPage(
+            tags$div(
+              id = "type_info",
+              style = "padding: 0px 5px 1px;margin-bottom: 0px;",
+              checkboxGroupInput("type_text", h4("Data Type :", style = "font-size: 1.2em;font-weight: bold;margin-bottom: 5px;margin-top: 0;"),
+                                 choiceNames = c(
+                                   "Phenotype", "Feature by sample matrix",
+                                   "Genomic segments", "Mutations"
+                                 ),
+                                 choiceValues = c("clinicalMatrix", "genomicMatrix", "genomicSegment", "mutationVector")
+              ),
+              shinyBS::bsPopover("type_text",
+                                 title = "Tips",
+                                 content = "Data type divide datasets into 4 basic categories: Phenotype for clinical or other phenotype data; Feature by sample matrix for gene/probe expression matrix; Genomic segments for copy number records; Mutations for mutation annotations",
+                                 placement = "right", options = list(container = "body")
+              )
+            )
+          ),
+          fluidPage(
+            tags$div(
+              id = "subtype_info",
+              style = "padding: 8px 1px 0px;margin-bottom: 25px;",
+              tags$style(type = "text/css", "#subtype_text {height: 35px;}"),
+              textInput("subtype_text", h4("Data Subtype :", style = "font-size: 1.2em;font-weight: bold;margin-bottom: 5px;margin-top: 0;"),
+                        width = "80%", placeholder = "e.g. gene expression (separator is ;)", value = NULL
+              ),
+              shinyBS::bsPopover("subtype_text",
+                                 title = "Tips",
+                                 content = paste0(
+                                   "Available options: ",
+                                   unique(XenaData$DataSubtype) %>% paste(collapse = ";")
+                                 ),
+                                 placement = "right", options = list(container = "body")
+              )
+            )
+          ), width = 3
       ),
       mainPanel = mainPanel(
         fluidPage(
