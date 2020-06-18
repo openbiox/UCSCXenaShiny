@@ -17,8 +17,8 @@ ui.modules_pancan_dist <- function(id) {
       materialSwitch(ns("pdist_mode"), "Show violin plot", inline = TRUE),
       materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = TRUE),
       materialSwitch(ns("pdist_show_p_label"), "Show P label", inline = TRUE),
-      colourpicker::colourInput(inputId = "tumor_col", "Tumor sample color", "#DF2020"),
-      colourpicker::colourInput(inputId = "normal_col", "Normal sample color",  "#DDDF21")
+      colourpicker::colourInput(inputId = ns("tumor_col"), "Tumor sample color", "#DF2020"),
+      colourpicker::colourInput(inputId = ns("normal_col"), "Normal sample color",  "#DDDF21")
     ),
     column(
       12,
@@ -35,17 +35,20 @@ ui.modules_pancan_dist <- function(id) {
 }
 
 server.modules_pancan_dist <- function(input, output, session) {
+  
+  colors <- reactive({c(input$tumor_col,input$normal_col)})
+  
   observeEvent(input$Pancan_search, {
     if (nchar(input$Pancan_search) >= 1) {
-      output$colorvalues = reactive({c(input$tumor_col,input$normal_col)
-        })
+      # output$colorvalues = reactive({c(input$tumor_col,input$normal_col)
+      #   })
       output$gene_pancan_dist <- renderPlot({
         vis_toil_TvsN(
           Gene = input$Pancan_search,
           Mode = ifelse(input$pdist_mode, "Violinplot", "Boxplot"),
           Show.P.value = input$pdist_show_p_value,
           Show.P.label = input$pdist_show_p_label,
-          values = reactive({c(input$tumor_col,input$normal_col)})
+          values = colors(),
         )
       })
     }

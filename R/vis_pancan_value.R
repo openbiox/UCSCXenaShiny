@@ -97,7 +97,7 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       p <- p + ggplot2::geom_text(aes(tissue,
         y = max(tcga_gtex_withNormal$tpm) * 1.1,
-        label = pv$p.signif
+        label = p.signif
       ),
       data = pv, inherit.aes = F
       )

@@ -59,7 +59,8 @@ Imports:
     UCSCXenaTools (>= 1.2.2),
     utils,
     zip (>= 2.0.1),
-    shinyalert
+    shinyalert,
+    colourpicker
 Suggests: 
     covr (>= 3.2.1),
     testthat (>= 2.0.1)
