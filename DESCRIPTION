@@ -1,6 +1,6 @@
 Package: UCSCXenaShiny
 Title: A Shiny App for UCSC Xena Database
-Version: 0.5.0
+Version: 0.5.99
 Authors@R: 
     c(person(given = "Shixiang",
              family = "Wang",
@@ -41,6 +41,7 @@ BugReports: https://github.com/openbiox/UCSCXenaShiny/issues
 Depends: 
     R (>= 3.5)
 Imports: 
+    colourpicker,
     dplyr (>= 0.8.3),
     DT (>= 0.5),
     ggplot2 (>= 3.2.0),
@@ -50,6 +51,7 @@ Imports:
     purrr,
     RColorBrewer (>= 1.1.2),
     shiny (>= 1.3.2),
+    shinyalert,
     shinyBS (>= 0.61),
     shinyjs (>= 1.0),
     shinythemes (>= 1.1.2),
@@ -58,9 +60,7 @@ Imports:
     tibble (>= 2.1.3),
     UCSCXenaTools (>= 1.2.2),
     utils,
-    zip (>= 2.0.1),
-    shinyalert,
-    colourpicker
+    zip (>= 2.0.1)
 Suggests: 
     covr (>= 3.2.1),
     testthat (>= 2.0.1)
