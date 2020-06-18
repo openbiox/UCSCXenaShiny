@@ -28,6 +28,10 @@ ui.sg.pancan.analysis <- function(id){
       )
     )
   ),
+  fluidRow(
+    selectInput(inputId = ns("immune_sig"), "Select the immune signature source", selected = "Cibersort",
+                choices= c("Yasin","Wolf","Attractors","ICR","c7atoms","Bindea","Cibersort"))
+  ),
   ##heatmap: correlation between gene and immune signatures
   fluidRow(
     column(
@@ -35,6 +39,9 @@ ui.sg.pancan.analysis <- function(id){
       plotOutput(ns("hm_gene_immune_cor")
       )
     )
+  ),
+  fluidRow(
+    
   )
   )
  )
@@ -61,7 +68,8 @@ server.sg.pancan.analysis <- function(input, output, session) {
      
      output$hm_gene_immune_cor <- renderPlot({
        vis_gene_immune_cor(
-         Gene = input$Pancan_search
+         Gene = input$Pancan_search,
+         Immune_sig_type = input$immune_sig
        )
      })
      
