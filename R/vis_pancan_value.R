@@ -31,6 +31,7 @@ vis_toil_gene <- function(data, x = "primary_site",
 #' @param Method default method is wilcox.test
 #' @param Show.P.label TRUE or FALSE present p value with number or label '* ** *** ****'
 #' @param values the color to fill tumor or normal
+#' @param TCGA.only include samples only from TCGA dataset
 #' @return a `ggplot` object
 #' @examples
 #' \donttest{
@@ -39,7 +40,7 @@ vis_toil_gene <- function(data, x = "primary_site",
 #' }
 #' @export
 #'
-vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21")) {
+vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE) {
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
   dir.create(file.path(tempdir(), "UCSCXenaShiny"), recursive = TRUE, showWarnings = FALSE)
   tmpfile <- file.path(tempdir(), "UCSCXenaShiny", "toil_TvsN.rds")
@@ -67,8 +68,12 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
   tcga_gtex <- t2 %>% dplyr::select("tpm", "tissue", "type2", "sample")
   tcga_gtex$type2 <- factor(tcga_gtex$type2, levels = c("tumor", "normal"))
   tcga_gtex_withNormal <- tcga_gtex[!(tcga_gtex$tissue %in% withoutNormal), ]
+  tcga_gtex_withNormal <- tcga_gtex_withNormal %>% dplyr::mutate(dataset = ifelse(stringr::str_sub(sample,1,4) == "TCGA","TCGA","GTEX"))
   tcga_gtex_MESO <- tcga_gtex[tcga_gtex$tissue == "MESO", ]
   tcga_gtex_UVM <- tcga_gtex[tcga_gtex$tissue == "UVM", ]
+  if (TCGA.only == TRUE) {
+    tcga_gtex_withNormal = tcga_gtex_withNormal %>% dplyr::filter(dataset == "TCGA")
+  }
   if (Show.P.value == FALSE) {
     Show.P.label <- FALSE
   }
