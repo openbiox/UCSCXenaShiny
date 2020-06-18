@@ -27,6 +27,14 @@ ui.sg.pancan.analysis <- function(id){
       plotOutput(ns("unicox_gene_tree")
       )
     )
+  ),
+  ##heatmap: correlation between gene and immune signatures
+  fluidRow(
+    column(
+      12,
+      plotOutput(ns("hm_gene_immune_cor")
+      )
+    )
   )
   )
  )
@@ -44,11 +52,19 @@ server.sg.pancan.analysis <- function(input, output, session) {
           Show.P.label = TRUE
         )
       })
+      
      output$unicox_gene_tree <- renderPlot({
        vis_unicox_tree(
          Gene = input$Pancan_search
        )
      })
+     
+     output$hm_gene_immune_cor <- renderPlot({
+       vis_gene_immune_cor(
+         Gene = input$Pancan_search
+       )
+     })
+     
     }
   })
 }
