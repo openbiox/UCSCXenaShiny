@@ -234,8 +234,8 @@ vis_unicox_tree <- function(Gene = "TP53"){
   return(p)
 }
 
-#’ heatmap visualization (correlation between immune signature and gene)
-#' cibersort and gene expression
+#’ heatmap visualization (correlation between immune signatures and gene)
+#' 
 vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman",Immune_sig_type = "Cibersort"){
   data("immune_sig")
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
@@ -299,5 +299,96 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman",Immune_si
 }
 
 
+#' visualize TMB and gene
+#' 
+#' 
+vis_gene_tmb_cor <- function(Gene = "TP53", Cor_method = "spearman"){
+  data("tmb_data")
+  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
+  t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
+  s <- data.frame(sample = names(t1), values = t1)
+  ss <- s %>% 
+    dplyr::inner_join(tmb_data, by = c("sample" = "Tumor_Sample_ID")) %>%
+    dplyr::inner_join(tcga_gtex[,c("tissue","sample")], by = "sample")
+  sss <- split(ss,ss$tissue)
+  tissues <- names(sss)
+  
+  cor_gene_tmb <- purrr::map(tissues,safely(function(cancer){
+    #cancer = "ACC"
+    sss_can <- sss[[cancer]]
+    dd  <- cor.test(sss_can$values,sss_can$Non_silent_per_Mb,type=Cor_method)
+    ddd <- data.frame(gene = Gene,cor=dd$estimate,p.value=dd$p.value,stringsAsFactors = F)
+    ddd$cancer = cancer
+    return(ddd)
+  })) %>% set_names(tissues)
+  
+  cor_gene_tmb <- cor_gene_tmb %>% 
+    map(~.x$result) %>%
+    compact
+  cor_gene_tmb_df <- do.call(rbind.data.frame,cor_gene_tmb)
+  data <- cor_gene_tmb_df
+  data$pstar <- ifelse(data$p.value < 0.05,
+                       ifelse(data$p.value < 0.01,"**","*"),
+                       "")
+  
+  p <- ggplot(data, aes(cancer, gene)) + 
+    geom_tile(aes(fill = cor), colour = "white",size=1)+
+    scale_fill_gradient2(low = "#2b8cbe",mid = "white",high = "#e41a1c")+
+    geom_text(aes(label=pstar),col ="black",size = 5)+
+    theme_minimal()+# 不要背景
+    theme(axis.title.x=element_blank(),#不要title
+          axis.ticks.x=element_blank(),#不要x轴
+          axis.title.y=element_blank(),#不要y轴
+          axis.text.x = element_text(angle = 45, hjust = 1),# 调整x轴文字
+          axis.text.y = element_text(size = 8))+#调整y轴文字
+    #调整legen
+    labs(fill =paste0(" * p < 0.05","\n\n","** p < 0.01","\n\n","Correlation"))
+  print(p)
+  return(p)
+}
 
-
+#' visualize gene and stemness
+vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman"){
+  data("stemness_data_RNA")
+  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
+  t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
+  s <- data.frame(sample = names(t1), values = t1)
+  ss <- s %>% 
+    dplyr::inner_join(stemness_data_RNA, by = c("sample")) %>%
+    dplyr::inner_join(tcga_gtex[,c("tissue","sample")], by = "sample")
+  sss <- split(ss,ss$tissue)
+  tissues <- names(sss)
+  
+  cor_gene_stemness <- purrr::map(tissues,safely(function(cancer){
+    #cancer = "ACC"
+    sss_can <- sss[[cancer]]
+    dd  <- cor.test(sss_can$values,sss_can$RNAss,type=Cor_method)
+    ddd <- data.frame(gene = Gene,cor=dd$estimate,p.value=dd$p.value,stringsAsFactors = F)
+    ddd$cancer = cancer
+    return(ddd)
+  })) %>% set_names(tissues)
+  
+  cor_gene_stemness <- cor_gene_stemness %>% 
+    map(~.x$result) %>%
+    compact
+  cor_gene_stemness_df <- do.call(rbind.data.frame,cor_gene_stemness)
+  data <- cor_gene_stemness_df
+  data$pstar <- ifelse(data$p.value < 0.05,
+                       ifelse(data$p.value < 0.01,"**","*"),
+                       "")
+  
+  p <- ggplot(data, aes(cancer, gene)) + 
+    geom_tile(aes(fill = cor), colour = "white",size=1)+
+    scale_fill_gradient2(low = "#2b8cbe",mid = "white",high = "#e41a1c")+
+    geom_text(aes(label=pstar),col ="black",size = 5)+
+    theme_minimal()+# 不要背景
+    theme(axis.title.x=element_blank(),#不要title
+          axis.ticks.x=element_blank(),#不要x轴
+          axis.title.y=element_blank(),#不要y轴
+          axis.text.x = element_text(angle = 45, hjust = 1),# 调整x轴文字
+          axis.text.y = element_text(size = 8))+#调整y轴文字
+    #调整legen
+    labs(fill =paste0(" * p < 0.05","\n\n","** p < 0.01","\n\n","Correlation"))
+  print(p)
+  return(p)
+}
