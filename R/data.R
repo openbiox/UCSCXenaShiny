@@ -70,7 +70,6 @@ NULL
 #' immune_sig = immune_sig %>% tibble::column_to_rownames("V1")
 #' }
 
-
 #' TCGA: TMB (tumor mutation burden)
 #' @docType data
 #' @name  tmb_data
@@ -85,7 +84,6 @@ NULL
 #' names(tmb_data)[c(4,5)] <- c("Silent_per_Mb","Non_silent_per_Mb")
 #' }
 #' 
-
 
 #' TCGA: Stemness
 #' @docType data
@@ -103,7 +101,6 @@ NULL
 #   tibble::rownames_to_column(var = "sample") %>%
 #   dplyr::mutate(sample = stringr::str_replace_all(sample,"\\.","-"))
 #' }
-
 
 #' TCGA: purity and ploidy data
 #' @docType data
@@ -132,8 +129,6 @@ NULL
 #'    dplyr::mutate(sample = stringr::str_sub(sample, 1, 15))
 #' }
 
-
-
 #' TCGA: purity data
 #' @docType data
 #' @name  purity_data
@@ -150,5 +145,3 @@ NULL
 #'  dplyr::rename(sample = "Sample ID",cancer_type = "Cancer type") %>%
 #'  dplyr::mutate(sample = stringr::str_sub(sample,1,15))
 #' }
-#' 
-#' 
