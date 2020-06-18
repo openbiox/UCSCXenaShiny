@@ -188,3 +188,49 @@ utils::globalVariables(
     "p.adj"
   )
 )
+
+#' Visualize single gene uni-cox result
+#' 
+vis_unicox_tree <- function(Gene = "TP53"){
+  data("toil_surv")
+  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
+  
+  t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
+  s <- data.frame(sample = names(t1), values = t1)
+  ##we use median cutoff here
+  ss <- s %>% 
+    dplyr::inner_join(toil_surv, by = "sample") %>%
+    dplyr::inner_join(tcga_gtex[,c("tissue","sample")], by = "sample")
+  
+  require(ezcox)
+  require(purrr)
+  sss <- split(ss,ss$tissue)
+  tissues <- names(sss)
+  unicox_res_all_cancers <- purrr::map(tissues,safely(function(cancer){
+    #cancer = "ACC"
+    sss_can <- sss[[cancer]]
+    sss_can = sss_can %>%
+      dplyr::mutate(group = ifelse(values>median(values),'high','low')) %>%
+      dplyr::mutate(group = factor(group,levels = c("low","high")))
+    
+    unicox_res_genes <- ezcox(sss_can, 
+                              covariates = "values",
+                              time = "OS.time", 
+                              status = "OS",
+                              verbose = F)
+    unicox_res_genes$cancer = cancer
+    return(unicox_res_genes)
+  })) %>% set_names(tissues)
+  
+  unicox_res_all_cancers <- unicox_res_all_cancers %>% 
+    map(~.x$result) %>%
+    compact
+  unicox_res_all_cancers_df <- do.call(rbind.data.frame,unicox_res_all_cancers)
+  ##visualization
+  p <- ggplot(data = unicox_res_all_cancers_df,
+         aes(x = cancer,y = HR, ymin = lower_95, ymax = upper_95))+
+    geom_pointrange()+
+    coord_flip()
+  return(p)
+}
+

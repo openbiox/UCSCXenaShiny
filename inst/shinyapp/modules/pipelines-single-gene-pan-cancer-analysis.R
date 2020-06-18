@@ -2,6 +2,7 @@ ui.sg.pancan.analysis <- function(id){
   ns <- NS(id)
   fluidPage(
     titlePanel("Single gene pan-cancer transcriptome analysis"),
+    ##input gene 
     fluidRow(
       shinyWidgets::searchInput(
         inputId = ns("Pancan_search"),
@@ -12,11 +13,20 @@ ui.sg.pancan.analysis <- function(id){
         width = "40%"
     )
   ),
+  ##pancan distribution
   fluidRow(
     column(
       12,
       plotOutput(ns("gene_pancan_dist")
       )
+  ),
+  ##uni-cox survival analysis
+  fluidRow(
+    column(
+      12,
+      plotOutput(ns("unicox_gene_tree")
+      )
+    )
   )
   )
  )
@@ -34,6 +44,11 @@ server.sg.pancan.analysis <- function(input, output, session) {
           Show.P.label = TRUE
         )
       })
+     output$unicox_gene_tree <- renderPlot({
+       vis_unicox_tree(
+         Gene = input$Pancan_search
+       )
+     })
     }
   })
 }
