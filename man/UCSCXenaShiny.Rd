@@ -5,5 +5,5 @@
 \alias{UCSCXenaShiny}
 \title{Xena Shiny App}
 \description{
-A Shiny App for UCSC Xena Data Hubs.
+A Shiny App for UCSC Xena Data Hubs. See \url{https://github.com/openbiox/UCSCXenaShiny} for details.
 }
