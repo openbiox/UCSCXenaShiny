@@ -1,4 +1,7 @@
 # Load necessary packages ----------------------------------
+
+
+
 require(magrittr)
 require(dplyr)
 require(ggplot2)
@@ -91,6 +94,7 @@ server <- function(input, output, session) {
   source(server_file("home.R"), local = TRUE)
   source(server_file("repository.R"), local = TRUE)
   source(server_file("modules.R"), local = TRUE)
+  source(server_file("pipelines.R"), local = TRUE)
 }
 
 # Run web app -------------------------------------------------------------
