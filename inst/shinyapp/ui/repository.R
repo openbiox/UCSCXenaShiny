@@ -23,7 +23,7 @@ ui.page_repository <- function() {
     
     sidebarLayout(
       sidebarPanel(
-        titlePanel(p("Dataset Filters",style = "font-size: 30px;letter-spacing: 2px;color: #C2C2C2;")),
+        h1("Dataset Filters",style = ";margin-top: 0px;font-size: 30px;letter-spacing: 2px;color: #C2C2C2;"),
         fluidPage(
           tags$div(
             id = "hubs_info",
