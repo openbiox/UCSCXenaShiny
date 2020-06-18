@@ -23,7 +23,7 @@ ui.page_repository <- function() {
     
     sidebarLayout(
       sidebarPanel(
-        titlePanel(p("Dataset Filters",style = "font-family: Georgia, serif;font-size: 30px;letter-spacing: 2px;color: #C2C2C2;")),
+        titlePanel(p("Dataset Filters",style = "font-size: 30px;letter-spacing: 2px;color: #C2C2C2;")),
         fluidPage(
           tags$div(
             id = "hubs_info",
@@ -110,8 +110,21 @@ ui.page_repository <- function() {
       ),
       mainPanel = mainPanel(
         fluidPage(
+          tags$div(
+            # style = "padding: 0px 5px 1px;border: 1px solid #EEE;border-radius: 3px;margin-bottom: 20px;",
+            style = "padding: 0px 5px 1px;margin-bottom: 25px;",
+            actionButton(inputId = "use_repository", 
+                         label = "How to use repository",
+                         icon = icon("question-circle"))
+          )
+          
+        )
+        ,
+        fluidPage(
+          
           DT::dataTableOutput("xena_table"),
           hr(),
+          useShinyalert(),  # Set up shinyalert
           actionButton(inputId = "show_met", label = "Show Metadata", icon = icon("database"), style = "margin-bottom: 10px; margin-left: 25px;"),
           actionButton(inputId = "req_data", label = "Request Data", icon = icon("file"), style = "margin-bottom: 10px; margin-left: 75px;"),
           

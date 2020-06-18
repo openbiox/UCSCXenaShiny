@@ -197,3 +197,15 @@ output$download <- downloadHandler(
     file.remove(paste0(tempdir(), "/target_database.zip"))
   }
 )
+
+# Show alert info when select rows from table
+observeEvent(input$use_repository,{
+  # Show a modal when the button is pressed
+  shinyalert(
+    title = "Hello",
+    text = "You can select Dataset in the left side and select Rows from tables. Note: Selection need download info from url, please to patient",
+    type = "info",
+    timer = 0,
+    confirmButtonCol = "#202324"
+  )
+})
