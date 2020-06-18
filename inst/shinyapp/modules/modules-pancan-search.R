@@ -1,6 +1,11 @@
+
+themes <- list("Light" = theme_light(),
+               "Minimal" = theme_minimal(),
+               "Classic" = theme_classic(),
+               "Gray" = theme_gray())
+
 ui.modules_pancan_dist <- function(id) {
   ns <- NS(id)
-
   fluidPage(
     titlePanel("Module: gene pancan expression distribution"),
     fluidRow(
@@ -17,8 +22,10 @@ ui.modules_pancan_dist <- function(id) {
       materialSwitch(ns("pdist_mode"), "Show violin plot", inline = TRUE),
       materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = TRUE),
       materialSwitch(ns("pdist_show_p_label"), "Show P label", inline = TRUE),
+      materialSwitch(ns("pdist_dataset"), "TCGA Dataset only", inline = FALSE),
       colourpicker::colourInput(inputId = ns("tumor_col"), "Tumor sample color", "#DF2020"),
-      colourpicker::colourInput(inputId = ns("normal_col"), "Normal sample color",  "#DDDF21")
+      colourpicker::colourInput(inputId = ns("normal_col"), "Normal sample color",  "#DDDF21"),
+      selectInput(inputId = ns("theme"), label = h4("Select theme for plot"), choices = names(themes), selected = "Light")
     ),
     column(
       12,
@@ -37,7 +44,7 @@ ui.modules_pancan_dist <- function(id) {
 server.modules_pancan_dist <- function(input, output, session) {
   
   colors <- reactive({c(input$tumor_col,input$normal_col)})
-  
+  plot_theme <- reactive({themes[[input$theme]]})
   observeEvent(input$Pancan_search, {
     if (nchar(input$Pancan_search) >= 1) {
       # output$colorvalues = reactive({c(input$tumor_col,input$normal_col)
@@ -48,8 +55,9 @@ server.modules_pancan_dist <- function(input, output, session) {
           Mode = ifelse(input$pdist_mode, "Violinplot", "Boxplot"),
           Show.P.value = input$pdist_show_p_value,
           Show.P.label = input$pdist_show_p_label,
+          TCGA.only = input$pdist_dataset,
           values = colors(),
-        )
+        ) + plot_theme()
       })
     }
   })
