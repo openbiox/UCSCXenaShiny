@@ -202,8 +202,11 @@ output$download <- downloadHandler(
 observeEvent(input$use_repository,{
   # Show a modal when the button is pressed
   shinyalert(
-    title = "Hello",
-    text = "You can select Dataset in the left side and select Rows from tables. Note: Selection need download info from url, please to patient",
+    title = "Repository Usage",
+    text = paste("Firstly, filter dataset table based on left filters or right search bar.", 
+                 "Secondly, select datasets by clicking corresponding rows in dataset table.",
+                 "Lastly, click the button under the dataset table to check metadata or download datasets.",
+                 sep = "\n"),
     type = "info",
     timer = 0,
     confirmButtonCol = "#202324"
