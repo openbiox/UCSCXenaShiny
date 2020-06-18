@@ -38,9 +38,9 @@ Xena_summary <- dplyr::group_by(xena_table, Hub) %>%
     n_dataset = length(unique(.data$`Dataset ID`)), .groups = "drop")
 
 # global color
-mycolor <- c(RColorBrewer::brewer.pal(12, "Paired"))
+mycolor <- c(RColorBrewer::brewer.pal(12, "Set3"))
 # need at least 140 colors for summary plot
-mycolor <- rep(mycolor, 15)
+#mycolor <- rep(mycolor, 15)
 
 
 # Put modules here --------------------------------------------------------

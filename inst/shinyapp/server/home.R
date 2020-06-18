@@ -3,7 +3,7 @@ callModule(server.home_search_box, "homepage_pancan_search")
 output$Xenasummary1 <- plotly::renderPlotly({
   p <- Xena_summary %>%
     ggplot(aes(x = Hub, y = n_cohort, fill = Hub)) +
-    ggplot2::geom_bar(stat = "identity", width = 0.8, color = "black") +
+    ggplot2::geom_bar(stat = "identity", width = 0.8) +
     ggplot2::coord_flip() +
     ggplot2::labs(x = NULL, y = NULL) +
     ggplot2::theme_bw(base_size = 15) + # 去除背景色
@@ -19,7 +19,7 @@ output$Xenasummary1 <- plotly::renderPlotly({
 output$Xenasummary2 <- plotly::renderPlotly({
   p <- Xena_summary %>%
     ggplot(aes(x = Hub, y = n_dataset, fill = Hub)) +
-    ggplot2::geom_bar(stat = "identity", width = 0.8, color = "black") +
+    ggplot2::geom_bar(stat = "identity", width = 0.8) +
     ggplot2::coord_flip() +
     ggplot2::labs(x = NULL, y = NULL) +
     ggplot2::theme_bw(base_size = 15) + # 去除背景色
