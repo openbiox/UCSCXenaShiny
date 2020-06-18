@@ -234,3 +234,70 @@ vis_unicox_tree <- function(Gene = "TP53"){
   return(p)
 }
 
+#’ heatmap visualization (correlation between immune signature and gene)
+#' cibersort and gene expression
+vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman",Immune_sig_type = "Cibersort"){
+  data("immune_sig")
+  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
+  immune_sig = immune_sig %>%
+    tidyr::pivot_longer(3:ncol(.),names_to = "sample",values_to = "score") %>%
+    dplyr::mutate(sample = str_sub(sample,1,15))
+  
+  t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
+  s <- data.frame(sample = names(t1), values = t1)
+  
+  ss <- s %>% 
+    dplyr::inner_join(immune_sig, by = "sample") %>%
+    dplyr::inner_join(tcga_gtex[,c("tissue","sample")], by = "sample")
+  
+  sss <- split(ss,ss$tissue)
+  tissues <- names(sss)
+  cor_gene_immune <- purrr::map(tissues,safely(function(cancer){
+    #cancer = "ACC"
+    sss_can <- sss[[cancer]]
+    ##filter cibersort data here
+    sss_can_class <- sss_can %>% filter(Source == Immune_sig_type) 
+    cells <- unique(sss_can_class$SetName)
+    cor_res_class_can <- purrr::map(cells,safely(function(i){
+      #i = cells[1]
+      dd = sss_can_class[sss_can_class$SetName == i,]
+      dd  <- cor.test(dd$values,dd$score,type=Cor_method)
+      ddd <- data.frame(gene = Gene,immune_cells= i,cor=dd$estimate,p.value=dd$p.value,stringsAsFactors = F)
+      return(ddd)
+    })) %>% set_names(cells)
+    cor_res_class_can <- cor_res_class_can %>% 
+      map(~.x$result) %>%
+      compact
+    cor_res_class_can_df <- do.call(rbind.data.frame,cor_res_class_can)
+    cor_res_class_can_df$cancer = cancer
+    return(cor_res_class_can_df)
+  })) %>% set_names(tissues)
+  
+  cor_gene_immune <- cor_gene_immune %>% 
+    map(~.x$result) %>%
+    compact
+  cor_gene_immune_df <- do.call(rbind.data.frame,cor_gene_immune)
+  data <- cor_gene_immune_df
+  data$pstar <- ifelse(data$p.value < 0.05,
+                       ifelse(data$p.value < 0.01,"**","*"),
+                       "")
+  
+  p <- ggplot(data, aes(cancer, immune_cells)) + 
+    geom_tile(aes(fill = cor), colour = "white",size=1)+
+    scale_fill_gradient2(low = "#2b8cbe",mid = "white",high = "#e41a1c")+
+    geom_text(aes(label=pstar),col ="black",size = 5)+
+    theme_minimal()+# 不要背景
+    theme(axis.title.x=element_blank(),#不要title
+          axis.ticks.x=element_blank(),#不要x轴
+          axis.title.y=element_blank(),#不要y轴
+          axis.text.x = element_text(angle = 45, hjust = 1),# 调整x轴文字
+          axis.text.y = element_text(size = 8))+#调整y轴文字
+    #调整legen
+    labs(fill =paste0(" * p < 0.05","\n\n","** p < 0.01","\n\n","Correlation"))
+  print(p)
+  return(p)
+}
+
+
+
+
