@@ -10,7 +10,8 @@ vis_toil_TvsN(
   Show.P.value = TRUE,
   Show.P.label = TRUE,
   Method = "wilcox.test",
-  values = c("#DF2020", "#DDDF21")
+  values = c("#DF2020", "#DDDF21"),
+  TCGA.only = FALSE
 )
 }
 \arguments{
@@ -18,13 +19,15 @@ vis_toil_TvsN(
 
 \item{Mode}{Boxplot or Violinplot to represent data}
 
-\item{Show.P.value}{TRUE or FALSE whether to count P value}
+\item{Show.P.value}{\code{TRUE} or \code{FALSE} whether to count P value}
 
-\item{Show.P.label}{TRUE or FALSE present p value with number or label '* ** *** ****'}
+\item{Show.P.label}{\code{TRUE} or \code{FALSE} present p value with number or label \code{*}, \verb{**}, \verb{***} and \verb{****}}
 
 \item{Method}{default method is wilcox.test}
 
 \item{values}{the color to fill tumor or normal}
+
+\item{TCGA.only}{include samples only from TCGA dataset}
 }
 \value{
 a \code{ggplot} object
@@ -34,7 +37,7 @@ Visualize single gene expression from toil data hub
 }
 \examples{
 \donttest{
-p <- vis_toil_TvsN(Gene = "TP53", Mode = "Violinplot", Show.P.value = F, Show.P.label = F)
-p <- vis_toil_TvsN(Gene = "TP53", Mode = "Boxplot", Show.P.value = F, Show.P.label = F)
+p <- vis_toil_TvsN(Gene = "TP53", Mode = "Violinplot", Show.P.value = FALSE, Show.P.label = FALSE)
+p <- vis_toil_TvsN(Gene = "TP53", Mode = "Boxplot", Show.P.value = FALSE, Show.P.label = FALSE)
 }
 }

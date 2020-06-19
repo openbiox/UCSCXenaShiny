@@ -6,6 +6,17 @@
 \usage{
 vis_unicox_tree(Gene = "TP53")
 }
+\arguments{
+\item{Gene}{Gene symbal for comparision}
+}
+\value{
+a \code{ggplot} object
+}
 \description{
 Visualize single gene uni-cox result
+}
+\examples{
+\donttest{
+p <- vis_unicox_tree(Gene = "TP53")
+}
 }
