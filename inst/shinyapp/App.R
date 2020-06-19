@@ -16,6 +16,7 @@ require(shinyWidgets)
 require(survival)
 require(survminer)
 require(shinyalert)
+require(shinyFiles)
 # Put data here -----------------------------------------------------------
 data("XenaData", package = "UCSCXenaTools", envir = environment())
 xena_table <- XenaData[, c(
