@@ -65,7 +65,8 @@ Imports:
     tidyr,
     UCSCXenaTools (>= 1.2.2),
     utils,
-    zip (>= 2.0.1)
+    zip (>= 2.0.1),
+    fs
 Suggests: 
     covr (>= 3.2.1),
     testthat (>= 2.0.1)
