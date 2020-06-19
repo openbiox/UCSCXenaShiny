@@ -111,11 +111,6 @@ observeEvent(input$req_data, {
         # ),
         # downloadButton(outputId = "download", label = "Download data directly", icon = icon("download"), style = "margin-bottom: 10px;"),
         shinyDirButton(id = "download", label = "Download data directly", title = "Please select a folder", icon = icon("download"), style = "margin-bottom: 10px;"),
-        shinyBS::bsPopover("download",
-          title = "Tips",
-          content = "Download zipped data to local",
-          placement = "bottom", options = list(container = "body")
-        ),
         downloadButton(outputId = "total_url", label = "Batch download in terminal", icon = icon("download"), style = "margin-bottom: 10px; margin-left: 50px;"),
         shinyBS::bsPopover("total_url",
           title = "Tips",
@@ -178,10 +173,10 @@ output$total_url <- downloadHandler(
 # })
 
 # Prepare request data by XenaPrepare function
-request_data <- eventReactive(input$load, {
-  xe_download <- UCSCXenaTools::XenaDownload(query_url())
-  return(UCSCXenaTools::XenaPrepare(xe_download))
-})
+# request_data <- eventReactive(input$load, {
+#   xe_download <- UCSCXenaTools::XenaDownload(query_url(), download_probeMap = TRUE, trans_slash = TRUE)
+#   return(UCSCXenaTools::XenaPrepare(xe_download))
+# })
 
 # observeEvent(input$load, {
 #   print(request_data())
@@ -204,7 +199,8 @@ observeEvent(input$download, {
   if (is.integer(input$download)) {
     print("No directory has been selected.")
   } else {
-    UCSCXenaTools::XenaDownload(query_url(), destdir = parseDirPath(volumes, input$download))
+    UCSCXenaTools::XenaDownload(query_url(), destdir = parseDirPath(volumes, input$download),
+                                download_probeMap = TRUE, trans_slash = TRUE)
   }
 })
 
