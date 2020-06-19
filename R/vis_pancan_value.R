@@ -206,9 +206,6 @@ vis_unicox_tree <- function(Gene = "TP53"){
   ss <- s %>% 
     dplyr::inner_join(toil_surv, by = "sample") %>%
     dplyr::inner_join(tcga_gtex[,c("tissue","sample")], by = "sample")
-  
-  require(ezcox)
-  require(purrr)
   sss <- split(ss,ss$tissue)
   tissues <- names(sss)
   unicox_res_all_cancers <- purrr::map(tissues,safely(function(cancer){
@@ -218,7 +215,7 @@ vis_unicox_tree <- function(Gene = "TP53"){
       dplyr::mutate(group = ifelse(values>median(values),'high','low')) %>%
       dplyr::mutate(group = factor(group,levels = c("low","high")))
     
-    unicox_res_genes <- ezcox(sss_can, 
+    unicox_res_genes <- ezcox::ezcox(sss_can, 
                               covariates = "values",
                               time = "OS.time", 
                               status = "OS",
