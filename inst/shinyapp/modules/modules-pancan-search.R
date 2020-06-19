@@ -74,7 +74,7 @@ server.modules_pancan_dist <- function(input, output, session) {
           Show.P.label = input$pdist_show_p_label,
           TCGA.only = input$pdist_dataset,
           values = colors(),
-        ) + plot_theme()
+        ) + plot_theme() + ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5))
       })
     }
   })
