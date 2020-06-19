@@ -23,28 +23,20 @@ ui.sg.pancan.analysis <- function(id){
   ##uni-cox survival analysis
   fluidRow(
     column(
-      12,
+      6,
       plotOutput(ns("unicox_gene_tree")
       )
-    )
-  ),
-  fluidRow(
-    selectInput(inputId = ns("immune_sig"), "Select the immune signature source", selected = "Cibersort",
-                choices= c("Yasin","Wolf","Attractors","ICR","c7atoms","Bindea","Cibersort"))
-  ),
-  ##heatmap: correlation between gene and immune signatures
-  fluidRow(
+    ),
     column(
-      12,
-      plotOutput(ns("hm_gene_immune_cor")
+      6,
+      ##heatmap: correlation between gene and immune signatures
+      selectInput(inputId = ns("immune_sig"), "Select the immune signature source", selected = "Cibersort",
+                  choices= c("Yasin","Wolf","Attractors","ICR","c7atoms","Bindea","Cibersort")),
+      plotOutput(ns("hm_gene_immune_cor"))
       )
-    )
-  ),
-  fluidRow(
-    
-  )
   )
  )
+)
 }
 
 server.sg.pancan.analysis <- function(input, output, session) {

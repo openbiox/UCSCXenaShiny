@@ -12,3 +12,4 @@
 ^UCSCXenaShiny.*\.tar\.gz$
 ^UCSCXenaShiny.*\.tgz$
 ^modules_apps$
+^docs$
