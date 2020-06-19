@@ -109,7 +109,8 @@ observeEvent(input$req_data, {
         #   content = "Directly load data into R for analyses provided by modules or pipelines",
         #   placement = "bottom", options = list(container = "body")
         # ),
-        downloadButton(outputId = "download", label = "Download data directly", icon = icon("download"), style = "margin-bottom: 10px;"),
+        # downloadButton(outputId = "download", label = "Download data directly", icon = icon("download"), style = "margin-bottom: 10px;"),
+        shinyDirButton(id = "download", label = "Download data directly", title = "Please select a folder", icon = icon("download"), style = "margin-bottom: 10px;"),
         shinyBS::bsPopover("download",
           title = "Tips",
           content = "Download zipped data to local",
@@ -166,15 +167,15 @@ output$total_url <- downloadHandler(
 
 
 # Download request data by XenaDownload function
-observeEvent(input$load, {
-  progress <- shiny::Progress$new()
-  on.exit(progress$close())
-  progress$set(message = "Begin to download files, Please wait...", value = 0)
-
-  UCSCXenaTools::XenaDownload(query_url())
-
-  progress$set(message = "Over...", value = 1)
-})
+# observeEvent(input$load, {
+#   progress <- shiny::Progress$new()
+#   on.exit(progress$close())
+#   progress$set(message = "Begin to download files, Please wait...", value = 0)
+# 
+#   UCSCXenaTools::XenaDownload(query_url())
+# 
+#   progress$set(message = "Over...", value = 1)
+# })
 
 # Prepare request data by XenaPrepare function
 request_data <- eventReactive(input$load, {
@@ -187,16 +188,25 @@ request_data <- eventReactive(input$load, {
 # })
 
 # Download buttom of request data with zip compress
-output$download <- downloadHandler(
-  filename = "database.zip",
-  contentType = "application/zip",
-  content = function(file) {
-    xe_download <- UCSCXenaTools::XenaDownload(query_url())
-    zip::zipr(zipfile = paste0(tempdir(), "/target_database.zip"), files = xe_download$destfiles, recurse = F)
-    file.copy(paste0(tempdir(), "/target_database.zip"), file)
-    file.remove(paste0(tempdir(), "/target_database.zip"))
+# output$download <- downloadHandler(
+#   filename = "database.zip",
+#   contentType = "application/zip",
+#   content = function(file) {
+#     xe_download <- UCSCXenaTools::XenaDownload(query_url())
+#     zip::zipr(zipfile = paste0(tempdir(), "/target_database.zip"), files = xe_download$destfiles, recurse = F)
+#     file.copy(paste0(tempdir(), "/target_database.zip"), file)
+#     file.remove(paste0(tempdir(), "/target_database.zip"))
+#   }
+# )
+volumes <- c(home = fs::path_home(), root = "/")
+shinyDirChoose(input, "download", roots = volumes, session = session)
+observeEvent(input$download, {
+  if (is.integer(input$download)) {
+    print("No directory has been selected.")
+  } else {
+    UCSCXenaTools::XenaDownload(query_url(), destdir = parseDirPath(volumes, input$download))
   }
-)
+})
 
 # Show alert info when select rows from table
 observeEvent(input$use_repository,{
