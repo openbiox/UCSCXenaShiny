@@ -1,7 +1,7 @@
 # Load necessary packages ----------------------------------
-
-
-
+require(purrr)
+require(tidyr)
+require(stringr)
 require(magrittr)
 require(dplyr)
 require(ggplot2)
@@ -16,6 +16,7 @@ require(shinyWidgets)
 require(survival)
 require(survminer)
 require(shinyalert)
+require(shinyFiles)
 # Put data here -----------------------------------------------------------
 data("XenaData", package = "UCSCXenaTools", envir = environment())
 xena_table <- XenaData[, c(
