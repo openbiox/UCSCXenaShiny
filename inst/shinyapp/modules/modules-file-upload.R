@@ -41,7 +41,7 @@ ui.file_upload <- function(id, test = FALSE) {
   
   if (test) {
     fluidPage(
-      titlePanel("Uploading Files"),
+      titlePanel("Module: Upload File (here for testing only)"),
       sidebarLayout(
         sidebarPanel = sidebarPanel(
           wPanel

@@ -7,7 +7,7 @@ themes <- list("Light" = theme_light(),
 ui.modules_pancan_dist <- function(id) {
   ns <- NS(id)
   fluidPage(
-    titlePanel("Module: gene pancan expression distribution"),
+    titlePanel("Module: Gene Pancan Expression Distribution"),
     fluidRow(
       tags$div(
         style = "margin-left: 30px;",
