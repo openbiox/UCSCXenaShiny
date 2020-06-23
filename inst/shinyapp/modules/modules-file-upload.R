@@ -36,7 +36,7 @@ ui.file_upload <- function(id, test = FALSE) {
     radioButtons(ns("disp"), "Display",
                  choices = c(Head = "head",
                              All = "all"),
-                 selected = "head"),
+                 selected = "head")
   )
   
   if (test) {
