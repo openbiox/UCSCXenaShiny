@@ -52,11 +52,14 @@ query_url <- reactive({
 })
 
 # Show download url for selected database
+w <- waiter::Waiter$new(id = "table", html = waiter::spin_wobblebar(), color = "white")
 observe({
   s <- input$xena_table_rows_selected
   if (!is.null(s)) {
     data <- selected_database()
-
+    
+    w$show() # Waiter add-ins
+    Sys.sleep(3)
     output$table <- renderTable(
       {
         data.frame(
@@ -178,10 +181,6 @@ output$total_url <- downloadHandler(
 #   return(UCSCXenaTools::XenaPrepare(xe_download))
 # })
 
-# observeEvent(input$load, {
-#   print(request_data())
-# })
-
 # Download buttom of request data with zip compress
 # output$download <- downloadHandler(
 #   filename = "database.zip",
@@ -199,8 +198,12 @@ observeEvent(input$download, {
   if (is.integer(input$download)) {
     print("No directory has been selected.")
   } else {
+    progress <- shiny::Progress$new()
+    on.exit(progress$close())
+    progress$set(message = "Begin to download files, Please wait...", value = 0)
     UCSCXenaTools::XenaDownload(query_url(), destdir = parseDirPath(volumes, input$download),
                                 download_probeMap = TRUE, trans_slash = TRUE)
+    progress$set(message = "Over...", value = 1)
   }
 })
 
@@ -218,3 +221,5 @@ observeEvent(input$use_repository,{
     confirmButtonCol = "#202324"
   )
 })
+
+

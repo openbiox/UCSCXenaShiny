@@ -19,6 +19,7 @@ require(shinyalert)
 require(shinyFiles)
 require(ezcox)
 require(purrr)
+require(waiter)
 
 # Put data here -----------------------------------------------------------
 data("XenaData", package = "UCSCXenaTools", envir = environment())
@@ -73,6 +74,7 @@ server_file <- function(x) {
 ui <- tagList(
   tags$head(tags$title("XenaShiny")),
   shinyjs::useShinyjs(),
+  use_waiter(),
   navbarPage(
     title = div(
       img(src = "xena_shiny-logo_white.png", height = 49.6, style = "margin:-20px -15px -15px -15px")

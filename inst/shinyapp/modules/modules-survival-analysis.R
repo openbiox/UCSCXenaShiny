@@ -27,7 +27,7 @@ ui.modules_sur_plot <- function(id) {
         h4("NOTEs:"),
         h5("1. Not all dataset have clinical/pathological stages, so, in this case, the stage option is disabled."),
         h5("2. The default option <Auto> will return the best p value, if you do not want to do so please choose <Custom>."),
-        tags$a(href = "https://tcga.xenahubs.net", "Data source from TCGA hub"),
+        tags$a(href = "https://tcga.xenahubs.net", "Data source from TCGA hub")
       )),
       column(3, wellPanel(
         conditionalPanel(
