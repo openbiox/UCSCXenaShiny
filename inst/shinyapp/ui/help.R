@@ -8,7 +8,15 @@ ui.page_help <- function() {
         includeMarkdown(system.file("NEWS.md", package = "UCSCXenaShiny", mustWork = TRUE))
       )
     ),
-    tabPanel("Usages"),
-    tabPanel("Term List")
+    tabPanel(
+      "Usages",
+      fluidPage(
+        includeMarkdown(system.file("shinyapp/shiny-doc", "usage.md", package = "UCSCXenaShiny", mustWork = TRUE))
+      )),
+    tabPanel(
+      "Term List",
+      fluidPage(
+        includeMarkdown(system.file("shinyapp/shiny-doc", "terms.md", package = "UCSCXenaShiny", mustWork = TRUE))
+      ))
   )
 }

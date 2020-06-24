@@ -41,33 +41,23 @@ BugReports: https://github.com/openbiox/UCSCXenaShiny/issues
 Depends: 
     R (>= 3.5)
 Imports: 
-    colourpicker,
     dplyr (>= 0.8.3),
     DT (>= 0.5),
     ezcox,
     ggplot2 (>= 3.2.0),
     ggpubr (>= 0.2),
     magrittr (>= 1.5),
-    plotly (>= 4.9.0),
+    pacman,
     purrr,
     RColorBrewer (>= 1.1.2),
     shiny (>= 1.3.2),
-    shinyalert,
-    shinyBS (>= 0.61),
-    shinyFiles,
-    shinyjs (>= 1.0),
-    shinythemes (>= 1.1.2),
-    shinyWidgets (>= 0.4.8),
     stats,
     stringr,
     survminer,
     tibble (>= 2.1.3),
     tidyr,
-    UCSCXenaTools (>= 1.2.2),
-    utils,
-    zip (>= 2.0.1),
-    fs,
-    waiter
+    UCSCXenaTools,
+    utils
 Suggests: 
     covr (>= 3.2.1),
     testthat (>= 2.0.1)
