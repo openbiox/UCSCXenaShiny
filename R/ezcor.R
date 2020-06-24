@@ -18,19 +18,7 @@
 #' @return a `data.frame`
 #' @author Yi Xiong
 #' @export
-#' @examples
-#' data("exprSet", package = "ezcor", envir = environment())
-#' g1 <- colnames(exprSet)[3]
-#' g2 <- colnames(exprSet)[4]
-#' res <- ezcor::ezcor(data= exprSet,
-#'                    split = TRUE,
-#'                    split_var = "tissue",
-#'                    var1 = g1,
-#'                    var2 = g2,
-#'                    cor_method = "spearman",
-#'                    adjust_method = "none",
-#'                    sig_label = TRUE,
-#'                    verbose = TRUE)
+
 
 ezcor <- function(data = NULL,
                   split = FALSE,
@@ -172,23 +160,6 @@ ezcor <- function(data = NULL,
 #' @return a `data.frame`
 #' @author Yi Xiong, Shixiang Wang
 #' @export
-#'
-#' @examples
-#' data("exprSet", package = "ezcor", envir = environment())
-#' target_variable = colnames(exprSet)[3]
-#' genelist <- colnames(exprSet)
-#' genelist <-  setdiff(genelist,c("patient","tissue",target_variable))
-#' res <- ezcor::ezcor_batch(data = exprSet,
-#'                           var1 = target_variable,
-#'                           var2 = genelist,
-#'                           split = TRUE,
-#'                           split_var = "tissue",
-#'                           cor_method = "pearson",
-#'                           adjust_method = "none",
-#'                           use = "complete",
-#'                           sig_label = TRUE,
-#'                           parallel = FALSE,
-#'                           verbose = TRUE)
 
 ezcor_batch <- function(data,
                         var1,
