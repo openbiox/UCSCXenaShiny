@@ -44,20 +44,6 @@ a \code{data.frame}
 \description{
 Run correlation between two variables and support group by a variable
 }
-\examples{
-data("exprSet", package = "ezcor", envir = environment())
-g1 <- colnames(exprSet)[3]
-g2 <- colnames(exprSet)[4]
-res <- ezcor::ezcor(data= exprSet,
-                   split = TRUE,
-                   split_var = "tissue",
-                   var1 = g1,
-                   var2 = g2,
-                   cor_method = "spearman",
-                   adjust_method = "none",
-                   sig_label = TRUE,
-                   verbose = TRUE)
-}
 \author{
 Yi Xiong
 }

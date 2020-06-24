@@ -48,23 +48,6 @@ a \code{data.frame}
 \description{
 Run correlation between two variables in a batch mode and support group by a variable
 }
-\examples{
-data("exprSet", package = "ezcor", envir = environment())
-target_variable = colnames(exprSet)[3]
-genelist <- colnames(exprSet)
-genelist <-  setdiff(genelist,c("patient","tissue",target_variable))
-res <- ezcor::ezcor_batch(data = exprSet,
-                          var1 = target_variable,
-                          var2 = genelist,
-                          split = TRUE,
-                          split_var = "tissue",
-                          cor_method = "pearson",
-                          adjust_method = "none",
-                          use = "complete",
-                          sig_label = TRUE,
-                          parallel = FALSE,
-                          verbose = TRUE)
-}
 \author{
 Yi Xiong, Shixiang Wang
 }
