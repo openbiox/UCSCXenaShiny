@@ -1,5 +1,5 @@
 # separator is ;
-dataset <- reactive({
+dataset <- eventReactive(input$hubs_text,{
   res <- XenaData
   
   if (!is.null(input$hubs_text)) {
