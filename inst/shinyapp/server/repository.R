@@ -55,24 +55,34 @@ query_url <- reactive({
 w <- waiter::Waiter$new(id = "table", html = waiter::spin_wobblebar(), color = "white")
 observe({
   s <- input$xena_table_rows_selected
-  if (!is.null(s)) {
+  
+  if (length(s) > 0) {
     data <- selected_database()
     
     w$show() # Waiter add-ins
-    Sys.sleep(3)
-    output$table <- renderTable(
-      {
-        data.frame(
-          ID = 1:length(s),
-          XenaCohorts = data$XenaCohorts,
-          Label = data$Label,
-          URL = unlist(lapply(query_url()$url, function(x) {
-            as.character(tags$a(href = x, x))
-          }))
-        )
-      },
-      sanitize.text.function = function(x) x
-    )
+    urls <- unlist(lapply(query_url()$url, function(x) {
+      as.character(tags$a(href = x, x))
+    }))
+    Sys.sleep(1)
+    
+    if (length(urls) > 0) {
+      output$table <- renderTable(
+        {
+          tryCatch(
+            data.frame(
+              ID = seq_along(s),
+              XenaCohorts = data$XenaCohorts,
+              Label = data$Label,
+              URL = urls
+            ),
+            error = function(e) {
+              message("Error comes from data.frame construction.")
+            }
+          )
+        },
+        sanitize.text.function = function(x) x
+      ) 
+    }
 
     shinyjs::show("show_data")
   } else {
