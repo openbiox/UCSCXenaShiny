@@ -1,25 +1,30 @@
 # Load necessary packages ----------------------------------
-require(purrr)
-require(tidyr)
-require(stringr)
-require(magrittr)
-require(dplyr)
-require(ggplot2)
-require(ggpubr)
-require(plotly)
-require(UCSCXenaTools)
-require(UCSCXenaShiny)
-require(shiny)
-require(shinyBS)
-require(shinyjs)
-require(shinyWidgets)
-require(survival)
-require(survminer)
-require(shinyalert)
-require(shinyFiles)
-require(ezcox)
-require(purrr)
-require(waiter)
+library(pacman)
+pacman::p_load(
+    purrr,
+    tidyr,
+    stringr,
+    magrittr,
+    dplyr,
+    ggplot2,
+    ggpubr,
+    plotly,
+    UCSCXenaTools,
+    UCSCXenaShiny,
+    shiny,
+    shinyBS,
+    shinyjs,
+    shinyWidgets,
+    shinyalert,
+    shinyFiles,
+    survival,
+    survminer,
+    ezcox,
+    waiter,
+    colourpicker,
+    DT,
+    fs
+)
 
 # Put data here -----------------------------------------------------------
 data("XenaData", package = "UCSCXenaTools", envir = environment())
@@ -43,10 +48,7 @@ Xena_summary <- dplyr::group_by(xena_table, Hub) %>%
     n_dataset = length(unique(.data$`Dataset ID`)), .groups = "drop")
 
 # global color
-mycolor <- c(RColorBrewer::brewer.pal(12, "Set3"))
-# need at least 140 colors for summary plot
-#mycolor <- rep(mycolor, 15)
-
+mycolor <- c(RColorBrewer::brewer.pal(12, "Paired"))
 
 # Put modules here --------------------------------------------------------
 modules_path <- system.file("shinyapp", "modules", package = "UCSCXenaShiny", mustWork = TRUE)
