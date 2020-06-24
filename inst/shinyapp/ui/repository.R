@@ -125,6 +125,7 @@ ui.page_repository <- function() {
           DT::dataTableOutput("xena_table"),
           hr(),
           useShinyalert(),  # Set up shinyalert
+          #use_waiter(),
           actionButton(inputId = "show_met", label = "Show Metadata", icon = icon("database"), style = "margin-bottom: 10px; margin-left: 25px;"),
           actionButton(inputId = "req_data", label = "Request Data", icon = icon("file"), style = "margin-bottom: 10px; margin-left: 75px;"),
           
