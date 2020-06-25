@@ -24,9 +24,9 @@ ezcor(
 
 \item{split_var}{a \code{character}, the group variable}
 
-\item{var1}{a `character, the first variable in correlation}
+\item{var1}{a character, the first variable in correlation}
 
-\item{var2}{a `character, the second variable in correlation}
+\item{var2}{a character, the second variable in correlation}
 
 \item{cor_method}{method="pearson" is the default value. The alternatives to be passed to cor are "spearman" and "kendall"}
 
@@ -34,7 +34,7 @@ ezcor(
 
 \item{use}{use="pairwise" will do pairwise deletion of cases. use="complete" will select just complete cases}
 
-\item{sig_label}{whether add symbal of significance. P < 0.001,"\emph{\strong{"; P < 0.01,"}"; P < 0.05,"}"; P >=0.05,""}
+\item{sig_label}{whether add symbal of significance. P < 0.001,\verb{***}; P < 0.01,\verb{**}; P < 0.05,\code{*}; P >=0.05,""}
 
 \item{verbose}{if \code{TRUE}, print extra info.}
 }

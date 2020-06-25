@@ -48,8 +48,8 @@ Imports:
     ggpubr (>= 0.2),
     magrittr (>= 1.5),
     pacman,
-    purrr,
     psych,
+    purrr,
     RColorBrewer (>= 1.1.2),
     shiny (>= 1.3.2),
     stats,
@@ -61,6 +61,8 @@ Imports:
     utils
 Suggests: 
     covr (>= 3.2.1),
+    furrr,
+    future,
     testthat (>= 2.0.1)
 Encoding: UTF-8
 LazyData: true

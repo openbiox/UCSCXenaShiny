@@ -3,23 +3,16 @@
 #' @param data a `data.frame` containing variables
 #' @param split whether perform correlation grouped by a variable, default is 'FALSE'
 #' @param split_var a `character`, the group variable
-#' @param var1 a `character, the first variable in correlation
-#' @param var2 a `character, the second variable in correlation
+#' @param var1 a character, the first variable in correlation
+#' @param var2 a character, the second variable in correlation
 #' @param cor_method method="pearson" is the default value. The alternatives to be passed to cor are "spearman" and "kendall"
 #' @param adjust_method What adjustment for multiple tests should be used? ("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none")
 #' @param use	use="pairwise" will do pairwise deletion of cases. use="complete" will select just complete cases
-#' @param sig_label whether add symbal of significance. P < 0.001,"***"; P < 0.01,"**"; P < 0.05,"*"; P >=0.05,""
+#' @param sig_label whether add symbal of significance. P < 0.001,`***`; P < 0.01,`**`; P < 0.05,`*`; P >=0.05,""
 #' @param verbose if `TRUE`, print extra info.
-
-#' @import psych
-#' @import purrr
-#' @importFrom purrr set_names
-#'
 #' @return a `data.frame`
 #' @author Yi Xiong
 #' @export
-
-
 ezcor <- function(data = NULL,
                   split = FALSE,
                   split_var = NULL,
@@ -138,25 +131,8 @@ ezcor <- function(data = NULL,
 }
 
 #' Run correlation between two variables in a batch mode and support group by a variable
-#'
-#' @param data a `data.frame` containing variables
-#' @param split whether perform correlation grouped by a variable, default is 'FALSE'
-#' @param split_var a `character`, the group variable
-#' @param var1 a `character`, the first variable in correlation
-#' @param var2 a `vector` containing variables in a batch mode
-#' @param cor_method method="pearson" is the default value. The alternatives to be passed to cor are "spearman" and "kendall"
-#' @param adjust_method What adjustment for multiple tests should be used? ("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none")
-#' @param sig_label whether add symbal of significance. P < 0.001,"***"; P < 0.01,"\\**"; P < 0.05,"*"; P >=0.05,""
-#' @param use	use="pairwise" will do pairwise deletion of cases. use="complete" will select just complete cases
+#' @inheritParams ezcor
 #' @param parallel if `TRUE`, do parallel computation by **furrr** package.
-#' @param verbose if `TRUE`, print extra info. If `parallel` is `TRUE`,
-#' set `verbose` to `FALSE` may speed up.
-#'
-#' @import dplyr
-#' @import psych
-#' @import purrr
-#' @importFrom purrr set_names
-#'
 #' @return a `data.frame`
 #' @author Yi Xiong, Shixiang Wang
 #' @export
@@ -190,7 +166,7 @@ ezcor_batch <- function(data,
       stop("split variable is unavailable in the dataset!")
     }
     all_cols <- unique(c(var1, var2, split_var))
-    #ss <- data
+
     ss <- ss[, all_cols]
     if (parallel) {
       if (!requireNamespace("furrr")) {
@@ -201,9 +177,6 @@ ezcor_batch <- function(data,
           message("Warning: variable < 200, parallel computation is not recommended!")
       }
 
-      if (!requireNamespace("furrr")) {
-        stop("Please install 'furrr' package firstly!")
-      }
       oplan <- future::plan()
       future::plan("multiprocess")
       on.exit(future::plan(oplan), add = TRUE)

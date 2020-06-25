@@ -21,9 +21,9 @@ ezcor_batch(
 \arguments{
 \item{data}{a \code{data.frame} containing variables}
 
-\item{var1}{a \code{character}, the first variable in correlation}
+\item{var1}{a character, the first variable in correlation}
 
-\item{var2}{a \code{vector} containing variables in a batch mode}
+\item{var2}{a character, the second variable in correlation}
 
 \item{split}{whether perform correlation grouped by a variable, default is 'FALSE'}
 
@@ -35,12 +35,11 @@ ezcor_batch(
 
 \item{use}{use="pairwise" will do pairwise deletion of cases. use="complete" will select just complete cases}
 
-\item{sig_label}{whether add symbal of significance. P < 0.001,"\emph{\strong{"; P < 0.01,"\\}"; P < 0.05,"}"; P >=0.05,""}
+\item{sig_label}{whether add symbal of significance. P < 0.001,\verb{***}; P < 0.01,\verb{**}; P < 0.05,\code{*}; P >=0.05,""}
 
 \item{parallel}{if \code{TRUE}, do parallel computation by \strong{furrr} package.}
 
-\item{verbose}{if \code{TRUE}, print extra info. If \code{parallel} is \code{TRUE},
-set \code{verbose} to \code{FALSE} may speed up.}
+\item{verbose}{if \code{TRUE}, print extra info.}
 }
 \value{
 a \code{data.frame}
