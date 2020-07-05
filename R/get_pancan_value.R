@@ -89,7 +89,7 @@ try_query_value = function(host, dataset,
     },
     error = function(e) {
       if (max_try == 1) {
-        stop("Tried ", MAX_TRY, " times but failed, please check URL or your internet connection or try it latter!")
+        stop("Tried ", MAX_TRY, " times but failed, please check URL or your internet connection or try it later!")
       } else {
         try_query_value(host, dataset,
                         identifiers, samples,
