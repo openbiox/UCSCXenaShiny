@@ -12,6 +12,13 @@ toil_surv <- XenaGenerate(subset = XenaDatasets == "TCGA_survival_data") %>%
   XenaPrepare() %>%
   as.data.frame()
 
+#-------------gene expression-------------------------
+get_expresion_value <- function(Gene = "TP53"){
+  t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
+  return(t1)
+}
+t1 <- get_expresion_value(Gene = "TP53")
+
 #-------------immune sig data--------------------------
 #access date: 2020-06-14
 #from https://gdc.cancer.gov/about-data/publications/panimmune
@@ -65,3 +72,4 @@ usethis::use_data(tmb_data, overwrite = TRUE)
 usethis::use_data(stemness_data_RNA, overwrite = TRUE)
 usethis::use_data(gi_data, overwrite = TRUE)
 usethis::use_data(purity_data, overwrite = TRUE)
+usethis::use_data(t1, overwrite = TRUE)
