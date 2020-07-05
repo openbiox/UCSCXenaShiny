@@ -63,13 +63,41 @@ get_pancan_value <- function(identifier, subtype = NULL, dataset = NULL, host = 
     stop("No dataset or more than one dataset is determined by input")
   }
 
-  res <- UCSCXenaTools::fetch_dense_values(data[["XenaHosts"]], data[["XenaDatasets"]],
+  MAX_TRY <- 5L
+  res <- try_query_value(data[["XenaHosts"]], data[["XenaDatasets"]],
     identifiers = identifier, samples = samples,
-    check = FALSE, use_probeMap = TRUE
+    check = FALSE, use_probeMap = TRUE,
+    max_try = MAX_TRY
   )
   res2 <- res[1, ]
   names(res2) <- colnames(res)
   res2
+}
+
+## try solving internet connection problem
+try_query_value = function(host, dataset,
+                           identifiers, samples,
+                           check = FALSE, use_probeMap = TRUE,
+                           max_try = 5L) {
+  Sys.sleep(0.1)
+  tryCatch(
+    {
+      message("Try querying data #", abs(max_try - (MAX_TRY + 1L)))
+      UCSCXenaTools::fetch_dense_values(host, dataset,
+                                        identifiers = identifiers, samples = samples,
+                                        check = check, use_probeMap = use_probeMap)
+    },
+    error = function(e) {
+      if (max_try == 1) {
+        stop("Tried ", MAX_TRY, " times but failed, please check URL or your internet connection or try it latter!")
+      } else {
+        try_query_value(host, dataset,
+                        identifiers, samples,
+                        check = check, use_probeMap = use_probeMap,
+                        max_try = max_try - 1L)
+      }
+    }
+  )
 }
 
 #' @describeIn get_pancan_value Fetch gene expression value from pan-cancer dataset
