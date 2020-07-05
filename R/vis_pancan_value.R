@@ -201,12 +201,25 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
 #' p <- vis_unicox_tree(Gene = "TP53")
 #' }
 #' @export
-vis_unicox_tree <- function(Gene = "TP53") {
+vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5) {
   ## 写在 R 内的数据集需要更严格的引用方式
   data("toil_surv", package = "UCSCXenaShiny", envir = environment())
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
-
-  t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
+  dir.create(file.path(tempdir(), "UCSCXenaShiny"), recursive = TRUE, showWarnings = FALSE)
+  tmpfile <- file.path(tempdir(), "UCSCXenaShiny", "toil_TvsN.rds")
+  if (file.exists(tmpfile)) {
+    t1 <- readRDS(tmpfile)
+    if (attr(t1, "gene") != Gene) {
+      t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
+      attr(t1, "gene") <- Gene
+      saveRDS(t1, file = tmpfile)
+    }
+  } else {
+    t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
+    attr(t1, "gene") <- Gene
+    saveRDS(t1, file = tmpfile)
+  }
+  # t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
   s <- data.frame(sample = names(t1), values = t1)
   ## we use median cutoff here
   ss <- s %>%
@@ -217,17 +230,57 @@ vis_unicox_tree <- function(Gene = "TP53") {
   unicox_res_all_cancers <- purrr::map(tissues, purrr::safely(function(cancer) {
     # cancer = "ACC"
     sss_can <- sss[[cancer]]
-    sss_can <- sss_can %>%
-      dplyr::mutate(group = ifelse(.data$values > stats::median(.data$values), "high", "low")) %>%
-      dplyr::mutate(group = factor(.data$group, levels = c("low", "high")))
-
+    if (threshold == 0.5) {
+      sss_can <- sss_can %>%
+        dplyr::mutate(group = ifelse(.data$values > stats::median(.data$values), "high", "low")) %>%
+        dplyr::mutate(group = factor(.data$group, levels = c("low", "high")))
+    }
+    
+    if (threshold == 0.25) {
+      sss_can <- sss_can %>%
+        dplyr::mutate(group = ifelse(.data$values > stats::quantile(.data$values)[4], "high", 
+                                     ifelse(.data$values < stats::quantile(.data$values)[2], "low"))) %>%
+        dplyr::mutate(group = factor(.data$group, levels = c("low", "high")))
+    }
+    
+    if (measure == "OS") {
     unicox_res_genes <- ezcox::ezcox(sss_can,
       covariates = "values",
       time = "OS.time",
       status = "OS",
       verbose = FALSE
     )
+    }
+    
+    if (measure == "PFI") {
+      unicox_res_genes <- ezcox::ezcox(sss_can,
+                                       covariates = "values",
+                                       time = "PFI.time",
+                                       status = "PFI",
+                                       verbose = FALSE
+      )
+    }
+    
+    if (measure == "DSS") {
+      unicox_res_genes <- ezcox::ezcox(sss_can,
+                                       covariates = "values",
+                                       time = "DSS.time",
+                                       status = "DSS",
+                                       verbose = FALSE
+      )
+    }
+    
+    if (measure == "DFI") {
+      unicox_res_genes <- ezcox::ezcox(sss_can,
+                                       covariates = "values",
+                                       time = "DFI.time",
+                                       status = "DFI",
+                                       verbose = FALSE
+      )
+    }
+    
     unicox_res_genes$cancer <- cancer
+    unicox_res_genes$measure <- measure
     return(unicox_res_genes)
   })) %>% magrittr::set_names(tissues)
 
@@ -235,13 +288,20 @@ vis_unicox_tree <- function(Gene = "TP53") {
     purrr::map(~ .x$result) %>%
     purrr::compact()
   unicox_res_all_cancers_df <- do.call(rbind.data.frame, unicox_res_all_cancers)
+  unicox_res_all_cancers_df <- unicox_res_all_cancers_df %>%
+    dplyr::mutate(HR_log = log(HR)) %>%
+    dplyr::mutate(lower_95_log = log(lower_95)) %>%
+    dplyr::mutate(upper_95_log = log(upper_95)) %>%
+    dplyr::mutate(Type = ifelse(p.value < 0.05 & HR_log > 0,"Risky",ifelse(p.value < 0.05 & HR_log < 0,"Protective","NS")))
   ## visualization
   p <- ggplot2::ggplot(
     data = unicox_res_all_cancers_df,
-    aes_string(x = "cancer", y = "HR", ymin = "lower_95", ymax = "upper_95")
+    aes_string(x = "cancer", y = "HR_log", ymin = "lower_95_log", ymax = "upper_95_log", color = "Type")
   ) +
+    ggplot2::theme_bw() +
     ggplot2::geom_pointrange() +
-    ggplot2::coord_flip()
+    ggplot2::coord_flip() +
+    ggplot2::labs(x = "Cancer", y = "log Hazard Ratio")
   return(p)
 }
 
