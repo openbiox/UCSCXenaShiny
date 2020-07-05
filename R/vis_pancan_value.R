@@ -305,6 +305,112 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5) {
   return(p)
 }
 
+#' Visualize single gene expression in anatomy location
+#'
+#' @inheritParams vis_pancan_anatomy
+#' @return a `ggplot` object
+#' @export
+
+vis_pancan_anatomy <- function(Gene = "TP53", Gender = "Female"){
+  if (!requireNamespace("gganatogram")) {
+    stop("Please install 'gganatogram' package firstly!")
+  }
+  require(gganatogram) ##devtools::install_github("jespermaag/gganatogram")
+  #data("t1", package = "UCSCXenaShiny", envir = environment())
+  data("TCGA.organ", package = "UCSCXenaShiny", envir = environment())
+  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
+  tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
+  dir.create(file.path(tempdir(), "UCSCXenaShiny"), recursive = TRUE, showWarnings = FALSE)
+  tmpfile <- file.path(tempdir(), "UCSCXenaShiny", "toil_TvsN.rds")
+  if (file.exists(tmpfile)) {
+    t1 <- readRDS(tmpfile)
+    if (attr(t1, "gene") != Gene) {
+      t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
+      attr(t1, "gene") <- Gene
+      saveRDS(t1, file = tmpfile)
+    }
+  } else {
+    t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
+    attr(t1, "gene") <- Gene
+    saveRDS(t1, file = tmpfile)
+  }
+  
+  t2 <- t1 %>%
+    as.data.frame() %>%
+    dplyr::rename("tpm" = ".") %>%
+    tibble::rownames_to_column(var = "sample") %>%
+    dplyr::inner_join(tcga_gtex, by = "sample")
+  t2 <- t2 %>% 
+    dplyr::left_join(TCGA.organ,by = c("tissue" = "TCGA")) %>%
+    mutate(group = paste(tissue, type2, sep = "_"))
+  #Male
+  Male_input <- t2 %>%
+    dplyr::full_join(hgMale_key, by = "organ") %>%
+    dplyr::filter(organ != "") %>%
+    dplyr::group_by(group) %>%
+    dplyr::summarise(tpmMedian = median(tpm),
+                     tissue = tissue,
+                     type.x = type.x,
+                     type = type2,
+                     organ = organ,
+                     color = colour) %>%
+    dplyr::ungroup() %>%
+    dplyr::distinct() %>%
+    dplyr::filter(complete.cases(.)) %>%
+    dplyr::mutate(value = tpmMedian)
+  #Female
+  Female_input <- t2 %>%
+    dplyr::full_join(hgFemale_key, by = "organ") %>%
+    dplyr::filter(organ != "") %>%
+    dplyr::group_by(group) %>%
+    dplyr::summarise(tpmMedian = median(tpm),
+                     tissue = tissue,
+                     type.x = type.x,
+                     type = type2,
+                     organ = organ,
+                     color = colour) %>%
+    dplyr::ungroup() %>%
+    dplyr::distinct() %>%
+    dplyr::filter(complete.cases(.)) %>%
+    dplyr::mutate(value = tpmMedian)
+  if(Gender == "Male"){
+    p1 <- gganatogram(data=Male_input, 
+                      fillOutline='white', 
+                      organism='human', 
+                      sex='male', 
+                      fill="value") + 
+      facet_wrap(~type) + 
+      # scale_fill_gradient(low = "white", high = "red") + 
+      labs(fill = "Log2(TPM + 0.001)") + 
+      coord_cartesian(ylim = c(-120, 0)) +
+      theme_void() +
+      scale_fill_viridis_c() +
+      ggtitle("Male: TCGA + GTEX") +
+      theme(plot.title = element_text(hjust = 0.5))
+    
+    p1
+    return(p1)
+  }
+  
+  if(Gender == "Female"){
+    p2 <- gganatogram(data=Female_input, 
+                      fillOutline='white', 
+                      organism='human', 
+                      sex='female', 
+                      fill="value") + 
+      facet_wrap(~type) + 
+      # scale_fill_gradient(low = "white", high = "red") + 
+      labs(fill = "Log2(TPM + 0.001)") + 
+      coord_cartesian(ylim = c(-120, 0))+ 
+      theme_void() +
+      scale_fill_viridis_c() +
+      ggtitle("Female: TCGA + GTEX") +
+      theme(plot.title = element_text(hjust = 0.5))
+    p2
+    return(p2)
+  }
+}
+
 #' Heatmap visualization (correlation between immune signatures and gene)
 #'
 #' @inheritParams vis_toil_TvsN
