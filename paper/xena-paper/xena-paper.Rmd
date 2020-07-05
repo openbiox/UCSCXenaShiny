@@ -6,11 +6,11 @@ authors:
     email: wangshx@shanghaitech.edu.cn
     corresponding_author: yes
   - name: Yi Xiong
-    email: bob@example.com
+    email: xiongyi123@csu.edu.cn
   - name: Kai Gu
     email: cat@example.com
   - name: Longfei Zhao
-    email: derek@example.com
+    email: longfei8533@live.cn
   - name: Yin Li
     email: cat@example.com
   - name: Fei Zhao
@@ -23,9 +23,9 @@ authors:
 abstract: |
   Motivation: UCSC Xena platform provides huge amounts of processed cancer omics data from big public projects like TCGA or individual reserach groups for enabling unprecedented research opportunities. In 2019, we developed UCSCXenaTools, an R package for retrieval of UCSC Xena data. However, an easier dataset exploration and analysis tool is still lack, especially for researchers without programming experience.
   
-  Results: We develop UCSCXenaShiny, an R Shiny package to quickly explore, download all datasets from UCSC Xena data hubs. In addiction, a module based analysis framework is constrcuted to analyze data.
+  Results: We develop UCSCXenaShiny, an R Shiny package to quickly explore, download all datasets from UCSC Xena data hubs. In addiction, a module based analysis framework is constrcuted to analyze and visualize data.
   
-  Availability: <https://github.com/openbiox/UCSCXenaShiny>. 
+  Availability: <https://github.com/openbiox/UCSCXenaShiny> or <https://cran.r-project.org/package=UCSCXenaShiny>. 
   
   Contact: <wangshx@shanghaitech.edu.cn> or <liuxs@shanghaitech.edu.cn>.
 acknowledgements: |
@@ -65,27 +65,23 @@ read_markdown <- function(file, trim_ws = TRUE, ...){
 
 # Introduction
 
-Over the past decade, programs including TCGA, ICGC, PCAWG, GTEx, CCLE and etc. have generated large amounts of molecular data characterizing the landscape of more than ten thousands of tumors from genomic, epigenomic and proteomic aspects. The data have been preprocessed and stored at data hubs of UCSC Xena platform along with many public cancer datasets from individual research groups, providing unprecedented opportunities for eithor simple or systematic exploration of cancer behaviors and mechanisms at multiple molecular layers in individual caner type or across cancer types.
+Over the past decade, programs including TCGA [@weinstein2013cancer], ICGC [@zhang2011international], PCAWG [@the2020pan], GTEx [@gtex2015genotype], CCLE [@barretina2012cancer] and etc. have generated large amounts of molecular data characterizing the landscape of more than ten thousands of tumors from genomic, epigenetic and proteomic aspects. The data have been preprocessed and stored at data hubs of UCSC Xena platform along with many public cancer datasets from individual research groups, providing unprecedented opportunities for either simple or systematic exploration of cancer behaviors and mechanisms at multiple molecular layers in individual caner type or across cancer types [@goldman2019ucsc].
 
-In 2019, we developed UCSCXenaTools, an open-source R package for retrieving and assembling public UCSC Xena data. UCSCXenaTools was developed to communicate with UCSC Xena data hubs for downloading datasets or dataset subsets, querying metadata of data hub, cohort or dataset. Despite UCSC Xena platform itself allows users to explore and analyze data, it is hard for researchers to quickly explore all available datasets, locate what they need in their research and download useful datasets. Besides, the analysis features provided by UCSC Xena platform mainly focus on individual cohort data, thus lack of full-feature functionality.
+In 2019, we developed UCSCXenaTools, an open-source R package for retrieving and assembling public UCSC Xena data [@wang2019ucscxenatools]. UCSCXenaTools was developed to communicate with UCSC Xena data hubs for downloading datasets or dataset subsets, querying metadata of data hub, cohort or dataset. Despite UCSC Xena platform itself allows users to explore and analyze data, it is hard for researchers to quickly explore all available datasets, locate what they need in their research and download useful datasets. Besides, the analysis features provided by UCSC Xena platform mainly focus on individual cohort data, thus lack of full-feature functionality.
 
-To this end, we develop an open-source R Shiny package UCSCXenaShiny for cancer community to allow researchers to explore and analyze datasets from UCSC Xena data hubs in web browser. In addiction, an extensible module based analysis framework is constrcuted to analyze data. Currently, several modules providing single gene expression analysis and visualization are implemented.
-
-**Here are two sample references: @Feynman1963118 [@Dirac1953888]. Bibliography will appear at the end of the document.**
+To this end, we develop an open-source R Shiny package UCSCXenaShiny for cancer community to allow researchers to explore and analyze datasets from UCSC Xena data hubs in web browser. In addiction, an extensible module based analysis framework is constructed to analyze data. Currently, several modules providing single-gene expression analysis and visualization are implemented.
 
 # Materials and methods
 
 ## Dataset exploration
 
-## Single gene expression analysis
+UCSCXenaShiny opens a web page in user's browser to provide service. The page "Repository" is used to explore all available UCSC Xena datasets. Users can find desired datasets by either defined buttons or searching in dataset table. Once one or several datasets selected, users can query their metadata or download them (Fig.\ref{fig:fig1}). To improve the performance of downloading large datasets, we provide a button to download a Shell script containing 'wget' commands which can run in Unix-like system.
+
+## Module and pipeline
+
+For now, several modules targeting at single-gene expression analysis are available at page "Module", a pipeline based on them is available at page "Pipeline" (Fig.\ref{fig:fig1}). The usage is quite easy, users just need to type the gene symbol name and all procedures will be properly done by UCSCXenaShiny, including downloading data from UCSC Xena data hubs, cleaning data, analyzing data and visualizing the result. We are happy to accept new feature requests and they can be discussed at <https://github.com/openbiox/UCSCXenaShiny/issues>.
 
 # Results
-
-The current structure and workflow of UCSCXenaShiny is described in Fig. \ref{fig:fig1}. 
-
-```{r fig1, fig.cap="Package architecture and functional flowchart of UCSCXena Shiny", echo = FALSE}
-knitr::include_graphics("flowchart.png")
-```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(dplyr)
@@ -96,15 +92,18 @@ df = read_markdown("table.txt") %>%
   )
 ```
 
-Table \ref{tab:tab1} summarise the cohort and dataset number available at different UCSC Xena data hubs. There are total `r sum(df$Datasets)` datasets and TCGA project is the major controbutor. These datasets all can be retrieved using UCSCXenaShiny at the "Repository" page.
+The structure and workflow of UCSCXenaShiny is described in Fig.\ref{fig:fig1}. Currently, the core components of this package are page "Repository" and page "Module". Page "Repository" allows researchers to explore and download datasets. Table \ref{tab:tab1} summaries the cohort and dataset number available at different UCSC Xena data hubs. There are total `r sum(df$Datasets)` datasets and TCGA project is the major contributor. Page "Module" provides modules implementing basic analysis functionality and modules can be go further assembled as analysis pipeline. For example, we constructed a few modules to analyze the single gene expression, including its pan-cancer distribution and survival effects under different expression cutoff. We combined some of them and built single-gene expression analysis pipeline so researchers can get as much information as possible in one click for a same task view.
 
-```{r tab1, results="asis", echo=FALSE, message=FALSE, warning=FALSE}
-print(xtable(df,caption="This is the table caption",label="tab:tab1"),
-      comment=FALSE)
+```{r fig1, fig.cap="Package architecture and functional flowchart of UCSCXenaShiny", echo = FALSE}
+knitr::include_graphics("flowchart.png")
 ```
 
 
-You can cross-reference sections and subsections as follows: Section \ref{materials-and-methods} and Section \ref{a-subsection}.
 
+
+```{r tab1, results="asis", echo=FALSE, message=FALSE, warning=FALSE}
+print(xtable(df,caption="Summary of UCSC Xena data hubs",label="tab:tab1"),
+      comment=FALSE)
+```
 
 # References
