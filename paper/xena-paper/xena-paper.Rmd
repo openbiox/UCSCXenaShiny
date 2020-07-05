@@ -8,7 +8,7 @@ authors:
   - name: Yi Xiong
     email: xiongyi123@csu.edu.cn
   - name: Kai Gu
-    email: kaigu1990@openbiox.org
+    email: gukai1212@163.com
   - name: Longfei Zhao
     email: longfei8533@live.cn
   - name: Yin Li
