@@ -64,6 +64,12 @@ purity_data = purity_data %>%
   dplyr::rename(sample = "Sample ID",cancer_type = "Cancer type") %>%
   dplyr::mutate(sample = stringr::str_sub(sample,1,15))
 
+#-------anatomy visualization--------------------------------
+#refer to FigureYa78gganatogram
+TCGA.organ <- data.table::fread("data-raw/TCGA_organ.txt", data.table = F)
+TCGA.organ <- TCGA.organ[,-3]
+
+
 
 usethis::use_data(toil_info, overwrite = TRUE)
 usethis::use_data(toil_surv, overwrite = TRUE)
@@ -73,3 +79,4 @@ usethis::use_data(stemness_data_RNA, overwrite = TRUE)
 usethis::use_data(gi_data, overwrite = TRUE)
 usethis::use_data(purity_data, overwrite = TRUE)
 usethis::use_data(t1, overwrite = TRUE)
+usethis::use_data(TCGA.organ, overwrite = TRUE)

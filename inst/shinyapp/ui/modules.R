@@ -10,6 +10,10 @@ ui.page_modules <- function() {
       ui.modules_pancan_dist("module_gene_pancan_dist")
     ),
     tabPanel(
+      "Gene Pan-cancer Expression Anatomy",
+      ui.modules_pancan_anatomy("modules_pancan_anatomy")
+    ),
+    tabPanel(
       "Gene Expression Cox Analysis",
       ui.modules_pancan_unicox("modules_pancan_unicox")
     ),
