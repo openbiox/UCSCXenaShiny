@@ -4,7 +4,7 @@
 \alias{vis_unicox_tree}
 \title{Visualize single gene uni-cox result}
 \usage{
-vis_unicox_tree(Gene = "TP53")
+vis_unicox_tree(Gene = "TP53", measure = "OS", threshold = 0.5)
 }
 \arguments{
 \item{Gene}{Gene symbal for comparision}
