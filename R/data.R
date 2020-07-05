@@ -99,3 +99,11 @@ NULL
 #' data("purity_data")
 #' @source <https://www.nature.com/articles/ncomms9971#Sec14>
 NULL
+
+#' TCGA: organ data
+#' @docType data
+#' @name  TCGA.organ
+#' @format A [data.frame]
+#' @examples
+#' data("TCGA.organ")
+NULL

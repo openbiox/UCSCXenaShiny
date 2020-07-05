@@ -1,5 +1,17 @@
 # Load necessary packages ----------------------------------
+message("Checking depedencies...")
+
 library(pacman)
+if (!requireNamespace("gganatogram")) {
+  pacman::p_load(remotes)
+  tryCatch(
+    remotes::install_github("jespermaag/gganatogram"),
+    error = function(e) {
+      remotes::install_git("https://gitee.com/XenaShiny/gganatogram")
+    }
+  )
+}
+
 pacman::p_load(
     purrr,
     tidyr,
@@ -23,8 +35,11 @@ pacman::p_load(
     waiter,
     colourpicker,
     DT,
-    fs
+    fs,
+    gganatogram
 )
+
+message("Starting...")
 
 # Put data here -----------------------------------------------------------
 data("XenaData", package = "UCSCXenaTools", envir = environment())

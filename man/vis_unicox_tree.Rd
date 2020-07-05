@@ -8,6 +8,10 @@ vis_unicox_tree(Gene = "TP53", measure = "OS", threshold = 0.5)
 }
 \arguments{
 \item{Gene}{Gene symbal for comparision}
+
+\item{measure}{a survival measure, e.g. "OS".}
+
+\item{threshold}{a expression cutoff, \code{0.5} for median.}
 }
 \value{
 a \code{ggplot} object

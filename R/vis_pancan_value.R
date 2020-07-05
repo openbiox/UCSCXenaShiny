@@ -195,6 +195,8 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
 #' Visualize single gene uni-cox result
 #'
 #' @inheritParams vis_toil_TvsN
+#' @param measure a survival measure, e.g. "OS".
+#' @param threshold a expression cutoff, `0.5` for median.
 #' @return a `ggplot` object
 #' @examples
 #' \donttest{
@@ -235,50 +237,51 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5) {
         dplyr::mutate(group = ifelse(.data$values > stats::median(.data$values), "high", "low")) %>%
         dplyr::mutate(group = factor(.data$group, levels = c("low", "high")))
     }
-    
+
     if (threshold == 0.25) {
       sss_can <- sss_can %>%
-        dplyr::mutate(group = ifelse(.data$values > stats::quantile(.data$values)[4], "high", 
-                                     ifelse(.data$values < stats::quantile(.data$values)[2], "low"))) %>%
+        dplyr::mutate(group = ifelse(.data$values > stats::quantile(.data$values)[4], "high",
+          ifelse(.data$values < stats::quantile(.data$values)[2], "low")
+        )) %>%
         dplyr::mutate(group = factor(.data$group, levels = c("low", "high")))
     }
-    
+
     if (measure == "OS") {
-    unicox_res_genes <- ezcox::ezcox(sss_can,
-      covariates = "values",
-      time = "OS.time",
-      status = "OS",
-      verbose = FALSE
-    )
+      unicox_res_genes <- ezcox::ezcox(sss_can,
+        covariates = "values",
+        time = "OS.time",
+        status = "OS",
+        verbose = FALSE
+      )
     }
-    
+
     if (measure == "PFI") {
       unicox_res_genes <- ezcox::ezcox(sss_can,
-                                       covariates = "values",
-                                       time = "PFI.time",
-                                       status = "PFI",
-                                       verbose = FALSE
+        covariates = "values",
+        time = "PFI.time",
+        status = "PFI",
+        verbose = FALSE
       )
     }
-    
+
     if (measure == "DSS") {
       unicox_res_genes <- ezcox::ezcox(sss_can,
-                                       covariates = "values",
-                                       time = "DSS.time",
-                                       status = "DSS",
-                                       verbose = FALSE
+        covariates = "values",
+        time = "DSS.time",
+        status = "DSS",
+        verbose = FALSE
       )
     }
-    
+
     if (measure == "DFI") {
       unicox_res_genes <- ezcox::ezcox(sss_can,
-                                       covariates = "values",
-                                       time = "DFI.time",
-                                       status = "DFI",
-                                       verbose = FALSE
+        covariates = "values",
+        time = "DFI.time",
+        status = "DFI",
+        verbose = FALSE
       )
     }
-    
+
     unicox_res_genes$cancer <- cancer
     unicox_res_genes$measure <- measure
     return(unicox_res_genes)
@@ -289,10 +292,10 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5) {
     purrr::compact()
   unicox_res_all_cancers_df <- do.call(rbind.data.frame, unicox_res_all_cancers)
   unicox_res_all_cancers_df <- unicox_res_all_cancers_df %>%
-    dplyr::mutate(HR_log = log(HR)) %>%
-    dplyr::mutate(lower_95_log = log(lower_95)) %>%
-    dplyr::mutate(upper_95_log = log(upper_95)) %>%
-    dplyr::mutate(Type = ifelse(p.value < 0.05 & HR_log > 0,"Risky",ifelse(p.value < 0.05 & HR_log < 0,"Protective","NS")))
+    dplyr::mutate(HR_log = log(.data$HR)) %>%
+    dplyr::mutate(lower_95_log = log(.data$lower_95)) %>%
+    dplyr::mutate(upper_95_log = log(.data$upper_95)) %>%
+    dplyr::mutate(Type = ifelse(.data$p.value < 0.05 & .data$HR_log > 0, "Risky", ifelse(.data$p.value < 0.05 & .data$HR_log < 0, "Protective", "NS")))
   ## visualization
   p <- ggplot2::ggplot(
     data = unicox_res_all_cancers_df,
@@ -307,16 +310,20 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5) {
 
 #' Visualize single gene expression in anatomy location
 #'
-#' @inheritParams vis_pancan_anatomy
+#' @inheritParams vis_toil_TvsN
+#' @param Gender a string, "Female" (default) or "Male".
 #' @return a `ggplot` object
+#' @importFrom stats complete.cases median
 #' @export
 
-vis_pancan_anatomy <- function(Gene = "TP53", Gender = "Female"){
+vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male")) {
+  Gender <- match.arg(Gender)
+
   if (!requireNamespace("gganatogram")) {
     stop("Please install 'gganatogram' package firstly!")
   }
-  require(gganatogram) ##devtools::install_github("jespermaag/gganatogram")
-  #data("t1", package = "UCSCXenaShiny", envir = environment())
+
+  # data("t1", package = "UCSCXenaShiny", envir = environment())
   data("TCGA.organ", package = "UCSCXenaShiny", envir = environment())
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
   tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
@@ -334,74 +341,82 @@ vis_pancan_anatomy <- function(Gene = "TP53", Gender = "Female"){
     attr(t1, "gene") <- Gene
     saveRDS(t1, file = tmpfile)
   }
-  
+
   t2 <- t1 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
     tibble::rownames_to_column(var = "sample") %>%
     dplyr::inner_join(tcga_gtex, by = "sample")
-  t2 <- t2 %>% 
-    dplyr::left_join(TCGA.organ,by = c("tissue" = "TCGA")) %>%
-    mutate(group = paste(tissue, type2, sep = "_"))
-  #Male
+  t2 <- t2 %>%
+    dplyr::left_join(TCGA.organ, by = c("tissue" = "TCGA")) %>%
+    mutate(group = paste(.data$tissue, .data$type2, sep = "_"))
+  # Male
   Male_input <- t2 %>%
-    dplyr::full_join(hgMale_key, by = "organ") %>%
-    dplyr::filter(organ != "") %>%
-    dplyr::group_by(group) %>%
-    dplyr::summarise(tpmMedian = median(tpm),
-                     tissue = tissue,
-                     type.x = type.x,
-                     type = type2,
-                     organ = organ,
-                     color = colour) %>%
+    dplyr::full_join(gganatogram::hgMale_key, by = "organ") %>%
+    dplyr::filter(.data$organ != "") %>%
+    dplyr::group_by(.data$group) %>%
+    dplyr::summarise(
+      tpmMedian = median(.data$tpm),
+      tissue = .data$tissue,
+      type.x = .data$type.x,
+      type = .data$type2,
+      organ = .data$organ,
+      color = .data$colour
+    ) %>%
     dplyr::ungroup() %>%
     dplyr::distinct() %>%
     dplyr::filter(complete.cases(.)) %>%
-    dplyr::mutate(value = tpmMedian)
-  #Female
+    dplyr::mutate(value = .data$tpmMedian)
+  # Female
   Female_input <- t2 %>%
-    dplyr::full_join(hgFemale_key, by = "organ") %>%
-    dplyr::filter(organ != "") %>%
-    dplyr::group_by(group) %>%
-    dplyr::summarise(tpmMedian = median(tpm),
-                     tissue = tissue,
-                     type.x = type.x,
-                     type = type2,
-                     organ = organ,
-                     color = colour) %>%
+    dplyr::full_join(gganatogram::hgFemale_key, by = "organ") %>%
+    dplyr::filter(.data$organ != "") %>%
+    dplyr::group_by(.data$group) %>%
+    dplyr::summarise(
+      tpmMedian = median(.data$tpm),
+      tissue = .data$tissue,
+      type.x = .data$type.x,
+      type = .data$type2,
+      organ = .data$organ,
+      color = .data$colour
+    ) %>%
     dplyr::ungroup() %>%
     dplyr::distinct() %>%
     dplyr::filter(complete.cases(.)) %>%
-    dplyr::mutate(value = tpmMedian)
-  if(Gender == "Male"){
-    p1 <- gganatogram(data=Male_input, 
-                      fillOutline='white', 
-                      organism='human', 
-                      sex='male', 
-                      fill="value") + 
-      facet_wrap(~type) + 
-      # scale_fill_gradient(low = "white", high = "red") + 
-      labs(fill = "Log2(TPM + 0.001)") + 
+    dplyr::mutate(value = .data$tpmMedian)
+  if (Gender == "Male") {
+    p1 <- gganatogram::gganatogram(
+      data = Male_input,
+      fillOutline = "white",
+      organism = "human",
+      sex = "male",
+      fill = "value"
+    ) +
+      facet_wrap(~type) +
+      # scale_fill_gradient(low = "white", high = "red") +
+      labs(fill = "Log2(TPM + 0.001)") +
       coord_cartesian(ylim = c(-120, 0)) +
       theme_void() +
       scale_fill_viridis_c() +
       ggtitle("Male: TCGA + GTEX") +
       theme(plot.title = element_text(hjust = 0.5))
-    
+
     p1
     return(p1)
   }
-  
-  if(Gender == "Female"){
-    p2 <- gganatogram(data=Female_input, 
-                      fillOutline='white', 
-                      organism='human', 
-                      sex='female', 
-                      fill="value") + 
-      facet_wrap(~type) + 
-      # scale_fill_gradient(low = "white", high = "red") + 
-      labs(fill = "Log2(TPM + 0.001)") + 
-      coord_cartesian(ylim = c(-120, 0))+ 
+
+  if (Gender == "Female") {
+    p2 <- gganatogram::gganatogram(
+      data = Female_input,
+      fillOutline = "white",
+      organism = "human",
+      sex = "female",
+      fill = "value"
+    ) +
+      facet_wrap(~type) +
+      # scale_fill_gradient(low = "white", high = "red") +
+      labs(fill = "Log2(TPM + 0.001)") +
+      coord_cartesian(ylim = c(-120, 0)) +
       theme_void() +
       scale_fill_viridis_c() +
       ggtitle("Female: TCGA + GTEX") +
@@ -488,7 +503,7 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_s
 
 
 #' Visualize TMB and gene
-#' 
+#'
 #' @inheritParams vis_gene_immune_cor
 #' @examples
 #' \donttest{
@@ -544,7 +559,7 @@ vis_gene_tmb_cor <- function(Gene = "TP53", Cor_method = "spearman") {
 }
 
 #' Visualize gene and stemness
-#' 
+#'
 #' @inheritParams vis_gene_immune_cor
 #' @examples
 #' \donttest{
@@ -608,6 +623,7 @@ utils::globalVariables(
     "tcga_gtex",
     "stemness_data_RNA",
     "tmb_data",
-    "toil_surv"
+    "toil_surv",
+    "TCGA.organ"
   )
 )
