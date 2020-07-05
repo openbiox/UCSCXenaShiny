@@ -21,17 +21,19 @@ authors:
     email: liuxs@shanghaitech.edu.cn
     corresponding_author: yes
 abstract: |
-  This is the abstract.
-
-  It consists of two paragraphs.
+  Motivation: UCSC Xena platform provides huge amounts of processed cancer omics data from big public projects like TCGA or individual reserach groups for enabling unprecedented research opportunities. In 2019, we developed UCSCXenaTools, an R package for retrieval of UCSC Xena data. However, an easier dataset exploration and analysis tool is still lack, especially for researchers without programming experience.
+  
+  Results: We develop UCSCXenaShiny, an R Shiny package to quickly explore, download all datasets from UCSC Xena data hubs. In addiction, a module based analysis framework is constrcuted to analyze data.
+  
+  Availability: <https://github.com/openbiox/UCSCXenaShiny>. 
+  
+  Contact: <wangshx@shanghaitech.edu.cn> or <liuxs@shanghaitech.edu.cn>.
 acknowledgements: |
-  This is an acknowledgement.
-
-  It consists of two paragraphs.
+  We thank projects TCGA, GTEx, ICGC, CCLE, PCAWG, etc., and individual research groups for making cancer genomics data public. We thank UCSC Xena platform for providing data processing, integration and download.
 keywords:
-  - key
-  - dictionary
-  - word
+  - UCSC Xena
+  - cancer genomics
+  - TCGA
 #fontsize: 12pt
 #spacing: halfline # could also be oneline
 #classoptions:
@@ -47,69 +49,62 @@ knitr::opts_chunk$set(out.width = '100%', dpi=300) # Figure resolution and size
 knitr::opts_chunk$set(fig.env="figure") # Latex figure environment
 
 library(xtable) # Creates tables that follow OUP guidelines; other options, such as kable, may also be workable
+
+read_markdown <- function(file, trim_ws = TRUE, ...){
+    if (length(file) > 1) {
+        lines <- file
+    } else {
+        lines <- readr::read_lines(file)
+    }
+    lines <- lines[!grepl('^[[:blank:]+-=:_|]*$', lines)]
+    lines <- gsub('(^\\s*?\\|)|(\\|\\s*?$)', '', lines)
+    readr::read_delim(paste(lines, collapse = '\n'), delim = '|', 
+                      trim_ws = trim_ws, ...)
+}
 ```
 
 # Introduction
 
-This template is based on the generic OUP template available [here](https://academic.oup.com/icesjms/pages/General_Instructions). The original OUP sample tex document, providing more details on prefered formatting for LaTeX documents, is included with the template in the file `ouparticle_sample.tex`.
+Over the past decade, programs including TCGA, ICGC, PCAWG, GTEx, CCLE and etc. have generated large amounts of molecular data characterizing the landscape of more than ten thousands of tumors from genomic, epigenomic and proteomic aspects. The data have been preprocessed and stored at data hubs of UCSC Xena platform along with many public cancer datasets from individual research groups, providing unprecedented opportunities for eithor simple or systematic exploration of cancer behaviors and mechanisms at multiple molecular layers in individual caner type or across cancer types.
 
-Here are two sample references: @Feynman1963118 [@Dirac1953888]. Bibliography will appear at the end of the document.
+In 2019, we developed UCSCXenaTools, an open-source R package for retrieving and assembling public UCSC Xena data. UCSCXenaTools was developed to communicate with UCSC Xena data hubs for downloading datasets or dataset subsets, querying metadata of data hub, cohort or dataset. Despite UCSC Xena platform itself allows users to explore and analyze data, it is hard for researchers to quickly explore all available datasets, locate what they need in their research and download useful datasets. Besides, the analysis features provided by UCSC Xena platform mainly focus on individual cohort data, thus lack of full-feature functionality.
+
+To this end, we develop an open-source R Shiny package UCSCXenaShiny for cancer community to allow researchers to explore and analyze datasets from UCSC Xena data hubs in web browser. In addiction, an extensible module based analysis framework is constrcuted to analyze data. Currently, several modules providing single gene expression analysis and visualization are implemented.
+
+**Here are two sample references: @Feynman1963118 [@Dirac1953888]. Bibliography will appear at the end of the document.**
 
 # Materials and methods
 
-An equation with a label for cross-referencing:
+## Dataset exploration
 
-\begin{equation}\label{eq:eq1}
-\int^{r_2}_0 F(r,\varphi){\rm d}r\,{\rm d}\varphi = [\sigma r_2/(2\mu_0)]
-\int^{\infty}_0\exp(-\lambda|z_j-z_i|)\lambda^{-1}J_1 (\lambda r_2)J_0
-(\lambda r_i\,\lambda {\rm d}\lambda)
-\end{equation}
-
-This equation can be referenced as follows: Eq. \ref{eq:eq1}
-
-## A subsection
-
-A numbered list:
-
-1) First point
-2) Second point
-    - Subpoint
-    
-A bullet list:
-
-* First point
-* Second point
+## Single gene expression analysis
 
 # Results
 
-Generate a figure.
+The current structure and workflow of UCSCXenaShiny is described in Fig. \ref{fig:fig1}. 
 
-```{r fig1, fig.cap="This is the first figure.",echo=TRUE}
-plot(1:10,main="Some data",xlab="Distance (cm)",ylab="Time (hours)")
+```{r fig1, fig.cap="Package architecture and functional flowchart of UCSCXena Shiny", echo = FALSE}
+knitr::include_graphics("flowchart.png")
 ```
 
-You can reference this figure as follows: Fig. \ref{fig:fig1}.
-
-```{r fig2, fig.cap="This is the second figure.",echo=TRUE}
-plot(1:5,pch=19,main="Some data",xlab="Distance (cm)",ylab="Time (hours)")
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(dplyr)
+df = read_markdown("table.txt") %>% 
+  dplyr::mutate(
+    Cohorts = as.integer(Cohorts),
+    Datasets = as.integer(Datasets)
+  )
 ```
 
-Reference to second figure: Fig. \ref{fig:fig2}
+Table \ref{tab:tab1} summarise the cohort and dataset number available at different UCSC Xena data hubs. There are total `r sum(df$Datasets)` datasets and TCGA project is the major controbutor. These datasets all can be retrieved using UCSCXenaShiny at the "Repository" page.
 
-Generate a table.
-
-```{r tab1, results="asis", echo=TRUE}
-df = data.frame(ID=1:3,code=letters[1:3])
+```{r tab1, results="asis", echo=FALSE, message=FALSE, warning=FALSE}
 print(xtable(df,caption="This is the table caption",label="tab:tab1"),
       comment=FALSE)
 ```
 
-You can reference this table as follows: Table \ref{tab:tab1}.
-
-# Discussion
 
 You can cross-reference sections and subsections as follows: Section \ref{materials-and-methods} and Section \ref{a-subsection}.
 
-***Note:*** the last section in the document will be used as the section title for the bibliography.
 
 # References
