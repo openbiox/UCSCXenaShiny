@@ -23,7 +23,7 @@ authors:
 abstract: |
   Motivation: UCSC Xena platform provides huge amounts of processed cancer omics data from big public projects like TCGA or individual reserach groups for enabling unprecedented research opportunities. In 2019, we developed UCSCXenaTools, an R package for retrieval of UCSC Xena data. However, an easier dataset exploration and analysis tool is still lack, especially for researchers without programming experience.
   
-  Results: We develop UCSCXenaShiny, an R Shiny package to quickly explore, download all datasets from UCSC Xena data hubs. In addiction, a module based analysis framework is constrcuted to analyze and visualize data.
+  Results: We develop UCSCXenaShiny, an R Shiny package to quickly explore, download all datasets from UCSC Xena data hubs. In addiction, a module based analysis framework is constructed to analyze and visualize data.
   
   Availability: <https://github.com/openbiox/UCSCXenaShiny> or <https://cran.r-project.org/package=UCSCXenaShiny>. 
   
