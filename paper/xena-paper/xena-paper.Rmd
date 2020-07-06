@@ -43,10 +43,15 @@ output: rticles::oup_article
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE) # By default, hide code; set to TRUE to see code
-knitr::opts_chunk$set(fig.pos = 'p') # Places figures on their own pages
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE) # By default, hide code; set to TRUE to see code
+knitr::opts_chunk$set(fig.pos = 'h') # 'p' for Places figures on their own pages
 knitr::opts_chunk$set(out.width = '100%', dpi=300) # Figure resolution and size
 knitr::opts_chunk$set(fig.env="figure") # Latex figure environment
+
+# Hold the figure position 
+knitr::knit_hooks$set(plot = function(x, options)  {
+  knitr::hook_plot_tex(x, options)
+})
 
 library(xtable) # Creates tables that follow OUP guidelines; other options, such as kable, may also be workable
 
@@ -75,11 +80,11 @@ To this end, we develop an open-source R Shiny package UCSCXenaShiny for cancer 
 
 ## Dataset exploration
 
-UCSCXenaShiny opens a web page in user's browser to provide service. The page "Repository" is used to explore all available UCSC Xena datasets. Users can find desired datasets by either defined buttons or searching in dataset table. Once one or several datasets selected, users can query their metadata or download them (Fig.\ref{fig:fig1}). To improve the performance of downloading large datasets, we provide a button to download a Shell script containing 'wget' commands which can run in Unix-like system.
+UCSCXenaShiny opens a web page in user's browser to provide service. The page "Repository" is used to explore all available UCSC Xena datasets. Users can find desired datasets by either defined buttons or searching in dataset table. Once one or several datasets selected, users can query their metadata or download them (Fig.\ref{fig:fig1} and Fig.\ref{fig:fig3}). To improve the performance of downloading large datasets, we provide a button to download a Shell script containing 'wget' commands which can run in Unix-like system.
 
 ## Module and pipeline
 
-For now, several modules targeting at single-gene expression analysis are available at page "Module", a pipeline based on them is available at page "Pipeline" (Fig.\ref{fig:fig1}). The usage is quite easy, users just need to type the gene symbol name and all procedures will be properly done by UCSCXenaShiny, including downloading data from UCSC Xena data hubs, cleaning data, analyzing data and visualizing the result. We are happy to accept new feature requests and they can be discussed at <https://github.com/openbiox/UCSCXenaShiny/issues>.
+For now, several modules targeting at single-gene expression analysis are available at page "Module" (Fig.\ref{fig:fig2} and Fig.\ref{fig:fig4}), a pipeline based on them is available at page "Pipeline" (Fig.\ref{fig:fig2}). The usage is quite easy, users just need to type the gene symbol name and all procedures will be properly done by UCSCXenaShiny, including downloading data from UCSC Xena data hubs, cleaning data, analyzing data and visualizing the result. We are happy to accept new feature requests and they can be discussed at <https://github.com/openbiox/UCSCXenaShiny/issues>.
 
 # Results
 
@@ -92,18 +97,37 @@ df = read_markdown("table.txt") %>%
   )
 ```
 
-The structure and workflow of UCSCXenaShiny is described in Fig.\ref{fig:fig1}. Currently, the core components of this package are page "Repository" and page "Module". Page "Repository" allows researchers to explore and download datasets. Table \ref{tab:tab1} summaries the cohort and dataset number available at different UCSC Xena data hubs. There are total `r sum(df$Datasets)` datasets and TCGA project is the major contributor. Page "Module" provides modules implementing basic analysis functionality and modules can be go further assembled as analysis pipeline. For example, we constructed a few modules to analyze the single gene expression, including its pan-cancer distribution and survival effects under different expression cutoff. We combined some of them and built single-gene expression analysis pipeline so researchers can get as much information as possible in one click for a same task view.
+## Package structure
 
-```{r fig1, fig.cap="Package architecture and functional flowchart of UCSCXenaShiny", echo = FALSE}
+The structure and workflow of UCSCXenaShiny is described in Fig.\ref{fig:fig1}. Currently, the core components of this package are page "Repository" and page "Module". Page "Repository" allows researchers to explore and download datasets. Table \ref{tab:tab1} summaries the cohort and dataset number available at different UCSC Xena data hubs. There are total `r sum(df$Datasets)` datasets and TCGA project is the major contributor. The development of UCSCXenaShiny is based on R Shiny platform (<https://shiny.rstudio.com/>), the overview of its graphic interface is shown in Fig.\ref{fig:fig2}.
+
+```{r fig1, fig.cap="Package architecture and functional flowchart of UCSCXenaShiny.", echo = FALSE}
 knitr::include_graphics("flowchart.png")
 ```
 
-
-
+```{r fig2, fig.cap="UCSCXenaShiny graphical interface overview.", echo = FALSE, fig.show="hold"}
+knitr::include_graphics("figure2.png")
+```
 
 ```{r tab1, results="asis", echo=FALSE, message=FALSE, warning=FALSE}
-print(xtable(df,caption="Summary of UCSC Xena data hubs",label="tab:tab1"),
+print(xtable(df,caption="Summary of UCSC Xena data hubs.",label="tab:tab1"),
       comment=FALSE)
+```
+
+## Feature 1: dataset exploration and download
+
+UCSCXenaShiny allows users to explore UCSC Xena datasets quickly and easily (Fig.\ref{fig:fig3}). A table storing all datasets is shown in Fig.\ref{fig:fig3}A, users can filter datasets by either typing some key words in search bar or selecting data hubs or data types. Once desired datasets are selected in the table, users can click the button on the bottom to check metadata of datasets or download datasets (Fig.\ref{fig:fig3}B-D).
+
+```{r fig3, fig.cap="Dataset search and download.", echo = FALSE, fig.show="hold"}
+knitr::include_graphics("figure3.png")
+```
+
+## Feature 2: Single-gene expression analysis
+
+UCSCXenaShiny provides modules implementing basic analysis functionality and modules can be go further assembled as analysis pipeline (Fig.\ref{fig:fig1}). For example, we constructed a few modules to analyze and visualize the single gene expression, including its pan-cancer distribution with violin plot or anatomy heatmap [@gganatogram], and survival effects [@survival-book] under different expression cutoff. We combined some of them and built single-gene expression analysis pipeline so researchers can get as much information as possible in one click for a same task view. An example for gene *TP53* is given in Fig.\ref{fig:fig4}. 
+
+```{r fig4, fig.cap="Current available analysis modules provided UCSCXenaShiny.", echo = FALSE, fig.show="hold"}
+knitr::include_graphics("figure4.png")
 ```
 
 # References
