@@ -1,6 +1,3 @@
-
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 # UCSCXenaShiny <img src="https://github.com/openbiox/openbiox-wiki/blob/master/static/img/logo-long.png" align="right" width="200"/>
 
 [![CRAN
@@ -15,6 +12,10 @@ Xena](https://xenabrowser.net/datapages/), which is a collection of
 UCSC-hosted public databases such as TCGA, ICGC, TARGET, GTEx, CCLE, and
 others. Databases are normalized so they can be combined, linked,
 filtered, explored and downloaded.
+
+Please cite the following article when using `UCSCXenaShiny`:
+
+Wang, S.; Xiong, Y.; Gu, K.; Zhao, L.; Li, Y.; Zhao, F.; Li, X.; Liu, X. UCSCXenaShiny: An R Package for Exploring and Analyzing UCSC Xena Public Datasets in Web Browser. Preprints 2020, 2020070179 (doi: 10.20944/preprints202007.0179.v1).
 
 ## :arrow\_double\_down: Installation
 
