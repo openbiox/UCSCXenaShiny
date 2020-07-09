@@ -1,0 +1,15 @@
+| Data hub       | Cohorts | Datasets | URL                                |
+| :------------- | ------- | -------: | :--------------------------------- |
+| tcgaHub        | 38 |    715 | https://tcga.xenahubs.net          |
+| gdcHub         | 41 |   528 | https://gdc.xenahubs.net           |
+| publicHub      | 36 |     109 | https://ucscpublic.xenahubs.net    |
+| pcawgHub       | 2 |       53 | https://pcawg.xenahubs.net         |
+| toilHub        | 5 |       50 | https://toil.xenahubs.net          |
+| singlecellHub  | 18 |      54 | https://singlecellnew.xenahubs.net    |
+| icgcHub        | 3 |       23 | https://icgc.xenahubs.net          |
+| pancanAtlasHub | 1 |     22 | https://pancanatlas.xenahubs.net   |
+| treehouseHub   | 10 |     26 | https://xena.treehouse.gi.ucsc.edu |
+| atacseqHub     | 2 |        9 | https://atacseq.xenahubs.net       |
+| kidsfirstHub | 3 | 50 | https://kidsfirst.xenahubs.net |
+
+
