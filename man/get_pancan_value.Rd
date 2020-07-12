@@ -3,6 +3,8 @@
 \name{get_pancan_value}
 \alias{get_pancan_value}
 \alias{get_pancan_gene_value}
+\alias{get_pancan_protein_value}
+\alias{get_pancan_mutation_status}
 \title{Fetch identifier value from pan-cancer dataset}
 \usage{
 get_pancan_value(
@@ -13,7 +15,11 @@ get_pancan_value(
   samples = NULL
 )
 
-get_pancan_gene_value(identifier, host = "toilHub")
+get_pancan_gene_value(identifier)
+
+get_pancan_protein_value(identifier)
+
+get_pancan_mutation_status(identifier)
 }
 \arguments{
 \item{identifier}{a length-1 character representing a gene symbol, ensembl gene id, or probe id.
@@ -40,6 +46,10 @@ Identifier includes gene/probe etc.
 \item \code{get_pancan_value}: Fetch identifier value from pan-cancer dataset
 
 \item \code{get_pancan_gene_value}: Fetch gene expression value from pan-cancer dataset
+
+\item \code{get_pancan_protein_value}: Fetch protein expression value from pan-cancer dataset
+
+\item \code{get_pancan_mutation_status}: Fetch mutation status value from pan-cancer dataset
 }}
 
 \examples{
@@ -50,6 +60,8 @@ t1 <- get_pancan_value("TP53",
   host = "toilHub"
 )
 t2 <- get_pancan_gene_value("TP53")
+t3 <- get_pancan_protein_value("AKT")
+t4 <- get_pancan_mutation_status("TP53")
 }
 
 }
