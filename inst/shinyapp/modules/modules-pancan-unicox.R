@@ -44,12 +44,14 @@ ui.modules_pancan_unicox  <- function(id) {
 
 server.modules_pancan_unicox <- function(input, output, session) {
   observeEvent(input$Pancan_search, {
-    output$unicox_gene_tree <- renderPlot({
-      vis_unicox_tree(
-        Gene = input$Pancan_search,
-        measure = input$measure,
-        threshold = input$threshold
-      )
-    })
+    if (nchar(input$Pancan_search) >= 1) {
+      output$unicox_gene_tree <- renderPlot({
+        vis_unicox_tree(
+          Gene = input$Pancan_search,
+          measure = input$measure,
+          threshold = input$threshold
+        )
+      })
+    }
   })
 }

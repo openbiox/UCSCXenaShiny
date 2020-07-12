@@ -241,8 +241,9 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5) {
     if (threshold == 0.25) {
       sss_can <- sss_can %>%
         dplyr::mutate(group = ifelse(.data$values > stats::quantile(.data$values)[4], "high",
-          ifelse(.data$values < stats::quantile(.data$values)[2], "low")
+          ifelse(.data$values < stats::quantile(.data$values)[2], "low","middle")
         )) %>%
+        dplyr::filter(group != "middle") %>%
         dplyr::mutate(group = factor(.data$group, levels = c("low", "high")))
     }
 
@@ -442,8 +443,21 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_s
   immune_sig <- immune_sig %>%
     tidyr::pivot_longer(3:ncol(.), names_to = "sample", values_to = "score") %>%
     dplyr::mutate(sample = stringr::str_sub(.data$sample, 1, 15))
-
-  t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
+  dir.create(file.path(tempdir(), "UCSCXenaShiny"), recursive = TRUE, showWarnings = FALSE)
+  tmpfile <- file.path(tempdir(), "UCSCXenaShiny", "toil_TvsN.rds")
+  if (file.exists(tmpfile)) {
+    t1 <- readRDS(tmpfile)
+    if (attr(t1, "gene") != Gene) {
+      t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
+      attr(t1, "gene") <- Gene
+      saveRDS(t1, file = tmpfile)
+    }
+  } else {
+    t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
+    attr(t1, "gene") <- Gene
+    saveRDS(t1, file = tmpfile)
+  }
+  
   s <- data.frame(sample = names(t1), values = t1)
 
   ss <- s %>%
@@ -479,24 +493,23 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_s
   cor_gene_immune_df <- do.call(rbind.data.frame, cor_gene_immune)
   data <- cor_gene_immune_df
   data$pstar <- ifelse(data$p.value < 0.05,
-    ifelse(data$p.value < 0.01, "**", "*"),
+    ifelse(data$p.value < 0.001, "***",ifelse(data$p.value < 0.01,"**","*")),
     ""
   )
 
   p <- ggplot2::ggplot(data, ggplot2::aes_string(x = "cancer", y = "immune_cells")) +
     ggplot2::geom_tile(ggplot2::aes_string(fill = "cor"), colour = "white", size = 1) +
-    ggplot2::scale_fill_gradient2(low = "#2b8cbe", mid = "white", high = "#e41a1c") +
+    ggplot2::scale_fill_gradient2(low = "#377DB8", mid = "white", high = "#E31A1C") +
     ggplot2::geom_text(ggplot2::aes_string(label = "pstar"), col = "black", size = 5) +
-    ggplot2::theme_minimal() + # 不要背景
+    ggplot2::theme_minimal() +
     ggplot2::theme(
-      axis.title.x = ggplot2::element_blank(), # 不要title
-      axis.ticks.x = ggplot2::element_blank(), # 不要x轴
-      axis.title.y = ggplot2::element_blank(), # 不要y轴
-      axis.text.x = ggplot2::element_text(angle = 45, hjust = 1), # 调整x轴文字
+      axis.title.x = ggplot2::element_blank(),
+      axis.ticks.x = ggplot2::element_blank(),
+      axis.title.y = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_text(angle = 45, hjust = 1), 
       axis.text.y = ggplot2::element_text(size = 8)
-    ) + # 调整y轴文字
-    # 调整legen
-    ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "Correlation"))
+    ) + 
+    ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "*** p < 0.001", "\n\n", "Correlation"))
   print(p)
   return(p)
 }

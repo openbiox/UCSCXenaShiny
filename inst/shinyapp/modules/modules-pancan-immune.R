@@ -1,7 +1,7 @@
-ui.modules_pancan_anatomy <- function(id) {
+ui.modules_pancan_immune <- function(id) {
   ns <- NS(id)
   fluidPage(
-    titlePanel("Module: Gene Pancan Expression Anatomy Visualization"),
+    titlePanel("Module: Gene Pancan Expression vs Immune Gene Signature"),
     fluidRow(
       tags$div(
         style = "margin-left: 30px;",
@@ -24,27 +24,31 @@ ui.modules_pancan_anatomy <- function(id) {
       sidebarPanel = sidebarPanel(
         fluidPage(
           fluidRow(
-            selectInput(inputId = ns("Gender"), label = h4("Select Gender for plot"), choices = c("Male","Female"), selected = "Female")
+            selectInput(inputId = ns("immune_sig"), "Select the immune signature source", selected = "Cibersort",
+                        choices= c("Yasin","Wolf","Attractors","ICR","c7atoms","Bindea","Cibersort"))
           )
         )
       ),
       mainPanel = mainPanel(
         column(
           12,
-          plotOutput(ns("pancan_anatomy"))
+          plotOutput(ns("hm_gene_immune_cor"))
         )
       )
     )
   )
 }
 
-server.modules_pancan_anatomy  <- function(input, output, session) {
+
+
+
+server.modules_pancan_immune <- function(input, output, session) {
   observeEvent(input$Pancan_search, {
     if (nchar(input$Pancan_search) >= 1) {
-      output$pancan_anatomy <- renderPlot({
-        vis_pancan_anatomy(
+      output$hm_gene_immune_cor <- renderPlot({
+        vis_gene_immune_cor(
           Gene = input$Pancan_search,
-          Gender = input$Gender
+          Immune_sig_type = input$immune_sig
         )
       })
     }

@@ -18,7 +18,8 @@ ui.page_modules <- function() {
       ui.modules_pancan_unicox("modules_pancan_unicox")
     ),
     tabPanel(
-      "Gene Expression vs Immune Correlation Analysis"
+      "Gene Expression vs Immune Correlation Analysis",
+      ui.modules_pancan_immune("modules_pancan_immune")
     ),
     tabPanel(
       "Survival Analysis",
