@@ -40,11 +40,13 @@ ui.modules_pancan_anatomy <- function(id) {
 
 server.modules_pancan_anatomy  <- function(input, output, session) {
   observeEvent(input$Pancan_search, {
-    output$pancan_anatomy <- renderPlot({
-      vis_pancan_anatomy(
-        Gene = input$Pancan_search,
-        Gender = input$Gender
-      )
-    })
+    if (nchar(input$Pancan_search) >= 1) {
+      output$pancan_anatomy <- renderPlot({
+        vis_pancan_anatomy(
+          Gene = input$Pancan_search,
+          Gender = input$Gender
+        )
+      })
+    }
   })
 }

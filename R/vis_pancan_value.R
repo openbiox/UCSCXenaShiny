@@ -241,8 +241,9 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5) {
     if (threshold == 0.25) {
       sss_can <- sss_can %>%
         dplyr::mutate(group = ifelse(.data$values > stats::quantile(.data$values)[4], "high",
-          ifelse(.data$values < stats::quantile(.data$values)[2], "low")
+          ifelse(.data$values < stats::quantile(.data$values)[2], "low","middle")
         )) %>%
+        dplyr::filter(group != "middle") %>%
         dplyr::mutate(group = factor(.data$group, levels = c("low", "high")))
     }
 
