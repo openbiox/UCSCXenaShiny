@@ -31,7 +31,7 @@ ui.modules_pancan_unicox  <- function(id) {
       ),
       mainPanel = mainPanel(
         column(
-          12,
+          6,
           plotOutput(ns("unicox_gene_tree"))
         )
       )

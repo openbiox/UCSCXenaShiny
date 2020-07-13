@@ -203,7 +203,7 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
 #' p <- vis_unicox_tree(Gene = "TP53")
 #' }
 #' @export
-vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5) {
+vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, values = c("grey","#E31A1C","#377DB8")) {
   ## 写在 R 内的数据集需要更严格的引用方式
   data("toil_surv", package = "UCSCXenaShiny", envir = environment())
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
@@ -222,6 +222,7 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5) {
     saveRDS(t1, file = tmpfile)
   }
   # t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
+  message(paste0("Get gene expression for ", Gene))
   s <- data.frame(sample = names(t1), values = t1)
   ## we use median cutoff here
   ss <- s %>%
@@ -296,7 +297,8 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5) {
     dplyr::mutate(HR_log = log(.data$HR)) %>%
     dplyr::mutate(lower_95_log = log(.data$lower_95)) %>%
     dplyr::mutate(upper_95_log = log(.data$upper_95)) %>%
-    dplyr::mutate(Type = ifelse(.data$p.value < 0.05 & .data$HR_log > 0, "Risky", ifelse(.data$p.value < 0.05 & .data$HR_log < 0, "Protective", "NS")))
+    dplyr::mutate(Type = ifelse(.data$p.value < 0.05 & .data$HR_log > 0, "Risky", ifelse(.data$p.value < 0.05 & .data$HR_log < 0, "Protective", "NS"))) %>%
+    dplyr::mutate(Type = factor(Type, levels = c("NS","Risky", "Protective")))
   ## visualization
   p <- ggplot2::ggplot(
     data = unicox_res_all_cancers_df,
@@ -305,7 +307,12 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5) {
     ggplot2::theme_bw() +
     ggplot2::geom_pointrange() +
     ggplot2::coord_flip() +
-    ggplot2::labs(x = "Cancer", y = "log Hazard Ratio")
+    ggplot2::labs(x = "", y = "log Hazard Ratio") +
+    ggplot2::theme(axis.text.x = element_text(color = "black"),
+                   axis.text.y = element_text(color = "black"),
+                   panel.grid.major = element_blank(),
+                   panel.grid.minor  = element_blank()) +
+    ggplot2::scale_color_manual(values = values)
   return(p)
 }
 
@@ -342,7 +349,7 @@ vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male")) {
     attr(t1, "gene") <- Gene
     saveRDS(t1, file = tmpfile)
   }
-
+  message(paste0("Get gene expression for ", Gene))
   t2 <- t1 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
@@ -399,7 +406,7 @@ vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male")) {
       coord_cartesian(ylim = c(-120, 0)) +
       theme_void() +
       scale_fill_viridis_c() +
-      ggtitle("Male: TCGA + GTEX") +
+      ggtitle(paste0(Gene," Male: TCGA + GTEX")) +
       theme(plot.title = element_text(hjust = 0.5))
 
     p1
@@ -420,7 +427,7 @@ vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male")) {
       coord_cartesian(ylim = c(-120, 0)) +
       theme_void() +
       scale_fill_viridis_c() +
-      ggtitle("Female: TCGA + GTEX") +
+      ggtitle(paste0(Gene," Female: TCGA + GTEX")) +
       theme(plot.title = element_text(hjust = 0.5))
     p2
     return(p2)
@@ -457,7 +464,7 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_s
     attr(t1, "gene") <- Gene
     saveRDS(t1, file = tmpfile)
   }
-  
+  message(paste0("Get gene expression for ", Gene))
   s <- data.frame(sample = names(t1), values = t1)
 
   ss <- s %>%
@@ -509,7 +516,8 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_s
       axis.text.x = ggplot2::element_text(angle = 45, hjust = 1), 
       axis.text.y = ggplot2::element_text(size = 8)
     ) + 
-    ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "*** p < 0.001", "\n\n", "Correlation"))
+    ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "*** p < 0.001", "\n\n", "Correlation")) +
+    ggtitle(paste0("The correlation between ",Gene," with immune signatures"))
   print(p)
   return(p)
 }
