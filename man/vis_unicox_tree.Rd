@@ -4,7 +4,12 @@
 \alias{vis_unicox_tree}
 \title{Visualize single gene uni-cox result}
 \usage{
-vis_unicox_tree(Gene = "TP53", measure = "OS", threshold = 0.5)
+vis_unicox_tree(
+  Gene = "TP53",
+  measure = "OS",
+  threshold = 0.5,
+  values = c("grey", "#E31A1C", "#377DB8")
+)
 }
 \arguments{
 \item{Gene}{Gene symbal for comparision}
@@ -12,6 +17,8 @@ vis_unicox_tree(Gene = "TP53", measure = "OS", threshold = 0.5)
 \item{measure}{a survival measure, e.g. "OS".}
 
 \item{threshold}{a expression cutoff, \code{0.5} for median.}
+
+\item{values}{the color to fill tumor or normal}
 }
 \value{
 a \code{ggplot} object
