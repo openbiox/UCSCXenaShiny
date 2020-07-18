@@ -1,3 +1,5 @@
+#' @describeIn get_pancan_value Fetch copy number value from CCLE dataset
+#' @export
 get_ccle_cn_value <- function(identifier) {
   host <- "publicHub"
   dataset <- "ccle/CCLE_copynumber_byGene_2013-12-03"
@@ -8,6 +10,8 @@ get_ccle_cn_value <- function(identifier) {
   res
 }
 
+#' @describeIn get_pancan_value Fetch gene expression value from CCLE dataset
+#' @export
 get_ccle_gene_value <- function(identifier) {
   host <- "publicHub"
   dataset <- "ccle/CCLE_DepMap_18Q2_RNAseq_RPKM_20180502"
@@ -18,6 +22,8 @@ get_ccle_gene_value <- function(identifier) {
   res
 }
 
+#' @describeIn get_pancan_value Fetch gene protein expression value from CCLE dataset
+#' @export
 get_ccle_protein_value <- function(identifier) {
   ## NOTE: Only ~200 proteins available, so many identifiers will return NAs
   host <- "publicHub"
@@ -91,10 +97,10 @@ get_ccle_protein_value <- function(identifier) {
 #   get_pancan_value(identifier, dataset = dataset, host = host)
 # }
 
-
-get_ccle_phenotype <- function() {
-  
-}
+# ## 直接下载整个数据吧？或者存到包里
+# get_ccle_phenotype <- function() {
+#   
+# }
 
 
 

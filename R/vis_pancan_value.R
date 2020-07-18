@@ -645,6 +645,8 @@ utils::globalVariables(
     "stemness_data_RNA",
     "tmb_data",
     "toil_surv",
-    "TCGA.organ"
+    "TCGA.organ",
+    "Type",
+    "group"
   )
 )
