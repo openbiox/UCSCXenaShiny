@@ -5,6 +5,7 @@
 \alias{get_pancan_gene_value}
 \alias{get_pancan_protein_value}
 \alias{get_pancan_mutation_status}
+\alias{get_pancan_cn_value}
 \title{Fetch identifier value from pan-cancer dataset}
 \usage{
 get_pancan_value(
@@ -20,6 +21,8 @@ get_pancan_gene_value(identifier)
 get_pancan_protein_value(identifier)
 
 get_pancan_mutation_status(identifier)
+
+get_pancan_cn_value(identifier)
 }
 \arguments{
 \item{identifier}{a length-1 character representing a gene symbol, ensembl gene id, or probe id.
@@ -50,6 +53,8 @@ Identifier includes gene/probe etc.
 \item \code{get_pancan_protein_value}: Fetch protein expression value from pan-cancer dataset
 
 \item \code{get_pancan_mutation_status}: Fetch mutation status value from pan-cancer dataset
+
+\item \code{get_pancan_cn_value}: Fetch gene copy number value from pan-cancer dataset processed by GISTIC 2.0
 }}
 
 \examples{
@@ -62,6 +67,7 @@ t1 <- get_pancan_value("TP53",
 t2 <- get_pancan_gene_value("TP53")
 t3 <- get_pancan_protein_value("AKT")
 t4 <- get_pancan_mutation_status("TP53")
+t5 <- get_pancan_cn_value("TP53")
 }
 
 }

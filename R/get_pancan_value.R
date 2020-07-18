@@ -36,6 +36,7 @@ available_hosts <- function() {
 #' t2 <- get_pancan_gene_value("TP53")
 #' t3 <- get_pancan_protein_value("AKT")
 #' t4 <- get_pancan_mutation_status("TP53")
+#' t5 <- get_pancan_cn_value("TP53")
 #' }
 #'
 #' @export
@@ -61,8 +62,13 @@ get_pancan_value <- function(identifier, subtype = NULL, dataset = NULL, host = 
       dplyr::filter(XenaHostNames == host, grepl(dataset, XenaDatasets))
   }
 
-  if (nrow(data) != 1) {
-    stop("No dataset or more than one dataset is determined by input")
+  if (nrow(data) == 0) {
+    stop("No dataset is determined by input")
+  }
+  
+  if (nrow(data) > 1) {
+    data <- data %>% 
+      dplyr::filter(XenaDatasets == dataset)
   }
 
   res <- try_query_value(data[["XenaHosts"]], data[["XenaDatasets"]],
@@ -107,12 +113,7 @@ get_pancan_gene_value <- function(identifier) {
   dataset <- "TcgaTargetGtex_rsem_isoform_tpm"
   expression <- get_pancan_value(identifier, dataset = dataset, host = host)
   unit <- "log2(tpm+0.001)"
-  msg <- paste0(
-    "More info about dataset please run following commands:\n",
-    "  library(UCSCXenaTools)\n",
-    "  XenaGenerate(subset = XenaDatasets == \"", dataset, "\") %>% XenaBrowse()"
-  )
-  message(msg)
+  report_dataset_info(dataset)
   res <- list(expression = expression, unit = unit)
   res
 }
@@ -125,12 +126,7 @@ get_pancan_protein_value <- function(identifier) {
   dataset <- "TCGA-RPPA-pancan-clean.xena"
   expression <- get_pancan_value(identifier, dataset = dataset, host = host)
   unit <- "norm_value"
-  msg <- paste0(
-    "More info about dataset please run following commands:\n",
-    "  library(UCSCXenaTools)\n",
-    "  XenaGenerate(subset = XenaDatasets == \"", dataset, "\") %>% XenaBrowse()"
-  )
-  message(msg)
+  report_dataset_info(dataset)
   res <- list(expression = expression, unit = unit)
   res
 }
@@ -189,14 +185,31 @@ get_pancan_mutation_status <- function(identifier) {
   
   host <- "pancanAtlasHub"
   dataset <- "mc3.v0.2.8.PUBLIC.nonsilentGene.xena"
+  report_dataset_info(dataset)
+  
+  get_pancan_value(identifier, dataset = dataset, host = host)
+}
+
+#' @describeIn get_pancan_value Fetch gene copy number value from pan-cancer dataset processed by GISTIC 2.0
+#' @export
+get_pancan_cn_value <- function(identifier) {
+  host <- "tcgaHub"
+  dataset <- "TCGA.PANCAN.sampleMap/Gistic2_CopyNumber_Gistic2_all_thresholded.by_genes"
+  expression <- get_pancan_value(identifier, dataset = dataset, host = host)
+  unit <- "-2,-1,0,1,2: 2 copy del,1 copy del,no change,amplification,high-amplification"
+  report_dataset_info(dataset)
+  res <- list(expression = expression, unit = unit)
+  res
+}
+
+
+report_dataset_info <- function(dataset) {
   msg <- paste0(
     "More info about dataset please run following commands:\n",
     "  library(UCSCXenaTools)\n",
     "  XenaGenerate(subset = XenaDatasets == \"", dataset, "\") %>% XenaBrowse()"
   )
   message(msg)
-  
-  get_pancan_value(identifier, dataset = dataset, host = host)
 }
 
 utils::globalVariables(
