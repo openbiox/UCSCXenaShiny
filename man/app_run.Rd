@@ -4,7 +4,10 @@
 \alias{app_run}
 \title{Run Xena Shiny App}
 \usage{
-app_run()
+app_run(runMode = "client")
+}
+\arguments{
+\item{runMode}{default is 'client' for personal user, set it to 'server' for running on server.}
 }
 \description{
 Run Xena Shiny App

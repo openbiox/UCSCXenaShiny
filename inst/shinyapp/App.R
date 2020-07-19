@@ -1,3 +1,7 @@
+# Detect run mode ---------------------------------------------------------
+xena.runMode <- getOption("xena.runMode", default = "client")
+message("Run mode:", xena.runMode)
+
 # Load necessary packages ----------------------------------
 message("Checking depedencies...")
 

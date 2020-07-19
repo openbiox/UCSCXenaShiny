@@ -42,20 +42,9 @@ vis_toil_gene <- function(data, x = "primary_site",
 #'
 vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE) {
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
-  dir.create(file.path(tempdir(), "UCSCXenaShiny"), recursive = TRUE, showWarnings = FALSE)
-  tmpfile <- file.path(tempdir(), "UCSCXenaShiny", "toil_TvsN.rds")
-  if (file.exists(tmpfile)) {
-    t1 <- readRDS(tmpfile)
-    if (attr(t1, "gene") != Gene) {
-      t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
-      attr(t1, "gene") <- Gene
-      saveRDS(t1, file = tmpfile)
-    }
-  } else {
-    t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
-    attr(t1, "gene") <- Gene
-    saveRDS(t1, file = tmpfile)
-  }
+
+  t1 <- get_pancan_gene_value(identifier = Gene)$expression
+
   tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
   t2 <- t1 %>%
     as.data.frame() %>%
@@ -203,25 +192,13 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
 #' p <- vis_unicox_tree(Gene = "TP53")
 #' }
 #' @export
-vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, values = c("grey","#E31A1C","#377DB8")) {
+vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, values = c("grey", "#E31A1C", "#377DB8")) {
   ## 写在 R 内的数据集需要更严格的引用方式
   data("toil_surv", package = "UCSCXenaShiny", envir = environment())
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
-  dir.create(file.path(tempdir(), "UCSCXenaShiny"), recursive = TRUE, showWarnings = FALSE)
-  tmpfile <- file.path(tempdir(), "UCSCXenaShiny", "toil_TvsN.rds")
-  if (file.exists(tmpfile)) {
-    t1 <- readRDS(tmpfile)
-    if (attr(t1, "gene") != Gene) {
-      t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
-      attr(t1, "gene") <- Gene
-      saveRDS(t1, file = tmpfile)
-    }
-  } else {
-    t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
-    attr(t1, "gene") <- Gene
-    saveRDS(t1, file = tmpfile)
-  }
-  # t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
+
+  t1 <- get_pancan_gene_value(Gene)$expression
+
   message(paste0("Get gene expression for ", Gene))
   s <- data.frame(sample = names(t1), values = t1)
   ## we use median cutoff here
@@ -242,7 +219,7 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, valu
     if (threshold == 0.25) {
       sss_can <- sss_can %>%
         dplyr::mutate(group = ifelse(.data$values > stats::quantile(.data$values)[4], "high",
-          ifelse(.data$values < stats::quantile(.data$values)[2], "low","middle")
+          ifelse(.data$values < stats::quantile(.data$values)[2], "low", "middle")
         )) %>%
         dplyr::filter(group != "middle") %>%
         dplyr::mutate(group = factor(.data$group, levels = c("low", "high")))
@@ -298,7 +275,7 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, valu
     dplyr::mutate(lower_95_log = log(.data$lower_95)) %>%
     dplyr::mutate(upper_95_log = log(.data$upper_95)) %>%
     dplyr::mutate(Type = ifelse(.data$p.value < 0.05 & .data$HR_log > 0, "Risky", ifelse(.data$p.value < 0.05 & .data$HR_log < 0, "Protective", "NS"))) %>%
-    dplyr::mutate(Type = factor(Type, levels = c("NS","Risky", "Protective")))
+    dplyr::mutate(Type = factor(Type, levels = c("NS", "Risky", "Protective")))
   ## visualization
   p <- ggplot2::ggplot(
     data = unicox_res_all_cancers_df,
@@ -308,10 +285,12 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, valu
     ggplot2::geom_pointrange() +
     ggplot2::coord_flip() +
     ggplot2::labs(x = "", y = "log Hazard Ratio") +
-    ggplot2::theme(axis.text.x = element_text(color = "black"),
-                   axis.text.y = element_text(color = "black"),
-                   panel.grid.major = element_blank(),
-                   panel.grid.minor  = element_blank()) +
+    ggplot2::theme(
+      axis.text.x = element_text(color = "black"),
+      axis.text.y = element_text(color = "black"),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank()
+    ) +
     ggplot2::scale_color_manual(values = values)
   return(p)
 }
@@ -335,20 +314,9 @@ vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male")) {
   data("TCGA.organ", package = "UCSCXenaShiny", envir = environment())
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
   tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
-  dir.create(file.path(tempdir(), "UCSCXenaShiny"), recursive = TRUE, showWarnings = FALSE)
-  tmpfile <- file.path(tempdir(), "UCSCXenaShiny", "toil_TvsN.rds")
-  if (file.exists(tmpfile)) {
-    t1 <- readRDS(tmpfile)
-    if (attr(t1, "gene") != Gene) {
-      t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
-      attr(t1, "gene") <- Gene
-      saveRDS(t1, file = tmpfile)
-    }
-  } else {
-    t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
-    attr(t1, "gene") <- Gene
-    saveRDS(t1, file = tmpfile)
-  }
+
+  t1 <- get_pancan_gene_value(identifier = Gene)$expression
+
   message(paste0("Get gene expression for ", Gene))
   t2 <- t1 %>%
     as.data.frame() %>%
@@ -406,7 +374,7 @@ vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male")) {
       coord_cartesian(ylim = c(-120, 0)) +
       theme_void() +
       scale_fill_viridis_c() +
-      ggtitle(paste0(Gene," Male: TCGA + GTEX")) +
+      ggtitle(paste0(Gene, " Male: TCGA + GTEX")) +
       theme(plot.title = element_text(hjust = 0.5))
 
     p1
@@ -427,7 +395,7 @@ vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male")) {
       coord_cartesian(ylim = c(-120, 0)) +
       theme_void() +
       scale_fill_viridis_c() +
-      ggtitle(paste0(Gene," Female: TCGA + GTEX")) +
+      ggtitle(paste0(Gene, " Female: TCGA + GTEX")) +
       theme(plot.title = element_text(hjust = 0.5))
     p2
     return(p2)
@@ -450,20 +418,9 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_s
   immune_sig <- immune_sig %>%
     tidyr::pivot_longer(3:ncol(.), names_to = "sample", values_to = "score") %>%
     dplyr::mutate(sample = stringr::str_sub(.data$sample, 1, 15))
-  dir.create(file.path(tempdir(), "UCSCXenaShiny"), recursive = TRUE, showWarnings = FALSE)
-  tmpfile <- file.path(tempdir(), "UCSCXenaShiny", "toil_TvsN.rds")
-  if (file.exists(tmpfile)) {
-    t1 <- readRDS(tmpfile)
-    if (attr(t1, "gene") != Gene) {
-      t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
-      attr(t1, "gene") <- Gene
-      saveRDS(t1, file = tmpfile)
-    }
-  } else {
-    t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
-    attr(t1, "gene") <- Gene
-    saveRDS(t1, file = tmpfile)
-  }
+
+  t1 <- get_pancan_gene_value(identifier = Gene)$expression
+
   message(paste0("Get gene expression for ", Gene))
   s <- data.frame(sample = names(t1), values = t1)
 
@@ -500,7 +457,7 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_s
   cor_gene_immune_df <- do.call(rbind.data.frame, cor_gene_immune)
   data <- cor_gene_immune_df
   data$pstar <- ifelse(data$p.value < 0.05,
-    ifelse(data$p.value < 0.001, "***",ifelse(data$p.value < 0.01,"**","*")),
+    ifelse(data$p.value < 0.001, "***", ifelse(data$p.value < 0.01, "**", "*")),
     ""
   )
 
@@ -513,11 +470,11 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_s
       axis.title.x = ggplot2::element_blank(),
       axis.ticks.x = ggplot2::element_blank(),
       axis.title.y = ggplot2::element_blank(),
-      axis.text.x = ggplot2::element_text(angle = 45, hjust = 1), 
+      axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
       axis.text.y = ggplot2::element_text(size = 8)
-    ) + 
+    ) +
     ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "*** p < 0.001", "\n\n", "Correlation")) +
-    ggtitle(paste0("The correlation between ",Gene," with immune signatures"))
+    ggtitle(paste0("The correlation between ", Gene, " with immune signatures"))
   print(p)
   return(p)
 }

@@ -8,6 +8,7 @@
 #' Run Xena Shiny App
 #'
 #' @importFrom shiny shinyAppFile
+#' @param runMode default is 'client' for personal user, set it to 'server' for running on server.
 #' @return NULL
 #' @export
 #'
@@ -15,7 +16,9 @@
 #' \dontrun{
 #' app_run()
 #' }
-app_run <- function() {
+app_run <- function(runMode = "client") {
+  runMode <- match.arg(runMode, choices = c("client", "server"))
+  options(xena.runMode = runMode)
   shiny::shinyAppFile(system.file("shinyapp", "App.R", package = "UCSCXenaShiny"))
 }
 
