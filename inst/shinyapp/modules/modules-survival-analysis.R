@@ -262,26 +262,18 @@ sur_get <- function(TCGA_cohort, gene) {
       }
     }
   
-  gd <- UCSCXenaTools::fetch_dense_values(
-    host = gx$XenaHosts,
-    dataset = gx$XenaDatasets,
-    identifiers = gene,
-    use_probeMap = TRUE
-  ) %>%
-    .[1, ]
+  gd <- get_pancan_gene_value(gene)$expression
+  gd <- gd[nchar(names(gd)) == 15]
   
   merged_data <- tibble(
     sampleID = names(gd),
     gene_expression = as.numeric(gd),
-    patid = stringr::str_match(sampleID, "^(.*)-\\d+")[,2]
+    patid = substr(sampleID, 1, 12)
   ) %>%
-    left_join(cliMat, by = c("patid" = "bcr_patient_barcode")) %>%
-    dplyr::filter(
-      # sample_type == names(which.max(table(sample_type))),
-      !as.numeric(stringr::str_extract(sampleID, "\\d+$")) %in% c(10:29),
-      !is.na(OS),
-      !is.na(OS.time)
-    ) %>%
+    dplyr::filter(as.numeric(substr(sampleID, 14, 15)) < 10) %>% 
+    dplyr::left_join(cliMat, by = c("patid" = "bcr_patient_barcode")) %>% 
+    dplyr::filter(!is.na(OS),
+                  !is.na(OS.time)) %>%
     dplyr::select(sampleID, gene_expression,
                   time = OS.time, status = OS,
                   gender, age = age_at_initial_pathologic_diagnosis,

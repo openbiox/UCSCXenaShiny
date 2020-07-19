@@ -41,13 +41,13 @@ ezcor <- function(data = NULL,
     if (!split_var %in% colnames(ss)) {
       stop("split variable is unavailable in the dataset!")
     }
-    #index
-    n = which(colnames(ss) %in% split_var)
+    # index
+    n <- which(colnames(ss) %in% split_var)
     sss <- with(ss, split(ss, ss[, n]))
     s <- names(sss)
-    ##calculate correlation
+    ## calculate correlation
     cor2var <- purrr::map(s, purrr::safely(function(x) {
-      #x = s[1]
+      # x = s[1]
       sss_sub <- sss[[x]]
       dd <-
         psych::corr.test(
@@ -57,7 +57,7 @@ ezcor <- function(data = NULL,
           adjust = adjust_method,
           use =  use
         )
-      #dd <- stats::cor.test(as.numeric(sss_can[,var1]),as.numeric(sss_can[,var2]), type = cor_method)
+      # dd <- stats::cor.test(as.numeric(sss_can[,var1]),as.numeric(sss_can[,var2]), type = cor_method)
       ddd <-
         data.frame(
           cor = dd$r,
@@ -65,7 +65,7 @@ ezcor <- function(data = NULL,
           method = cor_method,
           adjust = adjust_method,
           v1 = var1,
-          v2 = var2 ,
+          v2 = var2,
           stringsAsFactors = F
         )
       ddd$group <- x
@@ -73,7 +73,7 @@ ezcor <- function(data = NULL,
     })) %>% purrr::set_names(s)
 
     cor2var <- cor2var %>%
-      purrr::map( ~ .x$result) %>%
+      purrr::map(~ .x$result) %>%
       purrr::compact()
     cor2var_df <- do.call(rbind.data.frame, cor2var)
 
@@ -124,7 +124,6 @@ ezcor <- function(data = NULL,
         ),
         ""
       )
-
     }
     return(cor2var_df)
   }
@@ -173,8 +172,9 @@ ezcor_batch <- function(data,
         stop("Please install 'furrr' package firstly!")
       }
       if (length(var2) < 200) {
-        if (verbose)
+        if (verbose) {
           message("Warning: variable < 200, parallel computation is not recommended!")
+        }
       }
 
       oplan <- future::plan()
@@ -211,7 +211,7 @@ ezcor_batch <- function(data,
     res2 <- dplyr::bind_rows(res)
     return(res2)
   }
-  else{
+  else {
     all_cols <- unique(c(var1, var2))
     ss <- ss[, all_cols]
     res <- purrr::map(
@@ -230,7 +230,6 @@ ezcor_batch <- function(data,
     res2 <- dplyr::bind_rows(res)
     return(res2)
   }
-
 }
 
 ezcor_caller <- function(var2,
