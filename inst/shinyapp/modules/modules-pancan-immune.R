@@ -63,18 +63,18 @@ ui.modules_pancan_immune <- function(id) {
 }
 
 server.modules_pancan_immune <- function(input, output, session) {
-  observeEvent(input$Pancan_search, {
-    if (nchar(input$Pancan_search) >= 1) {
-      output$hm_gene_immune_cor <- renderPlot({
-        vis_gene_immune_cor(
-          Gene = input$Pancan_search,
-          Immune_sig_type = input$immune_sig,
-          Cor_method = input$Cor_method
-        )
-      })
-    }
-  })
-  
+  # observeEvent(input$Pancan_search, {
+  #   if (nchar(input$Pancan_search) >= 1) {
+  #     output$hm_gene_immune_cor <- renderPlot({
+  #       vis_gene_immune_cor(
+  #         Gene = input$Pancan_search,
+  #         Immune_sig_type = input$immune_sig,
+  #         Cor_method = input$Cor_method
+  #       )
+  #     })
+  #   }
+  # })
+  # 
   ns <- session$ns
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("hm_gene_immune_cor"), html = waiter::spin_hexdots(), color = "white")
@@ -83,7 +83,8 @@ server.modules_pancan_immune <- function(input, output, session) {
     if (nchar(input$Pancan_search) >= 1) {
       p <- vis_gene_immune_cor(
         Gene = input$Pancan_search,
-        Immune_sig_type = input$immune_sig
+        Immune_sig_type = input$immune_sig,
+        Cor_method = input$Cor_method
       )
     }
     return(p)
