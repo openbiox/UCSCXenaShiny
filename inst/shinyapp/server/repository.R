@@ -287,17 +287,17 @@ if (xena.runMode == "client") {
   #Download buttom of request data with zip compress
   message("Download datasets from server mode.")
   output$download <- downloadHandler(
-    filename = paste(format(Sys.time(), "%Y-%m-%d-%H-%M-%S"), "database.zip", sep = "-"),
+    filename = paste(format(Sys.time(), "%Y-%m-%d-%H-%M-%S"), "xena-datasets.zip", sep = "-"),
     contentType = "application/zip",
     content = function(file) {
       xe_download <- UCSCXenaTools::XenaDownload(query_url(),
                                                  destdir = path.expand("~/.xenashiny/datasets"),
                                                  trans_slash = TRUE,
                                                  download_probeMap = TRUE)
-      zip::zipr(zipfile = file.path(tempdir(), "target_database.zip"), 
+      zip::zipr(zipfile = file.path(tempdir(), "xena-datasets.zip"), 
                 files = xe_download$destfiles, recurse = FALSE)
-      file.copy(file.path(tempdir(), "target_database.zip"), file)
-      file.remove(file.path(tempdir(), "target_database.zip"))
+      file.copy(file.path(tempdir(), "xena-datasets.zip"), file)
+      file.remove(file.path(tempdir(), "xena-datasets.zip"))
     }
   )
 }
