@@ -119,7 +119,17 @@ server.modules_pancan_dist <- function(input, output, session) {
     },
     content = function(file) {
       p <- plot_func()
-      ggplot2::ggsave(filename = file, plot = print(p), device = input$device, width = input$width, height = input$height, dpi = 600)
+      if(input$device == "pdf"){
+        pdf(file,width = input$width, height = input$height)
+        print(p)
+        dev.off()
+      } else {
+        png(file,width = input$width, height = input$height,res = 300,units = "in")
+        print(p)
+        dev.off()
+      }
+      
+      #ggplot2::ggsave(filename = file, plot = print(p), device = input$device, width = input$width, height = input$height, dpi = 600)
     }
   )
   

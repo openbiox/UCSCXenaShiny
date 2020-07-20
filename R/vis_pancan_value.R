@@ -303,7 +303,7 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, valu
 #' @importFrom stats complete.cases median
 #' @export
 
-vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male")) {
+vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male"), option = "D") {
   Gender <- match.arg(Gender)
 
   if (!requireNamespace("gganatogram")) {
@@ -373,7 +373,7 @@ vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male")) {
       labs(fill = "Log2(TPM + 0.001)") +
       coord_cartesian(ylim = c(-120, 0)) +
       theme_void() +
-      scale_fill_viridis_c() +
+      scale_fill_viridis_c(option = option) +
       ggtitle(paste0(Gene, " Male: TCGA + GTEX")) +
       theme(plot.title = element_text(hjust = 0.5))
 
@@ -394,7 +394,7 @@ vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male")) {
       labs(fill = "Log2(TPM + 0.001)") +
       coord_cartesian(ylim = c(-120, 0)) +
       theme_void() +
-      scale_fill_viridis_c() +
+      scale_fill_viridis_c(option = option) +
       ggtitle(paste0(Gene, " Female: TCGA + GTEX")) +
       theme(plot.title = element_text(hjust = 0.5))
     p2
