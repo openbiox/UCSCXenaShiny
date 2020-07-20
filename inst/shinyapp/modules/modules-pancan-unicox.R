@@ -26,7 +26,7 @@ ui.modules_pancan_unicox  <- function(id) {
           fluidRow(
             selectInput(inputId = ns("measure"), label ="Select Measure for plot", choices = c("OS","PFI","DSS","DFI"), selected = "OS"),
             selectInput(inputId = ns("threshold"), label = "Select Threshold for plot", choices = c(0.25,0.5), selected = 0.5),
-            colourpicker::colourInput(inputId = ns("first_col"), "First color", "grey"),
+            colourpicker::colourInput(inputId = ns("first_col"), "First color", "#6A6F68"),
             colourpicker::colourInput(inputId = ns("second_col"), "Second color",  "#E31A1C"),
             colourpicker::colourInput(inputId = ns("third_col"), "Third color", "#377DB8"),
           ),
