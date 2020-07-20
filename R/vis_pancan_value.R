@@ -439,7 +439,7 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_s
     cor_res_class_can <- purrr::map(cells, purrr::safely(function(i) {
       # i = cells[1]
       dd <- sss_can_class[sss_can_class$SetName == i, ]
-      dd <- stats::cor.test(dd$values, dd$score, type = Cor_method)
+      dd <- stats::cor.test(dd$values, dd$score, method = Cor_method)
       ddd <- data.frame(gene = Gene, immune_cells = i, cor = dd$estimate, p.value = dd$p.value, stringsAsFactors = FALSE)
       return(ddd)
     })) %>% magrittr::set_names(cells)
