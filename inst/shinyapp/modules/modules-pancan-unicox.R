@@ -55,10 +55,15 @@ ui.modules_pancan_unicox  <- function(id) {
         )
       ),
       mainPanel = mainPanel(
-        column(
+        fluidRow(column(
           10,
-          wellPanel(plotOutput(ns("unicox_gene_tree"),height = "600px"),style = "height:700px")
-        )
+          wellPanel(plotOutput(ns("unicox_gene_tree"),height = "600px"),style = "height:650px")
+        )),
+        fluidRow(column(
+          12,
+          DT::DTOutput(outputId = ns('tbl')),
+          downloadButton(ns("downloadTable"), "Save as csv")
+        ))
       )
     )
     
@@ -73,6 +78,24 @@ server.modules_pancan_unicox <- function(input, output, session) {
   w <- waiter::Waiter$new(id = ns("unicox_gene_tree"), html = waiter::spin_hexdots(), color = "white")
   
   colors <- reactive({c(input$first_col,input$second_col,input$third_col)})
+  
+  return_data <- reactive({
+    if (nchar(input$Pancan_search) >= 1) {
+      p <- vis_unicox_tree(
+        Gene = input$Pancan_search,
+        measure = input$measure,
+        threshold = input$threshold,
+        values = colors()
+      )
+      
+      data = p$data
+      data = data %>% as.data.frame %>%dplyr::select(cancer, measure, n_contrast, n_ref, beta, HR_log, lower_95_log, upper_95_log, Type, p.value)
+      return(data)
+    }
+    
+    
+  })
+  
   
   plot_func <- reactive({
     if (nchar(input$Pancan_search) >= 1) {
@@ -115,4 +138,17 @@ server.modules_pancan_unicox <- function(input, output, session) {
     }
   )
  
+  
+  output$tbl = renderDT(
+    data <- return_data(), options = list(lengthChange = FALSE)
+  )
+  
+  output$downloadTable <- downloadHandler(
+    filename = function(){
+      paste0(input$Pancan_search,"_",input$measure,"_gene_pancan_unicox.csv")
+    },
+    content = function(file) {
+      write.csv(data <- return_data(), file, row.names = FALSE)
+    }
+  )
 }
