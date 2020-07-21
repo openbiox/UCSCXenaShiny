@@ -109,19 +109,40 @@ get_ccle_protein_value <- function(identifier) {
   "p90RSK_Caution", "p90RSK_pT359_S363_Caution", "p90RSK_pT573_Caution"
 )
 
-# https://xenabrowser.net/datapages/?dataset=ccle%2FCCLE_DepMap_18Q2_maf_20180502&host=https%3A%2F%2Fucscpublic.xenahubs.net&removeHub=https%3A%2F%2Fxena.treehouse.gi.ucsc.edu%3A443
+# NOTE this result is different from get_pancan_mutation_status!
 # It is maf like format, needs further processing.
-# get_ccle_mutation_status <- function(identifier) {
-#   if (utils::packageVersion("UCSCXenaTools") < "1.3.2") {
-#     stop("You need to update 'UCSCXenaTools' (>=1.3.2).", call. = FALSE)
-#   }
-#
-#   host <- "publicHub"
-#   dataset <- "ccle/CCLE_DepMap_18Q2_maf_20180502"
-#   report_dataset_info(dataset)
-#
-#   get_pancan_value(identifier, dataset = dataset, host = host)
-# }
+# See ?read.maf to get nonsync mutation
+#' @describeIn get_pancan_value Fetch gene mutation info from CCLE dataset
+#' @export
+get_ccle_mutation_status <- function(identifier) {
+  if (utils::packageVersion("UCSCXenaTools") < "1.3.2") {
+    stop("You need to update 'UCSCXenaTools' (>=1.3.2).", call. = FALSE)
+  }
+
+  #host <- "publicHub"
+  host <- "https://ucscpublic.xenahubs.net"
+  dataset <- "ccle/CCLE_DepMap_18Q2_maf_20180502"
+  report_dataset_info(dataset)
+  
+  res <- check_exist_data(identifier, dataset, host)
+  if (res$ok) {
+    data <- res$data
+  } else {
+    query_list <- UCSCXenaTools::fetch_sparse_values(host, dataset, identifier)
+    data <- as.data.frame(query_list$rows)
+    data <- dplyr::full_join(
+      dplyr::tibble(
+        sampleID = query_list$samples
+      ),
+      data, 
+      by = "sampleID"
+    )
+    save_data(data, identifier, dataset, host)
+  }
+  
+  report_dataset_info(dataset)
+  data
+}
 
 # ## 直接下载整个数据吧？或者存到包里
 # get_ccle_phenotype <- function() {

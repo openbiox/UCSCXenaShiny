@@ -4,7 +4,7 @@
 \alias{vis_pancan_anatomy}
 \title{Visualize single gene expression in anatomy location}
 \usage{
-vis_pancan_anatomy(Gene = "TP53", Gender = c("Female", "Male"))
+vis_pancan_anatomy(Gene = "TP53", Gender = c("Female", "Male"), option = "D")
 }
 \arguments{
 \item{Gene}{Gene symbal for comparision}
