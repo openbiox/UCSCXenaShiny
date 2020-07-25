@@ -148,3 +148,10 @@ get_ccle_mutation_status <- function(identifier) {
 # get_ccle_phenotype <- function() {
 #
 # }
+
+# obtain ccle phenotype
+# ccle_info <- XenaGenerate(subset = XenaDatasets == "ccle/CCLE_sample_info_file_2012-10-18.txt") %>%
+#   XenaQuery() %>%
+#   XenaDownload() %>%
+#   XenaPrepare() %>%
+#   as.data.frame()
