@@ -639,9 +639,12 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value =
     pv <- pv %>% dplyr::select(c("tissue", "p", "p.signif", "p.adj"))
     message("Counting P value finished")
   }
+  data = tcga_gtex_withNormal
   if (Mode == "Boxplot") {
-    p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "tissue", y = "tpm", fill = "type2")) +
+    p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "type2", y = "tpm", fill = "type2")) +
       ggplot2::geom_boxplot() +
+      ggplot2::geom_dotplot(binaxis='y', stackdir='center',position = "identity") +
+      #ggplot2::geom_jitter(aes_string(color = "type2"),shape=16, position=position_jitter(0.2), size = 2) +
       ggplot2::xlab(NULL) +
       ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
       ggplot2::theme_set(theme_set(theme_classic(base_size = 20))) +
@@ -649,15 +652,16 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value =
       ggplot2::guides(fill = guide_legend(title = NULL)) +
       ggplot2::theme(
         legend.background = element_blank(),
-        legend.position = c(0, 0), legend.justification = c(0, 0)
+        legend.position = "none", legend.justification = c(0, 0)
       ) +
-      ggplot2::scale_fill_manual(values = values)
+      ggplot2::scale_fill_manual(values = values)+
+      ggplot2::scale_color_manual(values = values)
     # p <- p + ggplot2::geom_boxplot(data = tcga_gtex_MESO) +
     #   ggplot2::geom_boxplot(data = tcga_gtex_UVM)
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       p <- p + ggplot2::geom_text(aes(
-        x = .data$tissue,
-        y = max(tcga_gtex_withNormal$tpm) * 1.1,
+        x = 1.5,
+        y = max(data$tpm) * 1.1,
         label = .data$p.signif
       ),
       data = pv,
@@ -666,8 +670,8 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value =
     }
     if (Show.P.value == TRUE & Show.P.label == FALSE) {
       p <- p + ggplot2::geom_text(aes(
-        x = .data$tissue,
-        y = max(tcga_gtex_withNormal$tpm) * 1.1,
+        x = 1.5,
+        y = max(data$tpm) * 1.1,
         label = as.character(signif(.data$p, 2))
       ),
       data = pv,
@@ -677,18 +681,12 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value =
     print(p)
   }
   if (Mode == "Violinplot") {
-    p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "tissue", y = "tpm", fill = "type2")) +
-      geom_split_violin(
-        draw_quantiles = c(0.25, 0.5, 0.75),
-        trim = TRUE,
-        linetype = "solid",
-        color = "black",
-        size = 0.2,
-        na.rm = TRUE,
-        position = "identity"
-      ) +
+    p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "type2", y = "tpm", fill = "type2")) +
+      ggplot2::geom_violin(trim=FALSE) +
+      ggplot2::geom_boxplot(width=0.1, fill="white") +
       ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
       ggplot2::xlab("") +
+      # ggplot2::ggtitle(.data$tissue) +
       ggplot2::scale_fill_manual(values = values) +
       ggplot2::theme_set(ggplot2::theme_classic(base_size = 20)) +
       ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = .5, vjust = .5)) +
@@ -699,8 +697,8 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value =
       )
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       p <- p + ggplot2::geom_text(ggplot2::aes(
-        x = .data$tissue,
-        y = max(tcga_gtex_withNormal$tpm) * 1.1,
+        x = 1.5,
+        y = max(data$tpm) * 1.1,
         label = .data$p.signif
       ),
       data = pv,
@@ -709,8 +707,8 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value =
     }
     if (Show.P.value == TRUE & Show.P.label == FALSE) {
       p <- p + ggplot2::geom_text(ggplot2::aes(
-        x = .data$tissue,
-        y = max(tcga_gtex_withNormal$tpm) * 1.1,
+        x = 1.5,
+        y = max(data$tpm) * 1.1,
         label = as.character(signif(.data$p, 2))
       ),
       data = pv,
