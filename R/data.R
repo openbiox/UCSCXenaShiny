@@ -47,6 +47,15 @@ NULL
 #' data("toil_surv")
 NULL
 
+#' Toil Hub: TCGA survival data from paper
+#' @docType data
+#' @name cliMat
+#' @format A [data.frame]
+#' @source Generate from paper
+#' @examples
+#' data("tcga_clinicalMatrix")
+NULL
+
 #' Toil Hub: merged TCGA GTEX selected phenotypes
 #' @docType data
 #' @name tcga_gtex
