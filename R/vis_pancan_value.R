@@ -592,6 +592,136 @@ vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman") {
   return(p)
 }
 
+# Visualize Single cancer TPM (Tumor (TCGA) vs normal (TCGA & GTEX))
+#' Visualize single gene expression from toil data hub (Single cancer type)
+#' @import ggplot2 dplyr tibble
+#' @param Gene Gene symbal for comparision
+#' @param Mode Boxplot or Violinplot to represent data
+#' @param Show.P.value `TRUE` or `FALSE` whether to count P value
+#' @param Method default method is wilcox.test
+#' @param Show.P.label `TRUE` or `FALSE` present p value with number or label `*`, `**`, `***` and `****`
+#' @param values the color to fill tumor or normal
+#' @param TCGA.only include samples only from TCGA dataset
+#' @param Cancer select a cancer
+#' @return a `ggplot` object
+#' @export
+#'
+vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, Cancer = "ACC") {
+  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
+  
+  t1 <- get_pancan_gene_value(identifier = Gene)$expression
+  
+  tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
+  t2 <- t1 %>%
+    as.data.frame() %>%
+    dplyr::rename("tpm" = ".") %>%
+    tibble::rownames_to_column(var = "sample") %>%
+    dplyr::inner_join(tcga_gtex, by = "sample")
+  tumorlist <- unique(tcga_gtex[tcga_gtex$type2 == "tumor", ]$tissue)
+  normallist <- unique(tcga_gtex[tcga_gtex$type2 == "normal", ]$tissue)
+  withoutNormal <- setdiff(tumorlist, normallist)
+  tcga_gtex <- t2 %>% dplyr::select("tpm", "tissue", "type2", "sample")
+  tcga_gtex$type2 <- factor(tcga_gtex$type2, levels = c("tumor", "normal"))
+  tcga_gtex_withNormal <- tcga_gtex[!(tcga_gtex$tissue %in% withoutNormal), ]
+  tcga_gtex_withNormal <- tcga_gtex_withNormal %>%
+    dplyr::mutate(dataset = ifelse(stringr::str_sub(.data$sample, 1, 4) == "TCGA", "TCGA", "GTEX"))
+  if (TCGA.only == TRUE) {
+    tcga_gtex_withNormal <- tcga_gtex_withNormal %>% dplyr::filter(.data$dataset == "TCGA")
+  }
+  tcga_gtex_withNormal = tcga_gtex_withNormal %>% dplyr::filter(.data$tissue == Cancer)
+  if (Show.P.value == FALSE) {
+    Show.P.label <- FALSE
+  }
+  if (Show.P.value == TRUE) {
+    message("Counting P value")
+    pv <- tcga_gtex_withNormal %>%
+      ggpubr::compare_means(tpm ~ type2, data = ., method = Method, group.by = "tissue")
+    pv <- pv %>% dplyr::select(c("tissue", "p", "p.signif", "p.adj"))
+    message("Counting P value finished")
+  }
+  if (Mode == "Boxplot") {
+    p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "tissue", y = "tpm", fill = "type2")) +
+      ggplot2::geom_boxplot() +
+      ggplot2::xlab(NULL) +
+      ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
+      ggplot2::theme_set(theme_set(theme_classic(base_size = 20))) +
+      ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5)) +
+      ggplot2::guides(fill = guide_legend(title = NULL)) +
+      ggplot2::theme(
+        legend.background = element_blank(),
+        legend.position = c(0, 0), legend.justification = c(0, 0)
+      ) +
+      ggplot2::scale_fill_manual(values = values)
+    # p <- p + ggplot2::geom_boxplot(data = tcga_gtex_MESO) +
+    #   ggplot2::geom_boxplot(data = tcga_gtex_UVM)
+    if (Show.P.value == TRUE & Show.P.label == TRUE) {
+      p <- p + ggplot2::geom_text(aes(
+        x = .data$tissue,
+        y = max(tcga_gtex_withNormal$tpm) * 1.1,
+        label = .data$p.signif
+      ),
+      data = pv,
+      inherit.aes = FALSE
+      )
+    }
+    if (Show.P.value == TRUE & Show.P.label == FALSE) {
+      p <- p + ggplot2::geom_text(aes(
+        x = .data$tissue,
+        y = max(tcga_gtex_withNormal$tpm) * 1.1,
+        label = as.character(signif(.data$p, 2))
+      ),
+      data = pv,
+      inherit.aes = FALSE
+      )
+    }
+    print(p)
+  }
+  if (Mode == "Violinplot") {
+    p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "tissue", y = "tpm", fill = "type2")) +
+      geom_split_violin(
+        draw_quantiles = c(0.25, 0.5, 0.75),
+        trim = TRUE,
+        linetype = "solid",
+        color = "black",
+        size = 0.2,
+        na.rm = TRUE,
+        position = "identity"
+      ) +
+      ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
+      ggplot2::xlab("") +
+      ggplot2::scale_fill_manual(values = values) +
+      ggplot2::theme_set(ggplot2::theme_classic(base_size = 20)) +
+      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = .5, vjust = .5)) +
+      ggplot2::guides(fill = ggplot2::guide_legend(title = NULL)) +
+      ggplot2::theme(
+        legend.background = ggplot2::element_blank(),
+        legend.position = c(0, 0), legend.justification = c(0, 0)
+      )
+    if (Show.P.value == TRUE & Show.P.label == TRUE) {
+      p <- p + ggplot2::geom_text(ggplot2::aes(
+        x = .data$tissue,
+        y = max(tcga_gtex_withNormal$tpm) * 1.1,
+        label = .data$p.signif
+      ),
+      data = pv,
+      inherit.aes = FALSE
+      )
+    }
+    if (Show.P.value == TRUE & Show.P.label == FALSE) {
+      p <- p + ggplot2::geom_text(ggplot2::aes(
+        x = .data$tissue,
+        y = max(tcga_gtex_withNormal$tpm) * 1.1,
+        label = as.character(signif(.data$p, 2))
+      ),
+      data = pv,
+      inherit.aes = FALSE
+      )
+    }
+    print(p)
+  }
+  return(p)
+}
+
 
 # Global variables --------------------------------------------------------
 

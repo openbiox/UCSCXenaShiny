@@ -1,3 +1,33 @@
 
-t1 <- get_ccle_gene_value(identifier = "TP53")$expression
-#head(t1)
+
+# Visualize CCLE TPM
+#' @import ggplot2 dplyr tibble
+#' @param Gene Gene symbal for comparision
+#' @param x.axis Different parameters for x.axis
+#' @return a `ggplot` object
+#' @export
+vis_ccle_tpm <- function(Gene = "TP53", x.axis = "Type"){
+  t1 <- get_ccle_gene_value(identifier = Gene)$expression
+  data("ccle_info", package = "UCSCXenaShiny", envir = environment())
+  t2 <- t1 %>%
+    as.data.frame() %>%
+    dplyr::rename("tpm" = ".") %>%
+    tibble::rownames_to_column(var = "cell") %>%
+    dplyr::inner_join(ccle_info, by = c("cell" = "CCLE_name"))
+  
+  p <- ggplot2::ggplot(t2, aes_string(x = x.axis, y = "tpm", fill = x.axis)) +
+    ggplot2::geom_boxplot() +
+    ggplot2::xlab(NULL) +
+    ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
+    ggplot2::theme_classic(base_size = 10) +
+    ggplot2::theme(axis.text.x = element_text(angle = 90)) +
+    ggplot2::guides(fill = guide_legend(title = NULL)) +
+    ggplot2::theme(
+      legend.background = element_blank(),
+      legend.position = "none"
+    )
+  print(p)
+  return(p)
+}
+
+
