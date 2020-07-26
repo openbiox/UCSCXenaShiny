@@ -72,7 +72,13 @@ purity_data <- purity_data %>%
 TCGA.organ <- data.table::fread("data-raw/TCGA_organ.txt", data.table = F)
 TCGA.organ <- TCGA.organ[, -3]
 
-
+#-------ccle phenotype--------------------------------------
+download.file("https://data.broadinstitute.org/ccle_legacy_data/cell_line_annotations/CCLE_sample_info_file_2012-10-18.txt", destfile = "./data-raw/ccle_pheno.txt", method="curl")
+ccle_info = data.table::fread("./data-raw/ccle_pheno.txt",data.table = F)
+table(ccle_info$Histology)
+table(ccle_info$`Site Primary`)
+ccle_info %>% mutate(Type = ifelse(`Hist Subtype1`== "NS",Histology,`Hist Subtype1`)) -> ccle_info
+names(ccle_info) <- c("CCLE_name","Cell_line_primary_name","Cell_line_aliases","Gender","Site_Primary","Histology","Hist_Subtype1","Notes","Source","Expression_arrays","SNP_arrays","Oncomap","Hybrid_Capture_Sequencing","Type")
 
 usethis::use_data(toil_info, overwrite = TRUE)
 usethis::use_data(toil_surv, overwrite = TRUE)
@@ -83,3 +89,4 @@ usethis::use_data(gi_data, overwrite = TRUE)
 usethis::use_data(purity_data, overwrite = TRUE)
 usethis::use_data(t1, overwrite = TRUE)
 usethis::use_data(TCGA.organ, overwrite = TRUE)
+usethis::use_data(ccle_info, overwrite = TRUE)

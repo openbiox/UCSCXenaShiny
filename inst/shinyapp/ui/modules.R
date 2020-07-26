@@ -10,6 +10,10 @@ ui.page_modules <- function() {
       ui.modules_pancan_dist("module_gene_pancan_dist")
     ),
     tabPanel(
+      "Gene Cancer Expression Distribution",
+      ui.modules_cancer_dist("modules_cancer_dist")
+    ),
+    tabPanel(
       "Gene Pan-cancer Expression Anatomy",
       ui.modules_pancan_anatomy("modules_pancan_anatomy")
     ),
@@ -24,6 +28,10 @@ ui.page_modules <- function() {
     tabPanel(
       "Survival Analysis",
       ui.modules_sur_plot("modules_sur_plot")
+    ),
+    tabPanel(
+      "Gene CCLE Expression Distribution",
+      ui.modules_ccle_dist("modules_ccle_dist")
     )
   )
 }
