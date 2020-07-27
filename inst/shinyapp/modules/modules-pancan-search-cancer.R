@@ -28,9 +28,9 @@ ui.modules_cancer_dist <- function(id) {
       sidebarPanel = sidebarPanel(
         fluidPage(
           fluidRow(
-            materialSwitch(ns("pdist_mode"), "Show violin plot", inline = TRUE),
-            materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = TRUE),
-            materialSwitch(ns("pdist_show_p_label"), "Show P label", inline = TRUE),
+            materialSwitch(ns("pdist_mode"), "Show Box plot", inline = TRUE),
+            materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = FALSE),
+            materialSwitch(ns("pdist_show_p_label"), "Show P label", inline = FALSE),
             materialSwitch(ns("pdist_dataset"), "TCGA Dataset only", inline = FALSE),
             colourpicker::colourInput(inputId = ns("tumor_col"), "Tumor sample color", "#DF2020"),
             colourpicker::colourInput(inputId = ns("normal_col"), "Normal sample color",  "#DDDF21"),
@@ -85,7 +85,7 @@ server.modules_cancer_dist <- function(input, output, session) {
       p <- vis_toil_TvsN_cancer(
         Gene = input$pancan_search,
         Cancer = input$Cancer,
-        Mode = ifelse(input$pdist_mode, "Violinplot", "Boxplot"),
+        Mode = ifelse(input$pdist_mode, "Boxplot","Violinplot"),
         Show.P.value = input$pdist_show_p_value,
         Show.P.label = input$pdist_show_p_label,
         TCGA.only = input$pdist_dataset,
