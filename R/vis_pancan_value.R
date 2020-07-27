@@ -45,7 +45,8 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
 
   t1 <- get_pancan_gene_value(identifier = Gene)$expression
 
-  tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
+  tcga_gtex <- tcga_gtex %>% dplyr::group_by(.data$tissue) %>% dplyr::distinct(.data$sample, .keep_all = TRUE)
+  
   t2 <- t1 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
@@ -198,7 +199,10 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, valu
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
 
   t1 <- get_pancan_gene_value(Gene)$expression
-
+  
+  #we filter out normal tissue
+  tcga_gtex = tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
+  
   message(paste0("Get gene expression for ", Gene))
   s <- data.frame(sample = names(t1), values = t1)
   ## we use median cutoff here
@@ -415,6 +419,10 @@ vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male"), opti
 vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_sig_type = "Cibersort") {
   data("immune_sig", package = "UCSCXenaShiny", envir = environment())
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
+  
+  #we filter out normal tissue
+  tcga_gtex = tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
+  
   immune_sig <- immune_sig %>%
     tidyr::pivot_longer(3:ncol(.), names_to = "sample", values_to = "score") %>%
     dplyr::mutate(sample = stringr::str_sub(.data$sample, 1, 15))
@@ -606,12 +614,15 @@ vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman") {
 #' @return a `ggplot` object
 #' @export
 #'
-vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, Cancer = "ACC") {
+vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, Cancer = "ACC") {
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
   
   t1 <- get_pancan_gene_value(identifier = Gene)$expression
   
-  tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
+  tcga_gtex <- tcga_gtex %>% dplyr::group_by(.data$tissue) %>% dplyr::distinct(.data$sample, .keep_all = TRUE)
+  
+  #tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
+  
   t2 <- t1 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
@@ -635,8 +646,8 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value =
   if (Show.P.value == TRUE) {
     message("Counting P value")
     pv <- tcga_gtex_withNormal %>%
-      ggpubr::compare_means(tpm ~ type2, data = ., method = Method, group.by = "tissue")
-    pv <- pv %>% dplyr::select(c("tissue", "p", "p.signif", "p.adj"))
+      ggpubr::compare_means(tpm ~ type2, data = ., method = Method)
+    pv <- pv %>% dplyr::select(c("p", "p.signif", "p.adj"))
     message("Counting P value finished")
   }
   data = tcga_gtex_withNormal
