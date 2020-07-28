@@ -1,7 +1,7 @@
 
 
 #' Visualize CCLE Gene Expression in TPM format
-#' @import ggplot2 dplyr tibble
+#' @import ggplot2 dplyr tibble forcats
 #' @param Gene Gene symbal for comparision
 #' @param x.axis Different parameters for x.axis
 #' @return a `ggplot` object
@@ -15,7 +15,11 @@ vis_ccle_tpm <- function(Gene = "TP53", x.axis = "Type"){
     tibble::rownames_to_column(var = "cell") %>%
     dplyr::inner_join(ccle_info, by = c("cell" = "CCLE_name"))
   
-  p <- ggplot2::ggplot(t2, aes_string(x = x.axis, y = "tpm", fill = x.axis)) +
+  t2[[x.axis]] = forcats::fct_reorder(t2[[x.axis]], t2$tpm)
+  
+  # t2 %>% mutate(x.axis = fct_reorder(x.axis, tpm, .fun='median')) -> t2
+  
+  p <- t2 %>% ggplot2::ggplot(aes_string(x = x.axis, y = "tpm", fill = x.axis)) +
     ggplot2::geom_boxplot() +
     ggplot2::xlab(NULL) +
     ggplot2::ylab(paste0(Gene, " expression (TPM)")) +

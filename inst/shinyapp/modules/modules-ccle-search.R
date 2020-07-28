@@ -1,4 +1,4 @@
-choices <- c(
+ccle_choices <- c(
   "Gender","Site_Primary","Histology","Hist_Subtype1","Source","Expression_arrays","SNP_arrays","Hybrid_Capture_Sequencing","Type" 
 )
 
@@ -28,7 +28,7 @@ ui.modules_ccle_dist <- function(id) {
       sidebarPanel = sidebarPanel(
         fluidPage(
           fluidRow(
-            selectInput(inputId = ns("x.axis"), label = "Select Parameter to display in x.axis", choices = choices, selected = "Type"),
+            selectInput(inputId = ns("x.axis"), label = "Select Parameter to display in x.axis", choices = ccle_choices, selected = "Type"),
             fluidRow(
               numericInput(inputId = ns("height"),label = "Height",value = 5),
               numericInput(inputId = ns("width"),label = "Width",value = 12),
