@@ -10,6 +10,7 @@
 \alias{get_pancan_protein_value}
 \alias{get_pancan_mutation_status}
 \alias{get_pancan_cn_value}
+\alias{get_pancan_methylation_value}
 \title{Fetch identifier value from pan-cancer dataset}
 \usage{
 get_ccle_cn_value(identifier)
@@ -35,6 +36,8 @@ get_pancan_protein_value(identifier)
 get_pancan_mutation_status(identifier)
 
 get_pancan_cn_value(identifier)
+
+get_pancan_methylation_value(identifier, type = c("450K", "27K"))
 }
 \arguments{
 \item{identifier}{a length-1 character representing a gene symbol, ensembl gene id, or probe id.
@@ -49,6 +52,8 @@ Gene symbol is highly recommended.}
 \item{host}{a length-1 character representing host name, e.g. "toilHub".}
 
 \item{samples}{a character vector representing samples want to be returned.}
+
+\item{type}{methylation type, one of "450K" and "27K".}
 }
 \value{
 a named vector or \code{list}
@@ -75,6 +80,8 @@ Identifier includes gene/probe etc.
 \item \code{get_pancan_mutation_status}: Fetch mutation status value from pan-cancer dataset
 
 \item \code{get_pancan_cn_value}: Fetch gene copy number value from pan-cancer dataset processed by GISTIC 2.0
+
+\item \code{get_pancan_methylation_value}: Fetch gene expression value from CCLE dataset
 }}
 
 \examples{

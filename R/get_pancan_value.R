@@ -238,6 +238,34 @@ get_pancan_cn_value <- function(identifier) {
 }
 
 
+#' @describeIn get_pancan_value Fetch gene expression value from CCLE dataset
+#' @param type methylation type, one of "450K" and "27K".
+#' @export
+get_pancan_methylation_value <- function(identifier, type = c("450K", "27K")) {
+  type <- match.arg(type)
+  
+  if (type == "450K") {
+    host <- "pancanAtlasHub"
+    dataset <- "jhu-usc.edu_PANCAN_HumanMethylation450.betaValue_whitelisted.tsv.synapse_download_5096262.xena"
+  } else {
+    host <- "tcgaHub"
+    dataset <- "TCGA.PANCAN.sampleMap/HumanMethylation27"
+  }
+  
+  res <- check_exist_data(identifier, dataset, host)
+  if (res$ok) {
+    data <- res$data
+  } else {
+    data <- get_pancan_value(identifier, dataset = dataset, host = host)
+    save_data(data, identifier, dataset, host)
+  }
+  
+  unit <- "beta value"
+  report_dataset_info(dataset)
+  res <- list(data = data, unit = unit)
+  res
+}
+
 report_dataset_info <- function(dataset) {
   msg <- paste0(
     "More info about dataset please run following commands:\n",
