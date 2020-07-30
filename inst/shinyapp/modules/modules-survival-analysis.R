@@ -9,7 +9,7 @@ dataset <- dplyr::filter(XenaData, XenaHostNames == "tcgaHub") %>%
 
 ui.modules_sur_plot <- function(id) {
   ns <- NS(id)
-
+  
   fluidPage(
     titlePanel("Module: Surviva Analysis"),
     fluidRow(
@@ -18,7 +18,7 @@ ui.modules_sur_plot <- function(id) {
           inputId = ns("dataset"), label = "Choose a dataset:",
           choices = dataset$id
         ),
-
+        
         shinyWidgets::prettyRadioButtons(
           inputId = ns("profiles"), label = "Select a genomic profiles:",
           choiceValues = c("mRNA", "mutation", "cnv", "protein"),
@@ -74,14 +74,14 @@ ui.modules_sur_plot <- function(id) {
         h5("2. The default option <Auto> will return the best p value, if you do not want to do so please choose <Custom>."),
         tags$a(href = "https://tcga.xenahubs.net", "Data source from TCGA hub")
       )),
-
+      
       shinyjs::hidden(
         column(3, id = ns("parameter"), wellPanel(
           sliderInput(
             inputId = ns("age"), label = "Age",
             min = 0, max = 100, value = c(0, 100)
           ),
-
+          
           shinyWidgets::prettyCheckboxGroup(
             inputId = ns("sex"), label = "Sex",
             choices = c("Female" = "FEMALE", "Male" = "MALE", "Unknown" = "Unknown"),
@@ -90,7 +90,7 @@ ui.modules_sur_plot <- function(id) {
             status = "primary",
             animation = "jelly"
           ),
-
+          
           shinyWidgets::prettyCheckboxGroup(
             inputId = ns("stage"), label = "Clinical/Pathological stage",
             choices = c("I", "II", "III", "IV", "Unknown"),
@@ -99,7 +99,7 @@ ui.modules_sur_plot <- function(id) {
             status = "primary",
             animation = "jelly"
           ),
-
+          
           conditionalPanel(
             condition = "input.profiles == 'mRNA' | input.profiles == 'protein'", ns = ns,
             shinyWidgets::prettyRadioButtons(
@@ -121,12 +121,12 @@ ui.modules_sur_plot <- function(id) {
               hr()
             )
           ),
-
+          
           conditionalPanel(
             condition = "input.profiles == 'mutation'", ns = ns,
             tags$p("Note: In TCGA somatic mutation (SNP and INDEL) dataset, mutation type is represented by 1 and wild type is 0.")
           ),
-
+          
           shinyWidgets::actionBttn(
             inputId = ns("go"), label = " GO!",
             style = "gradient",
@@ -135,7 +135,7 @@ ui.modules_sur_plot <- function(id) {
             block = TRUE,
             size = "sm"
           ),
-
+          
           tags$hr(),
           column(
             width = 12, align = "center",
@@ -150,7 +150,7 @@ ui.modules_sur_plot <- function(id) {
               fill = TRUE
             )
           ),
-
+          
           downloadBttn(
             outputId = ns("download"),
             # label = "Download Plot",
@@ -161,7 +161,7 @@ ui.modules_sur_plot <- function(id) {
           )
         ))
       ),
-
+      
       column(
         6,
         verbatimTextOutput(ns("plot_text")),
@@ -183,7 +183,7 @@ server.modules_sur_plot <- function(input, output, session) {
       shinyjs::hide(id = "protein_input")
     }
   })
-
+  
   observe({
     if (is.null(input$sex) | is.null(input$stage)) {
       sendSweetAlert(
@@ -194,7 +194,18 @@ server.modules_sur_plot <- function(input, output, session) {
       )
     }
   })
-
+  observe({
+    if(!is.null(filter_dat())){
+      if(nrow(filter_dat())<10){
+        sendSweetAlert(
+          session = session,
+          title = "Error...",
+          text = "Data is too little to analysis (<10).",
+          type = "error")
+      }
+    }
+  })
+  
   # Action monitoring
   observeEvent(input$submit_bt, {
     if (input$profiles == "gene" & input$gene_input == "") {
@@ -206,7 +217,7 @@ server.modules_sur_plot <- function(input, output, session) {
       )
     }
   })
-
+  
   observeEvent(input$submit_bt, {
     shinyjs::show("progress")
     if (!is.null(sur_dat_pre())) {
@@ -215,7 +226,7 @@ server.modules_sur_plot <- function(input, output, session) {
     }
     shinyjs::hide("progress")
   })
-
+  
   # block
   sur_dat_pre <- eventReactive(input$submit_bt, {
     if (input$profiles == "protein") {
@@ -230,7 +241,7 @@ server.modules_sur_plot <- function(input, output, session) {
       )
     }
   }, )
-
+  
   filter_dat <- eventReactive(input$go, {
     # req(input$age,input$sex,input$stage)
     if (is.null(sur_dat_pre())) {
@@ -241,28 +252,7 @@ server.modules_sur_plot <- function(input, output, session) {
       gender = input$sex, stage = input$stage
     )
   })
-
-  # output
-  # Show waiter for surplot
-  w <- waiter::Waiter$new(id = ns("surplot"), html = waiter::spin_hexdots(), color = "white")
-
-  output$pre_re <- renderText({
-    if (is.null(sur_dat_pre())) {
-      return(paste(p("Failure. The possible reason is that the gene cannot be found.", style = "color:red")))
-    } else {
-      return(paste(p("Next setp.", style = "color:green")))
-    }
-  })
-
-  output$cutoff1 <- renderText({
-    paste("Cutoff-Low(%) :", "0 -", input$cutpoint[1])
-  })
-
-  output$cutoff2 <- renderText({
-    paste("Cutoff-High(%): ", input$cutpoint[2], "- 100")
-  })
-
-  output$plot_text <- renderText({
+  plot_text <- eventReactive(input$go,{
     if (input$profiles == "protein") {
       item_show <- input$protein_input
     } else {
@@ -273,32 +263,55 @@ server.modules_sur_plot <- function(input, output, session) {
       paste("Profiles :", input$profiles),
       paste("Item :", item_show),
       paste("Number of cases :", nrow(sur_dat_pre())),
-      paste("Number of filtered cases :", nrow(filter_dat())),
       sep = "\n"
     )
-  })
-
-  output$surplot <- renderPlot({
-    if (is.null(filter_dat())) {
-      NULL
-    } else if (nrow(filter_dat()) < 10) {
-      sendSweetAlert(
-        session = session,
-        title = "Error...",
-        text = "Data is too little to analysis (<10).",
-        type = "error"
-      )
-      NULL
-    } else {
-      w$show() # Waiter add-ins
-      if (input$profiles == "mRNA" | input$profiles == "protein") {
-        sur_plot_mRNA_protein(filter_dat(), input$cut_off_mode, input$cutpoint)
-      } else if (input$profiles == "mutation") {
-        sur_plot_mut(filter_dat())
-      }
+  }
+  )
+  
+  plot_func <- eventReactive(input$go,{
+    if (!is.null(filter_dat())) {
+      if(nrow(filter_dat()) >= 10){
+        if (input$profiles == "mRNA" | input$profiles == "protein") {
+          p <- sur_plot_mRNA_protein(filter_dat(), input$cut_off_mode, input$cutpoint)
+        } else if (input$profiles == "mutation") {
+          p <- sur_plot_mut(filter_dat())
+        }
+        return(p)
+      }else{
+        return(NULL)}
+    }else{
+      return(NULL)
     }
   })
-
+  
+  # output
+  w <- waiter::Waiter$new(id = ns("surplot"), # Show waiter for surplot
+                          html = waiter::spin_hexdots(), 
+                          color = "white")
+  
+  output$pre_re <- renderText({
+    if (is.null(sur_dat_pre())) {
+      return(paste(p("Failure. The possible reason is that the gene cannot be found.", style = "color:red")))
+    } else {
+      return(paste(p("Next setp.", style = "color:green")))
+    }
+  })
+  
+  output$cutoff1 <- renderText({
+    paste("Cutoff-Low(%) :", "0 -", input$cutpoint[1])
+  })
+  
+  output$cutoff2 <- renderText({
+    paste("Cutoff-High(%): ", input$cutpoint[2], "- 100")
+  })
+  
+  output$plot_text <- renderText(plot_text())
+  
+  output$surplot <- renderPlot({
+    w$show() # Waiter add-ins
+    plot_func()
+  })
+  
   output$download <- downloadHandler(
     filename = function() {
       paste0("surplot.", input$device)
@@ -320,10 +333,10 @@ sur_get <- function(TCGA_cohort, item, profile) {
   luad_cohort <- XenaData %>%
     filter(XenaHostNames == "tcgaHub") %>%
     .[grep(TCGA_cohort, .$XenaCohorts), ]
-
+  
   data("tcga_clinicalMatrix", package = "UCSCXenaShiny", envir = environment())
   cliMat <- dplyr::filter(cliMat, type == TCGA_cohort)
-
+  
   if (profile == "mRNA") {
     gd <- get_pancan_gene_value(item)$expression
   } else if (profile == "mutation") {
@@ -347,9 +360,9 @@ sur_get <- function(TCGA_cohort, item, profile) {
       !is.na(OS.time)
     ) %>%
     dplyr::select(sampleID, value,
-      time = OS.time, status = OS,
-      gender, age = age_at_initial_pathologic_diagnosis,
-      stage = ajcc_pathologic_tumor_stage
+                  time = OS.time, status = OS,
+                  gender, age = age_at_initial_pathologic_diagnosis,
+                  stage = ajcc_pathologic_tumor_stage
     ) %>%
     # dplyr::mutate(stage = gsub("[(Stage)ABC ]*", "", stage)) %>%
     dplyr::mutate(stage = stringr::str_match(stage, "Stage\\s+(.*?)[ABC]?$")[, 2]) %>%
@@ -390,7 +403,7 @@ sur_plot_mRNA_protein <- function(data, cut_off_mode, cutpoint) {
   } else {
     data %<>% mutate(group = case_when(
       per_rank > !!cutpoint[2] ~ "High",
-      per_rank < !!cutpoint[1] ~ "Low",
+      per_rank <= !!cutpoint[1] ~ "Low",
       TRUE ~ NA_character_
     ))
   }
@@ -408,14 +421,14 @@ sur_plot_mut <- function(data) {
 p_survplot <- function(data) {
   fit <- survfit(Surv(time, status) ~ group, data = data)
   ggsurvplot(fit,
-    data = data, pval = TRUE, pval.method = TRUE,
-    size = 1.2, # change line size
-    risk.table = TRUE,
-    risk.table.col = "strata", # Risk table color by groups
-    risk.table.y.text = FALSE, # show bars instead of names in text annotations
-    xlab = "Duration overall survival (days)",
-    ggtheme = theme_classic(), # Change ggplot2 theme
-    ncensor.plot = TRUE, # plot the number of censored subjects at time t
-    ncensor.plot.height = 0.20
+             data = data, pval = TRUE, pval.method = TRUE,
+             size = 1.2, # change line size
+             risk.table = TRUE,
+             risk.table.col = "strata", # Risk table color by groups
+             risk.table.y.text = FALSE, # show bars instead of names in text annotations
+             xlab = "Duration overall survival (days)",
+             ggtheme = theme_classic(), # Change ggplot2 theme
+             ncensor.plot = TRUE, # plot the number of censored subjects at time t
+             ncensor.plot.height = 0.20
   )
 }
