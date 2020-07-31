@@ -179,7 +179,7 @@ observeEvent(input$req_data, {
           outputId = "total_url",
           label = "Batch download in terminal",
           icon = icon("download"),
-          style = "margin-bottom: 10px; margin-left: 50px;"
+          style = "margin-bottom: 10px; margin-left: 40px;"
         ),
         shinyBS::bsPopover(
           "total_url",
@@ -187,7 +187,15 @@ observeEvent(input$req_data, {
           content = "Download wget commands to download requested datasets.",
           placement = "bottom",
           options = list(container = "body")
-        )
+        ),
+        actionButton(
+          "show_R_code",
+          label = "Copy R download code",
+          icon = icon("file"),
+          style = "margin-bottom: 10px; margin-left: 65px;"
+        ),
+        hr(),
+        verbatimTextOutput("R_download_code")
       )
     )
     
@@ -301,6 +309,35 @@ if (xena.runMode == "client") {
     }
   )
 }
+
+## Show download code for reproducible research
+observeEvent(input$show_R_code, {
+  
+  f <- tempfile()
+  dput(query_url(), f)
+  R_code <- paste(
+    "# Load R package",
+    "library('UCSCXenaTools')",
+    "",
+    "# Generate dataset(s) information",
+    paste0("dataset_query <- ", paste(readLines(f), collapse = "")),
+    "",
+    "# Download dataset(s)",
+    "dl <- XenaDownload(dataset_query,
+                        destdir = './', # At default, download to working directory
+                        download_probeMap = TRUE,
+                        trans_slash = TRUE)", 
+    "",
+    "# Load dataset(s) into R",
+    "datasets <- XenaPrepare(dl)",
+    "# Check data",
+    "datasets",
+    sep = "\n"
+  )
+  file.remove(f)
+  
+  output$R_download_code <- shiny::renderText(R_code)
+})
 
 # Show alert info when select rows from table
 observeEvent(input$use_repository, {
