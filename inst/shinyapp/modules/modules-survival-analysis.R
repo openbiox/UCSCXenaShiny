@@ -275,6 +275,13 @@ server.modules_sur_plot <- function(input, output, session) {
           p <- sur_plot_mRNA_protein(filter_dat(), input$cut_off_mode, input$cutpoint)
         } else if (input$profiles == "mutation") {
           p <- sur_plot_mut(filter_dat())
+          if(is.null(p)){
+            sendSweetAlert(
+              session = session,
+              title = "Error...",
+              text = "There is only one genotype for this gene.",
+              type = "error")
+          }
         }
         return(p)
       }else{
@@ -414,6 +421,9 @@ sur_plot_mRNA_protein <- function(data, cut_off_mode, cutpoint) {
 sur_plot_mut <- function(data) {
   data %<>% dplyr::rename(mut = value) %>%
     mutate(group = ifelse(mut == 1, "MT", "WT"))
+  if(length(table(data$group))<2){
+    return(NULL)
+  }
   p_survplot(data)
 }
 
