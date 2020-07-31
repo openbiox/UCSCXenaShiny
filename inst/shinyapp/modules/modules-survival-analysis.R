@@ -45,7 +45,7 @@ ui.modules_sur_plot <- function(id) {
             choices = UCSCXenaShiny:::.all_pancan_proteins,
             selected = NULL,
             options = list(
-              liveSearch = TRUE,
+              `live-search` = TRUE,
               style = "btn-default btn-lg;"
             )
           )
