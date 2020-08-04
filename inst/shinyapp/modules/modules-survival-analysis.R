@@ -127,6 +127,19 @@ ui.modules_sur_plot <- function(id) {
             tags$p("Note: In TCGA somatic mutation (SNP and INDEL) dataset, mutation type is represented by 1 and wild type is 0.")
           ),
           
+          conditionalPanel(
+            condition = "input.profiles == 'cnv'", ns = ns,
+            awesomeCheckboxGroup(
+              inputId = ns("cs_cnv"),
+              label = "Select CNV type.", 
+              choices = c("Normal", "duplicated", "deleted"),
+              selected = c("Normal", "duplicated", "deleted"),
+              # status = "danger",
+              width = "120%",
+              inline = TRUE
+            )
+          ),
+          
           shinyWidgets::actionBttn(
             inputId = ns("go"), label = " GO!",
             style = "gradient",
@@ -282,6 +295,8 @@ server.modules_sur_plot <- function(input, output, session) {
               text = "There is only one genotype for this gene.",
               type = "error")
           }
+        } else if (input$profiles == "cnv") {
+          p <- sur_plot_cnv(filter_dat(), opt = input$cs_cnv)
         }
         return(p)
       }else{
@@ -300,7 +315,7 @@ server.modules_sur_plot <- function(input, output, session) {
     if (is.null(sur_dat_pre())) {
       return(paste(p("Failure. The possible reason is that the gene cannot be found.", style = "color:red")))
     } else {
-      return(paste(p("Next setp.", style = "color:green")))
+      return(paste(p("Next step.", style = "color:green")))
     }
   })
   
@@ -350,6 +365,8 @@ sur_get <- function(TCGA_cohort, item, profile) {
     gd <- get_pancan_mutation_status(item)
   } else if (profile == "protein") {
     gd <- get_pancan_protein_value(item)$expression
+  } else if (profile == "cnv") {
+    gd <- get_pancan_cn_value(item)$data
   }
   if (all(is.na(gd))) {
     return(NULL)
@@ -391,7 +408,7 @@ dat_filter <- function(data, age, gender, stage) {
   return(dat)
 }
 
-## Survaival analysis for mRNA and protein expression
+## Survival analysis for mRNA and protein expression
 sur_plot_mRNA_protein <- function(data, cut_off_mode, cutpoint) {
   data %<>% dplyr::arrange(value) %>%
     dplyr::mutate(per_rank = 100 / nrow(.) * (1:nrow(.)))
@@ -417,7 +434,7 @@ sur_plot_mRNA_protein <- function(data, cut_off_mode, cutpoint) {
   p_survplot(data)
 }
 
-## Survaival analysis for mutation DNA
+## Survival analysis for mutation DNA
 sur_plot_mut <- function(data) {
   data %<>% dplyr::rename(mut = value) %>%
     mutate(group = ifelse(mut == 1, "MT", "WT"))
@@ -427,10 +444,22 @@ sur_plot_mut <- function(data) {
   p_survplot(data)
 }
 
+## Survival analysis for CNV
+sur_plot_cnv <- function(data, opt) {
+  data %<>% dplyr::rename(mut = value) %>%
+    mutate(group = ifelse(mut == 0, "Normal", 
+                          ifelse(mut > 0, "duplicated", "deleted"))) %>%
+    filter(group %in% opt)
+  if(length(table(data$group))<2){
+    return(NULL)
+  }
+  p_survplot(data)
+}
+
 ## ggsurvplot
 p_survplot <- function(data) {
-  fit <- survfit(Surv(time, status) ~ group, data = data)
-  ggsurvplot(fit,
+  fit <- survival::survfit(Surv(time, status) ~ group, data = data)
+  survminer::ggsurvplot(fit,
              data = data, pval = TRUE, pval.method = TRUE,
              size = 1.2, # change line size
              risk.table = TRUE,
