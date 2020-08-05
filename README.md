@@ -32,6 +32,12 @@ with:
 remotes::install_github("openbiox/XenaShiny")
 ```
 
+Or Gitee (for Chinese users):
+
+```r
+remotes::install_git("https://gitee.com/XenaShiny/UCSCXenaShiny")
+```
+
 ## :beginner: Usage
 
 First load package:

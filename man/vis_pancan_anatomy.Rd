@@ -10,6 +10,10 @@ vis_pancan_anatomy(Gene = "TP53", Gender = c("Female", "Male"), option = "D")
 \item{Gene}{Gene symbal for comparision}
 
 \item{Gender}{a string, "Female" (default) or "Male".}
+
+\item{option}{A character string indicating the colormap option to use. Four
+options are available: "magma" (or "A"), "inferno" (or "B"), "plasma" (or "C"),
+"viridis" (or "D", the default option) and "cividis" (or "E").}
 }
 \value{
 a \code{ggplot} object

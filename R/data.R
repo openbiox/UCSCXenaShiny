@@ -28,6 +28,15 @@ NULL
 #' data("XenaInfo")
 NULL
 
+#' Phenotype info of CCLE database
+#' @docType data
+#' @name ccle_info
+#' @format A `data.frame`
+#' @source Generate from data-raw
+#' @examples
+#' data("ccle_info")
+NULL
+
 #' Toil Hub: TCGA TARGET GTEX selected phenotypes
 #' @docType data
 #' @name toil_info

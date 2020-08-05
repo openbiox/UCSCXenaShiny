@@ -302,6 +302,7 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, valu
 #' Visualize single gene expression in anatomy location
 #'
 #' @inheritParams vis_toil_TvsN
+#' @inheritParams ggplot2::scale_colour_viridis_d
 #' @param Gender a string, "Female" (default) or "Male".
 #' @return a `ggplot` object
 #' @importFrom stats complete.cases median
