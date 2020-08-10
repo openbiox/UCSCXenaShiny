@@ -7,3 +7,4 @@ UCSCXenaShiny.Rcheck/
 UCSCXenaShiny*.tar.gz
 UCSCXenaShiny*.tgz
 *.tex
+data-raw/*.gz
