@@ -32,6 +32,8 @@ with:
 remotes::install_github("openbiox/XenaShiny")
 ```
 
+#### If you don't want to install R and packages, Shiny App is also available in : https://hiplot.com.cn/  after registration
+
 ## :beginner: Usage
 
 First load package:
