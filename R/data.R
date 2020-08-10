@@ -28,6 +28,15 @@ NULL
 #' data("XenaInfo")
 NULL
 
+#' Phenotype info of CCLE database
+#' @docType data
+#' @name ccle_info
+#' @format A `data.frame`
+#' @source [dataset link](https://xenabrowser.net/datapages/?dataset=ccle%2FCCLE_sample_info_file_2012-10-18.txt&host=https%3A%2F%2Fucscpublic.xenahubs.net&removeHub=https%3A%2F%2Fxena.treehouse.gi.ucsc.edu%3A443).
+#' @examples
+#' data("ccle_info")
+NULL
+
 #' Toil Hub: TCGA TARGET GTEX selected phenotypes
 #' @docType data
 #' @name toil_info
@@ -115,4 +124,14 @@ NULL
 #' @format A [data.frame]
 #' @examples
 #' data("TCGA.organ")
+NULL
+
+#' TCGA subtype data
+#' @docType data
+#' @name  TCGAsubtype
+#' @format A [data.frame]
+#' @source [Molecular subtype](https://xenabrowser.net/datapages/?dataset=TCGASubtype.20170308.tsv&host=https%3A%2F%2Fpancanatlas.xenahubs.net&removeHub=https%3A%2F%2Fxena.treehouse.gi.ucsc.edu%3A443)
+#' and [immune subtype](https://xenabrowser.net/datapages/?dataset=Subtype_Immune_Model_Based.txt&host=https%3A%2F%2Fpancanatlas.xenahubs.net&removeHub=https%3A%2F%2Fxena.treehouse.gi.ucsc.edu%3A443).
+#' @examples
+#' data("TCGAsubtype")
 NULL

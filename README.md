@@ -32,6 +32,12 @@ with:
 remotes::install_github("openbiox/XenaShiny")
 ```
 
+Or Gitee (for Chinese users):
+
+```r
+remotes::install_git("https://gitee.com/XenaShiny/UCSCXenaShiny")
+```
+
 #### If you don't want to install R and packages, Shiny App is also available in : https://hiplot.com.cn/  after registration
 
 ## :beginner: Usage

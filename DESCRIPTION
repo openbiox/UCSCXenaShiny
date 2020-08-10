@@ -1,6 +1,6 @@
 Package: UCSCXenaShiny
 Title: A Shiny App for UCSC Xena Database
-Version: 0.5.99
+Version: 0.9.99
 Authors@R: 
     c(person(given = "Shixiang",
              family = "Wang",
@@ -49,13 +49,13 @@ Imports:
     ggpubr (>= 0.2),
     magrittr (>= 1.5),
     pacman,
+    ppcor,
     psych,
     purrr,
     RColorBrewer (>= 1.1.2),
     shiny (>= 1.3.2),
     stats,
     stringr,
-    survminer,
     tibble (>= 2.1.3),
     tidyr,
     UCSCXenaTools,
