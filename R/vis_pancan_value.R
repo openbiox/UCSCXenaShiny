@@ -732,7 +732,8 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.valu
   return(p)
 }
 
-# Visualize Gene-gene correlation in TCGA dataset
+#' Visualize Gene-gene correlation in TCGA dataset
+#' 
 #' @import ggplot2 dplyr ppcor
 #' @param Gene1 the first gene
 #' @param Gene2 the second gene

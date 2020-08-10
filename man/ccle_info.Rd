@@ -8,7 +8,7 @@
 A \code{data.frame}
 }
 \source{
-Generate from data-raw
+\href{https://xenabrowser.net/datapages/?dataset=ccle%2FCCLE_sample_info_file_2012-10-18.txt&host=https%3A%2F%2Fucscpublic.xenahubs.net&removeHub=https%3A%2F%2Fxena.treehouse.gi.ucsc.edu%3A443}{dataset link}.
 }
 \description{
 Phenotype info of CCLE database
