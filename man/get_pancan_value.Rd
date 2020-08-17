@@ -7,6 +7,7 @@
 \alias{get_ccle_mutation_status}
 \alias{get_pancan_value}
 \alias{get_pancan_gene_value}
+\alias{get_pancan_transcript_value}
 \alias{get_pancan_protein_value}
 \alias{get_pancan_mutation_status}
 \alias{get_pancan_cn_value}
@@ -30,6 +31,8 @@ get_pancan_value(
 )
 
 get_pancan_gene_value(identifier)
+
+get_pancan_transcript_value(identifier)
 
 get_pancan_protein_value(identifier)
 
@@ -74,6 +77,8 @@ Identifier includes gene/probe etc.
 \item \code{get_pancan_value}: Fetch identifier value from pan-cancer dataset
 
 \item \code{get_pancan_gene_value}: Fetch gene expression value from pan-cancer dataset
+
+\item \code{get_pancan_transcript_value}: Fetch gene transcript expression value from pan-cancer dataset
 
 \item \code{get_pancan_protein_value}: Fetch protein expression value from pan-cancer dataset
 
