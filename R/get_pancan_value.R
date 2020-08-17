@@ -112,8 +112,39 @@ try_query_value <- function(host, dataset,
 #' @export
 get_pancan_gene_value <- function(identifier) {
   host <- "toilHub"
-  dataset <- "TcgaTargetGtex_rsem_isoform_tpm"
+  dataset <- "TcgaTargetGtex_rsem_gene_tpm"
 
+  res <- check_exist_data(identifier, dataset, host)
+  if (res$ok) {
+    expression <- res$data
+  } else {
+    expression <- get_pancan_value(identifier, dataset = dataset, host = host)
+    save_data(expression, identifier, dataset, host)
+  }
+  unit <- "log2(tpm+0.001)"
+  report_dataset_info(dataset)
+  res <- list(expression = expression, unit = unit)
+  res
+}
+
+#' @describeIn get_transcript_value Fetch gene expression value from pan-cancer dataset
+#' @export
+get_pancan_transcript_value <- function(identifier) {
+  # ENST00000000233
+  host <- "toilHub"
+  dataset <- "TcgaTargetGtex_rsem_isoform_tpm"
+  
+  res_p <- check_exist_data("mp", dataset, host)
+  if (res_p$ok) {
+    ids <- res_p$data
+  } else {
+    ids <- UCSCXenaTools::fetch_dataset_identifiers("https://toil.xenahubs.net", dataset)
+    names(ids) <- sub("\\.[0-9]+", "", ids)
+    save_data(ids, "mp", dataset, host)
+  }
+  
+  identifier <- as.character(ids[identifier])
+  
   res <- check_exist_data(identifier, dataset, host)
   if (res$ok) {
     expression <- res$data
