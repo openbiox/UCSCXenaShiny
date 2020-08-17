@@ -127,7 +127,7 @@ get_pancan_gene_value <- function(identifier) {
   res
 }
 
-#' @describeIn get_transcript_value Fetch gene transcript expression value from pan-cancer dataset
+#' @describeIn get_pancan_value Fetch gene transcript expression value from pan-cancer dataset
 #' @export
 get_pancan_transcript_value <- function(identifier) {
   # ENST00000000233

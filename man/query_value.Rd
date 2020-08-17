@@ -19,7 +19,7 @@ query_value(
 CCLE.}
 }
 \value{
-
+a list.
 }
 \description{
 Query Single Identifier Value from Pan-cancer Database

@@ -5,7 +5,7 @@
 #' @param database database, either 'toil' for TCGA TARGET GTEx, or 'ccle' for
 #' CCLE.
 #'
-#' @return
+#' @return a list.
 #' @export
 query_value <- function(identifier,
                         data_type = c("gene", "transcript", "protein",
