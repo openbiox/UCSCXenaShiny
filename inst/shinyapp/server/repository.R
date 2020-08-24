@@ -84,6 +84,9 @@ query_url <- reactive({
     xe <-
       UCSCXenaTools::XenaGenerate(subset = XenaDatasets %in% data$XenaDatasets)
     xe_query <- UCSCXenaTools::XenaQuery(xe)
+    xe_query$browse <- utils::URLencode(
+      paste0("https://xenabrowser.net/datapages/?", 
+      "dataset=", xe_query$datasets, "&host=", xe_query$hosts)) 
     return(xe_query)
   }
 })
@@ -104,7 +107,10 @@ observe({
     
     w$show() # Waiter add-ins
     urls <- unlist(lapply(query_url()$url, function(x) {
-      as.character(tags$a(href = x, x))
+      as.character(tags$a(href = x, "download link"))
+    }))
+    xena_pages <- unlist(lapply(query_url()$browse, function(x) {
+      as.character(tags$a(href = x, "browse Xena dataset page"))
     }))
     Sys.sleep(1)
     
@@ -113,10 +119,11 @@ observe({
         {
           tryCatch(
             data.frame(
-              ID = seq_along(s),
-              XenaCohorts = data$XenaCohorts,
+              No = seq_along(s),
+              CohortName = data$XenaCohorts,
               Label = data$Label,
-              URL = urls
+              Download = urls,
+              Browse = xena_pages
             ),
             error = function(e) {
               message("Detect error from data.frame construction, no pain.")
