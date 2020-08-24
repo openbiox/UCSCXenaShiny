@@ -8,8 +8,7 @@
 A \link{data.frame}
 }
 \source{
-\href{https://xenabrowser.net/datapages/?dataset=TCGASubtype.20170308.tsv&host=https%3A%2F%2Fpancanatlas.xenahubs.net&removeHub=https%3A%2F%2Fxena.treehouse.gi.ucsc.edu%3A443}{Molecular subtype}
-and \href{https://xenabrowser.net/datapages/?dataset=Subtype_Immune_Model_Based.txt&host=https%3A%2F%2Fpancanatlas.xenahubs.net&removeHub=https%3A%2F%2Fxena.treehouse.gi.ucsc.edu%3A443}{immune subtype}.
+UCSC Xena.
 }
 \description{
 TCGA subtype data
