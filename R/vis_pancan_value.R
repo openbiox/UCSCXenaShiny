@@ -739,6 +739,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.valu
 #' @param Gene2 the second gene
 #' @param purity_adj whether performing partial correlation adjusted by purity
 #' @param split whether split by TCGA tumor tissue
+#' @export
 vis_gene_cor <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, split = FALSE){
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
   data("purity_data", package = "UCSCXenaShiny", envir = environment())
