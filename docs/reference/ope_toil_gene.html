@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">UCSCXenaShiny</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.99</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.99</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -94,7 +94,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/openbiox/UCSCXenaShiny/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -120,7 +120,7 @@
     <p>Obtain toilHub info for single gene</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ope_toil_gene</span>(<span class='kw'>identifier</span> <span class='kw'>=</span> <span class='st'>"TP53"</span>)</pre>
+    <pre class="usage"><span class='fu'>ope_toil_gene</span><span class='op'>(</span>identifier <span class='op'>=</span> <span class='st'>"TP53"</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -138,22 +138,24 @@ Gene symbol is highly recommended.</p></td>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='no'>t</span> <span class='kw'>&lt;-</span> <span class='fu'>ope_toil_gene</span>()</div><div class='output co'>#&gt; <span class='message'>-&gt; Checking if the dataset has probeMap...</span></div><div class='output co'>#&gt; <span class='message'>-&gt; Done. ProbeMap is found.</span></div><div class='output co'>#&gt; <span class='message'>More info about dataset please run following commands:</span>
+<span class='va'>t</span> <span class='op'>&lt;-</span> <span class='fu'>ope_toil_gene</span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Running mode: client</span></div><div class='output co'>#&gt; <span class='message'>More info about dataset please run following commands:</span>
 #&gt; <span class='message'>  library(UCSCXenaTools)</span>
-#&gt; <span class='message'>  XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_isoform_tpm") %&gt;% XenaBrowse()</span></div><div class='input'><span class='no'>t</span></div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 19,044 x 8</span><span>
-#&gt;    sample primary_site detailed_catego… sample_type gender study expression
-#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>        </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>            </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>
-#&gt; </span><span style='color: #555555;'> 1</span><span> TCGA-… Eye          Uveal Melanoma   Primary Tu… Male   TCGA       -</span><span style='color: #BB0000;'>6.12</span><span>
-#&gt; </span><span style='color: #555555;'> 2</span><span> TCGA-… Eye          Uveal Melanoma   Primary Tu… Male   TCGA       -</span><span style='color: #BB0000;'>6.38</span><span>
-#&gt; </span><span style='color: #555555;'> 3</span><span> TCGA-… Eye          Uveal Melanoma   Primary Tu… Male   TCGA       -</span><span style='color: #BB0000;'>5.68</span><span>
-#&gt; </span><span style='color: #555555;'> 4</span><span> TCGA-… Eye          Uveal Melanoma   Primary Tu… Male   TCGA       -</span><span style='color: #BB0000;'>7.49</span><span>
-#&gt; </span><span style='color: #555555;'> 5</span><span> TCGA-… Eye          Uveal Melanoma   Primary Tu… Male   TCGA       -</span><span style='color: #BB0000;'>6.03</span><span>
-#&gt; </span><span style='color: #555555;'> 6</span><span> TCGA-… Eye          Uveal Melanoma   Primary Tu… Male   TCGA       -</span><span style='color: #BB0000;'>7.90</span><span>
-#&gt; </span><span style='color: #555555;'> 7</span><span> TCGA-… Eye          Uveal Melanoma   Primary Tu… Male   TCGA       -</span><span style='color: #BB0000;'>7.33</span><span>
-#&gt; </span><span style='color: #555555;'> 8</span><span> TCGA-… Eye          Uveal Melanoma   Primary Tu… Male   TCGA       -</span><span style='color: #BB0000;'>7.02</span><span>
-#&gt; </span><span style='color: #555555;'> 9</span><span> TCGA-… Eye          Uveal Melanoma   Primary Tu… Male   TCGA       -</span><span style='color: #BB0000;'>7.63</span><span>
-#&gt; </span><span style='color: #555555;'>10</span><span> TCGA-… Eye          Uveal Melanoma   Primary Tu… Male   TCGA       -</span><span style='color: #BB0000;'>7.04</span><span>
-#&gt; </span><span style='color: #555555;'># … with 19,034 more rows, and 1 more variable: unit </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span></div><div class='input'># }
+#&gt; <span class='message'>  XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span></div><div class='input'><span class='va'>t</span>
+</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 19,044 x 8</span><span>
+#&gt;    sample     primary_site detailed_category sample_type gender study expression
+#&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>        </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>             </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>       </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>
+#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> TCGA-V4-A… Eye          Uveal Melanoma    Primary Tu… Male   TCGA        5.62
+#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> TCGA-VD-A… Eye          Uveal Melanoma    Primary Tu… Male   TCGA        4.84
+#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> TCGA-V4-A… Eye          Uveal Melanoma    Primary Tu… Male   TCGA        5.42
+#&gt; </span><span style='color: #BCBCBC;'> 4</span><span> TCGA-VD-A… Eye          Uveal Melanoma    Primary Tu… Male   TCGA        5.79
+#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> TCGA-WC-A… Eye          Uveal Melanoma    Primary Tu… Male   TCGA        4.98
+#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> TCGA-WC-A… Eye          Uveal Melanoma    Primary Tu… Male   TCGA        4.88
+#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> TCGA-WC-A… Eye          Uveal Melanoma    Primary Tu… Male   TCGA        4.75
+#&gt; </span><span style='color: #BCBCBC;'> 8</span><span> TCGA-YZ-A… Eye          Uveal Melanoma    Primary Tu… Male   TCGA        5.00
+#&gt; </span><span style='color: #BCBCBC;'> 9</span><span> TCGA-V4-A… Eye          Uveal Melanoma    Primary Tu… Male   TCGA        5.15
+#&gt; </span><span style='color: #BCBCBC;'>10</span><span> TCGA-WC-A… Eye          Uveal Melanoma    Primary Tu… Male   TCGA        4.41
+#&gt; </span><span style='color: #949494;'># … with 19,034 more rows, and 1 more variable: unit &lt;chr&gt;</span><span></div><div class='input'><span class='co'># }</span>
 </div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -170,7 +172,7 @@ Gene symbol is highly recommended.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
