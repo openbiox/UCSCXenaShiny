@@ -24,6 +24,7 @@ pacman::p_load(
     dplyr,
     ggplot2,
     ggpubr,
+    ggthemes,
     plotly,
     UCSCXenaTools,
     UCSCXenaShiny,
@@ -68,6 +69,17 @@ Xena_summary <- dplyr::group_by(xena_table, Hub) %>%
 
 # global color
 mycolor <- c(RColorBrewer::brewer.pal(12, "Paired"))
+
+# global ggplot theme list
+theme_list <- list(
+  "Base" = ggthemes::theme_base(),
+  "BW" = ggplot2::theme_bw(),
+  "Clean" = ggthemes::theme_clean(),
+  "Classic" = ggplot2::theme_classic(),
+  "Minimal" = ggplot2::theme_minimal(),
+  "Economist" = ggthemes::theme_economist(),
+  "Excel" = ggthemes::theme_excel(),
+  "Void" = ggplot2::theme_void())
 
 # Put modules here --------------------------------------------------------
 modules_path <- system.file("shinyapp", "modules", package = "UCSCXenaShiny", mustWork = TRUE)
