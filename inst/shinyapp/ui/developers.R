@@ -19,7 +19,7 @@ ui.page_developers <- function() {
                   alt = "logo", style = "width: 30% ; margin: 0 auto "
                 ),
                 tags$h4(class = "card-title", "Shixiang Wang"),
-                tags$p(class = "card-text", "Core developer")
+                tags$p(class = "card-text", "Leader")
               ),
               tags$div(
                 class = "card-footer",
@@ -36,7 +36,7 @@ ui.page_developers <- function() {
                   alt = "logo", style = "width: 30% ; margin: 0 auto "
                 ),
                 tags$h4(class = "card-title", "Fei Zhao"),
-                tags$p(class = "card-text", "Core developer")
+                tags$p(class = "card-text", "Counselor")
               ),
               tags$div(
                 class = "card-footer",
@@ -53,7 +53,7 @@ ui.page_developers <- function() {
                   alt = "logo", style = "width: 30% ; margin: 0 auto "
                 ),
                 tags$h4(class = "card-title", "Yi Xiong"),
-                tags$p(class = "card-text", "Core developer")
+                tags$p(class = "card-text", "Key developer")
               ),
               tags$div(
                 class = "card-footer",
@@ -74,7 +74,7 @@ ui.page_developers <- function() {
                   alt = "logo", style = "width: 30% ; margin: 0 auto "
                 ),
                 tags$h4(class = "card-title", "Longfei Zhao"),
-                tags$p(class = "card-text", "Core developer")
+                tags$p(class = "card-text", "Key developer")
               ),
               tags$div(
                 class = "card-footer",
@@ -91,7 +91,7 @@ ui.page_developers <- function() {
                   alt = "logo", style = "width: 30% ; margin: 0 auto "
                 ),
                 tags$h4(class = "card-title", "Yin Li"),
-                tags$p(class = "card-text", "Core developer")
+                tags$p(class = "card-text", " Developer")
               ),
               tags$div(
                 class = "card-footer",
@@ -108,7 +108,7 @@ ui.page_developers <- function() {
                   alt = "logo", style = "width: 30% ; margin: 0 auto "
                 ),
                 tags$h4(class = "card-title", "Kai Gu"),
-                tags$p(class = "card-text", "Core developer")
+                tags$p(class = "card-text", "Key developer")
               ),
               tags$div(
                 class = "card-footer",

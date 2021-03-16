@@ -1,4 +1,4 @@
-ui.sg.pancan.analysis <- function(id){
+ui.combo.sg.pancan.analysis <- function(id){
   ns <- NS(id)
   fluidPage(
     titlePanel("Single gene pan-cancer transcriptome analysis"),
@@ -39,7 +39,7 @@ ui.sg.pancan.analysis <- function(id){
 )
 }
 
-server.sg.pancan.analysis <- function(input, output, session) {
+server.combo.sg.pancan.analysis <- function(input, output, session) {
   observeEvent(input$Pancan_search, {
     if (nchar(input$Pancan_search) >= 1) {
       output$gene_pancan_dist <- renderPlot({
