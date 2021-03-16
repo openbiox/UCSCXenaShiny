@@ -8,3 +8,4 @@ UCSCXenaShiny*.tar.gz
 UCSCXenaShiny*.tgz
 *.tex
 data-raw/*.gz
+inst/doc
