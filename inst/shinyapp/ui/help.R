@@ -1,7 +1,7 @@
 ui.page_help <- function() {
   navbarMenu(
     title = "Help",
-    # icon = icon("question-circle"),
+    icon = icon("question-circle"),
     # tabPanel(
     #   "News",
     #   fluidPage(
