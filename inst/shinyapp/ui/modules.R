@@ -14,7 +14,7 @@ ui.page_modules <- function() {
       ui.modules_cancer_dist("modules_cancer_dist")
     ),
     tabPanel(
-      "TCGAGene Pan-cancer Expression Anatomy",
+      "TCGA Gene Pan-cancer Expression Anatomy",
       ui.modules_pancan_anatomy("modules_pancan_anatomy")
     ),
     tabPanel(
