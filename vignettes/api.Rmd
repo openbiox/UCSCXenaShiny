@@ -17,3 +17,7 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(UCSCXenaShiny)
 ```
+
+## Data query functions
+
+## Useful visualization functions

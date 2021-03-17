@@ -13,6 +13,11 @@ ui.page_help <- function() {
         includeMarkdown(set_md_path("citation.md"))
       )),
     tabPanel(
+      "Contact",
+      fluidPage(
+        includeMarkdown(set_md_path("contact.md"))
+      )),
+    tabPanel(
       "Term List",
       fluidPage(
         includeMarkdown(set_md_path("terms.md"))

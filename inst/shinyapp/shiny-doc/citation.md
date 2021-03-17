@@ -1,4 +1,3 @@
-# Citation
 
 Currently, the `UCSCXenaShiny` package has not been formly published, if you
 want to cite this paper in your academic research, please cite the following preprint:
