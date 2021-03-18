@@ -20,7 +20,10 @@ ui.page_home <- function() {
                 "UCSCXenaTools v", packageVersion("UCSCXenaTools")
               )),
               tags$br(),
-              tags$a(href = "https://xenabrowser.net/datapages/", "Data source"),
+              tags$b("Data source: "),
+              tags$a(href = "https://xenabrowser.net/datapages/", "UCSC Xena"),
+              " or ",
+              tags$a(href = "https://xena.hiplot.com.cn/datapages/", "Hiplot mirror"),
               tags$hr(),
               tags$div(
                 class = "card-deck text-center block-center",

@@ -21,6 +21,7 @@ Assume you have already installed `UCSCXenaShiny` package
 ```{r setup}
 library(UCSCXenaShiny)
 ```
+
 Check parameters 
 ```{r}
 args(query_value)
@@ -77,5 +78,4 @@ tp53 <- purrr::reduce(list(expr, cnv, mut), dplyr::full_join, by = "sample")
 
 GGally::ggpairs(tp53[, -1])
 ```
-
 

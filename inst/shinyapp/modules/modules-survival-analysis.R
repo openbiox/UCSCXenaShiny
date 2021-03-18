@@ -46,7 +46,7 @@ ui.modules_sur_plot <- function(id) {
             selected = NULL,
             options = list(
               `live-search` = TRUE,
-              style = "btn-default btn-lg;"
+              style = "btn-light"
             )
           )
         ),
@@ -178,7 +178,7 @@ ui.modules_sur_plot <- function(id) {
       column(
         6,
         verbatimTextOutput(ns("plot_text")),
-        plotOutput(ns("surplot"), height = "500px")
+        plotOutput(ns("surplot"), height = "600px")
       )
     )
   )
@@ -342,7 +342,7 @@ server.modules_sur_plot <- function(input, output, session) {
       p <- plot_func()
       ggplot2::ggsave(
         filename = file, plot = print(p, newpage = F), device = input$device,
-        units = "cm", width = 20, height = 15, dpi = 600
+        units = "cm", width = 20, height = 25, dpi = 600
       )
     }
   )
@@ -461,13 +461,20 @@ p_survplot <- function(data) {
   fit <- survival::survfit(Surv(time, status) ~ group, data = data)
   survminer::ggsurvplot(fit,
              data = data, pval = TRUE, pval.method = TRUE,
+             palette ="aaas",
              size = 1.2, # change line size
+             font.legend = c(14, "black"),
+             font.x = c(14,"bold","black"),
+             font.y = c(14,"bold","black"),
+             font.tickslab =c(12,"bold","black"),
+             xlab = "Duration overall survival (days)",
              risk.table = TRUE,
              risk.table.col = "strata", # Risk table color by groups
              risk.table.y.text = FALSE, # show bars instead of names in text annotations
-             xlab = "Duration overall survival (days)",
-             ggtheme = theme_classic(), # Change ggplot2 theme
              ncensor.plot = TRUE, # plot the number of censored subjects at time t
-             ncensor.plot.height = 0.20
+             surv.plot.height = 0.7,
+             risk.table.height = 0.15,
+             ncensor.plot.height = 0.15,
+             ggtheme = theme_classic() # Change ggplot2 theme
   )
 }
