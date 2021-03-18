@@ -6,14 +6,76 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+2021-03-18
 
+For Chinese Version, Please ref to: https://shixiangwang.github.io/home/cn/post/2020-09-26-access-gene-level-cancer-data-from-ucsc-xena/
+
+In `XenaShiny`, We provided function to retrieve these multi-dimensional data from genomic, epigenomic, transcriptomic, and proteomic data.
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 ```
-
+Assume you have already installed `UCSCXenaShiny` package
 ```{r setup}
 library(UCSCXenaShiny)
 ```
+Check parameters 
+```{r}
+args(query_value)
+```
+We allow users to fetch different type of data (gene, transcript, protein, mutation, cnv and DNA methylation) for various datasets.
+
+- Fetch Gene Expression data 
+We first fetch data from the Xena Dataset `TcgaTargetGtex_rsem_gene_tpm` which include 19131 samples including tumor tissue samples and normal tissue samples. The unit used for expression value is `log2(tpm+0.001)`
+```{r}
+gene_expr <- query_value("TP53")
+```
+```{r}
+str(gene_expr)
+```
+
+- Fetch transcripts value (Bug here)
+```{r}
+t2 <- get_pancan_value("TP53",
+  dataset = "TcgaTargetGtex_rsem_isoform_tpm",
+  host = "toilHub"
+)
+```
+- Fetch CNV and mutation data
+```{r}
+#cnv data
+gene_cnv <- query_value("TP53", data_type = "cnv")
+str(gene_cnv)
+```
+```{r}
+#mutation data
+gene_mut <- query_value("TP53", data_type = "mutation")
+gene_mut[1:5]
+```
+Integrated data
+```{r}
+suppressMessages(library(tidyverse))
+
+expr <- dplyr::tibble(
+  sample = names(gene_expr$expression),
+  expr = as.numeric(gene_expr$expression)
+)
+
+cnv <- dplyr::tibble(
+  sample = names(gene_cnv$data),
+  cnv = as.numeric(gene_cnv$data)
+)
+
+mut <- dplyr::tibble(
+  sample = names(gene_mut),
+  mut = as.numeric(gene_mut)
+)
+
+tp53 <- purrr::reduce(list(expr, cnv, mut), dplyr::full_join, by = "sample")
+
+GGally::ggpairs(tp53[, -1])
+```
+
+
