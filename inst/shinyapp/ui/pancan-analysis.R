@@ -1,12 +1,11 @@
-ui.page_modules <- function() {
+ui.page_pancan <- function() {
   navbarMenu(
-    title = "Modules",
+    title = "Quick PanCan Analysis",
     icon = icon("buromobelexperte"),
+    tabPanel("Combo: Single Gene Analysis",
+             ui.combo.sg.pancan.analysis("combo.sg.pancan.analysis")),
     tabPanel(
-      "Upload File",
-      ui.file_upload("module_file_upload", test = TRUE)),
-    tabPanel(
-      "TCGA Gene Pan-cancer Expression Distribution ",
+      "TCGA Gene Expression Distribution ",
       ui.modules_pancan_dist("module_gene_pancan_dist")
     ),
     tabPanel(
@@ -14,7 +13,7 @@ ui.page_modules <- function() {
       ui.modules_cancer_dist("modules_cancer_dist")
     ),
     tabPanel(
-      "TCGAGene Pan-cancer Expression Anatomy",
+      "TCGA Gene Expression Anatomy",
       ui.modules_pancan_anatomy("modules_pancan_anatomy")
     ),
     tabPanel(
@@ -22,7 +21,7 @@ ui.page_modules <- function() {
       ui.modules_pancan_unicox("modules_pancan_unicox")
     ),
     tabPanel(
-      "TCGA Gene Expression vs Immune Correlation Analysis",
+      "TCGA Gene Expression vs Immune Correlation",
       ui.modules_pancan_immune("modules_pancan_immune")
     ),
     tabPanel(

@@ -17,31 +17,31 @@ if (!requireNamespace("gganatogram")) {
 }
 
 pacman::p_load(
-    purrr,
-    tidyr,
-    stringr,
-    magrittr,
-    dplyr,
-    ggplot2,
-    ggpubr,
-    ggthemes,
-    plotly,
-    UCSCXenaTools,
-    UCSCXenaShiny,
-    shiny,
-    shinyBS,
-    shinyjs,
-    shinyWidgets,
-    shinyalert,
-    shinyFiles,
-    survival,
-    survminer,
-    ezcox,
-    waiter,
-    colourpicker,
-    DT,
-    fs,
-    gganatogram
+  purrr,
+  tidyr,
+  stringr,
+  magrittr,
+  dplyr,
+  ggplot2,
+  ggpubr,
+  ggthemes,
+  plotly,
+  UCSCXenaTools,
+  UCSCXenaShiny,
+  shiny,
+  shinyBS,
+  shinyjs,
+  shinyWidgets,
+  shinyalert,
+  shinyFiles,
+  survival,
+  survminer,
+  ezcox,
+  waiter,
+  colourpicker,
+  DT,
+  fs,
+  gganatogram
 )
 
 message("Starting...")
@@ -65,7 +65,8 @@ Data_subtypes_number <- "~45"
 Xena_summary <- dplyr::group_by(xena_table, Hub) %>%
   dplyr::summarise(
     n_cohort = length(unique(.data$Cohort)),
-    n_dataset = length(unique(.data$`Dataset ID`)), .groups = "drop")
+    n_dataset = length(unique(.data$`Dataset ID`)), .groups = "drop"
+  )
 
 # global color
 mycolor <- c(RColorBrewer::brewer.pal(12, "Paired"))
@@ -79,7 +80,8 @@ theme_list <- list(
   "Minimal" = ggplot2::theme_minimal(),
   "Economist" = ggthemes::theme_economist(),
   "Excel" = ggthemes::theme_excel(),
-  "Void" = ggplot2::theme_void())
+  "Void" = ggplot2::theme_void()
+)
 
 # Put modules here --------------------------------------------------------
 modules_path <- system.file("shinyapp", "modules", package = "UCSCXenaShiny", mustWork = TRUE)
@@ -115,8 +117,9 @@ ui <- tagList(
     # inst/shinyapp/ui
     ui.page_home(),
     ui.page_repository(),
-    ui.page_modules(),
-    ui.page_pipelines(),
+    ui.page_general_analysis(),
+    ui.page_pancan(),
+    ui.page_global(),
     ui.page_help(),
     ui.page_developers(),
     footer = ui.footer(),
@@ -133,7 +136,6 @@ server <- function(input, output, session) {
   source(server_file("home.R"), local = TRUE)
   source(server_file("repository.R"), local = TRUE)
   source(server_file("modules.R"), local = TRUE)
-  source(server_file("pipelines.R"), local = TRUE)
 }
 
 # Run web app -------------------------------------------------------------

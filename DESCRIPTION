@@ -61,11 +61,14 @@ Imports:
     UCSCXenaTools,
     utils
 Suggests: 
+    knitr,
     covr (>= 3.2.1),
     furrr,
     future,
-    testthat (>= 2.0.1)
+    testthat (>= 2.0.1),
+    rmarkdown
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+VignetteBuilder: knitr
