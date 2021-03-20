@@ -19,12 +19,10 @@ Firstly, assume you have already installed `UCSCXenaShiny` package
 library(UCSCXenaShiny)
 library(tidyverse)
 ```
-<<<<<<< HEAD
 
-=======
 ## Fetch Data
 In `XenaShiny`, We provided function to retrieve these multi-dimensional data from genomic, epigenomic, transcriptomic, and proteomic data.
->>>>>>> yixiong
+
 Check parameters 
 ```{r}
 args(query_value)
@@ -82,8 +80,7 @@ tp53 <- purrr::reduce(list(expr, cnv, mut), dplyr::full_join, by = "sample")
 GGally::ggpairs(tp53[, -1])
 ```
 
-<<<<<<< HEAD
-=======
+
 ## Data Visualization
 
 1. use `vis_toil_TvsN` function to visualize single gene expression in PANCAN dataset
@@ -118,4 +115,3 @@ vis_unicox_tree(
 )
 ```
 
->>>>>>> yixiong
