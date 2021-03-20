@@ -8,20 +8,23 @@ vignette: >
 ---
 2021-03-18
 
-For Chinese Version, Please ref to: https://shixiangwang.github.io/home/cn/post/2020-09-26-access-gene-level-cancer-data-from-ucsc-xena/
-
-In `XenaShiny`, We provided function to retrieve these multi-dimensional data from genomic, epigenomic, transcriptomic, and proteomic data.
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 ```
-Assume you have already installed `UCSCXenaShiny` package
+Firstly, assume you have already installed `UCSCXenaShiny` package
 ```{r setup}
 library(UCSCXenaShiny)
+library(tidyverse)
 ```
+<<<<<<< HEAD
 
+=======
+## Fetch Data
+In `XenaShiny`, We provided function to retrieve these multi-dimensional data from genomic, epigenomic, transcriptomic, and proteomic data.
+>>>>>>> yixiong
 Check parameters 
 ```{r}
 args(query_value)
@@ -79,3 +82,40 @@ tp53 <- purrr::reduce(list(expr, cnv, mut), dplyr::full_join, by = "sample")
 GGally::ggpairs(tp53[, -1])
 ```
 
+<<<<<<< HEAD
+=======
+## Data Visualization
+
+1. use `vis_toil_TvsN` function to visualize single gene expression in PANCAN dataset
+```{r}
+p <- vis_toil_TvsN(Gene = "TP53", Mode = "Violinplot", Show.P.value = FALSE, Show.P.label = FALSE)
+```
+
+2. compare the gene expression level in the single cancer type
+```{r}
+vis_toil_TvsN_cancer(
+  Gene = "TP53",
+  Mode = "Violinplot",
+  Show.P.value = TRUE,
+  Show.P.label = TRUE,
+  Method = "wilcox.test",
+  values = c("#DF2020", "#DDDF21"),
+  TCGA.only = FALSE,
+  Cancer = "ACC"
+)
+```
+3. show the gene expression level between tumor and normal tissue in different anatomic regions
+```{r}
+vis_pancan_anatomy(Gene = "TP53", Gender = c("Female", "Male"), option = "D")
+```
+4. visualize the relationship between gene expression and prognosis in the PANCAN dataset
+```{r}
+vis_unicox_tree(
+  Gene = "TP53",
+  measure = "OS",
+  threshold = 0.5,
+  values = c("grey", "#E31A1C", "#377DB8")
+)
+```
+
+>>>>>>> yixiong
