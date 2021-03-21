@@ -13,3 +13,11 @@ data-raw/ds_PO.17.00073-1.xlsx
 data-raw/CCLE-ABSOLUTE结果-10.1038:s41586-020-03133-3.xlsx
 data-raw/infiltration_estimation_for_tcga.csv
 data-raw/ncomms15180-s2.csv
+
+data/pancan_MSI.rda
+data/tcga_pan_immune_signature.rda
+data/tcga_MSI.rda
+data/tcga_stemness.rda
+data/tcga_TIL.rda
+data/tcga_tmb.rda
+data/tcga_chr_alteration.rda

@@ -15,3 +15,11 @@
 ^docs$
 ^paper$
 ^data-remote$
+
+data/pancan_MSI.rda
+data/tcga_pan_immune_signature.rda
+data/tcga_MSI.rda
+data/tcga_stemness.rda
+data/tcga_TIL.rda
+data/tcga_tmb.rda
+data/tcga_chr_alteration.rda
