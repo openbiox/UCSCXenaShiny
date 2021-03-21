@@ -197,7 +197,7 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
 #' @export
 vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, values = c("grey", "#E31A1C", "#377DB8")) {
   ## 写在 R 内的数据集需要更严格的引用方式
-  data("toil_surv", package = "UCSCXenaShiny", envir = environment())
+  data("tcga_surv", package = "UCSCXenaShiny", envir = environment())
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
 
   t1 <- get_pancan_gene_value(Gene)$expression
@@ -209,7 +209,7 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, valu
   s <- data.frame(sample = names(t1), values = t1)
   ## we use median cutoff here
   ss <- s %>%
-    dplyr::inner_join(toil_surv, by = "sample") %>%
+    dplyr::inner_join(tcga_surv, by = "sample") %>%
     dplyr::inner_join(tcga_gtex[, c("tissue", "sample")], by = "sample")
   sss <- split(ss, ss$tissue)
   tissues <- names(sss)
@@ -815,7 +815,7 @@ utils::globalVariables(
     "tcga_gtex",
     "tcga_stemness",
     "tcga_tmb",
-    "toil_surv",
+    "tcga_surv",
     "TCGA.organ",
     "Type",
     "group"

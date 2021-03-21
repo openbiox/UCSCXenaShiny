@@ -357,8 +357,8 @@ sur_get <- function(TCGA_cohort, item, profile) {
     .[grep(TCGA_cohort, .$XenaCohorts), ]
   
   data("tcga_clinical", package = "UCSCXenaShiny", envir = environment())
-  data("toil_surv", package = "UCSCXenaShiny", envir = environment())
-  cliMat <- dplyr::full_join(tcga_clinical, toil_surv, by = "sample") %>% 
+  data("tcga_surv", package = "UCSCXenaShiny", envir = environment())
+  cliMat <- dplyr::full_join(tcga_clinical, tcga_surv, by = "sample") %>% 
     dplyr::filter(cliMat, type == TCGA_cohort)
   
   if (profile == "mRNA") {

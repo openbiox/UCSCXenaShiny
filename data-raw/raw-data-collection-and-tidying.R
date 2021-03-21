@@ -3,6 +3,7 @@
 # 大/不常使用的数据文件统一上传到 https://zenodo.org/
 # 全部的文件都以 .rds 格式保存
 # sed -i "" "s/stemness_data_RNA/tcga_stemness/g" `grep "stemness_data_RNA" -rl R/*`
+sed -i "" "s/toil_surv/tcga_surv/g" `grep "toil_surv" -rl R/*`
 
 # cohort: TCGA TARGET GTEx
 library(UCSCXenaTools)
@@ -18,6 +19,7 @@ toil_surv <- XenaGenerate(subset = XenaDatasets == "TCGA_survival_data") %>%
   XenaPrepare() %>%
   as.data.frame()
 attr(toil_surv, "data_source") <- "DOI:https://doi.org/10.1016/j.cell.2018.02.052"
+tcga_surv <- toil_surv
 
 #-------------immune sig data--------------------------
 # access date: 2020-06-14
@@ -143,7 +145,7 @@ usethis::use_data(tcga_clinical, overwrite = TRUE)
 usethis::use_data(tcga_subtypes, overwrite = TRUE)
 usethis::use_data(tcga_subtypes, overwrite = TRUE)
 usethis::use_data(toil_info, overwrite = TRUE)
-usethis::use_data(toil_surv, overwrite = TRUE)
+usethis::use_data(tcga_surv, overwrite = TRUE)
 usethis::use_data(tcga_pan_immune_signature, overwrite = TRUE)
 usethis::use_data(tcga_tmb, overwrite = TRUE)
 usethis::use_data(tcga_stemness, overwrite = TRUE)

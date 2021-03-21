@@ -22,11 +22,11 @@ NULL
 
 #' Toil Hub: TCGA survival data
 #' @docType data
-#' @name toil_surv
+#' @name tcga_surv
 #' @format A [data.frame]
 #' @source Generate from data-raw
 #' @examples
-#' data("toil_surv")
+#' data("tcga_surv")
 NULL
 
 #' Toil Hub: TCGA survival data from paper
