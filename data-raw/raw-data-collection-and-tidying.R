@@ -3,7 +3,6 @@
 # 大/不常使用的数据文件统一上传到 https://zenodo.org/
 # 全部的文件都以 .rds 格式保存
 # sed -i "" "s/stemness_data_RNA/tcga_stemness/g" `grep "stemness_data_RNA" -rl R/*`
-sed -i "" "s/toil_surv/tcga_surv/g" `grep "toil_surv" -rl R/*`
 
 # cohort: TCGA TARGET GTEx
 library(UCSCXenaTools)
@@ -131,7 +130,7 @@ TCGAsubtype <- as.data.frame(TCGAsubtype)
 tcga_subtypes <- TCGAsubtype
 attr(tcga_subtypes, "data_source") <- "https://pancanatlas.xenahubs.net/"
 
-# TCGA clinical data (survival is excluded, use toil_surv instead.)
+# TCGA clinical data (survival is excluded, use toil_surv instead.) -----
 download.file(
   "https://tcga-pancan-atlas-hub.s3.us-east-1.amazonaws.com/latest/Survival_SupplementalTable_S1_20171025_xena_sp.gz",
   "data-raw/tcga_clinical.gz"
@@ -141,6 +140,33 @@ tcga_clinical <- tcga_clinical[, c(-c(13, 16, 17, 23, 26:34))]
 colnames(tcga_clinical)[c(2:3)] <- c("patient", "type")
 attr(tcga_clinical, "data_source") <- "DOI:https://doi.org/10.1016/j.cell.2018.02.052"
 
+# TCGA TIL --------
+tcga_TIL <- readr::read_csv("data-raw/infiltration_estimation_for_tcga.csv")
+attr(tcga_TIL, "data_source") <- "http://timer.cistrome.org/"
+
+# TCGA 染色体变异 ---------
+tcga_chr_alteration <- readxl::read_excel("data-raw/TCGA 染色体变异数据.xlsx", skip = 1)
+attr(tcga_chr_alteration, "data_source") <- "DOI:https://doi.org/10.1016/j.ccell.2018.03.007"
+
+# pancan MSI -----------
+pancan_MSI <- readxl::read_excel("data-raw/ds_PO.17.00073-1.xlsx")
+pancan_MSI <- pancan_MSI[, 1:3]
+colnames(pancan_MSI) <- c("case_id", "cancer_type", "MANTIS_Score")
+attr(pancan_MSI, "data_source") <- "DOI:https://doi.org/10.1200/PO.17.00073"
+
+# tcga MSI ------
+tcga_MSI <- readr::read_csv("data-raw/ncomms15180-s2.csv")
+attr(tcga_MSI, "data_source") <- "DOI:https://doi.org/10.1038/ncomms15180"
+
+# ccle ABSOLUTE result -----
+ccle_absolute <- readxl::read_excel("data-raw/CCLE-ABSOLUTE结果-10.1038:s41586-020-03133-3.xlsx")
+attr(ccle_absolute, "data_source") <- "DOI:https://doi.org/10.1038/s41586-020-03133-3"
+
+usethis::use_data(ccle_absolute, overwrite = TRUE)
+usethis::use_data(tcga_MSI, overwrite = TRUE)
+usethis::use_data(pancan_MSI, overwrite = TRUE)
+usethis::use_data(tcga_chr_alteration, overwrite = TRUE)
+usethis::use_data(tcga_TIL, overwrite = TRUE)
 usethis::use_data(tcga_clinical, overwrite = TRUE)
 usethis::use_data(tcga_subtypes, overwrite = TRUE)
 usethis::use_data(tcga_subtypes, overwrite = TRUE)
@@ -153,3 +179,7 @@ usethis::use_data(tcga_genome_instability, overwrite = TRUE)
 usethis::use_data(tcga_purity, overwrite = TRUE)
 usethis::use_data(TCGA.organ, overwrite = TRUE)
 usethis::use_data(ccle_info, overwrite = TRUE)
+
+# 如果是要存储在远端的数据，将其从 data/ 移入 data-remote/ 中
+dir.create("data-remote")
+system("cd data && mv pancan_MSI* tcga_MSI* tcga_chr_* tcga_stemness* tcga_tmb* tcga_pan_immune* tcga_TIL* ../data-remote")
