@@ -48,10 +48,10 @@ NULL
 
 #' TCGA: immune signature data
 #' @docType data
-#' @name  tcga_pan_immune_signature
+#' @name  tcga_pan_tcga_pan_immune_signaturenature
 #' @format A [data.frame]
 #' @examples
-#' data("tcga_pan_immune_signature")
+#' data("tcga_pan_tcga_pan_immune_signaturenature")
 #' @source  <https://gdc.cancer.gov/about-data/publications/panimmune>
 NULL
 
@@ -101,9 +101,9 @@ NULL
 
 #' TCGA subtype data
 #' @docType data
-#' @name  TCGAsubtype
+#' @name  tcga_subtypes
 #' @format A [data.frame]
 #' @source UCSC Xena.
 #' @examples
-#' data("TCGAsubtype")
+#' data("tcga_subtypes")
 NULL

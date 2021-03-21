@@ -418,13 +418,13 @@ vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male"), opti
 #' }
 #' @export
 vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_sig_type = "Cibersort") {
-  data("immune_sig", package = "UCSCXenaShiny", envir = environment())
+  data("tcga_pan_immune_signature", package = "UCSCXenaShiny", envir = environment())
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
   
   #we filter out normal tissue
   tcga_gtex = tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
   
-  immune_sig <- immune_sig %>%
+  tcga_pan_immune_signature <- tcga_pan_immune_signature %>%
     tidyr::pivot_longer(3:ncol(.), names_to = "sample", values_to = "score") %>%
     dplyr::mutate(sample = stringr::str_sub(.data$sample, 1, 15))
 
@@ -434,7 +434,7 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_s
   s <- data.frame(sample = names(t1), values = t1)
 
   ss <- s %>%
-    dplyr::inner_join(immune_sig, by = "sample") %>%
+    dplyr::inner_join(tcga_pan_immune_signature, by = "sample") %>%
     dplyr::inner_join(tcga_gtex[, c("tissue", "sample")], by = "sample")
 
   sss <- split(ss, ss$tissue)
@@ -498,12 +498,12 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_s
 #' }
 #' @export
 vis_gene_tmb_cor <- function(Gene = "TP53", Cor_method = "spearman") {
-  data("tmb_data", package = "UCSCXenaShiny", envir = environment())
+  data("tcga_tmb", package = "UCSCXenaShiny", envir = environment())
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
   t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
   s <- data.frame(sample = names(t1), values = t1)
   ss <- s %>%
-    dplyr::inner_join(tmb_data, by = c("sample" = "Tumor_Sample_ID")) %>%
+    dplyr::inner_join(tcga_tmb, by = c("sample" = "Tumor_Sample_ID")) %>%
     dplyr::inner_join(tcga_gtex[, c("tissue", "sample")], by = "sample")
   sss <- split(ss, ss$tissue)
   tissues <- names(sss)
@@ -554,12 +554,12 @@ vis_gene_tmb_cor <- function(Gene = "TP53", Cor_method = "spearman") {
 #' }
 #' @export
 vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman") {
-  data("stemness_data_RNA", package = "UCSCXenaShiny", envir = environment())
+  data("tcga_stemness", package = "UCSCXenaShiny", envir = environment())
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
   t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
   s <- data.frame(sample = names(t1), values = t1)
   ss <- s %>%
-    dplyr::inner_join(stemness_data_RNA, by = c("sample")) %>%
+    dplyr::inner_join(tcga_stemness, by = c("sample")) %>%
     dplyr::inner_join(tcga_gtex[, c("tissue", "sample")], by = "sample")
   sss <- split(ss, ss$tissue)
   tissues <- names(sss)
@@ -742,8 +742,8 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.valu
 #' @export
 vis_gene_cor <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, split = FALSE){
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
-  data("purity_data", package = "UCSCXenaShiny", envir = environment())
-  purity_data$CPE = as.numeric(purity_data$CPE)
+  data("tcga_purity", package = "UCSCXenaShiny", envir = environment())
+  tcga_purity$CPE = as.numeric(tcga_purity$CPE)
   tcga_gtex <- tcga_gtex %>% dplyr::group_by(.data$tissue) %>% dplyr::distinct(.data$sample, .keep_all = TRUE)
   t1 <- get_pancan_gene_value(identifier = Gene1)$expression
   t2 <- t1 %>%
@@ -758,7 +758,7 @@ vis_gene_cor <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, spl
     tibble::rownames_to_column(var = "sample") %>%
     dplyr::inner_join(tcga_gtex, by = "sample")
   df <- data.frame(sample = t2$sample,tissue = t2$tissue, type2 = t2$type2, gene1 = t2$tpm, gene2 = t4$tpm,stringsAsFactors = F)
-  df %>% dplyr::left_join(purity_data,by = "sample") %>% filter(type2 == "tumor") -> df
+  df %>% dplyr::left_join(tcga_purity,by = "sample") %>% filter(type2 == "tumor") -> df
   #plot refer to https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
   if(split == FALSE){
     if(purity_adj == TRUE){
@@ -804,8 +804,8 @@ utils::globalVariables(
   c(
     ".",
     "tcga_gtex",
-    "stemness_data_RNA",
-    "tmb_data",
+    "tcga_stemness",
+    "tcga_tmb",
     "toil_surv",
     "TCGA.organ",
     "Type",

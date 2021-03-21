@@ -2,7 +2,7 @@
 # 所有的数据集都要标注数据源和相关引用信息
 # 大/不常使用的数据文件统一上传到 https://zenodo.org/
 # 全部的文件都以 .rds 格式保存
-# sed -i "" "s/sig_feed/sig_tally/g" `grep "sig_feed" -rl R/*`
+#sed -i "" "s/stemness_data_RNA/tcga_stemness/g" `grep "stemness_data_RNA" -rl R/*`
 
 # cohort: TCGA TARGET GTEx
 library(UCSCXenaTools)
@@ -17,6 +17,7 @@ toil_surv <- XenaGenerate(subset = XenaDatasets == "TCGA_survival_data") %>%
   XenaDownload() %>%
   XenaPrepare() %>%
   as.data.frame()
+attr(toil_surv, "data_source") <- "DOI:https://doi.org/10.1016/j.cell.2018.02.052"
 
 #-------------immune sig data--------------------------
 # access date: 2020-06-14
@@ -123,6 +124,16 @@ TCGAsubtype = as.data.frame(TCGAsubtype)
 tcga_subtypes <- TCGAsubtype
 attr(tcga_subtypes, "data_source") <- "https://pancanatlas.xenahubs.net/"
 
+# TCGA clinical data (survival is excluded, use toil_surv instead.)
+download.file("https://tcga-pancan-atlas-hub.s3.us-east-1.amazonaws.com/latest/Survival_SupplementalTable_S1_20171025_xena_sp.gz",
+              "data-raw/tcga_clinical.gz")
+tcga_clinical <- readr::read_tsv("data-raw/tcga_clinical.gz", guess_max = 3000)
+tcga_clinical <- tcga_clinical[, c(-c(13, 16, 17, 23, 26:34))]
+colnames(tcga_clinical)[c(2:3)] <- c("patient", "type")
+attr(tcga_clinical, "data_source") <- "DOI:https://doi.org/10.1016/j.cell.2018.02.052"
+
+usethis::use_data(tcga_clinical, overwrite = TRUE)
+usethis::use_data(tcga_subtypes, overwrite = TRUE)
 usethis::use_data(tcga_subtypes, overwrite = TRUE)
 usethis::use_data(toil_info, overwrite = TRUE)
 usethis::use_data(toil_surv, overwrite = TRUE)
