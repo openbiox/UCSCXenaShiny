@@ -1,33 +1,6 @@
 ## how to document datasets: you need to specify @docType and @name; do not
 ## forget NULL in the end
 
-#' Number of datasets in each cohort
-#' @docType data
-#' @name dat_datasets
-#' @format A [data.frame]
-#' @source Generate from data-raw
-#' @examples
-#' data("dat_datasets")
-NULL
-
-#' Number of samples in each cohort
-#' @docType data
-#' @name dat_samples
-#' @format A [data.frame]
-#' @source Generate from data-raw
-#' @examples
-#' data("dat_samples")
-NULL
-
-#' Summary info of UCSC Xena
-#' @docType data
-#' @name XenaInfo
-#' @format A [list]
-#' @source Generate from data-raw
-#' @examples
-#' data("XenaInfo")
-NULL
-
 #' Phenotype info of CCLE database
 #' @docType data
 #' @name ccle_info
@@ -75,46 +48,46 @@ NULL
 
 #' TCGA: immune signature data
 #' @docType data
-#' @name  immune_sig
+#' @name  tcga_pan_immune_signature
 #' @format A [data.frame]
 #' @examples
-#' data("immune_sig")
+#' data("tcga_pan_immune_signature")
 #' @source  <https://gdc.cancer.gov/about-data/publications/panimmune>
 NULL
 
 #' TCGA: TMB (tumor mutation burden) data
 #' @docType data
-#' @name  tmb_data
+#' @name  tcga_tmb
 #' @format A [data.frame]
 #' @examples
-#' data("tmb_data")
+#' data("tcga_tmb")
 #' @source <https://gdc.cancer.gov/about-data/publications/panimmune>
 NULL
 
 #' TCGA: Stemness data
 #' @docType data
-#' @name  stemness_data_RNA
+#' @name  tcga_stemness
 #' @format A [data.frame]
 #' @examples
-#' data("stemness_data_RNA")
-#' @source <https://pancanatlas.xenahubs.net/download/StemnessScores_DNAmeth_20170210.tsv.gz>
+#' data("tcga_stemness")
+#' @source <https://pancanatlas.xenahubs.net>
 NULL
 
 #' TCGA: genome instability data
 #' @docType data
-#' @name  gi_data
+#' @name  tcga_genome_instability
 #' @format A [data.frame]
 #' @examples
-#' data("gi_data")
+#' data("tcga_genome_instability")
 #' @source <https://gdc.cancer.gov/about-data/publications/PanCanStemness-2018>
 NULL
 
 #' TCGA: purity data
 #' @docType data
-#' @name  purity_data
+#' @name  tcga_purity
 #' @format A [data.frame]
 #' @examples
-#' data("purity_data")
+#' data("tcga_purity")
 #' @source <https://www.nature.com/articles/ncomms9971#Sec14>
 NULL
 
