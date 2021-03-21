@@ -45,8 +45,10 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
 
   t1 <- get_pancan_gene_value(identifier = Gene)$expression
 
-  tcga_gtex <- tcga_gtex %>% dplyr::group_by(.data$tissue) %>% dplyr::distinct(.data$sample, .keep_all = TRUE)
-  
+  tcga_gtex <- tcga_gtex %>%
+    dplyr::group_by(.data$tissue) %>%
+    dplyr::distinct(.data$sample, .keep_all = TRUE)
+
   t2 <- t1 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
@@ -199,10 +201,10 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, valu
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
 
   t1 <- get_pancan_gene_value(Gene)$expression
-  
-  #we filter out normal tissue
-  tcga_gtex = tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
-  
+
+  # we filter out normal tissue
+  tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
+
   message(paste0("Get gene expression for ", Gene))
   s <- data.frame(sample = names(t1), values = t1)
   ## we use median cutoff here
@@ -420,10 +422,10 @@ vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male"), opti
 vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_sig_type = "Cibersort") {
   data("tcga_pan_immune_signature", package = "UCSCXenaShiny", envir = environment())
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
-  
-  #we filter out normal tissue
-  tcga_gtex = tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
-  
+
+  # we filter out normal tissue
+  tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
+
   tcga_pan_immune_signature <- tcga_pan_immune_signature %>%
     tidyr::pivot_longer(3:ncol(.), names_to = "sample", values_to = "score") %>%
     dplyr::mutate(sample = stringr::str_sub(.data$sample, 1, 15))
@@ -617,13 +619,15 @@ vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman") {
 #'
 vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, Cancer = "ACC") {
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
-  
+
   t1 <- get_pancan_gene_value(identifier = Gene)$expression
-  
-  tcga_gtex <- tcga_gtex %>% dplyr::group_by(.data$tissue) %>% dplyr::distinct(.data$sample, .keep_all = TRUE)
-  
-  #tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
-  
+
+  tcga_gtex <- tcga_gtex %>%
+    dplyr::group_by(.data$tissue) %>%
+    dplyr::distinct(.data$sample, .keep_all = TRUE)
+
+  # tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
+
   t2 <- t1 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
@@ -640,7 +644,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.valu
   if (TCGA.only == TRUE) {
     tcga_gtex_withNormal <- tcga_gtex_withNormal %>% dplyr::filter(.data$dataset == "TCGA")
   }
-  tcga_gtex_withNormal = tcga_gtex_withNormal %>% dplyr::filter(.data$tissue == Cancer)
+  tcga_gtex_withNormal <- tcga_gtex_withNormal %>% dplyr::filter(.data$tissue == Cancer)
   if (Show.P.value == FALSE) {
     Show.P.label <- FALSE
   }
@@ -651,12 +655,12 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.valu
     pv <- pv %>% dplyr::select(c("p", "p.signif", "p.adj"))
     message("Counting P value finished")
   }
-  data = tcga_gtex_withNormal
+  data <- tcga_gtex_withNormal
   if (Mode == "Boxplot") {
     p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "type2", y = "tpm", fill = "type2")) +
       ggplot2::geom_boxplot() +
-      ggplot2::geom_dotplot(binaxis='y', stackdir='center',position = "identity") +
-      #ggplot2::geom_jitter(aes_string(color = "type2"),shape=16, position=position_jitter(0.2), size = 2) +
+      ggplot2::geom_dotplot(binaxis = "y", stackdir = "center", position = "identity") +
+      # ggplot2::geom_jitter(aes_string(color = "type2"),shape=16, position=position_jitter(0.2), size = 2) +
       ggplot2::xlab(NULL) +
       ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
       ggplot2::theme_set(theme_set(theme_classic(base_size = 20))) +
@@ -666,7 +670,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.valu
         legend.background = element_blank(),
         legend.position = "none", legend.justification = c(0, 0)
       ) +
-      ggplot2::scale_fill_manual(values = values)+
+      ggplot2::scale_fill_manual(values = values) +
       ggplot2::scale_color_manual(values = values)
     # p <- p + ggplot2::geom_boxplot(data = tcga_gtex_MESO) +
     #   ggplot2::geom_boxplot(data = tcga_gtex_UVM)
@@ -694,8 +698,8 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.valu
   }
   if (Mode == "Violinplot") {
     p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "type2", y = "tpm", fill = "type2")) +
-      ggplot2::geom_violin(trim=FALSE) +
-      ggplot2::geom_boxplot(width=0.1, fill="white") +
+      ggplot2::geom_violin(trim = FALSE) +
+      ggplot2::geom_boxplot(width = 0.1, fill = "white") +
       ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
       ggplot2::xlab("") +
       # ggplot2::ggtitle(.data$tissue) +
@@ -733,18 +737,20 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.valu
 }
 
 #' Visualize Gene-gene correlation in TCGA dataset
-#' 
+#'
 #' @import ggplot2 dplyr ppcor
 #' @param Gene1 the first gene
 #' @param Gene2 the second gene
 #' @param purity_adj whether performing partial correlation adjusted by purity
 #' @param split whether split by TCGA tumor tissue
 #' @export
-vis_gene_cor <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, split = FALSE){
+vis_gene_cor <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, split = FALSE) {
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
   data("tcga_purity", package = "UCSCXenaShiny", envir = environment())
-  tcga_purity$CPE = as.numeric(tcga_purity$CPE)
-  tcga_gtex <- tcga_gtex %>% dplyr::group_by(.data$tissue) %>% dplyr::distinct(.data$sample, .keep_all = TRUE)
+  tcga_purity$CPE <- as.numeric(tcga_purity$CPE)
+  tcga_gtex <- tcga_gtex %>%
+    dplyr::group_by(.data$tissue) %>%
+    dplyr::distinct(.data$sample, .keep_all = TRUE)
   t1 <- get_pancan_gene_value(identifier = Gene1)$expression
   t2 <- t1 %>%
     as.data.frame() %>%
@@ -757,36 +763,39 @@ vis_gene_cor <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, spl
     dplyr::rename("tpm" = ".") %>%
     tibble::rownames_to_column(var = "sample") %>%
     dplyr::inner_join(tcga_gtex, by = "sample")
-  df <- data.frame(sample = t2$sample,tissue = t2$tissue, type2 = t2$type2, gene1 = t2$tpm, gene2 = t4$tpm,stringsAsFactors = F)
-  df %>% dplyr::left_join(tcga_purity,by = "sample") %>% filter(type2 == "tumor") -> df
-  #plot refer to https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
-  if(split == FALSE){
-    if(purity_adj == TRUE){
+  df <- data.frame(sample = t2$sample, tissue = t2$tissue, type2 = t2$type2, gene1 = t2$tpm, gene2 = t4$tpm, stringsAsFactors = F)
+  df %>%
+    dplyr::left_join(tcga_purity, by = "sample") %>%
+    filter(type2 == "tumor") -> df
+  # plot refer to https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
+  if (split == FALSE) {
+    if (purity_adj == TRUE) {
       df %>% filter(!is.na(CPE)) -> df
-      partial_cor_res <- ezcor_partial_cor(data = df, var1 = "gene1", var2 = "gene2", var3 = "CPE",sig_label = TRUE)
+      partial_cor_res <- ezcor_partial_cor(data = df, var1 = "gene1", var2 = "gene2", var3 = "CPE", sig_label = TRUE)
       cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2")
-      df$pc <- predict(prcomp(~gene1+gene1, df))[,1]
-      x= quantile(df$gene1)[1]; y = quantile(df$gene2)[5]
-      p <- ggplot2::ggplot(df, aes(gene1, gene2,color = pc)) +
+      df$pc <- predict(prcomp(~ gene1 + gene1, df))[, 1]
+      x <- quantile(df$gene1)[1]
+      y <- quantile(df$gene2)[5]
+      p <- ggplot2::ggplot(df, aes(gene1, gene2, color = pc)) +
         ggplot2::geom_point(shape = 16, size = 1.5, show.legend = FALSE) +
         ggplot2::theme_minimal() +
         ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
         ggplot2::labs(x = Gene1, y = Gene2) +
         ggplot2::ggtitle("TCGA PANCAN dataset") +
-        ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor,2), " ",cor_res$pstar,"\n","Cor_adj: ", round(partial_cor_res$cor_partial,2)," ",partial_cor_res$pstar),x = x + 1, y = y, size = 4, colour = "black")
-    } else{
+        ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar, "\n", "Cor_adj: ", round(partial_cor_res$cor_partial, 2), " ", partial_cor_res$pstar), x = x + 1, y = y, size = 4, colour = "black")
+    } else {
       cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2")
-      df$pc <- predict(prcomp(~gene1+gene1, df))[,1]
-      x= quantile(df$gene1)[1]; y = quantile(df$gene2)[5]
-      p <- ggplot2::ggplot(df, aes(gene1, gene2,color = pc)) +
+      df$pc <- predict(prcomp(~ gene1 + gene1, df))[, 1]
+      x <- quantile(df$gene1)[1]
+      y <- quantile(df$gene2)[5]
+      p <- ggplot2::ggplot(df, aes(gene1, gene2, color = pc)) +
         ggplot2::geom_point(shape = 16, size = 1.5, show.legend = FALSE) +
         ggplot2::theme_minimal() +
         ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
         ggplot2::labs(x = Gene1, y = Gene2) +
         ggplot2::ggtitle("TCGA PANCAN dataset") +
-        ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor,2), " ",cor_res$pstar),x = x + 1, y = y, size = 4, colour = "black")
+        ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar), x = x + 1, y = y, size = 4, colour = "black")
     }
-    
   }
   return(p)
 }

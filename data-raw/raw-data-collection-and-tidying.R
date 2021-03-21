@@ -2,7 +2,7 @@
 # 所有的数据集都要标注数据源和相关引用信息
 # 大/不常使用的数据文件统一上传到 https://zenodo.org/
 # 全部的文件都以 .rds 格式保存
-#sed -i "" "s/stemness_data_RNA/tcga_stemness/g" `grep "stemness_data_RNA" -rl R/*`
+# sed -i "" "s/stemness_data_RNA/tcga_stemness/g" `grep "stemness_data_RNA" -rl R/*`
 
 # cohort: TCGA TARGET GTEx
 library(UCSCXenaTools)
@@ -51,12 +51,13 @@ stemness_data_RNA <- stemness_data %>%
   dplyr::mutate(sample = stringr::str_replace_all(sample, "\\.", "-"))
 
 download.file("https://tcga-pancan-atlas-hub.s3.us-east-1.amazonaws.com/latest/StemnessScores_DNAmeth_20170210.tsv.gz",
-              destfile = "data-raw/StemnessScores_MethyBased.tsv.gz")
+  destfile = "data-raw/StemnessScores_MethyBased.tsv.gz"
+)
 stemness_data_methy <- readr::read_tsv("data-raw/StemnessScores_MethyBased.tsv.gz")
 
 # 有一些重复的样本名
-stemness_data_methy <- stemness_data_methy %>% 
-  tidyr::pivot_longer(cols = dplyr::starts_with("TCGA")) %>% 
+stemness_data_methy <- stemness_data_methy %>%
+  tidyr::pivot_longer(cols = dplyr::starts_with("TCGA")) %>%
   tidyr::pivot_wider(names_from = "sample", values_from = "value", values_fill = NA)
 colnames(stemness_data_methy)[1] <- "sample"
 
@@ -101,32 +102,38 @@ TCGA.organ <- data.table::fread("data-raw/TCGA_organ.txt", data.table = F)
 TCGA.organ <- TCGA.organ[, -3]
 
 #-------ccle phenotype--------------------------------------
-download.file("https://data.broadinstitute.org/ccle_legacy_data/cell_line_annotations/CCLE_sample_info_file_2012-10-18.txt", destfile = "./data-raw/ccle_pheno.txt", method="curl")
-ccle_info = data.table::fread("./data-raw/ccle_pheno.txt",data.table = F)
+download.file("https://data.broadinstitute.org/ccle_legacy_data/cell_line_annotations/CCLE_sample_info_file_2012-10-18.txt", destfile = "./data-raw/ccle_pheno.txt", method = "curl")
+ccle_info <- data.table::fread("./data-raw/ccle_pheno.txt", data.table = F)
 table(ccle_info$Histology)
 table(ccle_info$`Site Primary`)
-ccle_info %>% mutate(Type = ifelse(`Hist Subtype1`== "NS",Histology,`Hist Subtype1`)) -> ccle_info
-names(ccle_info) <- c("CCLE_name","Cell_line_primary_name","Cell_line_aliases","Gender","Site_Primary","Histology","Hist_Subtype1","Notes","Source","Expression_arrays","SNP_arrays","Oncomap","Hybrid_Capture_Sequencing","Type")
+ccle_info %>% mutate(Type = ifelse(`Hist Subtype1` == "NS", Histology, `Hist Subtype1`)) -> ccle_info
+names(ccle_info) <- c("CCLE_name", "Cell_line_primary_name", "Cell_line_aliases", "Gender", "Site_Primary", "Histology", "Hist_Subtype1", "Notes", "Source", "Expression_arrays", "SNP_arrays", "Oncomap", "Hybrid_Capture_Sequencing", "Type")
 attr(ccle_info, "data_source") <- "https://data.broadinstitute.org/ccle_legacy_data/cell_line_annotations/"
 
 #---- code to prepare `TCGAsubtype` dataset goes here
-download.file("https://pancanatlas.xenahubs.net/download/TCGASubtype.20170308.tsv.gz",
-              "data-raw/TCGAsubtype.tsv.gz")
+download.file(
+  "https://pancanatlas.xenahubs.net/download/TCGASubtype.20170308.tsv.gz",
+  "data-raw/TCGAsubtype.tsv.gz"
+)
 
-download.file("https://pancanatlas.xenahubs.net/download/Subtype_Immune_Model_Based.txt.gz",
-              "data-raw/immuSubtype.tsv.gz")
+download.file(
+  "https://pancanatlas.xenahubs.net/download/Subtype_Immune_Model_Based.txt.gz",
+  "data-raw/immuSubtype.tsv.gz"
+)
 
-d1 = data.table::fread("data-raw/TCGAsubtype.tsv.gz")
-d2 = data.table::fread("data-raw/immuSubtype.tsv.gz")
+d1 <- data.table::fread("data-raw/TCGAsubtype.tsv.gz")
+d2 <- data.table::fread("data-raw/immuSubtype.tsv.gz")
 
-TCGAsubtype = merge(d1, d2, by.x = "sampleID", by.y = "sample", all = TRUE)
-TCGAsubtype = as.data.frame(TCGAsubtype)
+TCGAsubtype <- merge(d1, d2, by.x = "sampleID", by.y = "sample", all = TRUE)
+TCGAsubtype <- as.data.frame(TCGAsubtype)
 tcga_subtypes <- TCGAsubtype
 attr(tcga_subtypes, "data_source") <- "https://pancanatlas.xenahubs.net/"
 
 # TCGA clinical data (survival is excluded, use toil_surv instead.)
-download.file("https://tcga-pancan-atlas-hub.s3.us-east-1.amazonaws.com/latest/Survival_SupplementalTable_S1_20171025_xena_sp.gz",
-              "data-raw/tcga_clinical.gz")
+download.file(
+  "https://tcga-pancan-atlas-hub.s3.us-east-1.amazonaws.com/latest/Survival_SupplementalTable_S1_20171025_xena_sp.gz",
+  "data-raw/tcga_clinical.gz"
+)
 tcga_clinical <- readr::read_tsv("data-raw/tcga_clinical.gz", guess_max = 3000)
 tcga_clinical <- tcga_clinical[, c(-c(13, 16, 17, 23, 26:34))]
 colnames(tcga_clinical)[c(2:3)] <- c("patient", "type")

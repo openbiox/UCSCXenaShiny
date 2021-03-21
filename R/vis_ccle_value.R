@@ -6,7 +6,7 @@
 #' @param x.axis Different parameters for x.axis
 #' @return a `ggplot` object
 #' @export
-vis_ccle_tpm <- function(Gene = "TP53", x.axis = "Type"){
+vis_ccle_tpm <- function(Gene = "TP53", x.axis = "Type") {
   t1 <- get_ccle_gene_value(identifier = Gene)$expression
   data("ccle_info", package = "UCSCXenaShiny", envir = environment())
   t2 <- t1 %>%
@@ -14,11 +14,11 @@ vis_ccle_tpm <- function(Gene = "TP53", x.axis = "Type"){
     dplyr::rename("tpm" = ".") %>%
     tibble::rownames_to_column(var = "cell") %>%
     dplyr::inner_join(ccle_info, by = c("cell" = "CCLE_name"))
-  
-  t2[[x.axis]] = forcats::fct_reorder(t2[[x.axis]], t2$tpm)
-  
+
+  t2[[x.axis]] <- forcats::fct_reorder(t2[[x.axis]], t2$tpm)
+
   # t2 %>% mutate(x.axis = fct_reorder(x.axis, tpm, .fun='median')) -> t2
-  
+
   p <- t2 %>% ggplot2::ggplot(aes_string(x = x.axis, y = "tpm", fill = x.axis)) +
     ggplot2::geom_boxplot() +
     ggplot2::xlab(NULL) +
@@ -33,5 +33,3 @@ vis_ccle_tpm <- function(Gene = "TP53", x.axis = "Type"){
   print(p)
   return(p)
 }
-
-
