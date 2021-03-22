@@ -1,6 +1,10 @@
 ---
 title: "Accessible Functions"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
 author: ["Shixiang Wang", "XiongYi"]
 date: "`r Sys.Date()`"
 vignette: >
@@ -92,10 +96,13 @@ vis_toil_TvsN_cancer(
 
 This function needs [gganatogram](https://github.com/jespermaag/gganatogram) package, which is not on CRAN. Please install it before using this function.
 
-```{r fig.width=8, fig.height=5}
+```{r eval=FALSE, fig.width=8, fig.height=5}
 if (require("gganatogram")) {
   vis_pancan_anatomy(Gene = "TP53", Gender = c("Female", "Male"), option = "D")
 }
+```
+```{r echo=FALSE}
+knitr::include_graphics("https://gitee.com/ShixiangWang/ImageCollection/raw/master/png/20210322130516.png")
 ```
 
 ### Visualize Relationship between Gene Expression and Prognosis in the PANCAN Dataset
