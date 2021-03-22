@@ -310,6 +310,16 @@ get_run_mode <- function() {
   getOption("xena.runMode", default = "client")
 }
 
+# For internal debugging usage
+rm_pkg_cache <- function() {
+  if (get_run_mode() == "client") {
+    unlink(path.expand(file.path(
+      tempdir(), "UCSCXenaShiny")))
+  } else {
+    unlink(path.expand("~/.xenashiny"))
+  }
+}
+
 check_file <- function(id, dataset, host) {
   runMode <- get_run_mode()
   message("Running mode: ", runMode)
