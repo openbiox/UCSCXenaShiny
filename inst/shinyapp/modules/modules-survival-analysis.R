@@ -356,10 +356,8 @@ sur_get <- function(TCGA_cohort, item, profile) {
     filter(XenaHostNames == "tcgaHub") %>%
     .[grep(TCGA_cohort, .$XenaCohorts), ]
   
-  data("tcga_clinical", package = "UCSCXenaShiny", envir = environment())
-  data("tcga_surv", package = "UCSCXenaShiny", envir = environment())
-  cliMat <- dplyr::full_join(tcga_clinical, tcga_surv, by = "sample") %>% 
-    dplyr::filter(cliMat, type == TCGA_cohort)
+  cliMat <- dplyr::full_join(load_data("tcga_clinical"), load_data("tcga_surv"), by = "sample") %>% 
+    dplyr::filter(type == TCGA_cohort)
   
   if (profile == "mRNA") {
     gd <- get_pancan_gene_value(item)$expression
@@ -373,14 +371,14 @@ sur_get <- function(TCGA_cohort, item, profile) {
   if (all(is.na(gd))) {
     return(NULL)
   }
-  gd <- gd[nchar(names(gd)) == 15]
+
   merged_data <- tibble(
     sampleID = names(gd),
-    value = as.numeric(gd),
-    patid = substr(sampleID, 1, 12)
+    value = as.numeric(gd)
   ) %>%
+    dplyr::filter(nchar(sampleID) == 15) %>% 
     dplyr::filter(as.numeric(substr(sampleID, 14, 15)) < 10) %>%
-    dplyr::left_join(cliMat, by = c("patid" = "sample")) %>%
+    dplyr::left_join(cliMat, by = c("sampleID" = "sample")) %>%
     dplyr::filter(
       !is.na(OS),
       !is.na(OS.time)
