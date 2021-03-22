@@ -388,7 +388,6 @@ sur_get <- function(TCGA_cohort, item, profile) {
                   gender, age = age_at_initial_pathologic_diagnosis,
                   stage = ajcc_pathologic_tumor_stage
     ) %>%
-    # dplyr::mutate(stage = gsub("[(Stage)ABC ]*", "", stage)) %>%
     dplyr::mutate(stage = stringr::str_match(stage, "Stage\\s+(.*?)[ABC]?$")[, 2]) %>%
     dplyr::mutate(
       stage = ifelse(is.na(stage), "Unknown", stage),
