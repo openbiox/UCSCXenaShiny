@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Visualize Gene-gene correlation in TCGA dataset — vis_gene_cor • UCSCXenaShiny</title>
+<title>TCGA: purity data — tcga_purity • UCSCXenaShiny</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Visualize Gene-gene correlation in TCGA dataset — vis_gene_cor" />
-<meta property="og:description" content="Visualize Gene-gene correlation in TCGA dataset" />
+<meta property="og:title" content="TCGA: purity data — tcga_purity" />
+<meta property="og:description" content="TCGA: purity data" />
 
 
 
@@ -123,39 +123,27 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Visualize Gene-gene correlation in TCGA dataset</h1>
-    <small class="dont-index">Source: <a href='https://github.com/openbiox/UCSCXenaShiny/blob/master/R/vis_pancan_value.R'><code>R/vis_pancan_value.R</code></a></small>
-    <div class="hidden name"><code>vis_gene_cor.Rd</code></div>
+    <h1>TCGA: purity data</h1>
+    <small class="dont-index">Source: <a href='https://github.com/openbiox/UCSCXenaShiny/blob/master/R/data.R'><code>R/data.R</code></a></small>
+    <div class="hidden name"><code>tcga_purity.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Visualize Gene-gene correlation in TCGA dataset</p>
+    <p>TCGA: purity data</p>
     </div>
 
-    <pre class="usage"><span class='fu'>vis_gene_cor</span><span class='op'>(</span>Gene1 <span class='op'>=</span> <span class='st'>"CSF1R"</span>, Gene2 <span class='op'>=</span> <span class='st'>"JAK3"</span>, purity_adj <span class='op'>=</span> <span class='cn'>TRUE</span>, split <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
-
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>Gene1</th>
-      <td><p>the first gene</p></td>
-    </tr>
-    <tr>
-      <th>Gene2</th>
-      <td><p>the second gene</p></td>
-    </tr>
-    <tr>
-      <th>purity_adj</th>
-      <td><p>whether performing partial correlation adjusted by purity</p></td>
-    </tr>
-    <tr>
-      <th>split</th>
-      <td><p>whether split by TCGA tumor tissue</p></td>
-    </tr>
-    </table>
 
 
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+
+    <p>A <a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></p>
+    <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
+
+    <p><a href='https://www.nature.com/articles/ncomms9971#Sec14'>https://www.nature.com/articles/ncomms9971#Sec14</a></p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"tcga_purity"</span><span class='op'>)</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

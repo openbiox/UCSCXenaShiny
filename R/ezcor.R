@@ -258,8 +258,7 @@ ezcor_caller <- function(var2,
 
 #' Run partial correlation
 #'
-#'
-#' @seealso \link{ppcor::pcor.test()} which this function wraps.
+#' @seealso [ppcor::pcor.test()] which this function wraps.
 #' @param data a `data.frame` containing variables
 #' @param split whether perform correlation grouped by a variable, default is 'FALSE'
 #' @param split_var a `character`, the group variable

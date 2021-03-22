@@ -10,6 +10,15 @@
 #' data("ccle_info")
 NULL
 
+#' ABSOLUTE result of CCLE database
+#' @docType data
+#' @name ccle_absolute
+#' @format A `data.frame`
+#' @source see "data_source" attribute.
+#' @examples
+#' data("ccle_absolute")
+NULL
+
 #' Toil Hub: TCGA TARGET GTEX selected phenotypes
 #' @docType data
 #' @name toil_info
@@ -20,6 +29,17 @@ NULL
 NULL
 
 
+#' Toil Hub: TCGA clinical data
+#' 
+#' See `tcga_surv` for TCGA survival data.
+#' @docType data
+#' @name tcga_clinical
+#' @format A [data.frame]
+#' @source Generate from data-raw
+#' @examples
+#' data("tcga_clinical")
+NULL
+
 #' Toil Hub: TCGA survival data
 #' @docType data
 #' @name tcga_surv
@@ -29,14 +49,6 @@ NULL
 #' data("tcga_surv")
 NULL
 
-#' Toil Hub: TCGA survival data from paper
-#' @docType data
-#' @name cliMat
-#' @format A [data.frame]
-#' @source Generate from paper
-#' @examples
-#' data("tcga_clinicalMatrix")
-NULL
 
 #' Toil Hub: merged TCGA GTEX selected phenotypes
 #' @docType data
@@ -44,15 +56,6 @@ NULL
 #' @format A [data.frame]
 #' @examples
 #' data("tcga_gtex_sampleinfo")
-NULL
-
-#' TCGA: immune signature data
-#' @docType data
-#' @name  tcga_pan_tcga_pan_immune_signaturenature
-#' @format A [data.frame]
-#' @examples
-#' data("tcga_pan_tcga_pan_immune_signaturenature")
-#' @source  <https://gdc.cancer.gov/about-data/publications/panimmune>
 NULL
 
 #' TCGA: TMB (tumor mutation burden) data
@@ -64,14 +67,6 @@ NULL
 #' @source <https://gdc.cancer.gov/about-data/publications/panimmune>
 NULL
 
-#' TCGA: Stemness data
-#' @docType data
-#' @name  tcga_stemness
-#' @format A [data.frame]
-#' @examples
-#' data("tcga_stemness")
-#' @source <https://pancanatlas.xenahubs.net>
-NULL
 
 #' TCGA: genome instability data
 #' @docType data

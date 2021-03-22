@@ -30,6 +30,5 @@ vis_ccle_tpm <- function(Gene = "TP53", x.axis = "Type") {
       legend.background = element_blank(),
       legend.position = "none"
     )
-  print(p)
   return(p)
 }

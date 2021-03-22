@@ -49,6 +49,18 @@
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="articles/api.html">Accessible Functions</a>
+    </li>
+  </ul>
+</li>
 <li>
   <a href="news/index.html">Changelog</a>
 </li>
@@ -80,6 +92,11 @@
 <p>The goal of <strong>UCSCXenaShiny</strong> is to provide a web app for downloading, analyzing and visualizing datasets from <a href="https://xenabrowser.net/datapages/">UCSC Xena</a>, which is a collection of UCSC-hosted public databases such as TCGA, ICGC, TARGET, GTEx, CCLE, and others. Databases are normalized so they can be combined, linked, filtered, explored and downloaded.</p>
 <p>Please cite the following article when using <code>UCSCXenaShiny</code>:</p>
 <p>Wang, S.; Xiong, Y.; Gu, K.; Zhao, L.; Li, Y.; Zhao, F.; Li, X.; Liu, X. UCSCXenaShiny: An R Package for Exploring and Analyzing UCSC Xena Public Datasets in Web Browser. Preprints 2020, 2020070179 (doi: 10.20944/preprints202007.0179.v1).</p>
+<div id="cloud-use-on-cloud" class="section level2">
+<h2 class="hasAnchor">
+<a href="#cloud-use-on-cloud" class="anchor"></a><span class="emoji" data-emoji="cloud">☁️</span> Use on cloud</h2>
+<p>If you don’t want to install R and packages locally, or you have no programming experience, try using this tool on Hiplot platform: <a href="https://shiny.hiplot.com.cn/ucsc-xena-shiny/" class="uri">https://shiny.hiplot.com.cn/ucsc-xena-shiny/</a>.</p>
+</div>
 <div id="arrow_double_down-installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#arrow_double_down-installation" class="anchor"></a>:arrow_double_down: Installation</h2>
@@ -92,10 +109,6 @@
 <p>Or Gitee (for Chinese users):</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_git.html">install_git</a></span><span class="op">(</span><span class="st">"https://gitee.com/XenaShiny/UCSCXenaShiny"</span><span class="op">)</span></code></pre></div>
-<div id="if-you-dont-want-to-install-r-and-packages-shiny-app-is-also-available-in--httpshiplotcomcn-after-registration" class="section level4">
-<h4 class="hasAnchor">
-<a href="#if-you-dont-want-to-install-r-and-packages-shiny-app-is-also-available-in--httpshiplotcomcn-after-registration" class="anchor"></a>If you don’t want to install R and packages, Shiny App is also available in : <a href="https://hiplot.com.cn/" class="uri">https://hiplot.com.cn/</a> after registration</h4>
-</div>
 </div>
 <div id="beginner-usage" class="section level2">
 <h2 class="hasAnchor">
@@ -106,6 +119,7 @@
 <p>Then run the following command in console:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="reference/app_run.html">app_run</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<p>For advanced users, useful functions for obtaining and analyzing data are described in vignette.</p>
 </div>
 <div id="writing_hand-author" class="section level2">
 <h2 class="hasAnchor">
