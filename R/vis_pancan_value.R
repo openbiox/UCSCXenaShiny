@@ -112,7 +112,6 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
       inherit.aes = FALSE
       )
     }
-    print(p)
   }
   if (Mode == "Violinplot") {
     p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "tissue", y = "tpm", fill = "type2")) +
@@ -179,7 +178,6 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
       inherit.aes = FALSE
       )
     }
-    print(p)
   }
   return(p)
 }
@@ -486,7 +484,6 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_s
     ) +
     ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "*** p < 0.001", "\n\n", "Correlation")) +
     ggtitle(paste0("The correlation between ", Gene, " with immune signatures"))
-  print(p)
   return(p)
 }
 
@@ -543,7 +540,6 @@ vis_gene_tmb_cor <- function(Gene = "TP53", Cor_method = "spearman") {
     ) + # 调整y轴文字
     # 调整legen
     ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "Correlation"))
-  print(p)
   return(p)
 }
 
@@ -599,7 +595,6 @@ vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman") {
     ) + # 调整y轴文字
     # 调整legen
     ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "Correlation"))
-  print(p)
   return(p)
 }
 
@@ -694,7 +689,6 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.valu
       inherit.aes = FALSE
       )
     }
-    print(p)
   }
   if (Mode == "Violinplot") {
     p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "type2", y = "tpm", fill = "type2")) +
@@ -731,7 +725,6 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.valu
       inherit.aes = FALSE
       )
     }
-    print(p)
   }
   return(p)
 }

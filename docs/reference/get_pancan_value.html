@@ -87,6 +87,18 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/api.html">Accessible Functions</a>
+    </li>
+  </ul>
+</li>
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
@@ -201,37 +213,19 @@ Gene symbol is highly recommended.</p></td>
 </ul>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
+    <pre class="examples"><span class='co'># \donttest{</span>
 <span class='co'># Fetch TP53 expression value from pan-cancer dataset</span>
 <span class='va'>t1</span> <span class='op'>&lt;-</span> <span class='fu'>get_pancan_value</span><span class='op'>(</span><span class='st'>"TP53"</span>,
   dataset <span class='op'>=</span> <span class='st'>"TcgaTargetGtex_rsem_isoform_tpm"</span>,
   host <span class='op'>=</span> <span class='st'>"toilHub"</span>
 <span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>=========================================================================================</span>
-#&gt; <span class='message'>UCSCXenaTools version 1.4.0</span>
-#&gt; <span class='message'>Project URL: https://github.com/ropensci/UCSCXenaTools</span>
-#&gt; <span class='message'>Usages: https://cran.r-project.org/web/packages/UCSCXenaTools/vignettes/USCSXenaTools.html</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>If you use it in published research, please cite:</span>
-#&gt; <span class='message'>Wang et al., (2019). The UCSCXenaTools R package: a toolkit for accessing genomics data</span>
-#&gt; <span class='message'>  from UCSC Xena platform, from cancer multi-omics to single-cell RNA-seq.</span>
-#&gt; <span class='message'>  Journal of Open Source Software, 4(40), 1627, https://doi.org/10.21105/joss.01627</span>
-#&gt; <span class='message'>=========================================================================================</span>
-#&gt; <span class='message'>                              --Enjoy it--</span></div><div class='output co'>#&gt; <span class='message'>Try querying data #1</span></div><div class='output co'>#&gt; <span class='message'>-&gt; Checking if the dataset has probeMap...</span></div><div class='output co'>#&gt; <span class='message'>-&gt; Done. ProbeMap is found.</span></div><div class='input'><span class='va'>t2</span> <span class='op'>&lt;-</span> <span class='fu'>get_pancan_gene_value</span><span class='op'>(</span><span class='st'>"TP53"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Running mode: client</span></div><div class='output co'>#&gt; <span class='message'>Try querying data #1</span></div><div class='output co'>#&gt; <span class='message'>-&gt; Checking if the dataset has probeMap...</span></div><div class='output co'>#&gt; <span class='message'>-&gt; Done. ProbeMap is found.</span></div><div class='output co'>#&gt; <span class='message'>Running mode: client</span></div><div class='output co'>#&gt; <span class='message'>More info about dataset please run following commands:</span>
-#&gt; <span class='message'>  library(UCSCXenaTools)</span>
-#&gt; <span class='message'>  XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span></div><div class='input'><span class='va'>t3</span> <span class='op'>&lt;-</span> <span class='fu'>get_pancan_protein_value</span><span class='op'>(</span><span class='st'>"AKT"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Running mode: client</span></div><div class='output co'>#&gt; <span class='message'>Try querying data #1</span></div><div class='output co'>#&gt; <span class='message'>-&gt; Checking if the dataset has probeMap...</span></div><div class='output co'>#&gt; <span class='message'>-&gt; Done. No probeMap found or error happened, use old way...</span></div><div class='output co'>#&gt; <span class='message'>Running mode: client</span></div><div class='output co'>#&gt; <span class='message'>More info about dataset please run following commands:</span>
-#&gt; <span class='message'>  library(UCSCXenaTools)</span>
-#&gt; <span class='message'>  XenaGenerate(subset = XenaDatasets == "TCGA-RPPA-pancan-clean.xena") %&gt;% XenaBrowse()</span></div><div class='input'><span class='va'>t4</span> <span class='op'>&lt;-</span> <span class='fu'>get_pancan_mutation_status</span><span class='op'>(</span><span class='st'>"TP53"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>More info about dataset please run following commands:</span>
-#&gt; <span class='message'>  library(UCSCXenaTools)</span>
-#&gt; <span class='message'>  XenaGenerate(subset = XenaDatasets == "mc3.v0.2.8.PUBLIC.nonsilentGene.xena") %&gt;% XenaBrowse()</span></div><div class='output co'>#&gt; <span class='message'>Running mode: client</span></div><div class='output co'>#&gt; <span class='message'>Try querying data #1</span></div><div class='output co'>#&gt; <span class='message'>-&gt; Checking if the dataset has probeMap...</span></div><div class='output co'>#&gt; <span class='message'>-&gt; Done. ProbeMap is found.</span></div><div class='output co'>#&gt; <span class='message'>Running mode: client</span></div><div class='input'><span class='va'>t5</span> <span class='op'>&lt;-</span> <span class='fu'>get_pancan_cn_value</span><span class='op'>(</span><span class='st'>"TP53"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Running mode: client</span></div><div class='output co'>#&gt; <span class='message'>Try querying data #1</span></div><div class='output co'>#&gt; <span class='message'>-&gt; Checking if the dataset has probeMap...</span></div><div class='output co'>#&gt; <span class='message'>-&gt; Done. No probeMap found or error happened, use old way...</span></div><div class='output co'>#&gt; <span class='message'>Running mode: client</span></div><div class='output co'>#&gt; <span class='message'>More info about dataset please run following commands:</span>
-#&gt; <span class='message'>  library(UCSCXenaTools)</span>
-#&gt; <span class='message'>  XenaGenerate(subset = XenaDatasets == "TCGA.PANCAN.sampleMap/Gistic2_CopyNumber_Gistic2_all_thresholded.by_genes") %&gt;% XenaBrowse()</span></div><div class='input'><span class='co'># }</span>
+<span class='va'>t2</span> <span class='op'>&lt;-</span> <span class='fu'>get_pancan_gene_value</span><span class='op'>(</span><span class='st'>"TP53"</span><span class='op'>)</span>
+<span class='va'>t3</span> <span class='op'>&lt;-</span> <span class='fu'>get_pancan_protein_value</span><span class='op'>(</span><span class='st'>"AKT"</span><span class='op'>)</span>
+<span class='va'>t4</span> <span class='op'>&lt;-</span> <span class='fu'>get_pancan_mutation_status</span><span class='op'>(</span><span class='st'>"TP53"</span><span class='op'>)</span>
+<span class='va'>t5</span> <span class='op'>&lt;-</span> <span class='fu'>get_pancan_cn_value</span><span class='op'>(</span><span class='st'>"TP53"</span><span class='op'>)</span>
+<span class='co'># }</span>
 
-</div></pre>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

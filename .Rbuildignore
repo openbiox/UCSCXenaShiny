@@ -23,3 +23,5 @@ data/tcga_stemness.rda
 data/tcga_TIL.rda
 data/tcga_tmb.rda
 data/tcga_chr_alteration.rda
+^doc$
+^Meta$

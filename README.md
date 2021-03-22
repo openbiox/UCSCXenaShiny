@@ -56,7 +56,7 @@ Then run the following command in console:
 app_run()
 ```
 
-For advanced users, useful datasets/functions provided by this package are described in vignette.
+For advanced users, useful functions for obtaining and analyzing data are described in vignette.
 
 ## :writing\_hand: Author
 
