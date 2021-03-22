@@ -32,6 +32,8 @@ vis_toil_gene <- function(data, x = "primary_site",
 #' @param Show.P.label `TRUE` or `FALSE` present p value with number or label `*`, `**`, `***` and `****`
 #' @param values the color to fill tumor or normal
 #' @param TCGA.only include samples only from TCGA dataset
+#' @param draw_quantiles draw quantiles for violinplot 
+#' @param trim whether trim the violin
 #' @return a `ggplot` object
 #' @examples
 #' \donttest{
@@ -40,7 +42,7 @@ vis_toil_gene <- function(data, x = "primary_site",
 #' }
 #' @export
 #'
-vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE) {
+vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, draw_quantiles = c(0.25, 0.5, 0.75), trim = TRUE) {
   data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
 
   t1 <- get_pancan_gene_value(identifier = Gene)$expression
@@ -116,8 +118,8 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
   if (Mode == "Violinplot") {
     p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "tissue", y = "tpm", fill = "type2")) +
       geom_split_violin(
-        draw_quantiles = c(0.25, 0.5, 0.75),
-        trim = TRUE,
+        draw_quantiles = draw_quantiles,
+        trim = trim,
         linetype = "solid",
         color = "black",
         size = 0.2,
@@ -138,8 +140,8 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
     p + geom_split_violin(
       data = tcga_gtex_MESO,
       mapping = aes_string(x = "tissue", y = "tpm", fill = "type2"),
-      draw_quantiles = c(0.25, 0.5, 0.75),
-      trim = TRUE,
+      draw_quantiles = draw_quantiles,
+      trim = trim,
       linetype = "solid",
       color = "black",
       size = 0.2,
@@ -149,15 +151,15 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
       geom_split_violin(
         data = tcga_gtex_UVM,
         mapping = ggplot2::aes_string(x = "tissue", y = "tpm", fill = "type2"),
-        draw_quantiles = c(0.25, 0.5, 0.75),
-        trim = TRUE,
+        draw_quantiles = draw_quantiles,
+        trim = trim,
         linetype = "solid",
         color = "black",
         size = 0.2,
         na.rm = TRUE,
         position = "identity"
-      ) +
-      ggplot2::scale_x_discrete(limits = levels(tcga_gtex$tissue))
+      ) #+
+      #ggplot2::scale_x_discrete(limits = levels(tcga_gtex$tissue))
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       p <- p + ggplot2::geom_text(ggplot2::aes(
         x = .data$tissue,
