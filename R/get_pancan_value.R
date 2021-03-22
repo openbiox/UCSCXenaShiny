@@ -131,6 +131,7 @@ get_pancan_gene_value <- function(identifier) {
 #' @export
 get_pancan_transcript_value <- function(identifier) {
   # ENST00000000233
+  id <- identifier
   host <- "toilHub"
   dataset <- "TcgaTargetGtex_rsem_isoform_tpm"
 
@@ -144,6 +145,7 @@ get_pancan_transcript_value <- function(identifier) {
   }
 
   identifier <- as.character(ids[identifier])
+  if (is.na(identifier)) identifier <- id # roll back
 
   res <- check_exist_data(identifier, dataset, host)
   if (res$ok) {
