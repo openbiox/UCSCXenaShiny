@@ -106,3 +106,14 @@ if (require("gganatogram")) {
 ```{r echo=FALSE}
 knitr::include_graphics("https://gitee.com/ShixiangWang/ImageCollection/raw/master/png/20210322130516.png")
 ```
+
+### Visualize Relationship between Gene Expression and Prognosis in the PANCAN Dataset
+
+```{r fig.width=5, fig.height=6}
+vis_unicox_tree(
+  Gene = "TP53",
+  measure = "OS",
+  threshold = 0.5,
+  values = c("grey", "#E31A1C", "#377DB8")
+)
+```
