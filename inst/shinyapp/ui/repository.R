@@ -23,7 +23,7 @@ ui.page_repository <- function() {
 
     sidebarLayout(
       sidebarPanel(
-        h1("Dataset Filters", style = ";margin-top: 0px;font-size: 30px;letter-spacing: 2px;color: #C2C2C2;"),
+        h3("Dataset Filters", style = ";margin-top: 0px;font-size: 30px;letter-spacing: 2px;color: #C2C2C2;"),
         fluidPage(
           tags$div(
             id = "hubs_info",
@@ -42,7 +42,8 @@ ui.page_repository <- function() {
               choiceValues = c(
                 "publicHub", "tcgaHub", "gdcHub", "icgcHub", "pancanAtlasHub",
                 "toilHub", "treehouseHub", "pcawgHub", "atacseqHub", "singlecellHub"
-              )
+              ),
+              selected = "gdcHub"
             ),
             # add popover on UI
             shinyBS::bsPopover("hubs_text",
@@ -50,8 +51,6 @@ ui.page_repository <- function() {
               content = "Data hub/host is an individual database for storing genomic data",
               placement = "right", options = list(container = "body")
             )
-            # bsTooltip("hubs_text", "The wait times will be broken into this many equally spaced bins",
-            #           "right", options = list(container = "body"))
           )
         ),
         fluidPage(

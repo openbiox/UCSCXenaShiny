@@ -47,7 +47,7 @@ df <- eventReactive(input$hubs_text, {
 })
 
 
-output$xena_table <- DT::renderDataTable(
+output$xena_table <- DT::renderDataTable({
   df()[, c(
     "XenaDatasets",
     "XenaHostNames",
@@ -56,17 +56,29 @@ output$xena_table <- DT::renderDataTable(
     "DataSubtype",
     "Label",
     "Unit"
-  )],
-  colnames = c(
-    "Dataset",
-    "Hub",
-    "Cohort",
-    "Samples",
-    "Subtype",
-    "Label",
-    "Unit"
-  )
-)
+  )] %>% 
+    DT::datatable(
+      rownames = FALSE,
+      colnames = c(
+        "Dataset",
+        "Hub",
+        "Cohort",
+        "Samples",
+        "Subtype",
+        "Label",
+        "Unit"
+      ),
+      options = list(
+        language = list(search = 'Filter with keyword:'),
+        initComplete = JS(
+          "function(settings, json) {",
+          "$(this.api().table().header()).css({'background-color': '#4a5a6a', 'color': '#fff'});",
+          "$(this.api().table().header()).css({'font-size': '80%'});",
+          "$(this.api().table().body()).css({'font-size': '70%'});",
+          "}")
+      )
+    )
+})
 
 
 # Keep selected database
