@@ -1,4 +1,3 @@
-
 ui.modules_sur_plot <- function(id) {
   ns <- NS(id)
   
@@ -351,9 +350,19 @@ server.modules_sur_plot <- function(input, output, session) {
   )
 }
 
-# function ---------------------------------------------------------------------------
+# data load ----------------------------------------------------------------
 load_data("tcga_clinical")
 load_data("tcga_surv")
+dataset <- dplyr::filter(XenaData, XenaHostNames == "tcgaHub") %>%
+  dplyr::select("XenaCohorts") %>%
+  unique() %>%
+  dplyr::mutate(
+    id = stringr::str_match(XenaCohorts, "\\((\\w+?)\\)")[, 2],
+    des = stringr::str_match(XenaCohorts, "(.*)\\s+\\(")[, 2]
+  ) %>%
+  dplyr::arrange(id)
+# function ---------------------------------------------------------------------------
+
 ## Retrieve and pre-download file
 sur_get <- function(TCGA_cohort, item, profile) {
   #data("tcga_clinical", package = "UCSCXenaShiny", envir = environment())
