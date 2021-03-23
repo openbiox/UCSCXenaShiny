@@ -1,5 +1,5 @@
 #' Load Dataset Provided by This Package
-#' 
+#'
 #' Load data from builtin or zenodo.
 #'
 #' @param name dataset name, can be one of

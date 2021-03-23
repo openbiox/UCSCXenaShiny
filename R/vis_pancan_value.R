@@ -32,7 +32,7 @@ vis_toil_gene <- function(data, x = "primary_site",
 #' @param Show.P.label `TRUE` or `FALSE` present p value with number or label `*`, `**`, `***` and `****`
 #' @param values the color to fill tumor or normal
 #' @param TCGA.only include samples only from TCGA dataset
-#' @param draw_quantiles draw quantiles for violinplot 
+#' @param draw_quantiles draw quantiles for violinplot
 #' @param trim whether trim the violin
 #' @return a `ggplot` object
 #' @examples
@@ -159,7 +159,7 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
         na.rm = TRUE,
         position = "identity"
       ) #+
-      #ggplot2::scale_x_discrete(limits = levels(tcga_gtex$tissue))
+    # ggplot2::scale_x_discrete(limits = levels(tcga_gtex$tissue))
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       p <- p + ggplot2::geom_text(ggplot2::aes(
         x = .data$tissue,

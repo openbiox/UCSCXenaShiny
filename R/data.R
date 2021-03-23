@@ -30,7 +30,7 @@ NULL
 
 
 #' Toil Hub: TCGA clinical data
-#' 
+#'
 #' See `tcga_surv` for TCGA survival data.
 #' @docType data
 #' @name tcga_clinical

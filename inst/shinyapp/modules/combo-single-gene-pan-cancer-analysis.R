@@ -1,8 +1,8 @@
-ui.combo.sg.pancan.analysis <- function(id){
+ui.combo.sg.pancan.analysis <- function(id) {
   ns <- NS(id)
   fluidPage(
     titlePanel("Single gene pan-cancer transcriptome analysis"),
-    ##input gene 
+    ## input gene
     fluidRow(
       shinyWidgets::searchInput(
         inputId = ns("Pancan_search"),
@@ -11,32 +11,32 @@ ui.combo.sg.pancan.analysis <- function(id){
         btnReset = icon("remove"),
         placeholder = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
         width = "40%"
-    )
-  ),
-  ##pancan distribution
-  fluidRow(
-    column(
-      12,
-      plotOutput(ns("gene_pancan_dist")
-      )
-  ),
-  ##uni-cox survival analysis
-  fluidRow(
-    column(
-      6,
-      plotOutput(ns("unicox_gene_tree")
       )
     ),
-    column(
-      6,
-      ##heatmap: correlation between gene and immune signatures
-      selectInput(inputId = ns("immune_sig"), "Select the immune signature source", selected = "Cibersort",
-                  choices= c("Yasin","Wolf","Attractors","ICR","c7atoms","Bindea","Cibersort")),
-      plotOutput(ns("hm_gene_immune_cor"))
+    ## pancan distribution
+    fluidRow(
+      column(
+        12,
+        plotOutput(ns("gene_pancan_dist"))
+      ),
+      ## uni-cox survival analysis
+      fluidRow(
+        column(
+          6,
+          plotOutput(ns("unicox_gene_tree"))
+        ),
+        column(
+          6,
+          ## heatmap: correlation between gene and immune signatures
+          selectInput(
+            inputId = ns("immune_sig"), "Select the immune signature source", selected = "Cibersort",
+            choices = c("Yasin", "Wolf", "Attractors", "ICR", "c7atoms", "Bindea", "Cibersort")
+          ),
+          plotOutput(ns("hm_gene_immune_cor"))
+        )
       )
+    )
   )
- )
-)
 }
 
 server.combo.sg.pancan.analysis <- function(input, output, session) {
@@ -51,20 +51,19 @@ server.combo.sg.pancan.analysis <- function(input, output, session) {
           Show.P.label = TRUE
         )
       })
-      
-     output$unicox_gene_tree <- renderPlot({
-       vis_unicox_tree(
-         Gene = input$Pancan_search
-       )
-     })
-     
-     output$hm_gene_immune_cor <- renderPlot({
-       vis_gene_immune_cor(
-         Gene = input$Pancan_search,
-         Immune_sig_type = input$immune_sig
-       )
-     })
-     
+
+      output$unicox_gene_tree <- renderPlot({
+        vis_unicox_tree(
+          Gene = input$Pancan_search
+        )
+      })
+
+      output$hm_gene_immune_cor <- renderPlot({
+        vis_gene_immune_cor(
+          Gene = input$Pancan_search,
+          Immune_sig_type = input$immune_sig
+        )
+      })
     }
   })
 }
