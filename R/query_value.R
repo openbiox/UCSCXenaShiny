@@ -10,7 +10,8 @@
 query_value <- function(identifier,
                         data_type = c(
                           "gene", "transcript", "protein",
-                          "mutation", "cnv", "methylation"
+                          "mutation", "cnv", "methylation",
+                          "miRNA"
                         ),
                         database = c("toil", "ccle")) {
   database <- match.arg(database)
@@ -23,7 +24,8 @@ query_value <- function(identifier,
       protein = get_pancan_protein_value,
       mutation = get_pancan_mutation_status,
       cnv = get_pancan_cn_value,
-      methylation = get_pancan_methylation_value
+      methylation = get_pancan_methylation_value,
+      miRNA = get_pancan_miRNA_value
     )
   } else {
     f <- switch(data_type,
@@ -32,7 +34,8 @@ query_value <- function(identifier,
       protein = get_ccle_protein_value,
       mutation = get_ccle_mutation_status,
       cnv = get_ccle_cn_value,
-      methylation = stop("Not support for database 'ccle'!")
+      methylation = stop("Not support for database 'ccle'!"),
+      miRNA = stop("Not support for database 'ccle'!")
     )
   }
   f(identifier)

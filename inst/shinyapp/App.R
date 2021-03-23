@@ -54,6 +54,22 @@ xena_table <- XenaData[, c(
 xena_table$SampleCount <- as.integer(xena_table$SampleCount)
 colnames(xena_table)[c(1:3)] <- c("Dataset ID", "Hub", "Cohort")
 
+TCGA_datasets <- xena_table %>%
+  dplyr::filter(Hub == "tcgaHub") %>%
+  dplyr::select("Cohort") %>%
+  unique() %>%
+  dplyr::mutate(
+    id = stringr::str_match(Cohort, "\\((\\w+?)\\)")[, 2],
+    des = stringr::str_match(Cohort, "(.*)\\s+\\(")[, 2]
+  ) %>%
+  dplyr::arrange(id)
+
+TCGA_cli_merged <- dplyr::full_join(
+  load_data("tcga_clinical"),
+  load_data("tcga_surv"),
+  by = "sample"
+)
+
 ## data summary
 Data_hubs_number <- length(unique(xena_table$Hub))
 Cohorts_number <- length(unique(xena_table$Cohort))
@@ -89,6 +105,9 @@ server_file <- function(x) {
   )
   file.path(server_path, x)
 }
+
+
+# Set utility functions ---------------------------------------------------
 
 
 

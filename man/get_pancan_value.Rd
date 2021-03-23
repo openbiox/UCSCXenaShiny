@@ -12,6 +12,7 @@
 \alias{get_pancan_mutation_status}
 \alias{get_pancan_cn_value}
 \alias{get_pancan_methylation_value}
+\alias{get_pancan_miRNA_value}
 \title{Fetch identifier value from pan-cancer dataset}
 \usage{
 get_ccle_cn_value(identifier)
@@ -41,6 +42,8 @@ get_pancan_mutation_status(identifier)
 get_pancan_cn_value(identifier)
 
 get_pancan_methylation_value(identifier, type = c("450K", "27K"))
+
+get_pancan_miRNA_value(identifier)
 }
 \arguments{
 \item{identifier}{a length-1 character representing a gene symbol, ensembl gene id, or probe id.
@@ -87,6 +90,8 @@ Identifier includes gene/probe etc.
 \item \code{get_pancan_cn_value}: Fetch gene copy number value from pan-cancer dataset processed by GISTIC 2.0
 
 \item \code{get_pancan_methylation_value}: Fetch gene expression value from CCLE dataset
+
+\item \code{get_pancan_miRNA_value}: Fetch miRNA expression value from pan-cancer dataset
 }}
 
 \examples{

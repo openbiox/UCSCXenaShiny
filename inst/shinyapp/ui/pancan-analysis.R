@@ -2,8 +2,10 @@ ui.page_pancan <- function() {
   navbarMenu(
     title = "Quick PanCan Analysis",
     icon = icon("buromobelexperte"),
-    tabPanel("Combo: Single Gene Analysis",
-             ui.combo.sg.pancan.analysis("combo.sg.pancan.analysis")),
+    tabPanel(
+      "Combo: Single Gene Analysis",
+      ui.combo.sg.pancan.analysis("combo.sg.pancan.analysis")
+    ),
     tabPanel(
       "TCGA Gene Expression Distribution ",
       ui.modules_pancan_dist("module_gene_pancan_dist")

@@ -311,7 +311,7 @@ get_pancan_miRNA_value <- function(identifier) {
     expression <- get_pancan_value(identifier, dataset = dataset, host = host)
     save_data(data, identifier, dataset, host)
   }
-  
+
   unit <- "log2(norm_value+1)"
   report_dataset_info(dataset)
   res <- list(expression = expression, unit = unit)
@@ -331,11 +331,12 @@ get_run_mode <- function() {
   getOption("xena.runMode", default = "client")
 }
 
-# For internal debugging usage
+# For internal debugging use
 rm_pkg_cache <- function() {
   if (get_run_mode() == "client") {
     unlink(path.expand(file.path(
-      tempdir(), "UCSCXenaShiny")))
+      tempdir(), "UCSCXenaShiny"
+    )))
   } else {
     unlink(path.expand("~/.xenashiny"))
   }

@@ -1,8 +1,10 @@
 
-themes <- list("Light" = theme_light(),
-               "Minimal" = theme_minimal(),
-               "Classic" = theme_classic(),
-               "Gray" = theme_gray())
+themes <- list(
+  "Light" = theme_light(),
+  "Minimal" = theme_minimal(),
+  "Classic" = theme_classic(),
+  "Gray" = theme_gray()
+)
 
 ui.modules_pancan_dist <- function(id) {
   ns <- NS(id)
@@ -21,11 +23,13 @@ ui.modules_pancan_dist <- function(id) {
             width = "40%"
           ),
           shinyBS::bsPopover(ns("Pancan_search"),
-                             title = "Tips",
-                             content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
-                             placement = "right", options = list(container = "body"))
+            title = "Tips",
+            content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
+            placement = "right", options = list(container = "body")
+          )
         )
-    )),
+      )
+    ),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidPage(
@@ -35,15 +39,15 @@ ui.modules_pancan_dist <- function(id) {
             materialSwitch(ns("pdist_show_p_label"), "Show P label", inline = TRUE),
             materialSwitch(ns("pdist_dataset"), "TCGA Dataset only", inline = FALSE),
             colourpicker::colourInput(inputId = ns("tumor_col"), "Tumor sample color", "#DF2020"),
-            colourpicker::colourInput(inputId = ns("normal_col"), "Normal sample color",  "#DDDF21"),
+            colourpicker::colourInput(inputId = ns("normal_col"), "Normal sample color", "#DDDF21"),
             selectInput(inputId = ns("theme"), label = "Select theme for plot", choices = names(themes), selected = "Light"),
             fluidRow(
-              numericInput(inputId = ns("height"),label = "Height",value = 5),
-              numericInput(inputId = ns("width"),label = "Width",value = 12),
+              numericInput(inputId = ns("height"), label = "Height", value = 5),
+              numericInput(inputId = ns("width"), label = "Width", value = 12),
               prettyRadioButtons(
                 inputId = ns("device"),
                 label = "Choose plot format",
-                choices = c("pdf","png"),
+                choices = c("pdf", "png"),
                 selected = "pdf",
                 inline = TRUE,
                 icon = icon("check"),
@@ -60,14 +64,14 @@ ui.modules_pancan_dist <- function(id) {
               )
             )
           )
-        ),width = 2
-      )
-      ,
+        ),
+        width = 2
+      ),
       mainPanel = mainPanel(
         column(
-          12,wellPanel(
+          12, wellPanel(
             plotOutput(ns("gene_pancan_dist"))
-            )
+          )
         ),
         column(
           12,
@@ -75,7 +79,8 @@ ui.modules_pancan_dist <- function(id) {
           h5("1. The data query may take some time based on your network. Wait until a plot shows"),
           h5("2. The unit of gene expression is log2(tpm+0.001)"),
           h5("3. You have to turn on both 'Show P value' and 'Show P label' to show significant labels")
-        ),width = 10
+        ),
+        width = 10
       )
     )
   )
@@ -83,13 +88,17 @@ ui.modules_pancan_dist <- function(id) {
 
 server.modules_pancan_dist <- function(input, output, session) {
   ns <- session$ns
-  colors <- reactive({c(input$tumor_col,input$normal_col)})
-  
-  plot_theme <- reactive({themes[[input$theme]]})
-  
+  colors <- reactive({
+    c(input$tumor_col, input$normal_col)
+  })
+
+  plot_theme <- reactive({
+    themes[[input$theme]]
+  })
+
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("gene_pancan_dist"), html = waiter::spin_hexdots(), color = "white")
-  
+
   plot_func <- reactive({
     if (nchar(input$Pancan_search) >= 1) {
       p <- vis_toil_TvsN(
@@ -103,34 +112,33 @@ server.modules_pancan_dist <- function(input, output, session) {
     }
     return(p)
   })
-  
+
   observeEvent(input$Pancan_search, {
-      # output$colorvalues = reactive({c(input$tumor_col,input$normal_col)
-      #   })
-      output$gene_pancan_dist <- renderPlot({
-        w$show() # Waiter add-ins
-        plot_func()
-      })
+    # output$colorvalues = reactive({c(input$tumor_col,input$normal_col)
+    #   })
+    output$gene_pancan_dist <- renderPlot({
+      w$show() # Waiter add-ins
+      plot_func()
+    })
   })
-  
+
   output$download <- downloadHandler(
-    filename = function(){
-      paste0(input$Pancan_search," gene_pancan_dist.", input$device)
+    filename = function() {
+      paste0(input$Pancan_search, " gene_pancan_dist.", input$device)
     },
     content = function(file) {
       p <- plot_func()
-      if(input$device == "pdf"){
-        pdf(file,width = input$width, height = input$height)
+      if (input$device == "pdf") {
+        pdf(file, width = input$width, height = input$height)
         print(p)
         dev.off()
       } else {
-        png(file,width = input$width, height = input$height,res = 300,units = "in")
+        png(file, width = input$width, height = input$height, res = 300, units = "in")
         print(p)
         dev.off()
       }
-      
-      #ggplot2::ggsave(filename = file, plot = print(p), device = input$device, width = input$width, height = input$height, dpi = 600)
+
+      # ggplot2::ggsave(filename = file, plot = print(p), device = input$device, width = input$width, height = input$height, dpi = 600)
     }
   )
-  
 }
