@@ -69,6 +69,12 @@ gene_cnv <- query_value("TP53", data_type = "cnv")
 gene_mut <- query_value("TP53", data_type = "mutation")
 ```
 
+### Fetch miRNA mature strand expression
+
+```{r eval=FALSE}
+miRNA_expr <- query_value("hsa-let-7a-2-3p", data_type = "miRNA")
+```
+
 ## Data Visualization
 
 ### Visualize Single Gene Expression in PANCAN Dataset

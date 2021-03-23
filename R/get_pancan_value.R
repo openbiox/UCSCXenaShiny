@@ -331,7 +331,7 @@ get_run_mode <- function() {
   getOption("xena.runMode", default = "client")
 }
 
-# For internal debugging usage
+# For internal debugging use
 rm_pkg_cache <- function() {
   if (get_run_mode() == "client") {
     unlink(path.expand(file.path(
