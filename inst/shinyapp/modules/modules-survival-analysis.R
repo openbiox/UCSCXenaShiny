@@ -13,16 +13,20 @@ ui.modules_sur_plot <- function(id) {
         shinyWidgets::prettyRadioButtons(
           inputId = ns("profiles"), label = "Select a genomic profiles:",
           choiceValues = c("mRNA","transcript","miRNA","mutation", "cnv", "met","protein"),
-          choiceNames = c("mRNA Expression", "Transcript Expression (ENSG)","miRNA Expression (hsa-let)", "Mutations", "Copy Number Variation", "DNA Methylation","Protein Expression"),
+          choiceNames = c("mRNA Expression", "Transcript Expression","miRNA Expression", "Mutations", "Copy Number Variation", "DNA Methylation","Protein Expression"),
           animation = "jelly"
         ),
+        shinyBS::bsPopover(ns("item_input"),
+                           title = "Tips",
+                           content = "Gene symbol: TP53; Ensembl: ENSG00000141510; miRNA ID: hsa-miR-128-3p;",
+                           placement = "right", options = list(container = "body")),
         shinyjs::hidden(
           # shinyWidgets::searchInput(
           shinyWidgets::textInputAddon(
             inputId = ns("item_input"),
             label = "Item",
             value = NULL,
-            placeholder = "Gene symbol",
+            placeholder = "",
             addon = icon("dna"),
             # btnSearch = icon("search"),
             # btnReset = icon("remove"),
