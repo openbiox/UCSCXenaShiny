@@ -299,6 +299,25 @@ get_pancan_methylation_value <- function(identifier, type = c("450K", "27K")) {
   res
 }
 
+#' @describeIn get_pancan_value Fetch miRNA expression value from pan-cancer dataset
+#' @export
+get_pancan_miRNA_value <- function(identifier) {
+  host <- "pancanAtlasHub"
+  dataset <- "pancanMiRs_EBadjOnProtocolPlatformWithoutRepsWithUnCorrectMiRs_08_04_16.xena"
+  res <- check_exist_data(identifier, dataset, host)
+  if (res$ok) {
+    expression <- res$data
+  } else {
+    expression <- get_pancan_value(identifier, dataset = dataset, host = host)
+    save_data(data, identifier, dataset, host)
+  }
+  
+  unit <- "log2(norm_value+1)"
+  report_dataset_info(dataset)
+  res <- list(expression = expression, unit = unit)
+  res
+}
+
 report_dataset_info <- function(dataset) {
   msg <- paste0(
     "More info about dataset please run following commands:\n",

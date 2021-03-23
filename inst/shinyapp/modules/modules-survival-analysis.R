@@ -1,11 +1,3 @@
-dataset <- dplyr::filter(XenaData, XenaHostNames == "tcgaHub") %>%
-  dplyr::select("XenaCohorts") %>%
-  unique() %>%
-  dplyr::mutate(
-    id = stringr::str_match(XenaCohorts, "\\((\\w+?)\\)")[, 2],
-    des = stringr::str_match(XenaCohorts, "(.*)\\s+\\(")[, 2]
-  ) %>%
-  dplyr::arrange(id)
 
 ui.modules_sur_plot <- function(id) {
   ns <- NS(id)
@@ -21,17 +13,17 @@ ui.modules_sur_plot <- function(id) {
         
         shinyWidgets::prettyRadioButtons(
           inputId = ns("profiles"), label = "Select a genomic profiles:",
-          choiceValues = c("mRNA","tp","miRNA","mutation", "cnv", "met","protein"),
-          choiceNames = c("mRNA Expression", "Transcriptome profiling","miRNA", "Mutations", "Copy number variation", "DNA methylation","Protein Expression"),
+          choiceValues = c("mRNA","transcript","miRNA","mutation", "cnv", "met","protein"),
+          choiceNames = c("mRNA Expression", "Transcript Expression (ENSG)","miRNA Expression (hsa-let)", "Mutations", "Copy Number Variation", "DNA Methylation","Protein Expression"),
           animation = "jelly"
         ),
         shinyjs::hidden(
           # shinyWidgets::searchInput(
           shinyWidgets::textInputAddon(
-            inputId = ns("gene_input"),
-            label = "Gene",
+            inputId = ns("item_input"),
+            label = "Item",
             value = NULL,
-            placeholder = "KDM1A",
+            placeholder = "Gene symbol",
             addon = icon("dna"),
             # btnSearch = icon("search"),
             # btnReset = icon("remove"),
@@ -101,7 +93,7 @@ ui.modules_sur_plot <- function(id) {
           ),
           
           shinyWidgets::prettyRadioButtons(
-            inputId = ns("event"),
+            inputId = ns("endpoint"),
             label = "Primary endpoint",
             choices = c("OS", "DSS" , "DFI", "PFI"),
             inline = TRUE,
@@ -110,7 +102,8 @@ ui.modules_sur_plot <- function(id) {
           ),
           
           conditionalPanel(
-            condition = "input.profiles == 'mRNA' | input.profiles == 'protein'", ns = ns,
+            condition = "input.profiles == 'mRNA' | input.profiles == 'protein' | input.profiles == 'miRNA' | input.profiles == 'met' | input.profiles == 'transcript'", 
+            ns = ns,
             shinyWidgets::prettyRadioButtons(
               inputId = ns("cut_off_mode"),
               label = "Cut off mode",
@@ -198,10 +191,10 @@ server.modules_sur_plot <- function(input, output, session) {
   # Global monitoring
   observe({
     if (input$profiles == "protein") {
-      shinyjs::hide(id = "gene_input")
+      shinyjs::hide(id = "item_input")
       shinyjs::show(id = "protein_input")
     } else {
-      shinyjs::show(id = "gene_input")
+      shinyjs::show(id = "item_input")
       shinyjs::hide(id = "protein_input")
     }
   })
@@ -230,7 +223,7 @@ server.modules_sur_plot <- function(input, output, session) {
   
   # Action monitoring
   observeEvent(input$submit_bt, {
-    if (input$profiles == "gene" & input$gene_input == "") {
+    if (input$profiles == "gene" & input$item_input == "") {
       sendSweetAlert(
         session = session,
         title = "Error...",
@@ -258,7 +251,7 @@ server.modules_sur_plot <- function(input, output, session) {
       )
     } else {
       sur_get(
-        TCGA_cohort = input$dataset, item = input$gene_input,
+        TCGA_cohort = input$dataset, item = input$item_input,
         profile = input$profiles
       )
     }
@@ -271,20 +264,21 @@ server.modules_sur_plot <- function(input, output, session) {
     }
     dat_filter(
       data = sur_dat_pre(), age = input$age,
-      gender = input$sex, stage = input$stage
+      gender = input$sex, stage = input$stage,
+      endpoint = input$endpoint
     )
   })
   plot_text <- eventReactive(input$go,{
     if (input$profiles == "protein") {
       item_show <- input$protein_input
     } else {
-      item_show <- input$gene_input
+      item_show <- input$item_input
     }
     paste(
       paste("Dataset :", input$dataset),
       paste("Profiles :", input$profiles),
       paste("Item :", item_show),
-      paste("Number of cases :", nrow(sur_dat_pre())),
+      paste("Number of cases :", nrow(filter_dat())),
       sep = "\n"
     )
   }
@@ -293,8 +287,8 @@ server.modules_sur_plot <- function(input, output, session) {
   plot_func <- eventReactive(input$go,{
     if (!is.null(filter_dat())) {
       if(nrow(filter_dat()) >= 10){
-        if (input$profiles == "mRNA" | input$profiles == "protein") {
-          p <- sur_plot_mRNA_protein(filter_dat(), input$cut_off_mode, input$cutpoint)
+        if (input$profiles %in% c("mRNA","miRNA","met","transcript","protein")) {
+          p <- sur_plot(filter_dat(), input$cut_off_mode, input$cutpoint)
         } else if (input$profiles == "mutation") {
           p <- sur_plot_mut(filter_dat())
           if(is.null(p)){
@@ -358,11 +352,12 @@ server.modules_sur_plot <- function(input, output, session) {
 }
 
 # function ---------------------------------------------------------------------------
-
+load_data("tcga_clinical")
+load_data("tcga_surv")
 ## Retrieve and pre-download file
 sur_get <- function(TCGA_cohort, item, profile) {
-  data("tcga_clinical", package = "UCSCXenaShiny", envir = environment())
-  data("tcga_surv", package = "UCSCXenaShiny", envir = environment())
+  #data("tcga_clinical", package = "UCSCXenaShiny", envir = environment())
+  #data("tcga_surv", package = "UCSCXenaShiny", envir = environment())
   cliMat <- dplyr::full_join(tcga_clinical, tcga_surv, by = "sample") %>% 
     dplyr::filter(type == TCGA_cohort)
   if (profile == "mRNA") {
@@ -373,6 +368,12 @@ sur_get <- function(TCGA_cohort, item, profile) {
     gd <- get_pancan_protein_value(item)$expression
   } else if (profile == "cnv") {
     gd <- get_pancan_cn_value(item)$data
+  } else if (profile == "miRNA"){
+    gd <- get_pancan_miRNA_value(item)$expression
+  } else if (profile == "transcript"){
+    gd <- get_pancan_transcript_value(item)$expression
+  } else if (profile == "met"){
+    gd <- get_pancan_methylation_value(item)$data
   }
   if (all(is.na(gd))) {
     return(NULL)
@@ -384,12 +385,7 @@ sur_get <- function(TCGA_cohort, item, profile) {
   ) %>%
     dplyr::filter(as.numeric(substr(sampleID, 14, 15)) < 10) %>%
     dplyr::left_join(cliMat, by = c("sampleID" = "sample")) %>%
-    dplyr::filter(
-      !is.na(OS),
-      !is.na(OS.time)
-    ) %>%
-    dplyr::select(sampleID, value,
-                  time = OS.time, status = OS,
+    dplyr::select(sampleID, value, OS, OS.time, DSS, DSS.time, DFI, DFI.time, PFI, PFI.time,
                   gender, age = age_at_initial_pathologic_diagnosis,
                   stage = ajcc_pathologic_tumor_stage
     ) %>%
@@ -402,18 +398,23 @@ sur_get <- function(TCGA_cohort, item, profile) {
 }
 
 ## Data filter
-dat_filter <- function(data, age, gender, stage) {
-  dat <- data %>% dplyr::filter(
+dat_filter <- function(data, age, gender, stage , endpoint) {
+  endpoint.time <- paste0(endpoint,".time")
+  dat <- data %>% 
+    dplyr::rename(time = !!endpoint.time, status = !!endpoint) %>% 
+    dplyr::filter(
     age > !!age[1],
     age < !!age[2],
     gender %in% !!gender,
-    stage %in% !!stage
+    stage %in% !!stage,
+    !is.na(time),
+    !is.na(status)
   )
   return(dat)
 }
 
 ## Survival analysis for mRNA and protein expression
-sur_plot_mRNA_protein <- function(data, cut_off_mode, cutpoint) {
+sur_plot <- function(data, cut_off_mode, cutpoint) {
   data %<>% dplyr::arrange(value) %>%
     dplyr::mutate(per_rank = 100 / nrow(.) * (1:nrow(.)))
   if (cut_off_mode == "Auto") {
