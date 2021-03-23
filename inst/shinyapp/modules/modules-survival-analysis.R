@@ -21,8 +21,8 @@ ui.modules_sur_plot <- function(id) {
         
         shinyWidgets::prettyRadioButtons(
           inputId = ns("profiles"), label = "Select a genomic profiles:",
-          choiceValues = c("mRNA", "mutation", "cnv", "protein"),
-          choiceNames = c("mRNA Expression", "Mutations", "Copy-number alterations from GISTIC", "Protein Expression"),
+          choiceValues = c("mRNA","tp","miRNA","mutation", "cnv", "met","protein"),
+          choiceNames = c("mRNA Expression", "Transcriptome profiling","miRNA", "Mutations", "Copy number variation", "DNA methylation","Protein Expression"),
           animation = "jelly"
         ),
         shinyjs::hidden(
@@ -97,6 +97,15 @@ ui.modules_sur_plot <- function(id) {
             selected = c("I", "II", "III", "IV", "Unknown"),
             # icon = icon("check"),
             status = "primary",
+            animation = "jelly"
+          ),
+          
+          shinyWidgets::prettyRadioButtons(
+            inputId = ns("event"),
+            label = "Primary endpoint",
+            choices = c("OS", "DSS" , "DFI", "PFI"),
+            inline = TRUE,
+            icon = icon("check"),
             animation = "jelly"
           ),
           
@@ -352,13 +361,10 @@ server.modules_sur_plot <- function(input, output, session) {
 
 ## Retrieve and pre-download file
 sur_get <- function(TCGA_cohort, item, profile) {
-  luad_cohort <- XenaData %>%
-    filter(XenaHostNames == "tcgaHub") %>%
-    .[grep(TCGA_cohort, .$XenaCohorts), ]
-  
-  cliMat <- dplyr::full_join(load_data("tcga_clinical"), load_data("tcga_surv"), by = "sample") %>% 
+  data("tcga_clinical", package = "UCSCXenaShiny", envir = environment())
+  data("tcga_surv", package = "UCSCXenaShiny", envir = environment())
+  cliMat <- dplyr::full_join(tcga_clinical, tcga_surv, by = "sample") %>% 
     dplyr::filter(type == TCGA_cohort)
-  
   if (profile == "mRNA") {
     gd <- get_pancan_gene_value(item)$expression
   } else if (profile == "mutation") {
@@ -371,12 +377,11 @@ sur_get <- function(TCGA_cohort, item, profile) {
   if (all(is.na(gd))) {
     return(NULL)
   }
-
+  gd <- gd[nchar(names(gd)) == 15]
   merged_data <- tibble(
     sampleID = names(gd),
     value = as.numeric(gd)
   ) %>%
-    dplyr::filter(nchar(sampleID) == 15) %>% 
     dplyr::filter(as.numeric(substr(sampleID, 14, 15)) < 10) %>%
     dplyr::left_join(cliMat, by = c("sampleID" = "sample")) %>%
     dplyr::filter(
