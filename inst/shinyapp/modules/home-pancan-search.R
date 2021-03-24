@@ -1,19 +1,31 @@
 ui.home_search_box <- function(id) {
   ns <- NS(id)
 
-  shinyWidgets::searchInput(
-    inputId = ns("Pancan_search"),
-    label = NULL,
-    btnSearch = icon("search"),
-    btnReset = icon("remove"),
-    placeholder = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
-    width = "80%"
-  )
+  # 如果使用的话，需要进行服务端加速，参考下文
+  # ref: https://shiny.rstudio.com/articles/selectize.html
+  selectizeInput(inputId = ns("Pancan_search"),
+                 label = NULL,
+                 choices = c("", "TP53", "KRAS"),
+                 selected = "",
+                 multiple = FALSE, # allow for multiple inputs
+                 options = list(
+                   create = TRUE,
+                   maxOptions = 5,
+                   placeholder = 'Enter a gene symbol, e.g. TP53'))
+  # shinyWidgets::searchInput(
+  #   inputId = ns("Pancan_search"),
+  #   label = NULL,
+  #   btnSearch = icon("search"),
+  #   btnReset = icon("remove"),
+  #   placeholder = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
+  #   width = "80%"
+  # )
 }
 
 server.home_search_box <- function(input, output, session) {
   ns <- session$ns
   observeEvent(input$Pancan_search, {
+    print(input$Pancan_search)
     if (nchar(input$Pancan_search) >= 1) {
       showModal(
         modalDialog(
