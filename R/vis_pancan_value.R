@@ -43,8 +43,8 @@ vis_toil_gene <- function(data, x = "primary_site",
 #' @export
 #'
 vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, draw_quantiles = c(0.25, 0.5, 0.75), trim = TRUE) {
-  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
-
+  tcga_gtex_sampleinfo <- load_data("tcga_gtex_sampleinfo")
+  
   t1 <- get_pancan_gene_value(identifier = Gene)$expression
 
   tcga_gtex <- tcga_gtex %>%
@@ -197,8 +197,8 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
 #' @export
 vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, values = c("grey", "#E31A1C", "#377DB8")) {
   ## 写在 R 内的数据集需要更严格的引用方式
-  data("tcga_surv", package = "UCSCXenaShiny", envir = environment())
-  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
+  tcga_surv <- load_data("tcga_surv")
+  tcga_gtex_sampleinfo <- load_data("tcga_gtex_sampleinfo")
 
   t1 <- get_pancan_gene_value(Gene)$expression
 
@@ -317,9 +317,8 @@ vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male"), opti
     stop("Please install 'gganatogram' package firstly!")
   }
 
-  # data("t1", package = "UCSCXenaShiny", envir = environment())
-  data("TCGA.organ", package = "UCSCXenaShiny", envir = environment())
-  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
+  TCGA.organ <- load_data("TCGA.organ")
+  tcga_gtex_sampleinfo <- load_data("tcga_gtex_sampleinfo")
   tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
 
   t1 <- get_pancan_gene_value(identifier = Gene)$expression
@@ -420,8 +419,8 @@ vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male"), opti
 #' }
 #' @export
 vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_sig_type = "Cibersort") {
-  data("tcga_pan_immune_signature", package = "UCSCXenaShiny", envir = environment())
-  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
+  tcga_pan_immune_signature <- load_data("tcga_pan_immune_signature")
+  tcga_gtex_sampleinfo <- load_data("tcga_gtex_sampleinfo")
 
   # we filter out normal tissue
   tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
@@ -499,8 +498,8 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_s
 #' }
 #' @export
 vis_gene_tmb_cor <- function(Gene = "TP53", Cor_method = "spearman") {
-  data("tcga_tmb", package = "UCSCXenaShiny", envir = environment())
-  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
+  tcga_tmb <- load_data("tcga_tmb")
+  tcga_gtex_sampleinfo <- load_data("tcga_gtex_sampleinfo")
   t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
   s <- data.frame(sample = names(t1), values = t1)
   ss <- s %>%
@@ -554,8 +553,9 @@ vis_gene_tmb_cor <- function(Gene = "TP53", Cor_method = "spearman") {
 #' }
 #' @export
 vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman") {
-  data("tcga_stemness", package = "UCSCXenaShiny", envir = environment())
-  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
+  tcga_stemness <- load_data("tcga_stemness")
+  tcga_gtex_sampleinfo <- load_data("tcga_gtex_sampleinfo")
+
   t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
   s <- data.frame(sample = names(t1), values = t1)
   ss <- s %>%
@@ -615,8 +615,8 @@ vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman") {
 #' @export
 #'
 vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, Cancer = "ACC") {
-  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
-
+  tcga_gtex_sampleinfo <- load_data("tcga_gtex_sampleinfo")
+  
   t1 <- get_pancan_gene_value(identifier = Gene)$expression
 
   tcga_gtex <- tcga_gtex %>%
@@ -740,8 +740,9 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.valu
 #' @param split whether split by TCGA tumor tissue
 #' @export
 vis_gene_cor <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, split = FALSE) {
-  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
-  data("tcga_purity", package = "UCSCXenaShiny", envir = environment())
+  tcga_gtex_sampleinfo <- load_data("tcga_gtex_sampleinfo")
+  tcga_purity <- load_data("tcga_purity")
+  
   tcga_purity$CPE <- as.numeric(tcga_purity$CPE)
   tcga_gtex <- tcga_gtex %>%
     dplyr::group_by(.data$tissue) %>%

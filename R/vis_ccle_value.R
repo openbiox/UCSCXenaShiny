@@ -7,8 +7,10 @@
 #' @return a `ggplot` object
 #' @export
 vis_ccle_tpm <- function(Gene = "TP53", x.axis = "Type") {
+  
+  ccle_info <- load_data("ccle_info")
+  
   t1 <- get_ccle_gene_value(identifier = Gene)$expression
-  data("ccle_info", package = "UCSCXenaShiny", envir = environment())
   t2 <- t1 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
