@@ -17,14 +17,17 @@ ui.combo.sg.pancan.analysis <- function(id) {
     selectInput(
       inputId = ns("immune_sig"), "Select the immune signature source", selected = "Cibersort",
       choices = c("Yasin", "Wolf", "Attractors", "ICR", "c7atoms", "Bindea", "Cibersort")
-    )),
+    ),
+    width = 3
+    ),
     mainPanel = mainPanel(
     ## pancan distribution
         plotOutput(ns("gene_pancan_dist")),
     ## uni-cox survival analysis
         plotOutput(ns("unicox_gene_tree")),
     ## heatmap: correlation between gene and immune signatures
-        plotOutput(ns("hm_gene_immune_cor"))
+        plotOutput(ns("hm_gene_immune_cor")),
+    width = 9
         )
     ))
 }
