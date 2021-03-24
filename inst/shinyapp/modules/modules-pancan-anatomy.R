@@ -2,63 +2,49 @@ ui.modules_pancan_anatomy <- function(id) {
   ns <- NS(id)
   fluidPage(
     titlePanel("Module: Gene Pancan Expression Anatomy Visualization"),
-    fluidRow(
-      tags$div(
-        style = "margin-left: 30px;",
-        fluidRow(
-          shinyWidgets::searchInput(
-            inputId = ns("Pancan_search"),
-            label = NULL,
-            btnSearch = icon("search"),
-            btnReset = icon("remove"),
-            placeholder = "Enter a gene symbol, e.g. TP53",
-            width = "40%"
-          ),
-          shinyBS::bsPopover(ns("Pancan_search"),
-            title = "Tips",
-            content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
-            placement = "right", options = list(container = "body")
-          )
-        )
-      )
-    ),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
-        fluidPage(
-          fluidRow(
-            selectInput(inputId = ns("Gender"), label = "Select Gender for plot", choices = c("Male", "Female"), selected = "Female"),
-            selectInput(inputId = ns("Pal"), label = "Select Color Palettes for plot", choices = c("A", "B", "C", "D", "E"), selected = "D")
-          ),
-          fluidRow(
-            numericInput(inputId = ns("height"), label = "Height", value = 5),
-            numericInput(inputId = ns("width"), label = "Width", value = 10),
-            prettyRadioButtons(
-              inputId = ns("device"),
-              label = "Choose plot format",
-              choices = c("pdf", "png"),
-              selected = "pdf",
-              inline = TRUE,
-              icon = icon("check"),
-              animation = "jelly",
-              fill = TRUE
-            ),
-            downloadBttn(
-              outputId = ns("download"),
-              # label = "Download Plot",
-              style = "gradient",
-              color = "default",
-              block = TRUE,
-              size = "sm"
-            )
-          )
-        )
+        shinyWidgets::searchInput(
+          inputId = ns("Pancan_search"),
+          label = NULL,
+          btnSearch = icon("search"),
+          btnReset = icon("remove"),
+          # placeholder = "Enter a gene symbol, e.g. TP53",
+          width = "100%"
+        ),
+        shinyBS::bsPopover(ns("Pancan_search"),
+          title = "Tips",
+          content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
+          placement = "right", options = list(container = "body")
+        ),
+
+        selectInput(inputId = ns("Gender"), label = "Select Gender for plot", choices = c("Male", "Female"), selected = "Female"),
+        selectInput(inputId = ns("Pal"), label = "Select Color Palettes for plot", choices = c("A", "B", "C", "D", "E"), selected = "D"),
+        numericInput(inputId = ns("height"), label = "Height", value = 5),
+        numericInput(inputId = ns("width"), label = "Width", value = 10),
+        prettyRadioButtons(
+          inputId = ns("device"),
+          label = "Choose plot format",
+          choices = c("pdf", "png"),
+          selected = "pdf",
+          inline = TRUE,
+          icon = icon("check"),
+          animation = "jelly",
+          fill = TRUE
+        ),
+        downloadBttn(
+          outputId = ns("download"),
+          # label = "Download Plot",
+          style = "gradient",
+          color = "default",
+          block = TRUE,
+          size = "sm"
+        ),
+        width = 3
       ),
       mainPanel = mainPanel(
-        column(
-          10, wellPanel(
-            plotOutput(ns("pancan_anatomy"))
-          )
-        )
+        plotOutput(ns("pancan_anatomy"), height = "500px"),
+        width = 9
       )
     )
   )

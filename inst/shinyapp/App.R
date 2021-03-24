@@ -120,17 +120,17 @@ server_file <- function(x) {
 ui <- tagList(
   tags$head(tags$title("XenaShiny")),
   shinyjs::useShinyjs(),
-  use_waiter(),
+  #use_waiter(),
   navbarPage(
     title = div(
       img(src = "xena_shiny-logo_white.png", height = 49.6, style = "margin:-20px -15px -15px -15px")
     ),
-    tags$head(tags$style(HTML("
-    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap');
-    * {
-        font-family: 'Open Sans', sans-serif;
-      }
-                              "))),
+    #' tags$head(tags$style(HTML("
+    #' @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap');
+    #' * {
+    #'     font-family: 'Open Sans', sans-serif;
+    #'   }
+    #'                           "))),
     # inst/shinyapp/ui
     ui.page_home(),
     ui.page_repository(),
@@ -140,7 +140,7 @@ ui <- tagList(
     ui.page_help(),
     ui.page_developers(),
     footer = ui.footer(),
-    theme = shinythemes::shinytheme("cosmo")
+    theme = shinythemes::shinytheme("flatly")
   )
 )
 

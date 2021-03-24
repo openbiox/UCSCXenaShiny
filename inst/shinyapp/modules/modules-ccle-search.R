@@ -6,32 +6,22 @@ ui.modules_ccle_dist <- function(id) {
   ns <- NS(id)
   fluidPage(
     titlePanel("Module: Gene CCLE Expression Distribution"),
-    fluidRow(
-      tags$div(
-        style = "margin-left: 30px;",
-        fluidRow(
+    sidebarLayout(
+      sidebarPanel = sidebarPanel(
           shinyWidgets::searchInput(
             inputId = ns("ccle_search"),
             label = NULL,
             btnSearch = icon("search"),
             btnReset = icon("remove"),
-            placeholder = "Enter a gene symbol, e.g. TP53",
-            width = "40%"
+            #placeholder = "Enter a gene symbol, e.g. TP53",
+            width = "100%"
           ),
           shinyBS::bsPopover(ns("ccle_search"),
             title = "Tips",
             content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
             placement = "right", options = list(container = "body")
-          )
-        )
-      )
-    ),
-    sidebarLayout(
-      sidebarPanel = sidebarPanel(
-        fluidPage(
-          fluidRow(
-            selectInput(inputId = ns("x.axis"), label = "Select Parameter to display in x.axis", choices = ccle_choices, selected = "Type"),
-            fluidRow(
+          ),
+            selectInput(inputId = ns("x.axis"), label = "x.axis", choices = ccle_choices, selected = "Type"),
               numericInput(inputId = ns("height"), label = "Height", value = 5),
               numericInput(inputId = ns("width"), label = "Width", value = 12),
               prettyRadioButtons(
@@ -51,19 +41,13 @@ ui.modules_ccle_dist <- function(id) {
                 color = "default",
                 block = TRUE,
                 size = "sm"
-              )
-            )
-          )
-        )
-      ),
+              ),
+          width = 3
+            ),
       mainPanel = mainPanel(
-        column(
-          12, wellPanel(
             plotOutput(ns("gene_ccle_dist"), height = "600px")
           )
-        ),
       )
-    )
   )
 }
 

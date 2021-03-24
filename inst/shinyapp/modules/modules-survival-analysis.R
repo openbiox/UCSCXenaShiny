@@ -24,7 +24,7 @@ ui.modules_sur_plot <- function(id) {
           # shinyWidgets::searchInput(
           shinyWidgets::textInputAddon(
             inputId = ns("item_input"),
-            label = "Item",
+            label = "Item:",
             value = NULL,
             placeholder = "",
             addon = icon("dna"),
