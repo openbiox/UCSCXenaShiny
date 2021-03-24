@@ -5,6 +5,8 @@ utils::globalVariables(
     "XenaHostNames",
     "DataSubtype",
     "XenaDatasets",
-    "ccle_info"
+    ".",
+    "Type",
+    "group"
   )
 )

@@ -103,7 +103,7 @@ vis_toil_TvsN_cancer(
 This function needs [gganatogram](https://github.com/jespermaag/gganatogram) package, which is not on CRAN. Please install it before using this function.
 
 
-```{r eval=FALSE, fig.width=8, fig.height=5}
+```
 if (require("gganatogram")) {
   vis_pancan_anatomy(Gene = "TP53", Gender = c("Female", "Male"), option = "D")
 }

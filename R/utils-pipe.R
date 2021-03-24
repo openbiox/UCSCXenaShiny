@@ -10,9 +10,9 @@
 #' @usage lhs \%>\% rhs
 NULL
 
-`%:::%` <- function(pkg, fun) {
+`%:::%` <- function(pkg, fun, inherits = TRUE) {
   get(fun,
     envir = asNamespace(pkg),
-    inherits = FALSE
+    inherits = inherits
   )
 }

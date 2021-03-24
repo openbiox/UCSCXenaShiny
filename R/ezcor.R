@@ -338,7 +338,7 @@ ezcor_partial_cor <- function(data = NULL,
           ppcor::pcor.test(as.numeric(sss_sub[, var1]),
             as.numeric(sss_sub[, var2]),
             as.numeric(sss_sub[, var3]),
-            method = cor_method....
+            method = cor_method
           )
         ddd <-
           data.frame(

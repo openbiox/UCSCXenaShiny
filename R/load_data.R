@@ -4,7 +4,6 @@
 #'
 #' @param name dataset name, can be one of
 #' `r paste(sub(".rda", "", unique(dir(system.file(c("data", "data-remote"), package = "UCSCXenaShiny")))), collapse="\n")`
-#'
 #' @return a dataset, typically a `data.frame`.
 #' @export
 #'

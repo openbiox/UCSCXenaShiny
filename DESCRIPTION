@@ -31,10 +31,10 @@ Authors@R:
              role = "aut",
              email = "zhaofei415@mails.ucas.edu.cn"))
 Maintainer: Shixiang Wang <w_shixiang@163.com>
-Description: Provides a web app for downloading, analyzing and
-    visualizing datasets from UCSC Xena (<http://xena.ucsc.edu/>), which
-    is a collection of UCSC-hosted public databases such as TCGA, ICGC,
-    TARGET, GTEx, CCLE, and others.
+Description: Provides a web app for downloading, analyzing and visualizing
+    datasets from UCSC Xena (<http://xena.ucsc.edu/>), which is a
+    collection of UCSC-hosted public databases such as TCGA, ICGC, TARGET,
+    GTEx, CCLE, and others.
 License: MIT + file LICENSE
 URL: https://github.com/openbiox/UCSCXenaShiny
 BugReports: https://github.com/openbiox/UCSCXenaShiny/issues
@@ -61,14 +61,16 @@ Imports:
     UCSCXenaTools,
     utils
 Suggests: 
-    knitr,
     covr (>= 3.2.1),
     furrr,
     future,
-    testthat (>= 2.0.1),
-    rmarkdown
+    knitr,
+    plyr,
+    rmarkdown,
+    testthat (>= 2.0.1)
+VignetteBuilder: 
+    knitr
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
-VignetteBuilder: knitr
