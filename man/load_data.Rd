@@ -14,7 +14,7 @@ pancan_MSI
 tcga_chr_alteration
 tcga_clinical
 tcga_genome_instability
-tcga_gtex_sampleinfo
+tcga_gtex
 tcga_MSI
 tcga_pan_immune_signature
 tcga_purity

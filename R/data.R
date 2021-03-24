@@ -55,7 +55,7 @@ NULL
 #' @name tcga_gtex
 #' @format A [data.frame]
 #' @examples
-#' data("tcga_gtex_sampleinfo")
+#' data("tcga_gtex")
 NULL
 
 #' TCGA: TMB (tumor mutation burden) data

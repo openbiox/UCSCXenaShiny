@@ -162,6 +162,9 @@ attr(tcga_MSI, "data_source") <- "DOI:https://doi.org/10.1038/ncomms15180"
 ccle_absolute <- readxl::read_excel("data-raw/CCLE-ABSOLUTE结果-10.1038:s41586-020-03133-3.xlsx")
 attr(ccle_absolute, "data_source") <- "DOI:https://doi.org/10.1038/s41586-020-03133-3"
 
+# 清理问题编码
+toil_info$`_primary_site` <- stringi::stri_enc_toascii(toil_info$`_primary_site`)
+
 usethis::use_data(ccle_absolute, overwrite = TRUE)
 usethis::use_data(tcga_MSI, overwrite = TRUE)
 usethis::use_data(pancan_MSI, overwrite = TRUE)
