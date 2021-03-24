@@ -5,7 +5,11 @@ message("Run mode: ", xena.runMode)
 # Load necessary packages ----------------------------------
 message("Checking depedencies...")
 
+if (!requireNamespace("pacman")) {
+  install.packages("pacman")
+}
 library(pacman)
+
 if (!requireNamespace("gganatogram")) {
   pacman::p_load(remotes)
   tryCatch(
@@ -40,6 +44,7 @@ pacman::p_load(
   colourpicker,
   DT,
   fs,
+  RColorBrewer,
   gganatogram
 )
 
