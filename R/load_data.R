@@ -15,7 +15,7 @@ load_data <- function(name) {
   data_path <- file.path(system.file("extdata", package = "UCSCXenaShiny"), name2)
   available_datasets <- c("ccle_absolute", "ccle_info", 
                           "tcga_clinical", "tcga_genome_instability",
-                          "tcga_gtex_sampleinfo", "tcga_purity",
+                          "tcga_gtex", "tcga_purity",
                           "tcga_subtypes", "tcga_surv", "TCGA.organ",
                           "toil_info")
   if (name %in% available_datasets) {
