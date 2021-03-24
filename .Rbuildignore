@@ -23,5 +23,14 @@ data/tcga_stemness.rda
 data/tcga_TIL.rda
 data/tcga_tmb.rda
 data/tcga_chr_alteration.rda
+
+inst/extdata/pancan_MSI.rda
+inst/extdata/tcga_pan_immune_signature.rda
+inst/extdata/tcga_MSI.rda
+inst/extdata/tcga_stemness.rda
+inst/extdata/tcga_TIL.rda
+inst/extdata/tcga_tmb.rda
+inst/extdata/tcga_chr_alteration.rda
+
 ^doc$
 ^Meta$

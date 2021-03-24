@@ -808,11 +808,6 @@ vis_gene_cor <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, spl
 utils::globalVariables(
   c(
     ".",
-    "tcga_gtex",
-    "tcga_stemness",
-    "tcga_tmb",
-    "tcga_surv",
-    "TCGA.organ",
     "Type",
     "group"
   )
