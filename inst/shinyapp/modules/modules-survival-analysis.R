@@ -439,18 +439,25 @@ dat_filter <- function(data, age, gender, stage, endpoint) {
 sur_plot <- function(data, cut_off_mode, cutpoint) {
   data %<>% dplyr::arrange(value) %>%
     dplyr::mutate(per_rank = 100 / nrow(.) * (1:nrow(.)))
-  if (cut_off_mode == "Auto") {
-    nd <- nrow(data)
-    nr <- which(data$per_rank > 25 & data$per_rank < 75)
-    p <- c()
-    for (i in nr) {
-      dat <- data %>% mutate(group = c(rep("Low", i), rep("High", nd - i)))
-      sdf <- survdiff(Surv(time, status) ~ group, data = dat)
-      p.val <- 1 - pchisq(sdf$chisq, length(sdf$n) - 1)
-      p <- c(p, p.val)
-    }
-    nr <- nr[which.min(p)]
-    data %<>% mutate(group = c(rep("Low", nr), rep("High", nd - nr)))
+  #if (cut_off_mode == "Auto") {
+    #nd <- nrow(data)
+    #nr <- which(data$per_rank > 25 & data$per_rank < 75)
+    #p <- c()
+    #for (i in nr) {
+    #  dat <- data %>% mutate(group = c(rep("Low", i), rep("High", nd - i)))
+    #  sdf <- survdiff(Surv(time, status) ~ group, data = dat)
+    #  p.val <- 1 - pchisq(sdf$chisq, length(sdf$n) - 1)
+    #  p <- c(p, p.val)
+    #}
+    #nr <- nr[which.min(p)]
+    #data %<>% mutate(group = c(rep("Low", nr), rep("High", nd - nr)))
+  if (cut_off_mode == "Auto"){
+    data %<>% surv_cutpoint(time = "time", event = "status",
+                             variables = c("value"),
+                            minprop=0.25,progressbar=F) %>% 
+      surv_categorize(labels = c("High","Low")) %>% 
+      data.frame() %>% 
+      dplyr::rename(group=value)
   } else {
     data %<>% mutate(group = case_when(
       per_rank > !!cutpoint[2] ~ "High",
