@@ -37,7 +37,7 @@ server.home_search_box <- function(input, output, session) {
     updateSelectizeInput(
       session,
       "Pancan_search",
-      choices = pancan_identifiers,
+      choices = pancan_identifiers$gene,
       selected = "TP53",
       server = TRUE)
   })

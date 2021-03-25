@@ -17,9 +17,13 @@ r <- purrr::map(
   sel_data,
   ~UCSCXenaTools::fetch_dataset_identifiers(hosts(pan_xe), .)
 )
-r2 <- c(r[[1]], r[[2]], r[[3]])
-r2 <- setdiff(unique(r2), "sampleID")
-saveRDS(r2, file = "inst/extdata/pancan_identifier_list.rds")
+
+names(r) <- c("miRNA", "gene", "protein")
+r <- lapply(r, function(x) {
+  setdiff(x, "sampleID")
+})
+
+saveRDS(r, file = "inst/extdata/pancan_identifier_list.rds")
 
 # cohort: TCGA TARGET GTEx
 toil_info <- XenaGenerate(subset = XenaDatasets == "TcgaTargetGTEX_phenotype.txt") %>%
