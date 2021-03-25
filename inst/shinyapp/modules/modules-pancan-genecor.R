@@ -3,17 +3,15 @@ ui.modules_pancan_gene_cor <- function(id) {
   ns <- NS(id)
   fluidPage(
     titlePanel("Module: TCGA Gene-Gene Correlation"),
-    fluidRow(
-      tags$div(
-        style = "margin-left: 30px;",
-        fluidRow(
+    sidebarLayout(
+      sidebarPanel = sidebarPanel(
           shinyWidgets::searchInput(
             inputId = ns("pancan_search1"),
             label = NULL,
             btnSearch = icon("search"),
             btnReset = icon("remove"),
             placeholder = "Enter a gene symbol, e.g. TP53",
-            width = "40%"
+            width = "100%"
           ),
           shinyWidgets::searchInput(
             inputId = ns("pancan_search2"),
@@ -21,28 +19,18 @@ ui.modules_pancan_gene_cor <- function(id) {
             btnSearch = icon("search"),
             btnReset = icon("remove"),
             placeholder = "Enter a gene symbol, e.g. TP53",
-            width = "40%"
-          )
-        )
-      )
-    ),
-    sidebarLayout(
-      sidebarPanel = sidebarPanel(
-        fluidPage(
-          fluidRow(
-            materialSwitch(ns("purity_adj"), "Adjust Purity", inline = TRUE)
-          )
-        )
+            width = "100%"
+          ),
+            materialSwitch(ns("purity_adj"), "Adjust Purity", inline = TRUE),
+          width=3
       ),
       mainPanel = mainPanel(
-        column(
-          8, wellPanel(
-            plotOutput(ns("gene_cor"), height = "600px")
+            plotOutput(ns("gene_cor"), height = "600px"),
+            width = 9
           )
         )
-      )
     )
-  )
+
 }
 
 server.modules_pancan_gene_cor <- function(input, output, session) {

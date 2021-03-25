@@ -2,75 +2,59 @@ ui.modules_pancan_unicox <- function(id) {
   ns <- NS(id)
   fluidPage(
     titlePanel("Module: Gene Pancan Uni-cox analysis"),
-    fluidRow(
-      tags$div(
-        style = "margin-left: 30px;",
-        fluidRow(
-          shinyWidgets::searchInput(
-            inputId = ns("Pancan_search"),
-            label = NULL,
-            btnSearch = icon("search"),
-            btnReset = icon("remove"),
-            placeholder = "Enter a gene symbol, e.g. TP53",
-            width = "40%"
-          ),
-          shinyBS::bsPopover(ns("Pancan_search"),
-            title = "Tips",
-            content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
-            placement = "right", options = list(container = "body")
-          )
-        )
-      )
-    ),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
-        fluidPage(
-          fluidRow(
-            selectInput(inputId = ns("measure"), label = "Select Measure for plot", choices = c("OS", "PFI", "DSS", "DFI"), selected = "OS"),
-            selectInput(inputId = ns("threshold"), label = "Select Threshold for plot", choices = c(0.25, 0.5), selected = 0.5),
-            colourpicker::colourInput(inputId = ns("first_col"), "First color", "#6A6F68"),
-            colourpicker::colourInput(inputId = ns("second_col"), "Second color", "#E31A1C"),
-            colourpicker::colourInput(inputId = ns("third_col"), "Third color", "#377DB8"),
-          ),
-          fluidRow(
-            numericInput(inputId = ns("height"), label = "Height", value = 8),
-            numericInput(inputId = ns("width"), label = "Width", value = 6),
-            prettyRadioButtons(
-              inputId = ns("device"),
-              label = "Choose plot format",
-              choices = c("pdf", "png"),
-              selected = "pdf",
-              inline = TRUE,
-              icon = icon("check"),
-              animation = "jelly",
-              fill = TRUE
-            ),
-            downloadBttn(
-              outputId = ns("download"),
-              # label = "Download Plot",
-              style = "gradient",
-              color = "default",
-              block = TRUE,
-              size = "sm"
-            )
-          )
-        )
+        shinyWidgets::searchInput(
+          inputId = ns("Pancan_search"),
+          label = NULL,
+          btnSearch = icon("search"),
+          btnReset = icon("remove"),
+          # placeholder = "Enter a gene symbol, e.g. TP53",
+          width = "100%"
+        ),
+        shinyBS::bsPopover(ns("Pancan_search"),
+          title = "Tips",
+          content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
+          placement = "right", options = list(container = "body")
+        ),
+        selectInput(inputId = ns("measure"), label = "Select Measure for plot", choices = c("OS", "PFI", "DSS", "DFI"), selected = "OS"),
+        selectInput(inputId = ns("threshold"), label = "Select Threshold for plot", choices = c(0.25, 0.5), selected = 0.5),
+        colourpicker::colourInput(inputId = ns("first_col"), "First color", "#6A6F68"),
+        colourpicker::colourInput(inputId = ns("second_col"), "Second color", "#E31A1C"),
+        colourpicker::colourInput(inputId = ns("third_col"), "Third color", "#377DB8"),
+        numericInput(inputId = ns("height"), label = "Height", value = 8),
+        numericInput(inputId = ns("width"), label = "Width", value = 6),
+        prettyRadioButtons(
+          inputId = ns("device"),
+          label = "Choose plot format",
+          choices = c("pdf", "png"),
+          selected = "pdf",
+          inline = TRUE,
+          icon = icon("check"),
+          animation = "jelly",
+          fill = TRUE
+        ),
+        downloadBttn(
+          outputId = ns("download"),
+          # label = "Download Plot",
+          style = "gradient",
+          color = "default",
+          block = TRUE,
+          size = "sm"
+        ),
+        width = 3
       ),
       mainPanel = mainPanel(
-        fluidRow(column(
-          10,
-          wellPanel(plotOutput(ns("unicox_gene_tree"), height = "600px"), style = "height:650px")
-        )),
-        fluidRow(column(
-          12,
-          DT::DTOutput(outputId = ns("tbl")),
-          downloadButton(ns("downloadTable"), "Save as csv")
-        ))
+        plotOutput(ns("unicox_gene_tree"), height = "500px"),
+        DT::DTOutput(outputId = ns("tbl")),
+        shinyjs::hidden(
+          wellPanel(id = ns("save_csv"),
+        downloadButton(ns("downloadTable"), "Save as csv"))),
+        width = 9
       )
     )
   )
 }
-
 
 
 server.modules_pancan_unicox <- function(input, output, session) {
@@ -84,19 +68,19 @@ server.modules_pancan_unicox <- function(input, output, session) {
 
   return_data <- reactive({
     if (nchar(input$Pancan_search) >= 1) {
+      shinyjs::show(id = "save_csv")
       p <- vis_unicox_tree(
         Gene = input$Pancan_search,
         measure = input$measure,
         threshold = input$threshold,
         values = colors()
       )
-
       data <- p$data
       data <- data %>%
         as.data.frame() %>%
         dplyr::select(cancer, measure, n_contrast, n_ref, beta, HR_log, lower_95_log, upper_95_log, Type, p.value)
       return(data)
-    }
+    }else{shinyjs::hide(id = "save_csv")}
   })
 
 
@@ -146,7 +130,7 @@ server.modules_pancan_unicox <- function(input, output, session) {
     data <- return_data(),
     options = list(lengthChange = FALSE)
   )
-
+  
   output$downloadTable <- downloadHandler(
     filename = function() {
       paste0(input$Pancan_search, "_", input$measure, "_gene_pancan_unicox.csv")
