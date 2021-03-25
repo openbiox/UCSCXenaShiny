@@ -171,6 +171,12 @@ observeEvent(input$show_met, {
       size = "l",
       DT::DTOutput("detail_info")
     ))
+  } else {
+    sendSweetAlert(
+      session, 
+      "Alert",
+      "Please select at least one dataset by clicking the rows in the data table firstly.",
+       type = "info")
   }
 })
 
@@ -233,6 +239,12 @@ observeEvent(input$req_data, {
 
     output$table_query <-
       DT::renderDT(query_url(), options = list(dom = "t", scrollX = TRUE))
+  } else {
+    sendSweetAlert(
+      session, 
+      "Alert",
+      "Please select at least one dataset by clicking the rows in the data table firstly.",
+      type = "info")
   }
 })
 
