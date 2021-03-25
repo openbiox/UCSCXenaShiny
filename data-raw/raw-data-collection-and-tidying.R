@@ -19,7 +19,7 @@ r <- purrr::map(
 )
 r2 <- c(r[[1]], r[[2]], r[[3]])
 r2 <- setdiff(unique(r2), "sampleID")
-save(r2, file = "inst/extdata/pancan_identifier_list.rds")
+saveRDS(r2, file = "inst/extdata/pancan_identifier_list.rds")
 
 # cohort: TCGA TARGET GTEx
 toil_info <- XenaGenerate(subset = XenaDatasets == "TcgaTargetGTEX_phenotype.txt") %>%

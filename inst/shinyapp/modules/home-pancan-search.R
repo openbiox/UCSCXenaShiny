@@ -1,17 +1,25 @@
 ui.home_search_box <- function(id) {
   ns <- NS(id)
 
-  # 如果使用的话，需要进行服务端加速，参考下文
   # ref: https://shiny.rstudio.com/articles/selectize.html
-  selectizeInput(inputId = ns("Pancan_search"),
-                 label = NULL,
-                 choices = c("", "TP53", "KRAS"),
-                 selected = "",
-                 multiple = FALSE, # allow for multiple inputs
-                 options = list(
-                   create = TRUE,
-                   maxOptions = 5,
-                   placeholder = 'Enter a gene symbol, e.g. TP53'))
+  # https://stackoverflow.com/questions/51343552/dynamic-selectizeinput-in-shiny
+  fluidRow(
+    column(8,
+           selectizeInput(inputId = ns("Pancan_search"),
+                          label = NULL,
+                          choices = NULL,
+                          options = list(
+                            create = TRUE,
+                            maxOptions = 5,
+                            placeholder = 'Enter a gene symbol, e.g. TP53',
+                            plugins = list('restore_on_backspace')
+                          ))),
+    column(2,
+           actionBttn(inputId = ns("search"),
+                      label = "Go!",
+                      color = "primary",
+                      style = "bordered"))
+  )
   # shinyWidgets::searchInput(
   #   inputId = ns("Pancan_search"),
   #   label = NULL,
@@ -23,9 +31,19 @@ ui.home_search_box <- function(id) {
 }
 
 server.home_search_box <- function(input, output, session) {
+  
   ns <- session$ns
-  observeEvent(input$Pancan_search, {
-    print(input$Pancan_search)
+  observe({
+    updateSelectizeInput(
+      session,
+      "Pancan_search",
+      choices = pancan_identifiers,
+      selected = "TP53",
+      server = TRUE)
+  })
+
+  observeEvent(input$search, {
+    message(input$Pancan_search, " is queried by user from home search box.")
     if (nchar(input$Pancan_search) >= 1) {
       showModal(
         modalDialog(

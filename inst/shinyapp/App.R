@@ -75,6 +75,18 @@ TCGA_cli_merged <- dplyr::full_join(
   by = "sample"
 )
 
+pancan_identifiers <- readRDS(
+  system.file(
+    "extdata", "pancan_identifier_list.rds", package = "UCSCXenaShiny"
+  )
+)
+# pancan_identifiers <- reactiveValues(
+#   choices = readRDS(
+#     system.file(
+#       "extdata", "pancan_identifier_list.rds", package = "UCSCXenaShiny"
+#     )
+#   ), selected = c(""))
+
 ## data summary
 Data_hubs_number <- length(unique(xena_table$Hub))
 Cohorts_number <- length(unique(xena_table$Cohort))
