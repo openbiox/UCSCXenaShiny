@@ -231,7 +231,7 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, valu
         dplyr::mutate(group = factor(.data$group, levels = c("low", "high")))
     }
 
-    
+
     unicox_res_genes <- ezcox::ezcox(
       sss_can,
       covariates = "values",

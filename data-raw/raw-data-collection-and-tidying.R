@@ -7,15 +7,15 @@
 library(UCSCXenaTools)
 library(dplyr)
 
-pan_xe <- XenaData %>% 
-  filter(XenaHostNames == "pancanAtlasHub") %>% 
-  XenaGenerate() 
+pan_xe <- XenaData %>%
+  filter(XenaHostNames == "pancanAtlasHub") %>%
+  XenaGenerate()
 
 datasets(pan_xe)
 sel_data <- datasets(pan_xe)[c(1, 3, 5)]
 r <- purrr::map(
   sel_data,
-  ~UCSCXenaTools::fetch_dataset_identifiers(hosts(pan_xe), .)
+  ~ UCSCXenaTools::fetch_dataset_identifiers(hosts(pan_xe), .)
 )
 
 names(r) <- c("miRNA", "gene", "protein")

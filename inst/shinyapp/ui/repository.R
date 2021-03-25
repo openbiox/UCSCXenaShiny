@@ -14,7 +14,7 @@ ui.page_repository <- function() {
           size = "sm"
         ),
         hr(),
-        shinyWidgets::prettyCheckboxGroup("hubs_text", "Active Data Hub:", 
+        shinyWidgets::prettyCheckboxGroup("hubs_text", "Active Data Hub:",
           choiceNames = c(
             "UCSC Public", "TCGA",
             "GDC", "ICGC",
@@ -42,7 +42,7 @@ ui.page_repository <- function() {
           content = "Cohort is an independent study, it contains datasets with same patients",
           placement = "right", options = list(container = "body")
         ),
-        shinyWidgets::prettyCheckboxGroup("type_text", "Data Type:", 
+        shinyWidgets::prettyCheckboxGroup("type_text", "Data Type:",
           choiceNames = c(
             "Phenotype", "Feature by sample matrix",
             "Genomic segments", "Mutations"
@@ -76,9 +76,9 @@ ui.page_repository <- function() {
               inputId = "show_met",
               label = "Show Metadata",
               icon = icon("database")
-              #style = "gradient",
-              #color = "default",
-              #size = "sm", block = T
+              # style = "gradient",
+              # color = "default",
+              # size = "sm", block = T
             )
           ),
           column(4,

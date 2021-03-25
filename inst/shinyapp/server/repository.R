@@ -2,23 +2,23 @@
 
 update_repo_data <- function(input) {
   res <- XenaData
-  
+
   if (!is.null(input$hubs_text)) {
     res <- dplyr::filter(res, XenaHostNames %in% input$hubs_text)
   }
-  
+
   if (!is.null(input$cohorts_text) && input$cohorts_text != "") {
     if (!"ALL" %in% input$cohorts_text) {
       res <- dplyr::filter(res, XenaCohorts %in% input$cohorts_text)
     }
   }
-  
+
   if (!is.null(input$subtype_text) && input$subtype_text != "") {
     if (!"ALL" %in% input$subtype_text) {
       res <- dplyr::filter(res, DataSubtype %in% input$subtype_text)
     }
   }
-  
+
   if (!is.null(input$type_text)) {
     res <- dplyr::filter(res, Type %in% input$type_text)
   }
@@ -34,7 +34,7 @@ repo_filters <- reactive({
   )
 })
 dataset <- eventReactive(repo_filters(), update_repo_data(input))
-#df <- dataset
+# df <- dataset
 
 output$cohorts_text <- renderUI({
   cohorts_text <- isolate(input$cohorts_text)
@@ -43,7 +43,8 @@ output$cohorts_text <- renderUI({
     label = "Cohort Name:",
     choices = c("ALL", unique(dataset()$XenaCohorts)),
     selected = cohorts_text,
-    multiple = TRUE)
+    multiple = TRUE
+  )
 })
 output$subtype_text <- renderUI({
   subtype_text <- isolate(input$subtype_text)
@@ -52,7 +53,8 @@ output$subtype_text <- renderUI({
     label = "Data Subtype:",
     choices = c("ALL", unique(dataset()$DataSubtype)),
     selected = subtype_text,
-    multiple = TRUE)
+    multiple = TRUE
+  )
 })
 
 output$xena_table <- DT::renderDataTable({
@@ -64,7 +66,7 @@ output$xena_table <- DT::renderDataTable({
     "DataSubtype",
     "Label",
     "Unit"
-  )] %>% 
+  )] %>%
     DT::datatable(
       rownames = FALSE,
       colnames = c(
@@ -77,13 +79,14 @@ output$xena_table <- DT::renderDataTable({
         "Unit"
       ),
       options = list(
-        language = list(search = 'Filter with keyword:'),
+        language = list(search = "Filter with keyword:"),
         initComplete = JS(
           "function(settings, json) {",
           "$(this.api().table().header()).css({'background-color': '#4a5a6a', 'color': '#fff'});",
           "$(this.api().table().header()).css({'font-size': '95%'});",
           "$(this.api().table().body()).css({'font-size': '90%'});",
-          "}")
+          "}"
+        )
       )
     )
 })
@@ -173,10 +176,11 @@ observeEvent(input$show_met, {
     ))
   } else {
     sendSweetAlert(
-      session, 
+      session,
       "Alert",
       "Please select at least one dataset by clicking the rows in the data table firstly.",
-       type = "info")
+      type = "info"
+    )
   }
 })
 
@@ -241,10 +245,11 @@ observeEvent(input$req_data, {
       DT::renderDT(query_url(), options = list(dom = "t", scrollX = TRUE))
   } else {
     sendSweetAlert(
-      session, 
+      session,
       "Alert",
       "Please select at least one dataset by clicking the rows in the data table firstly.",
-      type = "info")
+      type = "info"
+    )
   }
 })
 

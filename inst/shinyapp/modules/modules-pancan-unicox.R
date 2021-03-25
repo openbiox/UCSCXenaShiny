@@ -48,8 +48,11 @@ ui.modules_pancan_unicox <- function(id) {
         plotOutput(ns("unicox_gene_tree"), height = "500px"),
         DT::DTOutput(outputId = ns("tbl")),
         shinyjs::hidden(
-          wellPanel(id = ns("save_csv"),
-        downloadButton(ns("downloadTable"), "Save as csv"))),
+          wellPanel(
+            id = ns("save_csv"),
+            downloadButton(ns("downloadTable"), "Save as csv")
+          )
+        ),
         width = 9
       )
     )
@@ -80,7 +83,9 @@ server.modules_pancan_unicox <- function(input, output, session) {
         as.data.frame() %>%
         dplyr::select(cancer, measure, n_contrast, n_ref, beta, HR_log, lower_95_log, upper_95_log, Type, p.value)
       return(data)
-    }else{shinyjs::hide(id = "save_csv")}
+    } else {
+      shinyjs::hide(id = "save_csv")
+    }
   })
 
 
@@ -130,7 +135,7 @@ server.modules_pancan_unicox <- function(input, output, session) {
     data <- return_data(),
     options = list(lengthChange = FALSE)
   )
-  
+
   output$downloadTable <- downloadHandler(
     filename = function() {
       paste0(input$Pancan_search, "_", input$measure, "_gene_pancan_unicox.csv")

@@ -5,32 +5,31 @@ ui.modules_pancan_gene_cor <- function(id) {
     titlePanel("Module: TCGA Gene-Gene Correlation"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
-          shinyWidgets::searchInput(
-            inputId = ns("pancan_search1"),
-            label = NULL,
-            btnSearch = icon("search"),
-            btnReset = icon("remove"),
-            placeholder = "Enter a gene symbol, e.g. TP53",
-            width = "100%"
-          ),
-          shinyWidgets::searchInput(
-            inputId = ns("pancan_search2"),
-            label = NULL,
-            btnSearch = icon("search"),
-            btnReset = icon("remove"),
-            placeholder = "Enter a gene symbol, e.g. TP53",
-            width = "100%"
-          ),
-            materialSwitch(ns("purity_adj"), "Adjust Purity", inline = TRUE),
-          width=3
+        shinyWidgets::searchInput(
+          inputId = ns("pancan_search1"),
+          label = NULL,
+          btnSearch = icon("search"),
+          btnReset = icon("remove"),
+          placeholder = "Enter a gene symbol, e.g. TP53",
+          width = "100%"
+        ),
+        shinyWidgets::searchInput(
+          inputId = ns("pancan_search2"),
+          label = NULL,
+          btnSearch = icon("search"),
+          btnReset = icon("remove"),
+          placeholder = "Enter a gene symbol, e.g. TP53",
+          width = "100%"
+        ),
+        materialSwitch(ns("purity_adj"), "Adjust Purity", inline = TRUE),
+        width = 3
       ),
       mainPanel = mainPanel(
-            plotOutput(ns("gene_cor"), height = "600px"),
-            width = 9
-          )
-        )
+        plotOutput(ns("gene_cor"), height = "600px"),
+        width = 9
+      )
     )
-
+  )
 }
 
 server.modules_pancan_gene_cor <- function(input, output, session) {

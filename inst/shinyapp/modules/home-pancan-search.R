@@ -4,21 +4,29 @@ ui.home_search_box <- function(id) {
   # ref: https://shiny.rstudio.com/articles/selectize.html
   # https://stackoverflow.com/questions/51343552/dynamic-selectizeinput-in-shiny
   fluidRow(
-    column(8,
-           selectizeInput(inputId = ns("Pancan_search"),
-                          label = NULL,
-                          choices = NULL,
-                          options = list(
-                            create = TRUE,
-                            maxOptions = 5,
-                            placeholder = 'Enter a gene symbol, e.g. TP53',
-                            plugins = list('restore_on_backspace')
-                          ))),
-    column(2,
-           actionBttn(inputId = ns("search"),
-                      label = "Go!",
-                      color = "primary",
-                      style = "bordered"))
+    column(
+      8,
+      selectizeInput(
+        inputId = ns("Pancan_search"),
+        label = NULL,
+        choices = NULL,
+        options = list(
+          create = TRUE,
+          maxOptions = 5,
+          placeholder = "Enter a gene symbol, e.g. TP53",
+          plugins = list("restore_on_backspace")
+        )
+      )
+    ),
+    column(
+      2,
+      actionBttn(
+        inputId = ns("search"),
+        label = "Go!",
+        color = "primary",
+        style = "bordered"
+      )
+    )
   )
   # shinyWidgets::searchInput(
   #   inputId = ns("Pancan_search"),
@@ -31,7 +39,6 @@ ui.home_search_box <- function(id) {
 }
 
 server.home_search_box <- function(input, output, session) {
-  
   ns <- session$ns
   observe({
     updateSelectizeInput(
@@ -39,7 +46,8 @@ server.home_search_box <- function(input, output, session) {
       "Pancan_search",
       choices = pancan_identifiers$gene,
       selected = "TP53",
-      server = TRUE)
+      server = TRUE
+    )
   })
 
   observeEvent(input$search, {

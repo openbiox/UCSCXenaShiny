@@ -12,14 +12,15 @@ ui.modules_sur_plot <- function(id) {
 
         shinyWidgets::prettyRadioButtons(
           inputId = ns("profiles"), label = "Select a genomic profiles:",
-          choiceValues = c("mRNA","transcript","miRNA","mutation", "cnv", "met","protein"),
-          choiceNames = c("mRNA Expression", "Transcript Expression","miRNA Expression", "Mutations", "Copy Number Variation", "DNA Methylation","Protein Expression"),
+          choiceValues = c("mRNA", "transcript", "miRNA", "mutation", "cnv", "met", "protein"),
+          choiceNames = c("mRNA Expression", "Transcript Expression", "miRNA Expression", "Mutations", "Copy Number Variation", "DNA Methylation", "Protein Expression"),
           animation = "jelly"
         ),
         shinyBS::bsPopover(ns("item_input"),
-                           title = "Tips",
-                           content = "Gene symbol: TP53; Ensembl: ENSG00000141510; miRNA ID: hsa-miR-128-3p;",
-                           placement = "right", options = list(container = "body")),
+          title = "Tips",
+          content = "Gene symbol: TP53; Ensembl: ENSG00000141510; miRNA ID: hsa-miR-128-3p;",
+          placement = "right", options = list(container = "body")
+        ),
         shinyjs::hidden(
           # shinyWidgets::searchInput(
           shinyWidgets::textInputAddon(
@@ -439,25 +440,27 @@ dat_filter <- function(data, age, gender, stage, endpoint) {
 sur_plot <- function(data, cut_off_mode, cutpoint) {
   data %<>% dplyr::arrange(value) %>%
     dplyr::mutate(per_rank = 100 / nrow(.) * (1:nrow(.)))
-  #if (cut_off_mode == "Auto") {
-    #nd <- nrow(data)
-    #nr <- which(data$per_rank > 25 & data$per_rank < 75)
-    #p <- c()
-    #for (i in nr) {
-    #  dat <- data %>% mutate(group = c(rep("Low", i), rep("High", nd - i)))
-    #  sdf <- survdiff(Surv(time, status) ~ group, data = dat)
-    #  p.val <- 1 - pchisq(sdf$chisq, length(sdf$n) - 1)
-    #  p <- c(p, p.val)
-    #}
-    #nr <- nr[which.min(p)]
-    #data %<>% mutate(group = c(rep("Low", nr), rep("High", nd - nr)))
-  if (cut_off_mode == "Auto"){
-    data %<>% surv_cutpoint(time = "time", event = "status",
-                             variables = c("value"),
-                            minprop=0.25,progressbar=F) %>% 
-      surv_categorize(labels = c("High","Low")) %>% 
-      data.frame() %>% 
-      dplyr::rename(group=value)
+  # if (cut_off_mode == "Auto") {
+  # nd <- nrow(data)
+  # nr <- which(data$per_rank > 25 & data$per_rank < 75)
+  # p <- c()
+  # for (i in nr) {
+  #  dat <- data %>% mutate(group = c(rep("Low", i), rep("High", nd - i)))
+  #  sdf <- survdiff(Surv(time, status) ~ group, data = dat)
+  #  p.val <- 1 - pchisq(sdf$chisq, length(sdf$n) - 1)
+  #  p <- c(p, p.val)
+  # }
+  # nr <- nr[which.min(p)]
+  # data %<>% mutate(group = c(rep("Low", nr), rep("High", nd - nr)))
+  if (cut_off_mode == "Auto") {
+    data %<>% surv_cutpoint(
+      time = "time", event = "status",
+      variables = c("value"),
+      minprop = 0.25, progressbar = F
+    ) %>%
+      surv_categorize(labels = c("High", "Low")) %>%
+      data.frame() %>%
+      dplyr::rename(group = value)
   } else {
     data %<>% mutate(group = case_when(
       per_rank > !!cutpoint[2] ~ "High",

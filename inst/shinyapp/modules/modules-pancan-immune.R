@@ -9,48 +9,49 @@ ui.modules_pancan_immune <- function(id) {
           label = NULL,
           btnSearch = icon("search"),
           btnReset = icon("remove"),
-          #placeholder = "Enter a gene symbol, e.g. TP53"
+          # placeholder = "Enter a gene symbol, e.g. TP53"
           width = "100%"
         ),
         shinyBS::bsPopover(ns("Pancan_search"),
-                           title = "Tips",
-                           content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
-                           placement = "right", options = list(container = "body")
+          title = "Tips",
+          content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
+          placement = "right", options = list(container = "body")
         ),
-            selectInput(
-              inputId = ns("immune_sig"), "Select the immune signature source", selected = "Cibersort",
-              choices = c("Yasin", "Wolf", "Attractors", "ICR", "c7atoms", "Bindea", "Cibersort")
-            ),
-            selectInput(inputId = ns("Cor_method"), 
-                        label = "Select Correlation method", 
-                        choices = c("spearman", "pearson"), 
-                        selected = "spearman"),
-            numericInput(inputId = ns("height"), label = "Height", value = 8),
-            numericInput(inputId = ns("width"), label = "Width", value = 12),
-            prettyRadioButtons(
-              inputId = ns("device"),
-              label = "Choose plot format",
-              choices = c("pdf", "png"),
-              selected = "pdf",
-              inline = TRUE,
-              icon = icon("check"),
-              animation = "jelly",
-              fill = TRUE
-            ),
-            downloadBttn(
-              outputId = ns("download"),
-              # label = "Download Plot",
-              style = "gradient",
-              color = "default",
-              block = TRUE,
-              size = "sm"
-            ),width = 3
-              
+        selectInput(
+          inputId = ns("immune_sig"), "Select the immune signature source", selected = "Cibersort",
+          choices = c("Yasin", "Wolf", "Attractors", "ICR", "c7atoms", "Bindea", "Cibersort")
+        ),
+        selectInput(
+          inputId = ns("Cor_method"),
+          label = "Select Correlation method",
+          choices = c("spearman", "pearson"),
+          selected = "spearman"
+        ),
+        numericInput(inputId = ns("height"), label = "Height", value = 8),
+        numericInput(inputId = ns("width"), label = "Width", value = 12),
+        prettyRadioButtons(
+          inputId = ns("device"),
+          label = "Choose plot format",
+          choices = c("pdf", "png"),
+          selected = "pdf",
+          inline = TRUE,
+          icon = icon("check"),
+          animation = "jelly",
+          fill = TRUE
+        ),
+        downloadBttn(
+          outputId = ns("download"),
+          # label = "Download Plot",
+          style = "gradient",
+          color = "default",
+          block = TRUE,
+          size = "sm"
+        ),
+        width = 3
       ),
       mainPanel(
-          plotOutput(ns("hm_gene_immune_cor"), height = "500px"),width = 9
-             
-
+        plotOutput(ns("hm_gene_immune_cor"), height = "500px"),
+        width = 9
       )
     )
   )

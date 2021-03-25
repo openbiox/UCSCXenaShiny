@@ -17,7 +17,7 @@ ui.modules_pancan_dist <- function(id) {
           label = NULL,
           btnSearch = icon("search"),
           btnReset = icon("remove"),
-          #placeholder = "Enter a gene symbol, e.g. TP53",
+          # placeholder = "Enter a gene symbol, e.g. TP53",
           width = "100%"
         ),
         shinyBS::bsPopover(ns("Pancan_search"),
@@ -55,12 +55,12 @@ ui.modules_pancan_dist <- function(id) {
         width = 3
       ),
       mainPanel = mainPanel(
-          plotOutput(ns("gene_pancan_dist"), height = "500px"),
-          h5("NOTEs:"),
-          p("1. The data query may take some time based on your network. Wait until a plot shows"),
-          p("2. The unit of gene expression is log2(tpm+0.001)"),
-          p("3. You have to turn on both 'Show P value' and 'Show P label' to show significant labels"),
-          width = 9
+        plotOutput(ns("gene_pancan_dist"), height = "500px"),
+        h5("NOTEs:"),
+        p("1. The data query may take some time based on your network. Wait until a plot shows"),
+        p("2. The unit of gene expression is log2(tpm+0.001)"),
+        p("3. You have to turn on both 'Show P value' and 'Show P label' to show significant labels"),
+        width = 9
       )
     )
   )

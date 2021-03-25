@@ -8,46 +8,46 @@ ui.modules_ccle_dist <- function(id) {
     titlePanel("Module: Gene CCLE Expression Distribution"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
-          shinyWidgets::searchInput(
-            inputId = ns("ccle_search"),
-            label = NULL,
-            btnSearch = icon("search"),
-            btnReset = icon("remove"),
-            #placeholder = "Enter a gene symbol, e.g. TP53",
-            width = "100%"
-          ),
-          shinyBS::bsPopover(ns("ccle_search"),
-            title = "Tips",
-            content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
-            placement = "right", options = list(container = "body")
-          ),
-            selectInput(inputId = ns("x.axis"), label = "x.axis", choices = ccle_choices, selected = "Type"),
-              numericInput(inputId = ns("height"), label = "Height", value = 5),
-              numericInput(inputId = ns("width"), label = "Width", value = 12),
-              prettyRadioButtons(
-                inputId = ns("device"),
-                label = "Choose plot format",
-                choices = c("pdf", "png"),
-                selected = "pdf",
-                inline = TRUE,
-                icon = icon("check"),
-                animation = "jelly",
-                fill = TRUE
-              ),
-              downloadBttn(
-                outputId = ns("download"),
-                # label = "Download Plot",
-                style = "gradient",
-                color = "default",
-                block = TRUE,
-                size = "sm"
-              ),
-          width = 3
-            ),
+        shinyWidgets::searchInput(
+          inputId = ns("ccle_search"),
+          label = NULL,
+          btnSearch = icon("search"),
+          btnReset = icon("remove"),
+          # placeholder = "Enter a gene symbol, e.g. TP53",
+          width = "100%"
+        ),
+        shinyBS::bsPopover(ns("ccle_search"),
+          title = "Tips",
+          content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
+          placement = "right", options = list(container = "body")
+        ),
+        selectInput(inputId = ns("x.axis"), label = "x.axis", choices = ccle_choices, selected = "Type"),
+        numericInput(inputId = ns("height"), label = "Height", value = 5),
+        numericInput(inputId = ns("width"), label = "Width", value = 12),
+        prettyRadioButtons(
+          inputId = ns("device"),
+          label = "Choose plot format",
+          choices = c("pdf", "png"),
+          selected = "pdf",
+          inline = TRUE,
+          icon = icon("check"),
+          animation = "jelly",
+          fill = TRUE
+        ),
+        downloadBttn(
+          outputId = ns("download"),
+          # label = "Download Plot",
+          style = "gradient",
+          color = "default",
+          block = TRUE,
+          size = "sm"
+        ),
+        width = 3
+      ),
       mainPanel = mainPanel(
-            plotOutput(ns("gene_ccle_dist"), height = "600px")
-          )
+        plotOutput(ns("gene_ccle_dist"), height = "600px")
       )
+    )
   )
 }
 

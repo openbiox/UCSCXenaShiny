@@ -77,7 +77,8 @@ TCGA_cli_merged <- dplyr::full_join(
 
 pancan_identifiers <- readRDS(
   system.file(
-    "extdata", "pancan_identifier_list.rds", package = "UCSCXenaShiny"
+    "extdata", "pancan_identifier_list.rds",
+    package = "UCSCXenaShiny"
   )
 )
 # pancan_identifiers <- reactiveValues(
@@ -132,7 +133,7 @@ server_file <- function(x) {
 ui <- tagList(
   tags$head(tags$title("XenaShiny")),
   shinyjs::useShinyjs(),
-  #use_waiter(),
+  # use_waiter(),
   navbarPage(
     title = div(
       img(src = "xena_shiny-logo_white.png", height = 49.6, style = "margin:-20px -15px -15px -15px")
