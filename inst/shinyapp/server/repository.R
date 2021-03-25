@@ -1,54 +1,62 @@
-# separator is ;
-dataset <- eventReactive(input$hubs_text, {
-  res <- XenaData
+# Render cohorts_text and subtype_text from server
 
+update_repo_data <- function(input) {
+  res <- XenaData
+  
   if (!is.null(input$hubs_text)) {
     res <- dplyr::filter(res, XenaHostNames %in% input$hubs_text)
   }
-  if (!is.null(input$cohorts_text) & input$cohorts_text != "") {
-    ids <- sub(";", "|", input$cohorts_text)
-    res <-
-      dplyr::filter(res, grepl(ids, XenaCohorts, ignore.case = TRUE))
+  
+  if (!is.null(input$cohorts_text) && input$cohorts_text != "") {
+    if (!"ALL" %in% input$cohorts_text) {
+      res <- dplyr::filter(res, XenaCohorts %in% input$cohorts_text)
+    }
   }
-  if (!is.null(input$subtype_text) & input$subtype_text != "") {
-    ids <- sub(";", "|", input$subtype_text)
-    res <-
-      dplyr::filter(res, grepl(ids, DataSubtype, ignore.case = TRUE))
+  
+  if (!is.null(input$subtype_text) && input$subtype_text != "") {
+    if (!"ALL" %in% input$subtype_text) {
+      res <- dplyr::filter(res, DataSubtype %in% input$subtype_text)
+    }
   }
+  
   if (!is.null(input$type_text)) {
     res <- dplyr::filter(res, Type %in% input$type_text)
   }
-
   return(res)
+}
+
+repo_filters <- reactive({
+  list(
+    hub = input$hubs_text,
+    cohort = input$cohorts_text,
+    type = input$type_text,
+    subtype = input$subtype_text
+  )
 })
+dataset <- eventReactive(repo_filters(), update_repo_data(input))
+#df <- dataset
 
-# Show database information in repository page
-df <- eventReactive(input$hubs_text, {
-  res <- XenaData
-
-  if (!is.null(input$hubs_text)) {
-    res <- dplyr::filter(res, XenaHostNames %in% input$hubs_text)
-  }
-  if (!is.null(input$cohorts_text) & input$cohorts_text != "") {
-    ids <- sub(";", "|", input$cohorts_text)
-    res <-
-      dplyr::filter(res, grepl(ids, XenaCohorts, ignore.case = TRUE))
-  }
-  if (!is.null(input$subtype_text) & input$subtype_text != "") {
-    ids <- sub(";", "|", input$subtype_text)
-    res <-
-      dplyr::filter(res, grepl(ids, DataSubtype, ignore.case = TRUE))
-  }
-  if (!is.null(input$type_text)) {
-    res <- dplyr::filter(res, Type %in% input$type_text)
-  }
-
-  return(res)
+output$cohorts_text <- renderUI({
+  cohorts_text <- isolate(input$cohorts_text)
+  selectInput(
+    inputId = "cohorts_text",
+    label = "Cohort Name:",
+    choices = c("ALL", unique(dataset()$XenaCohorts)),
+    selected = cohorts_text,
+    multiple = TRUE)
 })
-
+output$subtype_text <- renderUI({
+  subtype_text <- isolate(input$subtype_text)
+  selectInput(
+    inputId = "subtype_text",
+    label = "Data Subtype:",
+    choices = c("ALL", unique(dataset()$DataSubtype)),
+    selected = subtype_text,
+    multiple = TRUE)
+})
 
 output$xena_table <- DT::renderDataTable({
-  df()[, c(
+  dataset()[, c(
     "XenaDatasets",
     "XenaHostNames",
     "XenaCohorts",
@@ -73,8 +81,8 @@ output$xena_table <- DT::renderDataTable({
         initComplete = JS(
           "function(settings, json) {",
           "$(this.api().table().header()).css({'background-color': '#4a5a6a', 'color': '#fff'});",
-          "$(this.api().table().header()).css({'font-size': '80%'});",
-          "$(this.api().table().body()).css({'font-size': '70%'});",
+          "$(this.api().table().header()).css({'font-size': '95%'});",
+          "$(this.api().table().body()).css({'font-size': '90%'});",
           "}")
       )
     )
