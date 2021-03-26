@@ -41,17 +41,18 @@ output$cohorts_text <- renderUI({
   selectInput(
     inputId = "cohorts_text",
     label = "Cohort Name:",
-    choices = c("ALL", unique(dataset()$XenaCohorts)),
+    choices = c("ALL", unique(xena_table$Cohort[xena_table$Hub %in% input$hubs_text])),
     selected = cohorts_text,
     multiple = TRUE
   )
 })
+
 output$subtype_text <- renderUI({
   subtype_text <- isolate(input$subtype_text)
   selectInput(
     inputId = "subtype_text",
     label = "Data Subtype:",
-    choices = c("ALL", unique(dataset()$DataSubtype)),
+    choices = c("ALL", unique(xena_table$DataSubtype[xena_table$Hub %in% input$hubs_text])),
     selected = subtype_text,
     multiple = TRUE
   )
