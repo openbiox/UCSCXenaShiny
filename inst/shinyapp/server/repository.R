@@ -165,6 +165,9 @@ observe({
   }
 })
 
+
+# Button to show metadata -------------------------------------------------
+
 # Dialog for showing selected data information
 observeEvent(input$show_met, {
   s <- input$xena_table_rows_selected
@@ -184,7 +187,32 @@ observeEvent(input$show_met, {
   }
 })
 
-# Dialog for some operations of request data
+# Show metadata
+observeEvent(input$show_met, {
+  s <- input$xena_table_rows_selected
+  if (length(s)) {
+    m <-
+      purrr::map2(dataset()$XenaHosts[s], dataset()$XenaDatasets[s], function(x, y) {
+        temp <- .p_dataset_metadata(x, y)
+        json_data <- jsonlite::parse_json(temp$text)
+        message("Metadata for ", y, " is queried.")
+        json_data <-
+          purrr::map(json_data, ~ ifelse(length(.) > 0, paste(., collapse = ","), .))
+        json_data <- tibble::enframe(json_data)
+        json_data$value <- unlist(json_data$value)
+        json_data
+      })
+    m <- purrr::reduce(m, dplyr::full_join, by = "name")
+    message("Metadata are loaded!")
+    colnames(m) <- c("Metadata", paste0("dataset", 1:(ncol(m) - 1L)))
+  }
+  output$detail_info <-
+    DT::renderDT(m, options = list(dom = "t", scrollX = TRUE))
+})
+
+
+# Button to request (download) data ---------------------------------------
+
 observeEvent(input$req_data, {
   s <- input$xena_table_rows_selected
   if (length(s)) {
@@ -240,7 +268,7 @@ observeEvent(input$req_data, {
         verbatimTextOutput("R_download_code")
       )
     )
-
+    
     output$table_query <-
       DT::renderDT(query_url(), options = list(dom = "t", scrollX = TRUE))
   } else {
@@ -252,53 +280,6 @@ observeEvent(input$req_data, {
     )
   }
 })
-
-# Show metadata
-observeEvent(input$show_met, {
-  s <- input$xena_table_rows_selected
-  if (length(s)) {
-    m <-
-      purrr::map2(dataset()$XenaHosts[s], dataset()$XenaDatasets[s], function(x, y) {
-        temp <- .p_dataset_metadata(x, y)
-        json_data <- jsonlite::parse_json(temp$text)
-        message("Metadata for ", y, " is queried.")
-        json_data <-
-          purrr::map(json_data, ~ ifelse(length(.) > 0, paste(., collapse = ","), .))
-        json_data <- tibble::enframe(json_data)
-        json_data$value <- unlist(json_data$value)
-        json_data
-      })
-    m <- purrr::reduce(m, dplyr::full_join, by = "name")
-    message("Metadata are loaded!")
-    colnames(m) <- c("Metadata", paste0("dataset", 1:(ncol(m) - 1L)))
-  }
-  output$detail_info <-
-    DT::renderDT(m, options = list(dom = "t", scrollX = TRUE))
-})
-
-# Download list of urls
-output$total_url <- downloadHandler(
-  filename = paste0(Sys.Date(), "-commands.sh"),
-  contentType = "text/txt",
-  content = function(file) {
-    write.table(
-      file = file,
-      c(
-        "#!/usr/bin/env bash",
-        paste(
-          "#Usage: run bash",
-          paste0(Sys.Date(), "-commands.sh"),
-          "in your terminal under a desired directory"
-        ),
-        paste0("wget -c ", query_url()$url)
-      ),
-      row.names = F,
-      col.names = F,
-      quote = F
-    )
-  }
-)
-
 
 # Download request data by XenaDownload function
 # observeEvent(input$load, {
@@ -360,6 +341,29 @@ if (xena.runMode == "client") {
   )
 }
 
+# Download list of urls
+output$total_url <- downloadHandler(
+  filename = paste0(Sys.Date(), "-commands.sh"),
+  contentType = "text/txt",
+  content = function(file) {
+    write.table(
+      file = file,
+      c(
+        "#!/usr/bin/env bash",
+        paste(
+          "#Usage: run bash",
+          paste0(Sys.Date(), "-commands.sh"),
+          "in your terminal under a desired directory"
+        ),
+        paste0("wget -c ", query_url()$url)
+      ),
+      row.names = F,
+      col.names = F,
+      quote = F
+    )
+  }
+)
+
 ## Show download code for reproducible research
 observeEvent(input$show_R_code, {
   f <- tempfile()
@@ -388,7 +392,16 @@ observeEvent(input$show_R_code, {
   output$R_download_code <- shiny::renderText(R_code)
 })
 
-# Show alert info when select rows from table
+
+# Button to Analysis ------------------------------------------------------
+
+# ref: https://stackoverflow.com/questions/38706965/is-there-any-way-for-an-actionbutton-to-navigate-to-another-tab-within-a-r-shi
+observeEvent(input$analyze_data, {
+  updateNavbarPage(session = session, inputId = "navbar", selected = "General Analysis")
+})
+
+# Show alert info when select rows from table -----------------------------
+
 observeEvent(input$use_repository, {
   # Show a modal when the button is pressed
   shinyalert(

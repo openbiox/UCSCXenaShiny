@@ -140,15 +140,10 @@ ui <- tagList(
   shinyjs::useShinyjs(),
   # use_waiter(),
   navbarPage(
+    id = "navbar",
     title = div(
       img(src = "xena_shiny-logo_white.png", height = 49.6, style = "margin:-20px -15px -15px -15px")
     ),
-    #' tags$head(tags$style(HTML("
-    #' @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap');
-    #' * {
-    #'     font-family: 'Open Sans', sans-serif;
-    #'   }
-    #'                           "))),
     # inst/shinyapp/ui
     ui.page_home(),
     ui.page_repository(),
