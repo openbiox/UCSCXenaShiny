@@ -1,11 +1,3 @@
-
-themes <- list(
-  "Light" = theme_light(),
-  "Minimal" = theme_minimal(),
-  "Classic" = theme_classic(),
-  "Gray" = theme_gray()
-)
-
 ui.modules_pancan_dist <- function(id) {
   ns <- NS(id)
   fluidPage(
@@ -31,7 +23,7 @@ ui.modules_pancan_dist <- function(id) {
         materialSwitch(ns("pdist_dataset"), "TCGA Dataset only", inline = FALSE),
         colourpicker::colourInput(inputId = ns("tumor_col"), "Tumor sample color", "#DF2020"),
         colourpicker::colourInput(inputId = ns("normal_col"), "Normal sample color", "#DDDF21"),
-        selectInput(inputId = ns("theme"), label = "Select theme for plot", choices = names(themes), selected = "Light"),
+        selectInput(inputId = ns("theme"), label = "Select theme for plot", choices = names(themes_list), selected = "cowplot"),
         numericInput(inputId = ns("height"), label = "Height", value = 5),
         numericInput(inputId = ns("width"), label = "Width", value = 12),
         prettyRadioButtons(
@@ -60,6 +52,7 @@ ui.modules_pancan_dist <- function(id) {
         p("1. The data query may take some time based on your network. Wait until a plot shows"),
         p("2. The unit of gene expression is log2(tpm+0.001)"),
         p("3. You have to turn on both 'Show P value' and 'Show P label' to show significant labels"),
+        p("4. If a void plot shows, please check your input"),
         width = 9
       )
     )
@@ -73,7 +66,7 @@ server.modules_pancan_dist <- function(input, output, session) {
   })
 
   plot_theme <- reactive({
-    themes[[input$theme]]
+    themes_list[[input$theme]]
   })
 
   # Show waiter for plot

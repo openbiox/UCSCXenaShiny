@@ -27,6 +27,7 @@ pacman::p_load(
   magrittr,
   dplyr,
   ggplot2,
+  cowplot,
   ggpubr,
   plotly,
   UCSCXenaTools,
@@ -45,8 +46,14 @@ pacman::p_load(
   DT,
   fs,
   RColorBrewer,
-  gganatogram
+  gganatogram,
+  zip
 )
+
+if (packageVersion("UCSCXenaTools") < "1.4.4") {
+  warning("UCSCXenaTools <1.4.4, this shiny has a known issue (the download button cannot be used) to work with it. Please upate this package!", 
+          immediate. = TRUE)
+}
 
 message("Starting...")
 
@@ -81,12 +88,16 @@ pancan_identifiers <- readRDS(
     package = "UCSCXenaShiny"
   )
 )
-# pancan_identifiers <- reactiveValues(
-#   choices = readRDS(
-#     system.file(
-#       "extdata", "pancan_identifier_list.rds", package = "UCSCXenaShiny"
-#     )
-#   ), selected = c(""))
+
+themes_list <- list(
+  "cowplot" = cowplot::theme_cowplot(),
+  "Light" = theme_light(),
+  "Minimal" = theme_minimal(),
+  "Classic" = theme_classic(),
+  "Gray" = theme_gray(),
+  "half_open" = cowplot::theme_half_open(),
+  "minimal_grid" = cowplot::theme_minimal_grid()
+)
 
 ## data summary
 Data_hubs_number <- length(unique(xena_table$Hub))
@@ -131,19 +142,25 @@ server_file <- function(x) {
 
 # UI part ----------------------------------------------------------------------
 ui <- tagList(
-  tags$head(tags$title("XenaShiny")),
+  tags$head(
+    tags$title("XenaShiny"),
+    tags$style(
+      HTML(".shiny-notification {
+              height: 100px;
+              width: 800px;
+              position:fixed;
+              top: calc(50% - 50px);;
+              left: calc(50% - 400px);;
+            }")
+    )
+  ),
   shinyjs::useShinyjs(),
   # use_waiter(),
   navbarPage(
+    id = "navbar",
     title = div(
       img(src = "xena_shiny-logo_white.png", height = 49.6, style = "margin:-20px -15px -15px -15px")
     ),
-    #' tags$head(tags$style(HTML("
-    #' @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap');
-    #' * {
-    #'     font-family: 'Open Sans', sans-serif;
-    #'   }
-    #'                           "))),
     # inst/shinyapp/ui
     ui.page_home(),
     ui.page_repository(),

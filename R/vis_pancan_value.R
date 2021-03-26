@@ -47,10 +47,10 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
 
   t1 <- get_pancan_gene_value(identifier = Gene)$expression
   
-  if (all(is.na(t1))) {
-    message("All NAs returned, return NULL instead.")
-    return(NULL)
-  }
+  # if (all(is.na(t1))) {
+  #   message("All NAs returned, return NULL instead.")
+  #   return(NULL)
+  # }
 
   tcga_gtex <- tcga_gtex %>%
     dplyr::group_by(.data$tissue) %>%

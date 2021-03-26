@@ -165,6 +165,9 @@ observe({
   }
 })
 
+
+# Button to show metadata -------------------------------------------------
+
 # Dialog for showing selected data information
 observeEvent(input$show_met, {
   s <- input$xena_table_rows_selected
@@ -184,7 +187,32 @@ observeEvent(input$show_met, {
   }
 })
 
-# Dialog for some operations of request data
+# Show metadata
+observeEvent(input$show_met, {
+  s <- input$xena_table_rows_selected
+  if (length(s)) {
+    m <-
+      purrr::map2(dataset()$XenaHosts[s], dataset()$XenaDatasets[s], function(x, y) {
+        temp <- .p_dataset_metadata(x, y)
+        json_data <- jsonlite::parse_json(temp$text)
+        message("Metadata for ", y, " is queried.")
+        json_data <-
+          purrr::map(json_data, ~ ifelse(length(.) > 0, paste(., collapse = ","), .))
+        json_data <- tibble::enframe(json_data)
+        json_data$value <- unlist(json_data$value)
+        json_data
+      })
+    m <- purrr::reduce(m, dplyr::full_join, by = "name")
+    message("Metadata are loaded!")
+    colnames(m) <- c("Metadata", paste0("dataset", 1:(ncol(m) - 1L)))
+  }
+  output$detail_info <-
+    DT::renderDT(m, options = list(dom = "t", scrollX = TRUE))
+})
+
+
+# Button to request (download) data ---------------------------------------
+
 observeEvent(input$req_data, {
   s <- input$xena_table_rows_selected
   if (length(s)) {
@@ -210,13 +238,6 @@ observeEvent(input$req_data, {
             style = "margin-bottom: 10px;"
           )
         },
-        # actionButton(inputId = "load", label = "Load Data", icon = icon("upload"), style = "margin-bottom: 10px; margin-right: 75px;"),
-        # shinyBS::bsPopover("load",
-        #   title = "Tips",
-        #   content = "Directly load data into R for analyses provided by modules or pipelines",
-        #   placement = "bottom", options = list(container = "body")
-        # ),
-        #
         downloadButton(
           outputId = "total_url",
           label = "Batch download in terminal",
@@ -253,28 +274,74 @@ observeEvent(input$req_data, {
   }
 })
 
-# Show metadata
-observeEvent(input$show_met, {
-  s <- input$xena_table_rows_selected
-  if (length(s)) {
-    m <-
-      purrr::map2(dataset()$XenaHosts[s], dataset()$XenaDatasets[s], function(x, y) {
-        temp <- .p_dataset_metadata(x, y)
-        json_data <- jsonlite::parse_json(temp$text)
-        message("Metadata for ", y, " is queried.")
-        json_data <-
-          purrr::map(json_data, ~ ifelse(length(.) > 0, paste(., collapse = ","), .))
-        json_data <- tibble::enframe(json_data)
-        json_data$value <- unlist(json_data$value)
-        json_data
-      })
-    m <- purrr::reduce(m, dplyr::full_join, by = "name")
-    message("Metadata are loaded!")
-    colnames(m) <- c("Metadata", paste0("dataset", 1:(ncol(m) - 1L)))
-  }
-  output$detail_info <-
-    DT::renderDT(m, options = list(dom = "t", scrollX = TRUE))
-})
+if (xena.runMode == "client") {
+  observeEvent(input$download, {
+    volumes <- c(home = fs::path_home(), root = "/")
+    shinyDirChoose(input, "download", roots = volumes, session = session)
+
+    if (is.integer(input$download)) {
+      message("No directory has been selected.")
+    } else {
+      message("Download datasets from client mode.")
+      withProgress(
+        message = "Download data directly from remote server with R",
+        detail = "This may take a while...",
+        value = 0,
+        {
+          for (i in seq_len(nrow(query_url()))) {
+            UCSCXenaTools::XenaDownload(
+              query_url()[i, ],
+              destdir = parseDirPath(volumes, input$download),
+              download_probeMap = TRUE,
+              trans_slash = TRUE
+            )
+            Sys.sleep(0.05)
+            incProgress(1 / nrow(query_url()))
+          }
+        }
+      )
+    }
+  })
+} else {
+  # Download buttom of request data with zip compress
+  message("Download datasets from server mode.")
+
+  output$download <- downloadHandler(
+    filename = paste(format(Sys.time(), "%Y-%m-%d-%H-%M-%S"), "xena-datasets.zip", sep = "-"),
+    contentType = "application/zip",
+    content = function(file) {
+      withProgress(
+        message = "Query data from remote server",
+        detail = "This may take a while...",
+        value = 0,
+        {
+          xe_download <- dplyr::tibble()
+          for (i in seq_len(nrow(query_url()))) {
+            xe_download <- dplyr::bind_rows(
+              xe_download,
+              UCSCXenaTools::XenaDownload(
+                query_url()[i, ],
+                destdir = path.expand("~/.xenashiny/datasets"),
+                download_probeMap = TRUE,
+                trans_slash = TRUE
+              )
+            )
+            incProgress(1 / (2 * nrow(query_url())))
+            Sys.sleep(0.05)
+          }
+          zip::zipr(
+            zipfile = file.path(tempdir(), "xena-datasets.zip"),
+            files = xe_download$destfiles, recurse = FALSE
+          )
+          incProgress(1 / 4)
+          file.copy(file.path(tempdir(), "xena-datasets.zip"), file)
+          file.remove(file.path(tempdir(), "xena-datasets.zip"))
+          incProgress(1 / 4)
+        }
+      )
+    }
+  )
+}
 
 # Download list of urls
 output$total_url <- downloadHandler(
@@ -298,67 +365,6 @@ output$total_url <- downloadHandler(
     )
   }
 )
-
-
-# Download request data by XenaDownload function
-# observeEvent(input$load, {
-#   progress <- shiny::Progress$new()
-#   on.exit(progress$close())
-#   progress$set(message = "Begin to download files, Please wait...", value = 0)
-#
-#   UCSCXenaTools::XenaDownload(query_url())
-#
-#   progress$set(message = "Over...", value = 1)
-# })
-
-# Prepare request data by XenaPrepare function
-# request_data <- eventReactive(input$load, {
-#   xe_download <- UCSCXenaTools::XenaDownload(query_url(), download_probeMap = TRUE, trans_slash = TRUE)
-#   return(UCSCXenaTools::XenaPrepare(xe_download))
-# })
-
-if (xena.runMode == "client") {
-  observeEvent(input$download, {
-    volumes <- c(home = fs::path_home(), root = "/")
-    shinyDirChoose(input, "download", roots = volumes, session = session)
-
-    if (is.integer(input$download)) {
-      message("No directory has been selected.")
-    } else {
-      message("Download datasets from client mode.")
-      progress <- shiny::Progress$new()
-      on.exit(progress$close())
-      progress$set(message = "Begin to download files, Please wait...", value = 0)
-      UCSCXenaTools::XenaDownload(
-        query_url(),
-        destdir = parseDirPath(volumes, input$download),
-        download_probeMap = TRUE,
-        trans_slash = TRUE
-      )
-      progress$set(message = "Over...", value = 1)
-    }
-  })
-} else {
-  # Download buttom of request data with zip compress
-  message("Download datasets from server mode.")
-  output$download <- downloadHandler(
-    filename = paste(format(Sys.time(), "%Y-%m-%d-%H-%M-%S"), "xena-datasets.zip", sep = "-"),
-    contentType = "application/zip",
-    content = function(file) {
-      xe_download <- UCSCXenaTools::XenaDownload(query_url(),
-        destdir = path.expand("~/.xenashiny/datasets"),
-        trans_slash = TRUE,
-        download_probeMap = TRUE
-      )
-      zip::zipr(
-        zipfile = file.path(tempdir(), "xena-datasets.zip"),
-        files = xe_download$destfiles, recurse = FALSE
-      )
-      file.copy(file.path(tempdir(), "xena-datasets.zip"), file)
-      file.remove(file.path(tempdir(), "xena-datasets.zip"))
-    }
-  )
-}
 
 ## Show download code for reproducible research
 observeEvent(input$show_R_code, {
@@ -388,7 +394,16 @@ observeEvent(input$show_R_code, {
   output$R_download_code <- shiny::renderText(R_code)
 })
 
-# Show alert info when select rows from table
+
+# Button to Analysis ------------------------------------------------------
+
+# ref: https://stackoverflow.com/questions/38706965/is-there-any-way-for-an-actionbutton-to-navigate-to-another-tab-within-a-r-shi
+observeEvent(input$analyze_data, {
+  updateNavbarPage(session = session, inputId = "navbar", selected = "General Analysis")
+})
+
+# Show alert info when select rows from table -----------------------------
+
 observeEvent(input$use_repository, {
   # Show a modal when the button is pressed
   shinyalert(
