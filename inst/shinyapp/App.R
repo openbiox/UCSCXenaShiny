@@ -27,6 +27,7 @@ pacman::p_load(
   magrittr,
   dplyr,
   ggplot2,
+  cowplot,
   ggpubr,
   plotly,
   UCSCXenaTools,
@@ -81,12 +82,16 @@ pancan_identifiers <- readRDS(
     package = "UCSCXenaShiny"
   )
 )
-# pancan_identifiers <- reactiveValues(
-#   choices = readRDS(
-#     system.file(
-#       "extdata", "pancan_identifier_list.rds", package = "UCSCXenaShiny"
-#     )
-#   ), selected = c(""))
+
+themes_list <- list(
+  "cowplot" = cowplot::theme_cowplot(),
+  "Light" = theme_light(),
+  "Minimal" = theme_minimal(),
+  "Classic" = theme_classic(),
+  "Gray" = theme_gray(),
+  "half_open"= cowplot::theme_half_open(),
+  "minimal_grid" = cowplot::theme_minimal_grid()
+)
 
 ## data summary
 Data_hubs_number <- length(unique(xena_table$Hub))

@@ -105,8 +105,6 @@ server.modules_cancer_dist <- function(input, output, session) {
         print(p)
         dev.off()
       }
-
-      # ggplot2::ggsave(filename = file, plot = print(p), device = input$device, width = input$width, height = input$height, dpi = 600)
     }
   )
 }
