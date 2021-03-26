@@ -70,16 +70,18 @@ ui.page_repository <- function() {
         # use_waiter(),
         hr(),
         fluidRow(
-          column(3,
+          column(
+            3,
             actionBttn(
               inputId = "show_met",
-              label = "Show Metadata", 
+              label = "Show Metadata",
               style = "gradient",
-              #color = "danger",
+              # color = "danger",
               icon = icon("database")
             )
           ),
-          column(3,
+          column(
+            3,
             actionBttn(
               inputId = "req_data",
               label = "Request Data",
@@ -87,13 +89,14 @@ ui.page_repository <- function() {
               icon = icon("file")
             )
           ),
-          column(3,
-                 actionBttn(
-                   inputId = "analyze_data",
-                   label = "Analyze Data",
-                   style = "gradient",
-                   icon = icon("chart-bar")
-                 )
+          column(
+            3,
+            actionBttn(
+              inputId = "analyze_data",
+              label = "Analyze Data",
+              style = "gradient",
+              icon = icon("chart-bar")
+            )
           )
         ),
         hr(),

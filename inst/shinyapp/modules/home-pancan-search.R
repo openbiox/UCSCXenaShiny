@@ -79,7 +79,7 @@ server.home_search_box <- function(input, output, session) {
           )
         )
       )
-      
+
       output$gene_pancan_dist <- renderPlot({
         p <- vis_toil_TvsN(
           Gene = input$Pancan_search,
@@ -87,7 +87,7 @@ server.home_search_box <- function(input, output, session) {
           Show.P.value = input$pdist_show_p_value,
           Show.P.label = input$pdist_show_p_label
         )
-        
+
         p + cowplot::theme_cowplot() + ggpubr::rotate_x_text(45)
       })
     }

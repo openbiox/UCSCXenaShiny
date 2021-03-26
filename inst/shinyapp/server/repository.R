@@ -238,13 +238,6 @@ observeEvent(input$req_data, {
             style = "margin-bottom: 10px;"
           )
         },
-        # actionButton(inputId = "load", label = "Load Data", icon = icon("upload"), style = "margin-bottom: 10px; margin-right: 75px;"),
-        # shinyBS::bsPopover("load",
-        #   title = "Tips",
-        #   content = "Directly load data into R for analyses provided by modules or pipelines",
-        #   placement = "bottom", options = list(container = "body")
-        # ),
-        #
         downloadButton(
           outputId = "total_url",
           label = "Batch download in terminal",
@@ -268,7 +261,7 @@ observeEvent(input$req_data, {
         verbatimTextOutput("R_download_code")
       )
     )
-    
+
     output$table_query <-
       DT::renderDT(query_url(), options = list(dom = "t", scrollX = TRUE))
   } else {
@@ -281,23 +274,6 @@ observeEvent(input$req_data, {
   }
 })
 
-# Download request data by XenaDownload function
-# observeEvent(input$load, {
-#   progress <- shiny::Progress$new()
-#   on.exit(progress$close())
-#   progress$set(message = "Begin to download files, Please wait...", value = 0)
-#
-#   UCSCXenaTools::XenaDownload(query_url())
-#
-#   progress$set(message = "Over...", value = 1)
-# })
-
-# Prepare request data by XenaPrepare function
-# request_data <- eventReactive(input$load, {
-#   xe_download <- UCSCXenaTools::XenaDownload(query_url(), download_probeMap = TRUE, trans_slash = TRUE)
-#   return(UCSCXenaTools::XenaPrepare(xe_download))
-# })
-
 if (xena.runMode == "client") {
   observeEvent(input$download, {
     volumes <- c(home = fs::path_home(), root = "/")
@@ -307,36 +283,62 @@ if (xena.runMode == "client") {
       message("No directory has been selected.")
     } else {
       message("Download datasets from client mode.")
-      progress <- shiny::Progress$new()
-      on.exit(progress$close())
-      progress$set(message = "Begin to download files, Please wait...", value = 0)
-      UCSCXenaTools::XenaDownload(
-        query_url(),
-        destdir = parseDirPath(volumes, input$download),
-        download_probeMap = TRUE,
-        trans_slash = TRUE
+      withProgress(
+        message = "Download data directly from remote server with R",
+        detail = "This may take a while...",
+        value = 0,
+        {
+          for (i in seq_len(nrow(query_url()))) {
+            UCSCXenaTools::XenaDownload(
+              query_url()[i, ],
+              destdir = parseDirPath(volumes, input$download),
+              download_probeMap = TRUE,
+              trans_slash = TRUE
+            )
+            Sys.sleep(0.05)
+            incProgress(1 / nrow(query_url()))
+          }
+        }
       )
-      progress$set(message = "Over...", value = 1)
     }
   })
 } else {
   # Download buttom of request data with zip compress
   message("Download datasets from server mode.")
+
   output$download <- downloadHandler(
     filename = paste(format(Sys.time(), "%Y-%m-%d-%H-%M-%S"), "xena-datasets.zip", sep = "-"),
     contentType = "application/zip",
     content = function(file) {
-      xe_download <- UCSCXenaTools::XenaDownload(query_url(),
-        destdir = path.expand("~/.xenashiny/datasets"),
-        trans_slash = TRUE,
-        download_probeMap = TRUE
+      withProgress(
+        message = "Query data from remote server",
+        detail = "This may take a while...",
+        value = 0,
+        {
+          xe_download <- dplyr::tibble()
+          for (i in seq_len(nrow(query_url()))) {
+            xe_download <- dplyr::bind_rows(
+              xe_download,
+              UCSCXenaTools::XenaDownload(
+                query_url()[i, ],
+                destdir = path.expand("~/.xenashiny/datasets"),
+                download_probeMap = TRUE,
+                trans_slash = TRUE
+              )
+            )
+            incProgress(1 / (2 * nrow(query_url())))
+            Sys.sleep(0.05)
+          }
+          zip::zipr(
+            zipfile = file.path(tempdir(), "xena-datasets.zip"),
+            files = xe_download$destfiles, recurse = FALSE
+          )
+          incProgress(1 / 4)
+          file.copy(file.path(tempdir(), "xena-datasets.zip"), file)
+          file.remove(file.path(tempdir(), "xena-datasets.zip"))
+          incProgress(1 / 4)
+        }
       )
-      zip::zipr(
-        zipfile = file.path(tempdir(), "xena-datasets.zip"),
-        files = xe_download$destfiles, recurse = FALSE
-      )
-      file.copy(file.path(tempdir(), "xena-datasets.zip"), file)
-      file.remove(file.path(tempdir(), "xena-datasets.zip"))
     }
   )
 }

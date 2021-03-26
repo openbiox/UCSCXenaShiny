@@ -46,8 +46,14 @@ pacman::p_load(
   DT,
   fs,
   RColorBrewer,
-  gganatogram
+  gganatogram,
+  zip
 )
+
+if (packageVersion("UCSCXenaTools") < "1.4.4") {
+  warning("UCSCXenaTools <1.4.4, this shiny has a known issue (the download button cannot be used) to work with it. Please upate this package!", 
+          immediate. = TRUE)
+}
 
 message("Starting...")
 
@@ -89,7 +95,7 @@ themes_list <- list(
   "Minimal" = theme_minimal(),
   "Classic" = theme_classic(),
   "Gray" = theme_gray(),
-  "half_open"= cowplot::theme_half_open(),
+  "half_open" = cowplot::theme_half_open(),
   "minimal_grid" = cowplot::theme_minimal_grid()
 )
 
@@ -136,7 +142,18 @@ server_file <- function(x) {
 
 # UI part ----------------------------------------------------------------------
 ui <- tagList(
-  tags$head(tags$title("XenaShiny")),
+  tags$head(
+    tags$title("XenaShiny"),
+    tags$style(
+      HTML(".shiny-notification {
+              height: 100px;
+              width: 800px;
+              position:fixed;
+              top: calc(50% - 50px);;
+              left: calc(50% - 400px);;
+            }")
+    )
+  ),
   shinyjs::useShinyjs(),
   # use_waiter(),
   navbarPage(
