@@ -11,5 +11,5 @@ A \link{data.frame}
 Toil Hub: merged TCGA GTEX selected phenotypes
 }
 \examples{
-data("tcga_gtex_sampleinfo")
+data("tcga_gtex")
 }

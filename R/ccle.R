@@ -119,11 +119,11 @@ get_ccle_mutation_status <- function(identifier) {
     stop("You need to update 'UCSCXenaTools' (>=1.3.2).", call. = FALSE)
   }
 
-  #host <- "publicHub"
+  # host <- "publicHub"
   host <- "https://ucscpublic.xenahubs.net"
   dataset <- "ccle/CCLE_DepMap_18Q2_maf_20180502"
   report_dataset_info(dataset)
-  
+
   res <- check_exist_data(identifier, dataset, host)
   if (res$ok) {
     data <- res$data
@@ -134,12 +134,12 @@ get_ccle_mutation_status <- function(identifier) {
       dplyr::tibble(
         sampleID = query_list$samples
       ),
-      data, 
+      data,
       by = "sampleID"
     )
     save_data(data, identifier, dataset, host)
   }
-  
+
   report_dataset_info(dataset)
   data
 }

@@ -131,9 +131,10 @@ get_pancan_gene_value <- function(identifier) {
 #' @export
 get_pancan_transcript_value <- function(identifier) {
   # ENST00000000233
+  id <- identifier
   host <- "toilHub"
   dataset <- "TcgaTargetGtex_rsem_isoform_tpm"
-  
+
   res_p <- check_exist_data("mp", dataset, host)
   if (res_p$ok) {
     ids <- res_p$data
@@ -142,9 +143,10 @@ get_pancan_transcript_value <- function(identifier) {
     names(ids) <- sub("\\.[0-9]+", "", ids)
     save_data(ids, "mp", dataset, host)
   }
-  
+
   identifier <- as.character(ids[identifier])
-  
+  if (is.na(identifier)) identifier <- id # roll back
+
   res <- check_exist_data(identifier, dataset, host)
   if (res$ok) {
     expression <- res$data
@@ -274,7 +276,7 @@ get_pancan_cn_value <- function(identifier) {
 #' @export
 get_pancan_methylation_value <- function(identifier, type = c("450K", "27K")) {
   type <- match.arg(type)
-  
+
   if (type == "450K") {
     host <- "pancanAtlasHub"
     dataset <- "jhu-usc.edu_PANCAN_HumanMethylation450.betaValue_whitelisted.tsv.synapse_download_5096262.xena"
@@ -282,7 +284,7 @@ get_pancan_methylation_value <- function(identifier, type = c("450K", "27K")) {
     host <- "tcgaHub"
     dataset <- "TCGA.PANCAN.sampleMap/HumanMethylation27"
   }
-  
+
   res <- check_exist_data(identifier, dataset, host)
   if (res$ok) {
     data <- res$data
@@ -290,10 +292,29 @@ get_pancan_methylation_value <- function(identifier, type = c("450K", "27K")) {
     data <- get_pancan_value(identifier, dataset = dataset, host = host)
     save_data(data, identifier, dataset, host)
   }
-  
+
   unit <- "beta value"
   report_dataset_info(dataset)
   res <- list(data = data, unit = unit)
+  res
+}
+
+#' @describeIn get_pancan_value Fetch miRNA expression value from pan-cancer dataset
+#' @export
+get_pancan_miRNA_value <- function(identifier) {
+  host <- "pancanAtlasHub"
+  dataset <- "pancanMiRs_EBadjOnProtocolPlatformWithoutRepsWithUnCorrectMiRs_08_04_16.xena"
+  res <- check_exist_data(identifier, dataset, host)
+  if (res$ok) {
+    expression <- res$data
+  } else {
+    expression <- get_pancan_value(identifier, dataset = dataset, host = host)
+    save_data(data, identifier, dataset, host)
+  }
+
+  unit <- "log2(norm_value+1)"
+  report_dataset_info(dataset)
+  res <- list(expression = expression, unit = unit)
   res
 }
 
@@ -308,6 +329,17 @@ report_dataset_info <- function(dataset) {
 
 get_run_mode <- function() {
   getOption("xena.runMode", default = "client")
+}
+
+# For internal debugging use
+rm_pkg_cache <- function() {
+  if (get_run_mode() == "client") {
+    unlink(path.expand(file.path(
+      tempdir(), "UCSCXenaShiny"
+    )))
+  } else {
+    unlink(path.expand("~/.xenashiny"))
+  }
 }
 
 check_file <- function(id, dataset, host) {

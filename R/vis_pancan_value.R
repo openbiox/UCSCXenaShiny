@@ -32,6 +32,8 @@ vis_toil_gene <- function(data, x = "primary_site",
 #' @param Show.P.label `TRUE` or `FALSE` present p value with number or label `*`, `**`, `***` and `****`
 #' @param values the color to fill tumor or normal
 #' @param TCGA.only include samples only from TCGA dataset
+#' @param draw_quantiles draw quantiles for violinplot
+#' @param trim whether trim the violin
 #' @return a `ggplot` object
 #' @examples
 #' \donttest{
@@ -40,13 +42,20 @@ vis_toil_gene <- function(data, x = "primary_site",
 #' }
 #' @export
 #'
-vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE) {
-  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
+vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, draw_quantiles = c(0.25, 0.5, 0.75), trim = TRUE) {
+  tcga_gtex <- load_data("tcga_gtex")
 
   t1 <- get_pancan_gene_value(identifier = Gene)$expression
-
-  tcga_gtex <- tcga_gtex %>% dplyr::group_by(.data$tissue) %>% dplyr::distinct(.data$sample, .keep_all = TRUE)
   
+  # if (all(is.na(t1))) {
+  #   message("All NAs returned, return NULL instead.")
+  #   return(NULL)
+  # }
+
+  tcga_gtex <- tcga_gtex %>%
+    dplyr::group_by(.data$tissue) %>%
+    dplyr::distinct(.data$sample, .keep_all = TRUE)
+
   t2 <- t1 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
@@ -110,13 +119,12 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
       inherit.aes = FALSE
       )
     }
-    print(p)
   }
   if (Mode == "Violinplot") {
     p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "tissue", y = "tpm", fill = "type2")) +
       geom_split_violin(
-        draw_quantiles = c(0.25, 0.5, 0.75),
-        trim = TRUE,
+        draw_quantiles = draw_quantiles,
+        trim = trim,
         linetype = "solid",
         color = "black",
         size = 0.2,
@@ -137,8 +145,8 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
     p + geom_split_violin(
       data = tcga_gtex_MESO,
       mapping = aes_string(x = "tissue", y = "tpm", fill = "type2"),
-      draw_quantiles = c(0.25, 0.5, 0.75),
-      trim = TRUE,
+      draw_quantiles = draw_quantiles,
+      trim = trim,
       linetype = "solid",
       color = "black",
       size = 0.2,
@@ -148,15 +156,15 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
       geom_split_violin(
         data = tcga_gtex_UVM,
         mapping = ggplot2::aes_string(x = "tissue", y = "tpm", fill = "type2"),
-        draw_quantiles = c(0.25, 0.5, 0.75),
-        trim = TRUE,
+        draw_quantiles = draw_quantiles,
+        trim = trim,
         linetype = "solid",
         color = "black",
         size = 0.2,
         na.rm = TRUE,
         position = "identity"
-      ) +
-      ggplot2::scale_x_discrete(limits = levels(tcga_gtex$tissue))
+      ) #+
+    # ggplot2::scale_x_discrete(limits = levels(tcga_gtex$tissue))
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       p <- p + ggplot2::geom_text(ggplot2::aes(
         x = .data$tissue,
@@ -177,7 +185,6 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
       inherit.aes = FALSE
       )
     }
-    print(p)
   }
   return(p)
 }
@@ -195,19 +202,19 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
 #' @export
 vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, values = c("grey", "#E31A1C", "#377DB8")) {
   ## 写在 R 内的数据集需要更严格的引用方式
-  data("toil_surv", package = "UCSCXenaShiny", envir = environment())
-  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
+  tcga_surv <- load_data("tcga_surv")
+  tcga_gtex <- load_data("tcga_gtex")
 
   t1 <- get_pancan_gene_value(Gene)$expression
-  
-  #we filter out normal tissue
-  tcga_gtex = tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
-  
+
+  # we filter out normal tissue
+  tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
+
   message(paste0("Get gene expression for ", Gene))
   s <- data.frame(sample = names(t1), values = t1)
   ## we use median cutoff here
   ss <- s %>%
-    dplyr::inner_join(toil_surv, by = "sample") %>%
+    dplyr::inner_join(tcga_surv, by = "sample") %>%
     dplyr::inner_join(tcga_gtex[, c("tissue", "sample")], by = "sample")
   sss <- split(ss, ss$tissue)
   tissues <- names(sss)
@@ -229,41 +236,14 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, valu
         dplyr::mutate(group = factor(.data$group, levels = c("low", "high")))
     }
 
-    if (measure == "OS") {
-      unicox_res_genes <- ezcox::ezcox(sss_can,
-        covariates = "values",
-        time = "OS.time",
-        status = "OS",
-        verbose = FALSE
-      )
-    }
 
-    if (measure == "PFI") {
-      unicox_res_genes <- ezcox::ezcox(sss_can,
-        covariates = "values",
-        time = "PFI.time",
-        status = "PFI",
-        verbose = FALSE
-      )
-    }
-
-    if (measure == "DSS") {
-      unicox_res_genes <- ezcox::ezcox(sss_can,
-        covariates = "values",
-        time = "DSS.time",
-        status = "DSS",
-        verbose = FALSE
-      )
-    }
-
-    if (measure == "DFI") {
-      unicox_res_genes <- ezcox::ezcox(sss_can,
-        covariates = "values",
-        time = "DFI.time",
-        status = "DFI",
-        verbose = FALSE
-      )
-    }
+    unicox_res_genes <- ezcox::ezcox(
+      sss_can,
+      covariates = "values",
+      time = paste0(measure, ".time"),
+      status = measure,
+      verbose = FALSE
+    )
 
     unicox_res_genes$cancer <- cancer
     unicox_res_genes$measure <- measure
@@ -311,13 +291,16 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, valu
 vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male"), option = "D") {
   Gender <- match.arg(Gender)
 
-  if (!requireNamespace("gganatogram")) {
+  # Loading while pass checking
+  if (eval(parse(text = "!requireNamespace('gganatogram')"))) {
     stop("Please install 'gganatogram' package firstly!")
   }
+  hgMale_key <- "gganatogram" %:::% "hgMale_key"
+  hgFemale_key <- "gganatogram" %:::% "hgFemale_key"
+  gganatogram <- "gganatogram" %:::% "gganatogram"
 
-  # data("t1", package = "UCSCXenaShiny", envir = environment())
-  data("TCGA.organ", package = "UCSCXenaShiny", envir = environment())
-  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
+  TCGA.organ <- load_data("TCGA.organ")
+  tcga_gtex <- load_data("tcga_gtex")
   tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
 
   t1 <- get_pancan_gene_value(identifier = Gene)$expression
@@ -333,7 +316,7 @@ vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male"), opti
     mutate(group = paste(.data$tissue, .data$type2, sep = "_"))
   # Male
   Male_input <- t2 %>%
-    dplyr::full_join(gganatogram::hgMale_key, by = "organ") %>%
+    dplyr::full_join(hgMale_key, by = "organ") %>%
     dplyr::filter(.data$organ != "") %>%
     dplyr::group_by(.data$group) %>%
     dplyr::summarise(
@@ -350,7 +333,7 @@ vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male"), opti
     dplyr::mutate(value = .data$tpmMedian)
   # Female
   Female_input <- t2 %>%
-    dplyr::full_join(gganatogram::hgFemale_key, by = "organ") %>%
+    dplyr::full_join(hgFemale_key, by = "organ") %>%
     dplyr::filter(.data$organ != "") %>%
     dplyr::group_by(.data$group) %>%
     dplyr::summarise(
@@ -366,7 +349,7 @@ vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male"), opti
     dplyr::filter(complete.cases(.)) %>%
     dplyr::mutate(value = .data$tpmMedian)
   if (Gender == "Male") {
-    p1 <- gganatogram::gganatogram(
+    p1 <- gganatogram(
       data = Male_input,
       fillOutline = "white",
       organism = "human",
@@ -387,7 +370,7 @@ vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male"), opti
   }
 
   if (Gender == "Female") {
-    p2 <- gganatogram::gganatogram(
+    p2 <- gganatogram(
       data = Female_input,
       fillOutline = "white",
       organism = "human",
@@ -418,13 +401,13 @@ vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male"), opti
 #' }
 #' @export
 vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_sig_type = "Cibersort") {
-  data("immune_sig", package = "UCSCXenaShiny", envir = environment())
-  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
-  
-  #we filter out normal tissue
-  tcga_gtex = tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
-  
-  immune_sig <- immune_sig %>%
+  tcga_pan_immune_signature <- load_data("tcga_pan_immune_signature")
+  tcga_gtex <- load_data("tcga_gtex")
+
+  # we filter out normal tissue
+  tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
+
+  tcga_pan_immune_signature <- tcga_pan_immune_signature %>%
     tidyr::pivot_longer(3:ncol(.), names_to = "sample", values_to = "score") %>%
     dplyr::mutate(sample = stringr::str_sub(.data$sample, 1, 15))
 
@@ -434,7 +417,7 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_s
   s <- data.frame(sample = names(t1), values = t1)
 
   ss <- s %>%
-    dplyr::inner_join(immune_sig, by = "sample") %>%
+    dplyr::inner_join(tcga_pan_immune_signature, by = "sample") %>%
     dplyr::inner_join(tcga_gtex[, c("tissue", "sample")], by = "sample")
 
   sss <- split(ss, ss$tissue)
@@ -484,7 +467,6 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_s
     ) +
     ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "*** p < 0.001", "\n\n", "Correlation")) +
     ggtitle(paste0("The correlation between ", Gene, " with immune signatures"))
-  print(p)
   return(p)
 }
 
@@ -498,12 +480,12 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_s
 #' }
 #' @export
 vis_gene_tmb_cor <- function(Gene = "TP53", Cor_method = "spearman") {
-  data("tmb_data", package = "UCSCXenaShiny", envir = environment())
-  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
+  tcga_tmb <- load_data("tcga_tmb")
+  tcga_gtex <- load_data("tcga_gtex")
   t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
   s <- data.frame(sample = names(t1), values = t1)
   ss <- s %>%
-    dplyr::inner_join(tmb_data, by = c("sample" = "Tumor_Sample_ID")) %>%
+    dplyr::inner_join(tcga_tmb, by = c("sample" = "Tumor_Sample_ID")) %>%
     dplyr::inner_join(tcga_gtex[, c("tissue", "sample")], by = "sample")
   sss <- split(ss, ss$tissue)
   tissues <- names(sss)
@@ -541,7 +523,6 @@ vis_gene_tmb_cor <- function(Gene = "TP53", Cor_method = "spearman") {
     ) + # 调整y轴文字
     # 调整legen
     ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "Correlation"))
-  print(p)
   return(p)
 }
 
@@ -554,12 +535,13 @@ vis_gene_tmb_cor <- function(Gene = "TP53", Cor_method = "spearman") {
 #' }
 #' @export
 vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman") {
-  data("stemness_data_RNA", package = "UCSCXenaShiny", envir = environment())
-  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
+  tcga_stemness <- load_data("tcga_stemness")
+  tcga_gtex <- load_data("tcga_gtex")
+
   t1 <- get_pancan_value(Gene, dataset = "TcgaTargetGtex_rsem_isoform_tpm", host = "toilHub")
   s <- data.frame(sample = names(t1), values = t1)
   ss <- s %>%
-    dplyr::inner_join(stemness_data_RNA, by = c("sample")) %>%
+    dplyr::inner_join(tcga_stemness, by = c("sample")) %>%
     dplyr::inner_join(tcga_gtex[, c("tissue", "sample")], by = "sample")
   sss <- split(ss, ss$tissue)
   tissues <- names(sss)
@@ -597,7 +579,6 @@ vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman") {
     ) + # 调整y轴文字
     # 调整legen
     ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "Correlation"))
-  print(p)
   return(p)
 }
 
@@ -616,14 +597,16 @@ vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman") {
 #' @export
 #'
 vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, Cancer = "ACC") {
-  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
-  
+  tcga_gtex <- load_data("tcga_gtex")
+
   t1 <- get_pancan_gene_value(identifier = Gene)$expression
-  
-  tcga_gtex <- tcga_gtex %>% dplyr::group_by(.data$tissue) %>% dplyr::distinct(.data$sample, .keep_all = TRUE)
-  
-  #tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
-  
+
+  tcga_gtex <- tcga_gtex %>%
+    dplyr::group_by(.data$tissue) %>%
+    dplyr::distinct(.data$sample, .keep_all = TRUE)
+
+  # tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
+
   t2 <- t1 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
@@ -640,7 +623,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.valu
   if (TCGA.only == TRUE) {
     tcga_gtex_withNormal <- tcga_gtex_withNormal %>% dplyr::filter(.data$dataset == "TCGA")
   }
-  tcga_gtex_withNormal = tcga_gtex_withNormal %>% dplyr::filter(.data$tissue == Cancer)
+  tcga_gtex_withNormal <- tcga_gtex_withNormal %>% dplyr::filter(.data$tissue == Cancer)
   if (Show.P.value == FALSE) {
     Show.P.label <- FALSE
   }
@@ -651,12 +634,12 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.valu
     pv <- pv %>% dplyr::select(c("p", "p.signif", "p.adj"))
     message("Counting P value finished")
   }
-  data = tcga_gtex_withNormal
+  data <- tcga_gtex_withNormal
   if (Mode == "Boxplot") {
     p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "type2", y = "tpm", fill = "type2")) +
       ggplot2::geom_boxplot() +
-      ggplot2::geom_dotplot(binaxis='y', stackdir='center',position = "identity") +
-      #ggplot2::geom_jitter(aes_string(color = "type2"),shape=16, position=position_jitter(0.2), size = 2) +
+      ggplot2::geom_dotplot(binaxis = "y", stackdir = "center", position = "identity") +
+      # ggplot2::geom_jitter(aes_string(color = "type2"),shape=16, position=position_jitter(0.2), size = 2) +
       ggplot2::xlab(NULL) +
       ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
       ggplot2::theme_set(theme_set(theme_classic(base_size = 20))) +
@@ -666,7 +649,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.valu
         legend.background = element_blank(),
         legend.position = "none", legend.justification = c(0, 0)
       ) +
-      ggplot2::scale_fill_manual(values = values)+
+      ggplot2::scale_fill_manual(values = values) +
       ggplot2::scale_color_manual(values = values)
     # p <- p + ggplot2::geom_boxplot(data = tcga_gtex_MESO) +
     #   ggplot2::geom_boxplot(data = tcga_gtex_UVM)
@@ -690,12 +673,11 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.valu
       inherit.aes = FALSE
       )
     }
-    print(p)
   }
   if (Mode == "Violinplot") {
     p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "type2", y = "tpm", fill = "type2")) +
-      ggplot2::geom_violin(trim=FALSE) +
-      ggplot2::geom_boxplot(width=0.1, fill="white") +
+      ggplot2::geom_violin(trim = FALSE) +
+      ggplot2::geom_boxplot(width = 0.1, fill = "white") +
       ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
       ggplot2::xlab("") +
       # ggplot2::ggtitle(.data$tissue) +
@@ -727,24 +709,26 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.valu
       inherit.aes = FALSE
       )
     }
-    print(p)
   }
   return(p)
 }
 
 #' Visualize Gene-gene correlation in TCGA dataset
-#' 
+#'
 #' @import ggplot2 dplyr ppcor
 #' @param Gene1 the first gene
 #' @param Gene2 the second gene
 #' @param purity_adj whether performing partial correlation adjusted by purity
 #' @param split whether split by TCGA tumor tissue
 #' @export
-vis_gene_cor <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, split = FALSE){
-  data("tcga_gtex_sampleinfo", package = "UCSCXenaShiny", envir = environment())
-  data("purity_data", package = "UCSCXenaShiny", envir = environment())
-  purity_data$CPE = as.numeric(purity_data$CPE)
-  tcga_gtex <- tcga_gtex %>% dplyr::group_by(.data$tissue) %>% dplyr::distinct(.data$sample, .keep_all = TRUE)
+vis_gene_cor <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, split = FALSE) {
+  tcga_gtex <- load_data("tcga_gtex")
+  tcga_purity <- load_data("tcga_purity")
+
+  tcga_purity$CPE <- as.numeric(tcga_purity$CPE)
+  tcga_gtex <- tcga_gtex %>%
+    dplyr::group_by(.data$tissue) %>%
+    dplyr::distinct(.data$sample, .keep_all = TRUE)
   t1 <- get_pancan_gene_value(identifier = Gene1)$expression
   t2 <- t1 %>%
     as.data.frame() %>%
@@ -757,58 +741,39 @@ vis_gene_cor <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, spl
     dplyr::rename("tpm" = ".") %>%
     tibble::rownames_to_column(var = "sample") %>%
     dplyr::inner_join(tcga_gtex, by = "sample")
-  df <- data.frame(sample = t2$sample,tissue = t2$tissue, type2 = t2$type2, gene1 = t2$tpm, gene2 = t4$tpm,stringsAsFactors = F)
-  df %>% dplyr::left_join(purity_data,by = "sample") %>% filter(type2 == "tumor") -> df
-  #plot refer to https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
-  if(split == FALSE){
-    if(purity_adj == TRUE){
-      df %>% filter(!is.na(CPE)) -> df
-      partial_cor_res <- ezcor_partial_cor(data = df, var1 = "gene1", var2 = "gene2", var3 = "CPE",sig_label = TRUE)
+  df <- data.frame(sample = t2$sample, tissue = t2$tissue, type2 = t2$type2, gene1 = t2$tpm, gene2 = t4$tpm, stringsAsFactors = F)
+  df %>%
+    dplyr::left_join(tcga_purity, by = "sample") %>%
+    filter(.data$type2 == "tumor") -> df
+  # plot refer to https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
+  if (split == FALSE) {
+    if (purity_adj == TRUE) {
+      df %>% filter(!is.na(.data$CPE)) -> df
+      partial_cor_res <- ezcor_partial_cor(data = df, var1 = "gene1", var2 = "gene2", var3 = "CPE", sig_label = TRUE)
       cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2")
-      df$pc <- predict(prcomp(~gene1+gene1, df))[,1]
-      x= quantile(df$gene1)[1]; y = quantile(df$gene2)[5]
-      p <- ggplot2::ggplot(df, aes(gene1, gene2,color = pc)) +
+      df$pc <- predict(prcomp(~ gene1 + gene1, df))[, 1]
+      x <- quantile(df$gene1)[1]
+      y <- quantile(df$gene2)[5]
+      p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
         ggplot2::geom_point(shape = 16, size = 1.5, show.legend = FALSE) +
         ggplot2::theme_minimal() +
         ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
         ggplot2::labs(x = Gene1, y = Gene2) +
         ggplot2::ggtitle("TCGA PANCAN dataset") +
-        ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor,2), " ",cor_res$pstar,"\n","Cor_adj: ", round(partial_cor_res$cor_partial,2)," ",partial_cor_res$pstar),x = x + 1, y = y, size = 4, colour = "black")
-    } else{
+        ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar, "\n", "Cor_adj: ", round(partial_cor_res$cor_partial, 2), " ", partial_cor_res$pstar), x = x + 1, y = y, size = 4, colour = "black")
+    } else {
       cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2")
-      df$pc <- predict(prcomp(~gene1+gene1, df))[,1]
-      x= quantile(df$gene1)[1]; y = quantile(df$gene2)[5]
-      p <- ggplot2::ggplot(df, aes(gene1, gene2,color = pc)) +
+      df$pc <- predict(prcomp(~ gene1 + gene1, df))[, 1]
+      x <- quantile(df$gene1)[1]
+      y <- quantile(df$gene2)[5]
+      p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
         ggplot2::geom_point(shape = 16, size = 1.5, show.legend = FALSE) +
         ggplot2::theme_minimal() +
         ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
         ggplot2::labs(x = Gene1, y = Gene2) +
         ggplot2::ggtitle("TCGA PANCAN dataset") +
-        ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor,2), " ",cor_res$pstar),x = x + 1, y = y, size = 4, colour = "black")
+        ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar), x = x + 1, y = y, size = 4, colour = "black")
     }
-    
   }
   return(p)
 }
-
-
-
-
-
-
-
-
-# Global variables --------------------------------------------------------
-
-utils::globalVariables(
-  c(
-    ".",
-    "tcga_gtex",
-    "stemness_data_RNA",
-    "tmb_data",
-    "toil_surv",
-    "TCGA.organ",
-    "Type",
-    "group"
-  )
-)

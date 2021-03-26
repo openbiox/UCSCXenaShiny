@@ -17,6 +17,10 @@ Please cite the following article when using `UCSCXenaShiny`:
 
 Wang, S.; Xiong, Y.; Gu, K.; Zhao, L.; Li, Y.; Zhao, F.; Li, X.; Liu, X. UCSCXenaShiny: An R Package for Exploring and Analyzing UCSC Xena Public Datasets in Web Browser. Preprints 2020, 2020070179 (doi: 10.20944/preprints202007.0179.v1).
 
+## :cloud: Use on cloud
+
+If you don't want to install R and packages locally, or you have no programming experience, try using this tool on Hiplot platform: <https://shiny.hiplot.com.cn/ucsc-xena-shiny/>.
+
 ## :arrow\_double\_down: Installation
 
 You can install stable release of **UCSCXenaShiny** from CRAN with:
@@ -38,8 +42,6 @@ Or Gitee (for Chinese users):
 remotes::install_git("https://gitee.com/XenaShiny/UCSCXenaShiny")
 ```
 
-#### If you don't want to install R and packages, Shiny App is also available in : https://hiplot.com.cn/  after registration
-
 ## :beginner: Usage
 
 First load package:
@@ -53,6 +55,8 @@ Then run the following command in console:
 ``` r
 app_run()
 ```
+
+For advanced users, useful functions for obtaining and analyzing data are described in vignette.
 
 ## :writing\_hand: Author
 

@@ -11,7 +11,9 @@ vis_toil_TvsN(
   Show.P.label = TRUE,
   Method = "wilcox.test",
   values = c("#DF2020", "#DDDF21"),
-  TCGA.only = FALSE
+  TCGA.only = FALSE,
+  draw_quantiles = c(0.25, 0.5, 0.75),
+  trim = TRUE
 )
 }
 \arguments{
@@ -28,6 +30,10 @@ vis_toil_TvsN(
 \item{values}{the color to fill tumor or normal}
 
 \item{TCGA.only}{include samples only from TCGA dataset}
+
+\item{draw_quantiles}{draw quantiles for violinplot}
+
+\item{trim}{whether trim the violin}
 }
 \value{
 a \code{ggplot} object

@@ -42,7 +42,7 @@ a \code{data.frame}
 Run partial correlation
 }
 \seealso{
-\link{ppcor::pcor.test()} which this function wraps.
+\code{\link[ppcor:pcor.test]{ppcor::pcor.test()}} which this function wraps.
 }
 \author{
 Yi Xiong
