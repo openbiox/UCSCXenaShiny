@@ -458,7 +458,7 @@ sur_plot <- function(data, cut_off_mode, cutpoint) {
       variables = c("value"),
       minprop = 0.25, progressbar = F
     ) %>%
-      surv_categorize(labels = c("High", "Low")) %>%
+      surv_categorize(labels = c("Low", "High")) %>%
       data.frame() %>%
       dplyr::rename(group = value)
   } else {
