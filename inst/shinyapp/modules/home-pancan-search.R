@@ -10,6 +10,7 @@ ui.home_search_box <- function(id) {
         inputId = ns("Pancan_search"),
         label = NULL,
         choices = NULL,
+        width = "100%",
         options = list(
           create = TRUE,
           maxOptions = 5,
@@ -19,12 +20,13 @@ ui.home_search_box <- function(id) {
       )
     ),
     column(
-      2,
+      4,
       actionBttn(
         inputId = ns("search"),
         label = "Go!",
         color = "primary",
-        style = "bordered"
+        style = "bordered",
+        size = "sm"
       )
     )
   )

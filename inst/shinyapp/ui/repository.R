@@ -13,7 +13,6 @@ ui.page_repository <- function() {
           color = "primary",
           size = "sm"
         ),
-        hr(),
         shinyWidgets::prettyCheckboxGroup("hubs_text", "Active Data Hub:",
           choiceNames = c(
             "UCSC Public", "TCGA",
@@ -70,23 +69,25 @@ ui.page_repository <- function() {
         # use_waiter(),
         hr(),
         fluidRow(
-          column(
-            3,
+          column(offset = 1,
+            4,
             actionBttn(
               inputId = "show_met",
               label = "Show Metadata",
               style = "gradient",
               # color = "danger",
-              icon = icon("database")
+              icon = icon("database"),
+              size = "sm"
             )
           ),
           column(
-            3,
+            4,
             actionBttn(
               inputId = "req_data",
               label = "Request Data",
               style = "gradient",
-              icon = icon("file")
+              icon = icon("file"),
+              size="sm"
             )
           ),
           column(
@@ -95,7 +96,8 @@ ui.page_repository <- function() {
               inputId = "analyze_data",
               label = "Analyze Data",
               style = "gradient",
-              icon = icon("chart-bar")
+              icon = icon("chart-bar"),
+              size="sm"
             )
           )
         ),
