@@ -101,6 +101,20 @@ selected_database <- reactive({
   }
 })
 
+selected_database_add_url <- reactive({
+  data <- selected_database()
+  if (!is.null(data)) {
+    data$download <- unlist(lapply(query_url()$url, function(x) {
+      as.character(tags$a(href = x, "download link"))
+    }))
+    data$browse <- unlist(lapply(query_url()$browse, function(x) {
+      as.character(tags$a(href = x, "browse Xena dataset page"))
+    }))
+  }
+  data
+})
+
+
 query_url <- reactive({
   s <- input$xena_table_rows_selected
   if (!is.null(s)) {
@@ -130,18 +144,18 @@ observe({
   s <- input$xena_table_rows_selected
 
   if (length(s) > 0) {
-    data <- selected_database()
+    data <- selected_database_add_url()
 
     w$show() # Waiter add-ins
-    urls <- unlist(lapply(query_url()$url, function(x) {
-      as.character(tags$a(href = x, "download link"))
-    }))
-    xena_pages <- unlist(lapply(query_url()$browse, function(x) {
-      as.character(tags$a(href = x, "browse Xena dataset page"))
-    }))
+    # urls <- unlist(lapply(query_url()$url, function(x) {
+    #   as.character(tags$a(href = x, "download link"))
+    # }))
+    # xena_pages <- unlist(lapply(query_url()$browse, function(x) {
+    #   as.character(tags$a(href = x, "browse Xena dataset page"))
+    # }))
     Sys.sleep(1)
 
-    if (length(urls) > 0) {
+    if (length(data$download) > 0) {
       output$table <- renderTable(
         {
           tryCatch(
@@ -149,8 +163,8 @@ observe({
               No = seq_along(s),
               CohortName = data$XenaCohorts,
               Label = data$Label,
-              Download = urls,
-              Browse = xena_pages
+              Download = data$download,
+              Browse = data$browse
             ),
             error = function(e) {
               message("Detect error from data.frame construction, no pain.")

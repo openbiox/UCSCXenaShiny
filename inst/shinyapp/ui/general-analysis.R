@@ -1,9 +1,4 @@
 ui.page_general_analysis <- function() {
-  tabPanel(
-    title = "General Analysis",
-    icon = icon("angle-double-down"),
-    "result"
-  )
   # navbarMenu(
   #   title = "General Analysis",
   #   icon = icon("angle-double-down"),
@@ -11,4 +6,25 @@ ui.page_general_analysis <- function() {
   #   # tabPanel("Single Gene Pan-cancer Analysis",
   #   #          ui.sg.pancan.analysis("sg.pancan.analysis"))
   # )
+  tabPanel(
+    title = "General Analysis",
+    icon = icon("angle-double-down"),
+    dropdownButton(
+      inputId = "ga_drop_button",
+      label = "Pre-selected Datasets for Analysis",
+      icon = icon("sliders"),
+      status = "primary",
+      circle = FALSE,
+      DT::dataTableOutput("ga_dataset_table")
+    ),
+    tags$br(),
+    tabsetPanel(
+      tabPanel(
+        "Correlation Analysis"
+      ),
+      tabPanel(
+        "Comparison Analysis"
+      )
+    )
+  )
 }

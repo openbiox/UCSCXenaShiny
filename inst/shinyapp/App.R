@@ -184,6 +184,7 @@ server <- function(input, output, session) {
   source(server_file("repository.R"), local = TRUE)
   source(server_file("modules.R"), local = TRUE)
   source(server_file("global.R"), local = TRUE)
+  source(server_file("general-analysis.R"), local = TRUE)
 }
 
 # Run web app -------------------------------------------------------------
