@@ -118,16 +118,7 @@ selected_database_add_url <- reactive({
 query_url <- reactive({
   s <- input$xena_table_rows_selected
   if (!is.null(s)) {
-    data <- selected_database()
-    xe <-
-      UCSCXenaTools::XenaGenerate(subset = XenaDatasets %in% data$XenaDatasets)
-    xe_query <- UCSCXenaTools::XenaQuery(xe)
-    xe_query$browse <- utils::URLencode(
-      paste0(
-        "https://xenabrowser.net/datapages/?",
-        "dataset=", xe_query$datasets, "&host=", xe_query$hosts
-      )
-    )
+    xe_query <- xe_query_url(selected_database())
     return(xe_query)
   }
 })
@@ -153,7 +144,7 @@ observe({
     # xena_pages <- unlist(lapply(query_url()$browse, function(x) {
     #   as.character(tags$a(href = x, "browse Xena dataset page"))
     # }))
-    Sys.sleep(1)
+    Sys.sleep(0.5)
 
     if (length(data$download) > 0) {
       output$table <- renderTable(

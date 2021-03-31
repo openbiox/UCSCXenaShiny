@@ -107,7 +107,6 @@ ui.page_repository <- function() {
             id = "show_data",
             h4("Selected Data:", style = "font-size: 1.2em;font-weight: bold;margin-bottom: 5px;margin-top: 0;"),
             h6("Wait until a table shows..."),
-            h6("Of note, single dataset file can be downloaded by clicking URL"),
             tableOutput(
               "table"
             )

@@ -138,7 +138,18 @@ server_file <- function(x) {
 
 # Set utility functions ---------------------------------------------------
 
-
+xe_query_url <- function(data) {
+  xe <-
+    UCSCXenaTools::XenaGenerate(subset = XenaDatasets %in% data$XenaDatasets)
+  xe_query <- UCSCXenaTools::XenaQuery(xe)
+  xe_query$browse <- utils::URLencode(
+    paste0(
+      "https://xenabrowser.net/datapages/?",
+      "dataset=", xe_query$datasets, "&host=", xe_query$hosts
+    )
+  )
+  return(xe_query)
+}
 
 # UI part ----------------------------------------------------------------------
 ui <- tagList(

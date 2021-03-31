@@ -17,6 +17,11 @@ ui.page_general_analysis <- function() {
       circle = FALSE,
       DT::dataTableOutput("ga_dataset_table")
     ),
+    shinyBS::bsPopover("ga_drop_button",
+                       title = "Tips",
+                       content = "Click to show pre-selected datasets including user selected datasets from Repository page and corresponding phenotype datasets.",
+                       placement = "right", options = list(container = "body")
+    ),
     tags$br(),
     tabsetPanel(
       tabPanel(
