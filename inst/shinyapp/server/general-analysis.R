@@ -35,7 +35,7 @@ output$ga_dataset_table <- DT::renderDataTable({
     colnames(show_table)[1:4] <- c("Cohort", "Dataset", "N", "Subtype")
   } else {
     sendSweetAlert(session, title = "Warning!", text = "Please select datasets from Repository page firstly",
-                   type = "warn")
+                   type = "warning")
   }
   
   show_table
