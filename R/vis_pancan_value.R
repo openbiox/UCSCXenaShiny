@@ -777,3 +777,72 @@ vis_gene_cor <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, spl
   }
   return(p)
 }
+
+
+#' Visualize Gene-gene correlation in TCGA Cancer Type
+#'
+#' @import ggplot2 dplyr ppcor
+#' @param Gene1 the first gene
+#' @param Gene2 the second gene
+#' @param purity_adj whether performing partial correlation adjusted by purity
+#' @param split whether split by TCGA tumor tissue
+#' @export
+vis_gene_cor_cancer <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, split = FALSE, tissue = "ACC") {
+  tcga_gtex <- load_data("tcga_gtex")
+  tcga_purity <- load_data("tcga_purity")
+  
+  tcga_purity$CPE <- as.numeric(tcga_purity$CPE)
+  tcga_gtex <- tcga_gtex %>%
+    dplyr::group_by(.data$tissue) %>%
+    dplyr::distinct(.data$sample, .keep_all = TRUE)
+  t1 <- get_pancan_gene_value(identifier = Gene1)$expression
+  t2 <- t1 %>%
+    as.data.frame() %>%
+    dplyr::rename("tpm" = ".") %>%
+    tibble::rownames_to_column(var = "sample") %>%
+    dplyr::inner_join(tcga_gtex, by = "sample")
+  t3 <- get_pancan_gene_value(identifier = Gene2)$expression
+  t4 <- t3 %>%
+    as.data.frame() %>%
+    dplyr::rename("tpm" = ".") %>%
+    tibble::rownames_to_column(var = "sample") %>%
+    dplyr::inner_join(tcga_gtex, by = "sample")
+  
+  df <- data.frame(sample = t2$sample, tissue = t2$tissue, type2 = t2$type2, gene1 = t2$tpm, gene2 = t4$tpm, stringsAsFactors = F)
+  
+  df %>%
+    dplyr::left_join(tcga_purity, by = "sample") %>%
+    filter(.data$type2 == "tumor")  %>%
+    filter(.data$tissue == tissue) -> df
+  # plot refer to https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
+  if (split == FALSE) {
+    if (purity_adj == TRUE) {
+      df %>% filter(!is.na(.data$CPE)) -> df
+      partial_cor_res <- ezcor_partial_cor(data = df, var1 = "gene1", var2 = "gene2", var3 = "CPE", sig_label = TRUE)
+      cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2")
+      df$pc <- predict(prcomp(~ gene1 + gene1, df))[, 1]
+      x <- quantile(df$gene1)[1]
+      y <- quantile(df$gene2)[5]
+      p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
+        ggplot2::geom_point(shape = 16, size = 1.5, show.legend = FALSE) +
+        ggplot2::theme_minimal() +
+        ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
+        ggplot2::labs(x = Gene1, y = Gene2) +
+        ggplot2::ggtitle(paste0("TCGA ",tissue," dataset")) +
+        ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar, "\n", "Cor_adj: ", round(partial_cor_res$cor_partial, 2), " ", partial_cor_res$pstar), x = x + 1, y = y, size = 10, colour = "black")
+    } else {
+      cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2")
+      df$pc <- predict(prcomp(~ gene1 + gene1, df))[, 1]
+      x <- quantile(df$gene1)[1]
+      y <- quantile(df$gene2)[5]
+      p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
+        ggplot2::geom_point(shape = 16, size = 1.5, show.legend = FALSE) +
+        ggplot2::theme_minimal() +
+        ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
+        ggplot2::labs(x = Gene1, y = Gene2) +
+        ggplot2::ggtitle(paste0("TCGA ",tissue," dataset")) +
+        ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar), x = x + 1, y = y, size = 10, colour = "black")
+    }
+  }
+  return(p)
+}

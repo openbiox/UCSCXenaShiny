@@ -4,13 +4,17 @@ ui.modules_pancan_immune <- function(id) {
     titlePanel("Module: Gene Pancan Expression vs Immune Gene Signature"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
-        shinyWidgets::searchInput(
+        selectizeInput(
           inputId = ns("Pancan_search"),
           label = NULL,
-          btnSearch = icon("search"),
-          btnReset = icon("remove"),
-          # placeholder = "Enter a gene symbol, e.g. TP53"
-          width = "100%"
+          choices = NULL,
+          width = "100%",
+          options = list(
+            create = TRUE,
+            maxOptions = 5,
+            placeholder = "Enter a gene symbol, e.g. TP53",
+            plugins = list("restore_on_backspace")
+          )
         ),
         shinyBS::bsPopover(ns("Pancan_search"),
           title = "Tips",
@@ -71,6 +75,17 @@ server.modules_pancan_immune <- function(input, output, session) {
   # })
   #
   ns <- session$ns
+  
+  observe({
+    updateSelectizeInput(
+      session,
+      "Pancan_search",
+      choices = pancan_identifiers$gene,
+      selected = "TP53",
+      server = TRUE
+    )
+  })
+  
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("hm_gene_immune_cor"), html = waiter::spin_hexdots(), color = "white")
 

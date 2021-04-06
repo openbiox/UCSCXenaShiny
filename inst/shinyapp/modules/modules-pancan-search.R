@@ -4,13 +4,17 @@ ui.modules_pancan_dist <- function(id) {
     titlePanel("Module: Gene Pancan Expression Distribution"),
     sidebarLayout(
       sidebarPanel(
-        shinyWidgets::searchInput(
+        selectizeInput(
           inputId = ns("Pancan_search"),
           label = NULL,
-          btnSearch = icon("search"),
-          btnReset = icon("remove"),
-          # placeholder = "Enter a gene symbol, e.g. TP53",
-          width = "100%"
+          choices = NULL,
+          width = "100%",
+          options = list(
+            create = TRUE,
+            maxOptions = 5,
+            placeholder = "Enter a gene symbol, e.g. TP53",
+            plugins = list("restore_on_backspace")
+          )
         ),
         shinyBS::bsPopover(ns("Pancan_search"),
           title = "Tips",
@@ -61,6 +65,17 @@ ui.modules_pancan_dist <- function(id) {
 
 server.modules_pancan_dist <- function(input, output, session) {
   ns <- session$ns
+  
+  observe({
+    updateSelectizeInput(
+      session,
+      "Pancan_search",
+      choices = pancan_identifiers$gene,
+      selected = "TP53",
+      server = TRUE
+    )
+  })
+  
   colors <- reactive({
     c(input$tumor_col, input$normal_col)
   })

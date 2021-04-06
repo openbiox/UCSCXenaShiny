@@ -1,3 +1,6 @@
+choices <- c(
+  "ACC", "BLCA", "BRCA", "CESC", "CHOL", "COAD", "DLBC", "ESCA", "GBM", "HNSC", "KICH", "KIRC", "KIRP", "LAML", "LGG", "LIHC", "LUAD", "LUSC"
+)
 
 ui.modules_pancan_gene_cor <- function(id) {
   ns <- NS(id)
@@ -5,23 +8,32 @@ ui.modules_pancan_gene_cor <- function(id) {
     titlePanel("Module: TCGA Gene-Gene Correlation"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
-        shinyWidgets::searchInput(
+        selectizeInput(
           inputId = ns("pancan_search1"),
           label = NULL,
-          btnSearch = icon("search"),
-          btnReset = icon("remove"),
-          placeholder = "Enter a gene symbol, e.g. TP53",
-          width = "100%"
+          choices = NULL,
+          width = "100%",
+          options = list(
+            create = TRUE,
+            maxOptions = 5,
+            placeholder = "Enter a gene symbol, e.g. CSF1R",
+            plugins = list("restore_on_backspace")
+          )
         ),
-        shinyWidgets::searchInput(
+        selectizeInput(
           inputId = ns("pancan_search2"),
           label = NULL,
-          btnSearch = icon("search"),
-          btnReset = icon("remove"),
-          placeholder = "Enter a gene symbol, e.g. TP53",
-          width = "100%"
+          choices = NULL,
+          width = "100%",
+          options = list(
+            create = TRUE,
+            maxOptions = 5,
+            placeholder = "Enter a gene symbol, e.g. JAK3",
+            plugins = list("restore_on_backspace")
+          )
         ),
         materialSwitch(ns("purity_adj"), "Adjust Purity", inline = TRUE),
+        selectInput(inputId = ns("Cancer"), label = "Filter Cancer", choices = choices, selected = "ACC"),
         width = 3
       ),
       mainPanel = mainPanel(
@@ -34,19 +46,41 @@ ui.modules_pancan_gene_cor <- function(id) {
 
 server.modules_pancan_gene_cor <- function(input, output, session) {
   ns <- session$ns
-
+  
+  observe({
+    updateSelectizeInput(
+      session,
+      "pancan_search1",
+      choices = pancan_identifiers$gene,
+      selected = "CSF1R",
+      server = TRUE
+    )
+  })
+  
+  observe({
+    updateSelectizeInput(
+      session,
+      "pancan_search2",
+      choices = pancan_identifiers$gene,
+      selected = "JAK3",
+      server = TRUE
+    )
+  })
+  
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("gene_cor"), html = waiter::spin_hexdots(), color = "white")
 
   plot_func <- reactive({
     if (nchar(input$pancan_search1) >= 1 & nchar(input$pancan_search2) >= 1) {
-      p <- vis_gene_cor(
+      p <- vis_gene_cor_cancer(
         Gene1 = input$pancan_search1,
         Gene2 = input$pancan_search2,
         purity_adj = input$purity_adj,
+        tissue = input$Cancer,
         split = FALSE
       )
     }
+    p = p + theme_cowplot()
     return(p)
   })
 
