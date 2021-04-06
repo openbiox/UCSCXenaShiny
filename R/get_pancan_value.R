@@ -67,8 +67,7 @@ get_pancan_value <- function(identifier, subtype = NULL, dataset = NULL, host = 
   }
 
   if (nrow(data) > 1) {
-    data <- data %>%
-      dplyr::filter(XenaDatasets == dataset)
+    data <- dplyr::filter(.data$XenaDatasets == dataset)
   }
 
   res <- try_query_value(data[["XenaHosts"]], data[["XenaDatasets"]],
@@ -390,4 +389,22 @@ save_data <- function(data, id, dataset, host) {
   }
 
   saveRDS(data, file = f)
+}
+
+get_data <- function(dataset, identifier, host = NULL) {
+  stopifnot(length(dataset) == 1)
+  
+  if (is.null(host)) {
+    host <- UCSCXenaTools::XenaData %>% 
+      dplyr::filter(.data$XenaDatasets == dataset) %>% 
+      dplyr::pull(.data$XenaHostNames)
+  }
+  res <- check_exist_data(identifier, dataset, host)
+  if (res$ok) {
+    value <- res$data
+  } else {
+    value <- get_pancan_value(identifier, dataset = dataset, host = host)
+    save_data(value, identifier, dataset, host)
+  }
+  value
 }

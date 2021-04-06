@@ -782,10 +782,11 @@ vis_gene_cor <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, spl
 #' Visualize Gene-gene correlation in TCGA Cancer Type
 #'
 #' @import ggplot2 dplyr ppcor
-#' @param Gene1 the first gene
-#' @param Gene2 the second gene
-#' @param purity_adj whether performing partial correlation adjusted by purity
-#' @param split whether split by TCGA tumor tissue
+#' @param Gene1 the first gene.
+#' @param Gene2 the second gene.
+#' @param purity_adj whether performing partial correlation adjusted by purity.
+#' @param split whether split by TCGA tumor tissue.
+#' @param tissue TCGA cohort name, e.g. "ACC".
 #' @export
 vis_gene_cor_cancer <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, split = FALSE, tissue = "ACC") {
   tcga_gtex <- load_data("tcga_gtex")

@@ -4,17 +4,49 @@
 \alias{vis_identifier_cor}
 \title{Visualize Identifier-identifier Correlation}
 \usage{
-vis_identifier_cor(id1, id2, dataset1, dataset2, samples = NULL, ...)
+vis_identifier_cor(
+  dataset1,
+  id1,
+  dataset2,
+  id2,
+  samples = NULL,
+  line_color = "blue",
+  alpha = 0.5,
+  ...
+)
 }
 \arguments{
+\item{dataset1}{the dataset to obtain \code{id1}.}
+
 \item{id1}{the first molecule identifier.}
+
+\item{dataset2}{the dataset to obtain \code{id2}.}
 
 \item{id2}{the second molecule identifier.}
 
-\item{dataset1}{the dataset to obtain \code{id1}.}
+\item{samples}{default is \code{NULL}, can be common sample names for two datasets.}
 
-\item{dataset2}{the dataset to obtain \code{id2}.}
+\item{line_color}{set the color for regression line.}
+
+\item{alpha}{set the alpha for dots.}
+
+\item{...}{other parameters passing to \href{http://rpkgs.datanovia.com/ggpubr/reference/ggscatter.html}{ggscatter}.}
 }
 \description{
-Visualize Identifier-identifier Correlation
+NOTE: the dataset must be dense matrix in UCSC Xena data hubs.
+}
+\examples{
+\dontrun{
+dataset <- "TcgaTargetGtex_rsem_isoform_tpm"
+id1 <- "TP53"
+id2 <- "KRAS"
+vis_identifier_cor(dataset, id1, dataset, id2)
+
+samples <- c(
+  "TCGA-D5-5538-01", "TCGA-VM-A8C8-01",
+  "TCGA-ZN-A9VQ-01", "TCGA-EE-A17X-06",
+  "TCGA-05-4420-01"
+)
+vis_identifier_cor(dataset, id1, dataset, id2, samples)
+}
 }
