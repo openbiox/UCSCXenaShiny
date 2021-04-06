@@ -21,7 +21,7 @@ available_hosts <- function() {
 #' `DataSubtype` column of [UCSCXenaTools::XenaData].
 #' @param dataset a length-1 chracter representing a regular expression for matching
 #' `XenaDatasets` of [UCSCXenaTools::XenaData].
-#' @param host a length-1 character representing host name, e.g. "toilHub".
+#' @param host a character vector representing host name(s), e.g. "toilHub".
 #' @param samples a character vector representing samples want to be returned.
 #'
 #' @return a named vector or `list`
@@ -50,16 +50,16 @@ get_pancan_value <- function(identifier, subtype = NULL, dataset = NULL, host = 
   if (!"UCSCXenaTools" %in% .packages()) {
     attachNamespace("UCSCXenaTools")
   }
-  host <- match.arg(host)
+  host <- match.arg(host, choices = available_hosts(), several.ok = TRUE)
 
   data <- UCSCXenaTools::XenaData
   if (!is.null(subtype)) {
     data <- data %>%
-      dplyr::filter(XenaHostNames == host, grepl(subtype, DataSubtype))
+      dplyr::filter(XenaHostNames %in% host, grepl(subtype, DataSubtype))
   }
   if (!is.null(dataset)) {
     data <- data %>%
-      dplyr::filter(XenaHostNames == host, grepl(dataset, XenaDatasets))
+      dplyr::filter(XenaHostNames %in% host, grepl(dataset, XenaDatasets))
   }
 
   if (nrow(data) == 0) {

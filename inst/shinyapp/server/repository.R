@@ -418,7 +418,7 @@ observeEvent(input$use_repository, {
       "Firstly, filter dataset table based on left filters or right search bar.",
       "Secondly, select datasets by clicking corresponding rows in dataset table.",
       "Lastly, click the button under the dataset table to check metadata or download datasets.",
-      sep = "\n"
+      sep = "\n\n"
     ),
     type = "info",
     timer = 0,

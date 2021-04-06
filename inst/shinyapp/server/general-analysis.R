@@ -26,6 +26,16 @@ selected_database_add_url_and_phenotype <- reactive({
   data
 })
 
+selected_database_rm_phenotype <- reactive({
+  data <- selected_database()
+  if (!is.null(data)) {
+    # Remove phenotype datasets
+    # Type != "clinicalMatrix"
+    data <- subset(data, Type != "clinicalMatrix")
+  }
+  data
+})
+
 output$ga_dataset_table <- DT::renderDataTable({
   show_table <- selected_database_add_url_and_phenotype() 
   if (!is.null(show_table)) {
@@ -40,3 +50,76 @@ output$ga_dataset_table <- DT::renderDataTable({
   
   show_table
 }, escape = FALSE)
+
+
+# Correlation -------------------------------------------------------------
+
+output$ga_data1_id <- renderUI({
+  show_table <- selected_database_rm_phenotype()
+  selectInput(
+    inputId = "ga_data1_id",
+    label = "Select dataset 1:",
+    choices = c("", unique(show_table$XenaDatasets)),
+    selected = "",
+    multiple = FALSE
+  )
+})
+
+observe({
+  updateSelectizeInput(
+    session,
+    "ga_data1_mid",
+    choices = all_preload_identifiers,
+    selected = "TP53",
+    server = TRUE
+  )
+})
+
+output$ga_data2_id <- renderUI({
+  show_table <- selected_database_rm_phenotype()
+  selectInput(
+    inputId = "ga_data2_id",
+    label = "Select dataset 2:",
+    choices = c("", unique(show_table$XenaDatasets)),
+    selected = "",
+    multiple = FALSE
+  )
+})
+
+observe({
+  updateSelectizeInput(
+    session,
+    "ga_data2_mid",
+    choices = all_preload_identifiers,
+    selected = "TP53",
+    server = TRUE
+  )
+})
+
+observeEvent(input$ga_go, {
+  # Analyze correlation with 2 input datasets and identifiers
+  output$ga_output <- renderPlot(
+    plot(rnorm(100))
+  )
+})
+
+output$xyz <- renderText(
+  input$ga_data1_mid
+)
+
+# Show use alert ----------------------------------------------------------
+
+observeEvent(input$use_ga_page, {
+  shinyalert(
+    title = "General Analysis Usage",
+    text = paste(
+      "Firstly, select datasets from Repository page, the datasets and corresonding clinical datasets will be automatically loaded here.",
+      "Secondly, use any analysis feature below by clicking the tab.",
+      "Lastly, control how to analyze from left panel and filter samples from right panel. The result plot should be shown at the middle.",
+      sep = "\n\n"
+    ),
+    type = "info",
+    timer = 0,
+    confirmButtonCol = "#202324"
+  )
+})

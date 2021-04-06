@@ -9,24 +9,80 @@ ui.page_general_analysis <- function() {
   tabPanel(
     title = "General Analysis",
     icon = icon("angle-double-down"),
-    dropdownButton(
-      inputId = "ga_drop_button",
-      label = "Pre-selected Datasets for Analysis",
-      icon = icon("sliders"),
-      status = "primary",
-      circle = FALSE,
-      DT::dataTableOutput("ga_dataset_table")
-    ),
-    shinyBS::bsPopover("ga_drop_button",
-                       title = "Tips",
-                       content = "Click to show pre-selected datasets including user selected datasets from Repository page and corresponding phenotype datasets.",
-                       placement = "right", options = list(container = "body")
+    fluidRow(
+      column(5,
+             dropdownButton(
+               inputId = "ga_drop_button",
+               label = "Pre-selected Datasets for Analysis",
+               icon = icon("sliders"),
+               status = "primary",
+               circle = FALSE,
+               DT::dataTableOutput("ga_dataset_table")
+             ),
+             shinyBS::bsPopover("ga_drop_button",
+                                title = "Tips",
+                                content = "Click to show pre-selected datasets including user selected datasets from Repository page and corresponding phenotype datasets.",
+                                placement = "right", options = list(container = "body")
+             )),
+      column(3, offset = 4,
+             shinyWidgets::actionBttn(
+               inputId = "use_ga_page",
+               label = "How to use",
+               icon = icon("question-circle"),
+               style = "bordered",
+               color = "primary",
+               size = "sm"
+             ),)
     ),
     tags$br(),
     # navlistPanel is an alternative
     tabsetPanel(
       tabPanel(
-        "Correlation Analysis"
+        "Correlation Analysis",
+        fluidPage(
+          fluidRow(
+            column(3, 
+                   h4("Analysis Controls"),
+                   uiOutput("ga_data1_id"),
+                   selectizeInput(
+                     inputId = "ga_data1_mid", # molecule identifier
+                     label = "Dataset 1 molecule identifier:",
+                     choices = NULL,
+                     options = list(
+                       create = TRUE,
+                       maxOptions = 5,
+                       placeholder = "e.g. TP53",
+                       plugins = list("restore_on_backspace")
+                     )
+                   ),
+                   uiOutput("ga_data2_id"),
+                   selectizeInput(
+                     inputId = "ga_data2_mid", # molecule identifier
+                     label = "Dataset 2 molecule identifier:",
+                     choices = NULL,
+                     options = list(
+                       create = TRUE,
+                       maxOptions = 5,
+                       placeholder = "e.g. TP53",
+                       plugins = list("restore_on_backspace")
+                     )
+                   ),
+                   actionBttn(
+                     inputId = "ga_go",
+                     label = "Go!",
+                     color = "primary",
+                     style = "bordered",
+                     size = "sm"
+                   ),
+                   verbatimTextOutput("xyz")
+                   ),
+            column(6,
+                   plotOutput("ga_output")),
+            column(3,
+                   h4("Sample Filters"),
+                   selectInput(inputId = "ga_data_filter1_id", "ABC", choices = c("A", "B", "C")))
+          )
+        )
       ),
       tabPanel(
         "Comparison Analysis"

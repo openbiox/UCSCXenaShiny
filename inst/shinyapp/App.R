@@ -88,6 +88,7 @@ pancan_identifiers <- readRDS(
     package = "UCSCXenaShiny"
   )
 )
+all_preload_identifiers <- c("NONE", as.character(unlist(pancan_identifiers)))
 
 themes_list <- list(
   "cowplot" = cowplot::theme_cowplot(),
