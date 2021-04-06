@@ -101,8 +101,10 @@ observeEvent(input$ga_go, {
   output$ga_output <- renderPlot(
     tryCatch(
       vis_identifier_cor(
-        input$ga_data1_id, input$ga_data1_mid,
-        input$ga_data2_id, input$ga_data2_mid),
+        isolate(input$ga_data1_id),
+        isolate(input$ga_data1_mid),
+        isolate(input$ga_data2_id), 
+        isolate(input$ga_data2_mid)),
       error = function(e) {
         sendSweetAlert(
           session,
