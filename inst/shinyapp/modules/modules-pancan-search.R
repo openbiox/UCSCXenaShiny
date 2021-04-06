@@ -85,7 +85,7 @@ server.modules_pancan_dist <- function(input, output, session) {
   })
 
   # Show waiter for plot
-  w <- waiter::Waiter$new(id = ns("gene_pancan_dist"), html = waiter::spin_hexdots(), color = "white")
+  w <- waiter::Waiter$new(id = ns("gene_pancan_dist"), html = waiter::spin_hexdots(), color = "black")
 
   plot_func <- reactive({
     if (nchar(input$Pancan_search) >= 1) {
