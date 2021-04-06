@@ -4,13 +4,17 @@ ui.modules_pancan_unicox <- function(id) {
     titlePanel("Module: Gene Pancan Uni-cox analysis"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
-        shinyWidgets::searchInput(
+        selectizeInput(
           inputId = ns("Pancan_search"),
           label = NULL,
-          btnSearch = icon("search"),
-          btnReset = icon("remove"),
-          # placeholder = "Enter a gene symbol, e.g. TP53",
-          width = "100%"
+          choices = NULL,
+          width = "100%",
+          options = list(
+            create = TRUE,
+            maxOptions = 5,
+            placeholder = "Enter a gene symbol, e.g. TP53",
+            plugins = list("restore_on_backspace")
+          )
         ),
         shinyBS::bsPopover(ns("Pancan_search"),
           title = "Tips",
@@ -62,6 +66,17 @@ ui.modules_pancan_unicox <- function(id) {
 
 server.modules_pancan_unicox <- function(input, output, session) {
   ns <- session$ns
+  
+  observe({
+    updateSelectizeInput(
+      session,
+      "Pancan_search",
+      choices = pancan_identifiers$gene,
+      selected = "TP53",
+      server = TRUE
+    )
+  })
+  
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("unicox_gene_tree"), html = waiter::spin_hexdots(), color = "white")
 
@@ -97,7 +112,11 @@ server.modules_pancan_unicox <- function(input, output, session) {
         threshold = input$threshold,
         values = colors()
       )
+      
+      p = p + theme_cowplot()
+      
     }
+
     return(p)
   })
 
