@@ -73,8 +73,8 @@ ui.page_general_analysis <- function() {
                      color = "primary",
                      style = "bordered",
                      size = "sm"
-                   ),
-                   verbatimTextOutput("xyz")
+                   )
+                   #verbatimTextOutput("xyz")
                    ),
             column(6,
                    plotOutput("ga_output")),

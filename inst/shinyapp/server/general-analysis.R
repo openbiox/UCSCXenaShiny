@@ -99,13 +99,24 @@ observe({
 observeEvent(input$ga_go, {
   # Analyze correlation with 2 input datasets and identifiers
   output$ga_output <- renderPlot(
-    plot(rnorm(100))
+    tryCatch(
+      vis_identifier_cor(
+        input$ga_data1_id, input$ga_data1_mid,
+        input$ga_data2_id, input$ga_data2_mid),
+      error = function(e) {
+        sendSweetAlert(
+          session,
+          title = "Error",
+          text = "Error to query data and plot. Please make sure the two selected datasets are 'genomicMatrix' type.",
+          type = "error")
+      }
+    )
   )
 })
 
-output$xyz <- renderText(
-  input$ga_data1_mid
-)
+# output$xyz <- renderText(
+#   input$ga_data1_mid
+# )
 
 # Show use alert ----------------------------------------------------------
 
