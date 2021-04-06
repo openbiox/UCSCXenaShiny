@@ -20,7 +20,7 @@ ui.modules_cancer_dist <- function(id) {
             plugins = list("restore_on_backspace")
           )
         ),
-        shinyBS::bsPopover(ns("pancan_search"),
+        shinyBS::bsPopover(ns("Pancan_search"),
           title = "Tips",
           content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
           placement = "right", options = list(container = "body")
@@ -83,9 +83,9 @@ server.modules_cancer_dist <- function(input, output, session) {
   w <- waiter::Waiter$new(id = ns("gene_cancer_dist"), html = waiter::spin_hexdots(), color = "white")
 
   plot_func <- reactive({
-    if (nchar(input$pancan_search) >= 1) {
+    if (nchar(input$Pancan_search) >= 1) {
       p <- vis_toil_TvsN_cancer(
-        Gene = input$pancan_search,
+        Gene = input$Pancan_search,
         Cancer = input$Cancer,
         Mode = ifelse(input$pdist_mode, "Boxplot", "Violinplot"),
         Show.P.value = input$pdist_show_p_value,
@@ -98,7 +98,7 @@ server.modules_cancer_dist <- function(input, output, session) {
     return(p)
   })
 
-  observeEvent(input$pancan_search, {
+  observeEvent(input$Pancan_search, {
     output$gene_cancer_dist <- renderPlot({
       w$show() # Waiter add-ins
       plot_func()
@@ -107,7 +107,7 @@ server.modules_cancer_dist <- function(input, output, session) {
 
   output$download <- downloadHandler(
     filename = function() {
-      paste0(input$pancan_search, " gene_cancer_dist.", input$device)
+      paste0(input$Pancan_search, " gene_cancer_dist.", input$device)
     },
     content = function(file) {
       p <- plot_func()
