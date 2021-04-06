@@ -23,6 +23,7 @@ ui.page_general_analysis <- function() {
                        placement = "right", options = list(container = "body")
     ),
     tags$br(),
+    # navlistPanel is an alternative
     tabsetPanel(
       tabPanel(
         "Correlation Analysis"

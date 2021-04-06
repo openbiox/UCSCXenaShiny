@@ -181,6 +181,7 @@ ui <- tagList(
     ui.page_help(),
     ui.page_developers(),
     footer = ui.footer(),
+    collapsible = TRUE,
     theme = shinythemes::shinytheme("flatly")
   )
 )
