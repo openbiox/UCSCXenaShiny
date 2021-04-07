@@ -128,6 +128,7 @@ observeEvent(input$ga_go, {
     if (inherits(p_scatter(), "ggplot")) {
       DT::datatable(
         p_scatter()$data,
+        rownames = FALSE,
         extensions = c("Buttons"),
         options = list(
           pageLength = 5,
@@ -177,28 +178,62 @@ output$ga_data_filter1_id <- renderUI({
     label = "Select phenotype dataset:",
     choices = c("NONE", unique(show_table$XenaDatasets[show_table$XenaDatasets %in% phenotype_datasets])),
     selected = "NONE",
-    multiple = TRUE
+    multiple = FALSE
   )
 })
 
 observeEvent(input$ga_filter_button, {
   message("Sample filter button is clicked by user.")
-  pdatasets <- setdiff(input$ga_data_filter1_id, "NONE")
+  pdataset <- setdiff(input$ga_data_filter1_id, "NONE")
 
-  if (length(pdatasets)) {
+  if (length(pdataset)) {
     showModal(
       modalDialog(
         title = "Filter samples for analysis",
         size = "l",
         fluidPage(
+          h4("Phenotype data table:"),
           fluidRow(
+            DT::dataTableOutput("ga_phenotype_data")
           )
         )
       )
     )
     
+    output$ga_phenotype_data <- DT::renderDataTable(server = FALSE, {
+      DT::datatable(
+        XenaGenerate(subset = XenaDatasets == pdataset) %>% 
+          XenaQuery() %>% 
+          XenaDownload(destdir = XENA_DEST) %>% 
+          XenaPrepare(),
+        rownames = FALSE,
+        extensions = c("Buttons"),
+        options = list(
+          pageLength = 5,
+          dom = 'Bfrtip',
+          buttons = list(
+            list(extend = "csv", text = "Download Current Page", filename = "page",
+                 exportOptions = list(
+                   modifier = list(page = "current")
+                 )
+            ),
+            list(extend = "csv", text = "Download Full Results", filename = "data",
+                 exportOptions = list(
+                   modifier = list(page = "all")
+                 )
+            )
+          ),
+          scrollY = 650,
+          scrollX = 500,
+          deferRender = TRUE,
+          scroller = TRUE
+        )
+      )
+    })
+    
+  } else {
+    sendSweetAlert(session, title = "Warning", type = "warn", text = "Please select a dataset!")
   }
-  
 })
 
 # Show use alert ----------------------------------------------------------

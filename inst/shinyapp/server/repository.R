@@ -327,7 +327,7 @@ if (xena.runMode == "client") {
               xe_download,
               UCSCXenaTools::XenaDownload(
                 query_url()[i, ],
-                destdir = path.expand("~/.xenashiny/datasets"),
+                destdir = XENA_DEST,
                 download_probeMap = TRUE,
                 trans_slash = TRUE
               )
@@ -336,12 +336,12 @@ if (xena.runMode == "client") {
             Sys.sleep(0.05)
           }
           zip::zipr(
-            zipfile = file.path(tempdir(), "xena-datasets.zip"),
+            zipfile = file.path(XENA_DEST, "xena-datasets.zip"),
             files = xe_download$destfiles, recurse = FALSE
           )
           incProgress(1 / 4)
-          file.copy(file.path(tempdir(), "xena-datasets.zip"), file)
-          file.remove(file.path(tempdir(), "xena-datasets.zip"))
+          file.copy(file.path(XENA_DEST, "xena-datasets.zip"), file)
+          file.remove(file.path(XENA_DEST, "xena-datasets.zip"))
           incProgress(1 / 4)
         }
       )

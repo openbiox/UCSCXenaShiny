@@ -120,6 +120,17 @@ Xena_summary <- dplyr::group_by(xena_table, Hub) %>%
 # global color
 mycolor <- c(RColorBrewer::brewer.pal(12, "Paired"))
 
+# Cache file dest directory
+XENA_DEST <- if (xena.runMode == "client") {
+  file.path(tempdir(), "UCSCXenaShiny")
+} else {
+  path.expand("~/.xenashiny/datasets")
+}
+
+if (!dir.exists(XENA_DEST)) {
+  dir.create(XENA_DEST, recursive = TRUE)
+}
+
 # Put modules here --------------------------------------------------------
 modules_path <- system.file("shinyapp", "modules", package = "UCSCXenaShiny", mustWork = TRUE)
 modules_file <- dir(modules_path, pattern = "\\.R$", full.names = TRUE)
