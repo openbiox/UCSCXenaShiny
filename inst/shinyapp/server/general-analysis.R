@@ -192,7 +192,7 @@ observeEvent(input$ga_filter_button, {
         title = "Filter samples for analysis",
         size = "l",
         fluidPage(
-          h4("Phenotype data table:"),
+          h4("First select columns to show.\nSecond filter rows by searchPanel.\nFinally specify sample column and hit button."),
           fluidRow(
             DT::dataTableOutput("ga_phenotype_data")
           )
@@ -207,11 +207,12 @@ observeEvent(input$ga_filter_button, {
           XenaDownload(destdir = XENA_DEST) %>% 
           XenaPrepare(),
         rownames = FALSE,
-        extensions = c("Buttons", "Select", "SearchPanes"),
+        extensions = c("Buttons", "Select", "SearchPanes", "Scroller"),
         options = list(
           pageLength = 5,
-          dom = 'PBfrtip',
+          dom = 'Bfrtip', # P
           buttons = list(
+            "searchPanes",
             list(extend = "csv", text = "Download Current Page", filename = "page",
                  exportOptions = list(
                    modifier = list(page = "current")
@@ -223,13 +224,20 @@ observeEvent(input$ga_filter_button, {
                  )
             )
           ),
+          language = list(searchPanes = list(collapse = "Filter Rows")),
           scrollY = 650,
           scrollX = 500,
           deferRender = TRUE,
-          scroller = TRUE
+          scroller = TRUE,
+          stateSave = TRUE
         ),
         selection = 'none'
       )
+    })
+    
+    observeEvent(input$ga_phenotype_data_rows_all, {
+      rows_filtered <- input$ga_phenotype_data_rows_all
+      print(rows_filtered)
     })
     
   } else {
