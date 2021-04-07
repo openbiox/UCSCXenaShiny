@@ -12,6 +12,7 @@ selected_database_add_url_and_phenotype <- reactive({
     if (nrow(add_datasets) > 0) {
       message("Querying extra Phenotype datasets for pre-selected datasets.")
       add_query <- xe_query_url(add_datasets)
+      
       add_datasets$download <- unlist(lapply(add_query$url, function(x) {
         as.character(tags$a(href = x, "download link"))
       }))
@@ -145,8 +146,6 @@ observeEvent(input$ga_go, {
           )
         )
       )
-      
-      
     }
   })
 })

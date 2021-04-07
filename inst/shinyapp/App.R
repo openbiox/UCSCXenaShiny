@@ -146,13 +146,16 @@ server_file <- function(x) {
 xe_query_url <- function(data) {
   xe <-
     UCSCXenaTools::XenaGenerate(subset = XenaDatasets %in% data$XenaDatasets)
+
   xe_query <- UCSCXenaTools::XenaQuery(xe)
-  xe_query$browse <- utils::URLencode(
-    paste0(
-      "https://xenabrowser.net/datapages/?",
-      "dataset=", xe_query$datasets, "&host=", xe_query$hosts
-    )
-  )
+  xe_query$browse <- purrr::map2(
+    xe_query$datasets, xe_query$hosts,
+    ~utils::URLencode(
+      paste0(
+        "https://xenabrowser.net/datapages/?",
+        "dataset=", .x, "&host=", .y
+      )
+    )) %>% unlist()
   return(xe_query)
 }
 
