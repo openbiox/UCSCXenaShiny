@@ -90,6 +90,10 @@ pancan_identifiers <- readRDS(
 )
 all_preload_identifiers <- c("NONE", as.character(unlist(pancan_identifiers)))
 
+phenotype_datasets <- UCSCXenaTools::XenaData %>% 
+  dplyr::filter(Type == "clinicalMatrix") %>% 
+  dplyr::pull(XenaDatasets)
+
 themes_list <- list(
   "cowplot" = cowplot::theme_cowplot(),
   "Light" = theme_light(),

@@ -73,14 +73,12 @@ ui.page_general_analysis <- function() {
                      color = "primary",
                      style = "bordered",
                      size = "sm"
-                   )
-                   #verbatimTextOutput("xyz")
-                   ),
+                   )),
             column(6,
                    plotOutput("ga_output")),
             column(3,
                    h4("Sample Filters"),
-                   selectInput(inputId = "ga_data_filter1_id", "ABC", choices = c("A", "B", "C")))
+                   uiOutput("ga_data_filter1_id"))
           )
         )
       ),

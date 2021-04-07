@@ -59,8 +59,8 @@ output$ga_data1_id <- renderUI({
   selectInput(
     inputId = "ga_data1_id",
     label = "Select dataset 1:",
-    choices = c("", unique(show_table$XenaDatasets)),
-    selected = "",
+    choices = c("NONE", unique(show_table$XenaDatasets)),
+    selected = "NONE",
     multiple = FALSE
   )
 })
@@ -80,8 +80,8 @@ output$ga_data2_id <- renderUI({
   selectInput(
     inputId = "ga_data2_id",
     label = "Select dataset 2:",
-    choices = c("", unique(show_table$XenaDatasets)),
-    selected = "",
+    choices = c("NONE", unique(show_table$XenaDatasets)),
+    selected = "NONE",
     multiple = FALSE
   )
 })
@@ -116,9 +116,16 @@ observeEvent(input$ga_go, {
   )
 })
 
-# output$xyz <- renderText(
-#   input$ga_data1_mid
-# )
+output$ga_data_filter1_id <- renderUI({
+  show_table <- selected_database_add_url_and_phenotype()
+  selectInput(
+    inputId = "ga_data_filter1_id",
+    label = "Select phenotype dataset:",
+    choices = c("NONE", unique(show_table$XenaDatasets[show_table$XenaDatasets %in% phenotype_datasets])),
+    selected = "NONE",
+    multiple = FALSE
+  )
+})
 
 # Show use alert ----------------------------------------------------------
 
