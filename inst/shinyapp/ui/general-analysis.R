@@ -75,10 +75,20 @@ ui.page_general_analysis <- function() {
                      size = "sm"
                    )),
             column(6,
-                   plotOutput("ga_output")),
+                   plotOutput("ga_output"),
+                   tags$br(),
+                   tags$br(),
+                   DT::dataTableOutput("ga_output_data")),
             column(3,
                    h4("Sample Filters"),
-                   uiOutput("ga_data_filter1_id"))
+                   uiOutput("ga_data_filter1_id"),
+                   actionBttn(
+                     inputId = "ga_filter_button",
+                     label = "Click to filter!",
+                     color = "primary",
+                     style = "bordered",
+                     size = "sm"
+                   ))
           )
         )
       ),

@@ -52,7 +52,7 @@ output$ga_dataset_table <- DT::renderDataTable({
 }, escape = FALSE)
 
 
-# Correlation -------------------------------------------------------------
+# Scatter and Correlation -------------------------------------------------------------
 
 output$ga_data1_id <- renderUI({
   show_table <- selected_database_rm_phenotype()
@@ -96,25 +96,80 @@ observe({
   )
 })
 
+p_scatter <- eventReactive(input$ga_go, {
+  tryCatch(
+    vis_identifier_cor(
+      isolate(input$ga_data1_id),
+      isolate(input$ga_data1_mid),
+      isolate(input$ga_data2_id), 
+      isolate(input$ga_data2_mid)),
+    error = function(e) {
+      "Error"
+    }
+  )
+})
+
 observeEvent(input$ga_go, {
   # Analyze correlation with 2 input datasets and identifiers
   output$ga_output <- renderPlot(
-    tryCatch(
-      vis_identifier_cor(
-        isolate(input$ga_data1_id),
-        isolate(input$ga_data1_mid),
-        isolate(input$ga_data2_id), 
-        isolate(input$ga_data2_mid)),
-      error = function(e) {
-        sendSweetAlert(
-          session,
-          title = "Error",
-          text = "Error to query data and plot. Please make sure the two selected datasets are 'genomicMatrix' type.",
-          type = "error")
-      }
-    )
+    if (inherits(p_scatter(), "ggplot")) {
+      p_scatter()
+    } else {
+      sendSweetAlert(
+        session,
+        title = "Error",
+        text = "Error to query data and plot. Please make sure the two selected datasets are 'genomicMatrix' type.",
+        type = "error")
+    }
   )
+  
+  output$ga_output_data <- DT::renderDataTable(server = FALSE, {
+    if (inherits(p_scatter(), "ggplot")) {
+      DT::datatable(
+        p_scatter()$data,
+        extensions = c("Buttons"),
+        options = list(
+          pageLength = 5,
+          dom = 'Bfrtip',
+          buttons = list(
+            list(extend = "csv", text = "Download Current Page", filename = "page",
+                 exportOptions = list(
+                   modifier = list(page = "current")
+                 )
+            ),
+            list(extend = "csv", text = "Download Full Results", filename = "data",
+                 exportOptions = list(
+                   modifier = list(page = "all")
+                 )
+            )
+          )
+        )
+      )
+      
+      
+    }
+  })
 })
+
+# observeEvent(input$ga_go, {
+#   # Analyze correlation with 2 input datasets and identifiers
+#   output$ga_output <- renderPlot(
+#     tryCatch(
+#       vis_identifier_cor(
+#         isolate(input$ga_data1_id),
+#         isolate(input$ga_data1_mid),
+#         isolate(input$ga_data2_id), 
+#         isolate(input$ga_data2_mid)),
+#       error = function(e) {
+#         sendSweetAlert(
+#           session,
+#           title = "Error",
+#           text = "Error to query data and plot. Please make sure the two selected datasets are 'genomicMatrix' type.",
+#           type = "error")
+#       }
+#     )
+#   )
+# })
 
 output$ga_data_filter1_id <- renderUI({
   show_table <- selected_database_add_url_and_phenotype()
@@ -123,8 +178,28 @@ output$ga_data_filter1_id <- renderUI({
     label = "Select phenotype dataset:",
     choices = c("NONE", unique(show_table$XenaDatasets[show_table$XenaDatasets %in% phenotype_datasets])),
     selected = "NONE",
-    multiple = FALSE
+    multiple = TRUE
   )
+})
+
+observeEvent(input$ga_filter_button, {
+  message("Sample filter button is clicked by user.")
+  pdatasets <- setdiff(input$ga_data_filter1_id, "NONE")
+
+  if (length(pdatasets)) {
+    showModal(
+      modalDialog(
+        title = "Filter samples for analysis",
+        size = "l",
+        fluidPage(
+          fluidRow(
+          )
+        )
+      )
+    )
+    
+  }
+  
 })
 
 # Show use alert ----------------------------------------------------------
