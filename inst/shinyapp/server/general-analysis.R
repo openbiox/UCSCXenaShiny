@@ -207,10 +207,10 @@ observeEvent(input$ga_filter_button, {
           XenaDownload(destdir = XENA_DEST) %>% 
           XenaPrepare(),
         rownames = FALSE,
-        extensions = c("Buttons"),
+        extensions = c("Buttons", "Select", "SearchPanes"),
         options = list(
           pageLength = 5,
-          dom = 'Bfrtip',
+          dom = 'PBfrtip',
           buttons = list(
             list(extend = "csv", text = "Download Current Page", filename = "page",
                  exportOptions = list(
@@ -227,7 +227,8 @@ observeEvent(input$ga_filter_button, {
           scrollX = 500,
           deferRender = TRUE,
           scroller = TRUE
-        )
+        ),
+        selection = 'none'
       )
     })
     
