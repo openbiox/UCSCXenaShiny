@@ -4,6 +4,8 @@ ui.modules_pancan_anatomy <- function(id) {
     titlePanel("Module: Gene Pancan Expression Anatomy Visualization"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
+        fluidRow(
+          column(9,
         selectizeInput(
           inputId = ns("Pancan_search"),
           label = NULL,
@@ -15,7 +17,17 @@ ui.modules_pancan_anatomy <- function(id) {
             placeholder = "Enter a gene symbol, e.g. TP53",
             plugins = list("restore_on_backspace")
           )
-        ),
+        )),
+      column(3,
+        shinyWidgets::actionBttn(
+          inputId = ns("search_bttn"), label = NULL,
+          style = "simple",
+          icon = icon("search"),
+          color = "primary",
+          block = FALSE,
+          size = "sm")
+        ))
+        ,
         shinyBS::bsPopover(ns("Pancan_search"),
           title = "Tips",
           content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
@@ -82,7 +94,7 @@ server.modules_pancan_anatomy <- function(input, output, session) {
   })
 
 
-  observeEvent(input$Pancan_search, {
+  observeEvent(input$search_bttn, {
     output$pancan_anatomy <- renderPlot({
       w$show() # Waiter add-ins
       plot_func()

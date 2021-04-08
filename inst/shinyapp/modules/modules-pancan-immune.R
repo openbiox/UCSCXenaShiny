@@ -4,6 +4,8 @@ ui.modules_pancan_immune <- function(id) {
     titlePanel("Module: Gene Pancan Expression vs Immune Gene Signature"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
+        fluidRow(
+          column(9,
         selectizeInput(
           inputId = ns("Pancan_search"),
           label = NULL,
@@ -15,7 +17,17 @@ ui.modules_pancan_immune <- function(id) {
             placeholder = "Enter a gene symbol, e.g. TP53",
             plugins = list("restore_on_backspace")
           )
-        ),
+        )),
+        column(3,
+               shinyWidgets::actionBttn(
+                 inputId = ns("search_bttn"), label = NULL,
+                 style = "simple",
+                 icon = icon("search"),
+                 color = "primary",
+                 block = FALSE,
+                 size = "sm")
+        ))
+        ,
         shinyBS::bsPopover(ns("Pancan_search"),
           title = "Tips",
           content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
@@ -100,7 +112,7 @@ server.modules_pancan_immune <- function(input, output, session) {
     return(p)
   })
 
-  observeEvent(input$Pancan_search, {
+  observeEvent(input$search_bttn, {
     # output$colorvalues = reactive({c(input$tumor_col,input$normal_col)
     #   })
     output$hm_gene_immune_cor <- renderPlot({

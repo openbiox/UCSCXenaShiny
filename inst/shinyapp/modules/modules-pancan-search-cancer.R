@@ -8,6 +8,8 @@ ui.modules_cancer_dist <- function(id) {
     titlePanel("Module: Gene Cancer Expression Distribution"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
+        fluidRow(
+          column(9,
         selectizeInput(
           inputId = ns("Pancan_search"),
           label = NULL,
@@ -19,7 +21,17 @@ ui.modules_cancer_dist <- function(id) {
             placeholder = "Enter a gene symbol, e.g. TP53",
             plugins = list("restore_on_backspace")
           )
-        ),
+        )),
+        column(3,
+               shinyWidgets::actionBttn(
+                 inputId = ns("search_bttn"), label = NULL,
+                 style = "simple",
+                 icon = icon("search"),
+                 color = "primary",
+                 block = FALSE,
+                 size = "sm")
+        ))
+        ,
         shinyBS::bsPopover(ns("Pancan_search"),
           title = "Tips",
           content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
@@ -98,7 +110,7 @@ server.modules_cancer_dist <- function(input, output, session) {
     return(p)
   })
 
-  observeEvent(input$Pancan_search, {
+  observeEvent(input$search_bttn, {
     output$gene_cancer_dist <- renderPlot({
       w$show() # Waiter add-ins
       plot_func()

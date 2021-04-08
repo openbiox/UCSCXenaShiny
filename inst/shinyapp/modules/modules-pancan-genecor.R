@@ -8,6 +8,8 @@ ui.modules_pancan_gene_cor <- function(id) {
     titlePanel("Module: TCGA Gene-Gene Correlation"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
+        fluidRow(
+          column(9,
         selectizeInput(
           inputId = ns("pancan_search1"),
           label = NULL,
@@ -19,7 +21,18 @@ ui.modules_pancan_gene_cor <- function(id) {
             placeholder = "Enter a gene symbol, e.g. CSF1R",
             plugins = list("restore_on_backspace")
           )
-        ),
+        )),
+        column(3,
+               shinyWidgets::actionBttn(
+                 inputId = ns("search_bttn"), label = NULL,
+                 style = "simple",
+                 icon = icon("search"),
+                 color = "primary",
+                 block = FALSE,
+                 size = "sm")
+        )),
+        fluidRow(
+          column(9,
         selectizeInput(
           inputId = ns("pancan_search2"),
           label = NULL,
@@ -31,7 +44,16 @@ ui.modules_pancan_gene_cor <- function(id) {
             placeholder = "Enter a gene symbol, e.g. JAK3",
             plugins = list("restore_on_backspace")
           )
-        ),
+        )),
+        column(3,
+               shinyWidgets::actionBttn(
+                 inputId = ns("search_bttn"), label = NULL,
+                 style = "simple",
+                 icon = icon("search"),
+                 color = "primary",
+                 block = FALSE,
+                 size = "sm")
+        )),
         materialSwitch(ns("purity_adj"), "Adjust Purity", inline = TRUE),
         selectInput(inputId = ns("Cancer"), label = "Filter Cancer", choices = choices, selected = "ACC"),
         width = 3
@@ -84,7 +106,7 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
     return(p)
   })
 
-  observeEvent(list(input$pancan_search1, input$pancan_search2), {
+  observeEvent(input$search_bttn, {
     output$gene_cor <- renderPlot({
       w$show() # Waiter add-ins
       plot_func()
