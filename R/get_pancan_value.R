@@ -219,7 +219,7 @@ get_pancan_mutation_status <- function(identifier) {
   host <- "pancanAtlasHub"
   dataset <- "mc3.v0.2.8.PUBLIC.nonsilentGene.xena"
   report_dataset_info(dataset)
-  
+
   data <- get_data(dataset, identifier, host)
 
   return(data)
@@ -254,7 +254,7 @@ get_pancan_methylation_value <- function(identifier, type = c("450K", "27K")) {
   }
 
   data <- get_data(dataset, identifier, host)
-  
+
   unit <- "beta value"
   report_dataset_info(dataset)
   res <- list(data = data, unit = unit)
@@ -266,7 +266,7 @@ get_pancan_methylation_value <- function(identifier, type = c("450K", "27K")) {
 get_pancan_miRNA_value <- function(identifier) {
   host <- "pancanAtlasHub"
   dataset <- "pancanMiRs_EBadjOnProtocolPlatformWithoutRepsWithUnCorrectMiRs_08_04_16.xena"
-  
+
   expression <- get_data(dataset, identifier, host)
 
   unit <- "log2(norm_value+1)"
@@ -351,10 +351,10 @@ save_data <- function(data, id, dataset, host) {
 
 get_data <- function(dataset, identifier, host = NULL) {
   stopifnot(length(dataset) == 1)
-  
+
   if (is.null(host)) {
-    host <- UCSCXenaTools::XenaData %>% 
-      dplyr::filter(.data$XenaDatasets == dataset) %>% 
+    host <- UCSCXenaTools::XenaData %>%
+      dplyr::filter(.data$XenaDatasets == dataset) %>%
       dplyr::pull(.data$XenaHostNames)
   }
   res <- check_exist_data(identifier, dataset, host)
@@ -362,8 +362,8 @@ get_data <- function(dataset, identifier, host = NULL) {
     value <- res$data
   } else {
     value <- get_pancan_value(identifier, dataset = dataset, host = host)
-    label <- UCSCXenaTools::XenaData %>% 
-      dplyr::filter(.data$XenaDatasets == dataset) %>% 
+    label <- UCSCXenaTools::XenaData %>%
+      dplyr::filter(.data$XenaDatasets == dataset) %>%
       dplyr::pull(.data$DataSubtype)
     attr(value, "label") <- label
     save_data(value, identifier, dataset, host)

@@ -52,5 +52,11 @@ samples <- c(
   "TCGA-05-4420-01"
 )
 vis_identifier_cor(dataset, id1, dataset, id2, samples)
+
+dataset1 <- "TCGA-BLCA.htseq_counts.tsv"
+dataset2 <- "TCGA-BLCA.gistic.tsv"
+id1 <- "TP53"
+id2 <- "KRAS"
+vis_identifier_cor(dataset1, id1, dataset2, id2)
 }
 }

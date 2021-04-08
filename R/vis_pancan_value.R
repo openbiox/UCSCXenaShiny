@@ -46,7 +46,7 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
   tcga_gtex <- load_data("tcga_gtex")
 
   t1 <- get_pancan_gene_value(identifier = Gene)$expression
-  
+
   # if (all(is.na(t1))) {
   #   message("All NAs returned, return NULL instead.")
   #   return(NULL)
@@ -791,7 +791,7 @@ vis_gene_cor <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, spl
 vis_gene_cor_cancer <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, split = FALSE, tissue = "ACC") {
   tcga_gtex <- load_data("tcga_gtex")
   tcga_purity <- load_data("tcga_purity")
-  
+
   tcga_purity$CPE <- as.numeric(tcga_purity$CPE)
   tcga_gtex <- tcga_gtex %>%
     dplyr::group_by(.data$tissue) %>%
@@ -808,12 +808,12 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TR
     dplyr::rename("tpm" = ".") %>%
     tibble::rownames_to_column(var = "sample") %>%
     dplyr::inner_join(tcga_gtex, by = "sample")
-  
+
   df <- data.frame(sample = t2$sample, tissue = t2$tissue, type2 = t2$type2, gene1 = t2$tpm, gene2 = t4$tpm, stringsAsFactors = F)
-  
+
   df %>%
     dplyr::left_join(tcga_purity, by = "sample") %>%
-    filter(.data$type2 == "tumor")  %>%
+    filter(.data$type2 == "tumor") %>%
     filter(.data$tissue == tissue) -> df
   # plot refer to https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
   if (split == FALSE) {
@@ -829,7 +829,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TR
         ggplot2::theme_minimal() +
         ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
         ggplot2::labs(x = Gene1, y = Gene2) +
-        ggplot2::ggtitle(paste0("TCGA ",tissue," dataset")) +
+        ggplot2::ggtitle(paste0("TCGA ", tissue, " dataset")) +
         ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar, "\n", "Cor_adj: ", round(partial_cor_res$cor_partial, 2), " ", partial_cor_res$pstar), x = x + 1, y = y, size = 10, colour = "black")
     } else {
       cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2")
@@ -841,7 +841,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TR
         ggplot2::theme_minimal() +
         ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
         ggplot2::labs(x = Gene1, y = Gene2) +
-        ggplot2::ggtitle(paste0("TCGA ",tissue," dataset")) +
+        ggplot2::ggtitle(paste0("TCGA ", tissue, " dataset")) +
         ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar), x = x + 1, y = y, size = 10, colour = "black")
     }
   }

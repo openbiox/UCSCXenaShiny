@@ -1,5 +1,5 @@
 #' Visualize Identifier-identifier Correlation
-#' 
+#'
 #' NOTE: the dataset must be dense matrix in UCSC Xena data hubs.
 #'
 #' @param id1 the first molecule identifier.
@@ -26,7 +26,7 @@
 #'   "TCGA-05-4420-01"
 #' )
 #' vis_identifier_cor(dataset, id1, dataset, id2, samples)
-#' 
+#'
 #' dataset1 <- "TCGA-BLCA.htseq_counts.tsv"
 #' dataset2 <- "TCGA-BLCA.gistic.tsv"
 #' id1 <- "TP53"
@@ -34,11 +34,11 @@
 #' vis_identifier_cor(dataset1, id1, dataset2, id2)
 #' }
 vis_identifier_cor <- function(
-  dataset1, id1, dataset2, id2, samples = NULL, 
-  use_simple_axis_label = TRUE,
-  line_color = "blue", alpha = 0.5, ...) {
+                               dataset1, id1, dataset2, id2, samples = NULL,
+                               use_simple_axis_label = TRUE,
+                               line_color = "blue", alpha = 0.5, ...) {
   stopifnot(length(id1) == 1, length(id2) == 1)
-  
+
   id1_value <- get_data(dataset1, id1)
   id2_value <- get_data(dataset2, id2)
 

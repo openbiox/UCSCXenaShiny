@@ -197,8 +197,11 @@ observeEvent(input$ga_filter_button, {
       XenaPrepare()
     
     output$ga_col_chooser <- renderUI({
+      all_cols <- colnames(phenotype_table)
+      sel_idx <- seq_len(min(length(all_cols), 5))
       chooserInput("ga_col_chooser", "Available columns", "Selected columns",
-                   colnames(phenotype_table)[-c(1:4)], colnames(phenotype_table)[1:4], size = 5, multiple = TRUE
+                   if (length(all_cols) == length(sel_idx)) c() else all_cols[-sel_idx], 
+                   all_cols[sel_idx], size = 5, multiple = TRUE
       )
     })
     
@@ -212,7 +215,7 @@ observeEvent(input$ga_filter_button, {
             phenotype_table %>% 
               dplyr::select(all_of(selected_cols)),
             rownames = FALSE,
-            extensions = c("Buttons", "Select", "SearchPanes", "Scroller"),
+            extensions = c("Buttons", "Select", "SearchPanes"), # "Scroller" causes bug in searchPanel
             options = list(
               dom = 'Bfrtip', # P
               buttons = list(
@@ -231,7 +234,7 @@ observeEvent(input$ga_filter_button, {
               scrollY = 350,
               scrollX = 300,
               deferRender = TRUE,
-              scroller = TRUE,
+              #scroller = TRUE,
               stateSave = TRUE
             ),
             selection = 'none'
@@ -242,7 +245,6 @@ observeEvent(input$ga_filter_button, {
       }
     })
     
-
     observeEvent(input$ga_phenotype_data_rows_all, {
       rows_filtered <- input$ga_phenotype_data_rows_all
       print(rows_filtered)
