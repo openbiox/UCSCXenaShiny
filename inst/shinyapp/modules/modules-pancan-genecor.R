@@ -56,11 +56,21 @@ ui.modules_pancan_gene_cor <- function(id) {
         )),
         materialSwitch(ns("purity_adj"), "Adjust Purity", inline = TRUE),
         selectInput(inputId = ns("Cancer"), label = "Filter Cancer", choices = choices, selected = "ACC"),
+        selectInput(
+          inputId = ns("cor_method"),
+          label = "Select Correlation method",
+          choices = c("spearman", "pearson"),
+          selected = "spearman"
+        ),
         width = 3
       ),
       mainPanel = mainPanel(
         plotOutput(ns("gene_cor"), height = "600px"),
-        width = 9
+        h5("NOTEs:"),
+        p("1. The data query may take some time based on your network. Wait until a plot shows"),
+        p("2. The unit of gene expression is log2(tpm+0.001)"),
+        p("3. You could choose correlation method or whether adjust tumor purity when calculating"),
+        width = 6
       )
     )
   )
@@ -98,7 +108,8 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
         Gene1 = input$pancan_search1,
         Gene2 = input$pancan_search2,
         purity_adj = input$purity_adj,
-        tissue = input$Cancer,
+        cancer_choose = input$Cancer,
+        cor_method = input$cor_method,
         split = FALSE
       )
     }

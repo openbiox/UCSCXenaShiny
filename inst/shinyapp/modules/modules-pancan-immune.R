@@ -67,6 +67,8 @@ ui.modules_pancan_immune <- function(id) {
       ),
       mainPanel(
         plotOutput(ns("hm_gene_immune_cor"), height = "500px"),
+        h5("NOTEs:"),
+        p("1. The immune signature data is from TCGA-Pancan Immune dataset"),
         width = 9
       )
     )

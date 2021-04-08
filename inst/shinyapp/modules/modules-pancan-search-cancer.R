@@ -68,6 +68,11 @@ ui.modules_cancer_dist <- function(id) {
       ),
       mainPanel = mainPanel(
         plotOutput(ns("gene_cancer_dist"), height = "600px"),
+        h5("NOTEs:"),
+        p("1. The data query may take some time based on your network. Wait until a plot shows"),
+        p("2. The unit of gene expression is log2(tpm+0.001)"),
+        p("3. You have to turn on both 'Show P value' and 'Show P label' to show significant labels"),
+        p("4. If a void plot shows, please check your input"),
         width = 9
       )
     )
