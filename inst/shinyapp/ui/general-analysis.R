@@ -32,7 +32,7 @@ ui.page_general_analysis <- function() {
                style = "bordered",
                color = "primary",
                size = "sm"
-             ),)
+             ))
     ),
     tags$br(),
     # navlistPanel is an alternative
