@@ -183,7 +183,6 @@ observeEvent(input$ga_filter_button, {
         size = "l",
         fluidPage(
           h4("1. Select available columns on the left to right"),
-          h6("NOTE: some useless columns are automatically filtered out by us."),
           fluidRow(
             uiOutput("ga_col_chooser")
           ),
