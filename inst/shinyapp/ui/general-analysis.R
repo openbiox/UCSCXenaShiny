@@ -38,7 +38,7 @@ ui.page_general_analysis <- function() {
     # navlistPanel is an alternative
     tabsetPanel(
       tabPanel(
-        "Correlation Analysis",
+        "Scatter-Correlation",
         fluidPage(
           fluidRow(
             column(3, 
@@ -67,6 +67,12 @@ ui.page_general_analysis <- function() {
                        plugins = list("restore_on_backspace")
                      )
                    ),
+                   materialSwitch(
+                     inputId = "ga_use_ggstats",
+                     label = "Use ggstatsplot?", 
+                     value = FALSE,
+                     status = "primary"
+                   ),
                    actionBttn(
                      inputId = "ga_go",
                      label = "Go!",
@@ -77,6 +83,7 @@ ui.page_general_analysis <- function() {
             column(6,
                    plotOutput("ga_output"),
                    tags$br(),
+                   h6("NOTE: The data table is not available when use ggstatsplot."),
                    tags$br(),
                    DT::dataTableOutput("ga_output_data")),
             column(3,
@@ -93,7 +100,10 @@ ui.page_general_analysis <- function() {
         )
       ),
       tabPanel(
-        "Comparison Analysis"
+        "Matrix-Correlation"
+      ),
+      tabPanel(
+        "Group-Comparison"
       )
     )
   )

@@ -97,14 +97,24 @@ observe({
   )
 })
 
+selected_samps <- reactiveValues(id = NULL)
 p_scatter <- eventReactive(input$ga_go, {
+  if (is.null(selected_samps$id)) {
+    message("All samples selected for analysis.")
+  } else {
+    message(length(selected_samps$id), " samples selected for analysis.")
+  }
   tryCatch(
     vis_identifier_cor(
       isolate(input$ga_data1_id),
       isolate(input$ga_data1_mid),
       isolate(input$ga_data2_id), 
-      isolate(input$ga_data2_mid)),
+      isolate(input$ga_data2_mid),
+      samples = isolate(selected_samps$id),
+      use_ggstats = isolate(input$ga_use_ggstats)),
     error = function(e) {
+      message("General analysis plot error:")
+      print(e$message)
       "Error"
     }
   )
@@ -113,8 +123,8 @@ p_scatter <- eventReactive(input$ga_go, {
 observeEvent(input$ga_go, {
   # Analyze correlation with 2 input datasets and identifiers
   output$ga_output <- renderPlot(
-    if (inherits(p_scatter(), "ggplot")) {
-      p_scatter()
+    if (inherits(p_scatter(), c("ggplot", "grob"))) {
+      print(p_scatter())
     } else {
       sendSweetAlert(
         session,
@@ -172,7 +182,7 @@ observeEvent(input$ga_filter_button, {
         title = "Filter samples for analysis",
         size = "l",
         fluidPage(
-          h4("Select available columns on the left to right"),
+          h4("1. Select available columns on the left to right"),
           h6("NOTE: some useless columns are automatically filtered out by us."),
           fluidRow(
             uiOutput("ga_col_chooser")
@@ -181,12 +191,24 @@ observeEvent(input$ga_filter_button, {
             inputId = "show_or_update_ptable",
             label = "Show/Update Phenotype Table",
             color = "primary",
-            style = "bordered"
+            style = "bordered",
+            size = "sm"
           ),
-          h4("Filter rows by searchPanel.\nFinally specify sample column and hit button."),
+          h4("2. Filter rows by SearchPanels"),
           fluidRow(
             DT::dataTableOutput("ga_phenotype_data")
-          )
+          ),
+          h4("3. Specify sample column and hit button"),
+          fluidRow(
+            uiOutput("ga_select_samp_col"),
+            actionBttn(
+              inputId = "ga_filter_submit_button",
+              label = "Submit to filter",
+              color = "primary",
+              style = "bordered", size = "sm"
+            )
+          ),
+          h4("4. After hitting button, dismiss this page and re-run plot (analysis) button")
         )
       )
     )
@@ -208,6 +230,7 @@ observeEvent(input$ga_filter_button, {
     observeEvent(input$show_or_update_ptable, {
       selected_cols <- isolate(input$ga_col_chooser$right)
       if (length(selected_cols)) {
+        message("Following columns selected by users from sample filter window.")
         print(selected_cols)
         
         output$ga_phenotype_data <- DT::renderDataTable(server = FALSE, {
@@ -240,14 +263,31 @@ observeEvent(input$ga_filter_button, {
             selection = 'none'
           )
         })
+        
       } else {
         sendSweetAlert(session, title = "Warning", type = "warn", text = "Please select at least 1 column!")
       }
     })
     
-    observeEvent(input$ga_phenotype_data_rows_all, {
-      rows_filtered <- input$ga_phenotype_data_rows_all
-      print(rows_filtered)
+    output$ga_select_samp_col <- renderUI({
+      selectInput(
+        inputId = "ga_select_samp_col",
+        label = "Select sample column:",
+        choices = c("NONE", input$ga_col_chooser$right),
+        selected = "NONE",
+        multiple = FALSE
+      )
+    })
+    observeEvent(input$ga_filter_submit_button, {
+      rows_filtered <- isolate(input$ga_phenotype_data_rows_all)
+      col_sample <- isolate(input$ga_select_samp_col)
+      keep_samples <- phenotype_table[rows_filtered, , drop = FALSE][[col_sample]]
+      message(length(keep_samples), " samples left after filtering.")
+      if (length(keep_samples) < 1) {
+        sendSweetAlert(session, title = "Error", text = "No samples left!", type = "error")
+      } else {
+        selected_samps$id <- keep_samples
+      }
     })
     
   } else {

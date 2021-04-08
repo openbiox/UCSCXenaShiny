@@ -67,7 +67,8 @@ Suggests:
     plyr,
     RColorBrewer (>= 1.1.2),
     rmarkdown,
-    testthat (>= 2.0.1)
+    testthat (>= 2.0.1),
+    ggstatsplot
 VignetteBuilder: 
     knitr
 Encoding: UTF-8

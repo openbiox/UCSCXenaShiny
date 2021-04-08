@@ -7,6 +7,7 @@
 #' @param dataset1 the dataset to obtain `id1`.
 #' @param dataset2 the dataset to obtain `id2`.
 #' @param samples default is `NULL`, can be common sample names for two datasets.
+#' @param use_ggstats if `TRUE`, use [ggstatsplot](https://github.com/IndrajeetPatil/ggstatsplot) package for plotting.
 #' @param use_simple_axis_label if `TRUE` (default), use simple axis labels.
 #' Otherwise, data subtype will be labeled.
 #' @param line_color set the color for regression line.
@@ -35,6 +36,7 @@
 #' }
 vis_identifier_cor <- function(
                                dataset1, id1, dataset2, id2, samples = NULL,
+                               use_ggstats = FALSE,
                                use_simple_axis_label = TRUE,
                                line_color = "blue", alpha = 0.5, ...) {
   stopifnot(length(id1) == 1, length(id2) == 1)
@@ -58,16 +60,30 @@ vis_identifier_cor <- function(
     df <- dplyr::filter(df, .data$sample %in% samples)
   }
 
-  eval(parse(text = "library(ggpubr)"))
-  p <- do.call("ggscatter", list(
-    data = df,
-    x = "X", y = "Y",
-    xlab = if (use_simple_axis_label) id1 else paste0(id1, "(", attr(id1_value, "label"), ")"),
-    ylab = if (use_simple_axis_label) id2 else paste0(id2, "(", attr(id2_value, "label"), ")"),
-    alpha = alpha,
-    add = "reg.line",
-    add.params = list(color = line_color, fill = "lightgray"),
-    cor.coef = TRUE, ...
-  ))
+  if (!use_ggstats) {
+    eval(parse(text = "library(ggpubr)"))
+    p <- do.call("ggscatter", list(
+      data = df,
+      x = "X", y = "Y",
+      xlab = if (use_simple_axis_label) id1 else paste0(id1, "(", attr(id1_value, "label"), ")"),
+      ylab = if (use_simple_axis_label) id2 else paste0(id2, "(", attr(id2_value, "label"), ")"),
+      alpha = alpha,
+      add = "reg.line",
+      add.params = list(color = line_color, fill = "lightgray"),
+      cor.coef = TRUE, ...
+    ))
+  } else {
+    if (!requireNamespace("ggstatsplot")) {
+      install.packages("ggstatsplot")
+    }
+    eval(parse(text = "library(ggstatsplot)"))
+    p <- do.call("ggscatterstats", list(
+      data = df,
+      x = "X", y = "Y",
+      xlab = if (use_simple_axis_label) id1 else paste0(id1, "(", attr(id1_value, "label"), ")"),
+      ylab = if (use_simple_axis_label) id2 else paste0(id2, "(", attr(id2_value, "label"), ")"),
+      ...
+    ))
+  }
   p
 }

@@ -10,6 +10,7 @@ vis_identifier_cor(
   dataset2,
   id2,
   samples = NULL,
+  use_ggstats = FALSE,
   use_simple_axis_label = TRUE,
   line_color = "blue",
   alpha = 0.5,
@@ -26,6 +27,8 @@ vis_identifier_cor(
 \item{id2}{the second molecule identifier.}
 
 \item{samples}{default is \code{NULL}, can be common sample names for two datasets.}
+
+\item{use_ggstats}{if \code{TRUE}, use \href{https://github.com/IndrajeetPatil/ggstatsplot}{ggstatsplot} package for plotting.}
 
 \item{use_simple_axis_label}{if \code{TRUE} (default), use simple axis labels.
 Otherwise, data subtype will be labeled.}
