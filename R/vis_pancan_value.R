@@ -815,9 +815,9 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TR
     dplyr::left_join(tcga_purity, by = "sample") %>%
     dplyr::filter(.data$type2 == "tumor") -> df
   df %>% dplyr::filter(.data$cancer_type == cancer_choose) -> df
-    
-  
-  
+
+
+
   # plot refer to https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
   if (split == FALSE) {
     if (purity_adj == TRUE) {
@@ -835,7 +835,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TR
         ggplot2::ggtitle(paste0("TCGA ", cancer_choose, " dataset")) +
         ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar, "\n", "Cor_adj: ", round(partial_cor_res$cor_partial, 2), " ", partial_cor_res$pstar), x = x + 1, y = y, size = 5, colour = "black")
     } else {
-      cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method )
+      cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
       df$pc <- predict(prcomp(~ gene1 + gene1, df))[, 1]
       x <- quantile(df$gene1)[1]
       y <- quantile(df$gene2)[5]

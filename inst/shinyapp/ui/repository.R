@@ -69,7 +69,8 @@ ui.page_repository <- function() {
         # use_waiter(),
         hr(),
         fluidRow(
-          column(offset = 1,
+          column(
+            offset = 1,
             4,
             actionBttn(
               inputId = "show_met",
@@ -87,7 +88,7 @@ ui.page_repository <- function() {
               label = "Request Data",
               style = "gradient",
               icon = icon("file"),
-              size="sm"
+              size = "sm"
             )
           ),
           column(
@@ -97,7 +98,7 @@ ui.page_repository <- function() {
               label = "Analyze Data",
               style = "gradient",
               icon = icon("chart-bar"),
-              size="sm"
+              size = "sm"
             )
           )
         ),

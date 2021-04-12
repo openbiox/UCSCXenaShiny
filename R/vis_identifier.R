@@ -34,8 +34,7 @@
 #' id2 <- "KRAS"
 #' vis_identifier_cor(dataset1, id1, dataset2, id2)
 #' }
-vis_identifier_cor <- function(
-                               dataset1, id1, dataset2, id2, samples = NULL,
+vis_identifier_cor <- function(dataset1, id1, dataset2, id2, samples = NULL,
                                use_ggstats = FALSE,
                                use_simple_axis_label = TRUE,
                                line_color = "blue", alpha = 0.5, ...) {
