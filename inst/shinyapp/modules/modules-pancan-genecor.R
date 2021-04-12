@@ -8,8 +8,6 @@ ui.modules_pancan_gene_cor <- function(id) {
     titlePanel("Module: TCGA Gene-Gene Correlation"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
-        fluidRow(
-          column(9,
         selectizeInput(
           inputId = ns("pancan_search1"),
           label = NULL,
@@ -21,18 +19,7 @@ ui.modules_pancan_gene_cor <- function(id) {
             placeholder = "Enter a gene symbol, e.g. CSF1R",
             plugins = list("restore_on_backspace")
           )
-        )),
-        column(3,
-               shinyWidgets::actionBttn(
-                 inputId = ns("search_bttn"), label = NULL,
-                 style = "simple",
-                 icon = icon("search"),
-                 color = "primary",
-                 block = FALSE,
-                 size = "sm")
-        )),
-        fluidRow(
-          column(9,
+        ),
         selectizeInput(
           inputId = ns("pancan_search2"),
           label = NULL,
@@ -44,16 +31,15 @@ ui.modules_pancan_gene_cor <- function(id) {
             placeholder = "Enter a gene symbol, e.g. JAK3",
             plugins = list("restore_on_backspace")
           )
-        )),
-        column(3,
-               shinyWidgets::actionBttn(
-                 inputId = ns("search_bttn"), label = NULL,
-                 style = "simple",
-                 icon = icon("search"),
-                 color = "primary",
-                 block = FALSE,
-                 size = "sm")
-        )),
+        ),
+        shinyWidgets::actionBttn(
+          inputId = ns("search_bttn"), label = NULL,
+          style = "simple",
+          icon = icon("search"),
+          color = "primary",
+          block = T,
+          size = "sm"),
+        br(),
         materialSwitch(ns("purity_adj"), "Adjust Purity", inline = TRUE),
         selectInput(inputId = ns("Cancer"), label = "Filter Cancer", choices = choices, selected = "ACC"),
         selectInput(

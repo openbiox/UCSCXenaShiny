@@ -182,32 +182,36 @@ observeEvent(input$ga_filter_button, {
         title = "Filter samples for analysis",
         size = "l",
         fluidPage(
+          wellPanel(
           h4("1. Select available columns on the left to right"),
-          fluidRow(
-            uiOutput("ga_col_chooser")
-          ),
+          uiOutput("ga_col_chooser"),
+          tags$hr(),
           actionBttn(
             inputId = "show_or_update_ptable",
             label = "Show/Update Phenotype Table",
             color = "primary",
             style = "bordered",
-            size = "sm"
+            size = "sm",
+            block = F)
           ),
+          wellPanel(
           h4("2. Filter rows by SearchPanels"),
-          fluidRow(
-            DT::dataTableOutput("ga_phenotype_data")
+          DT::dataTableOutput("ga_phenotype_data")
           ),
+          wellPanel(
           h4("3. Specify sample column and hit button"),
-          fluidRow(
             uiOutput("ga_select_samp_col"),
             actionBttn(
               inputId = "ga_filter_submit_button",
               label = "Submit to filter",
               color = "primary",
-              style = "bordered", size = "sm"
-            )
-          ),
+              style = "bordered", size = "sm",
+              block = F
+            ))
+          ,
+          wellPanel(
           h4("4. After hitting button, dismiss this page and re-run plot (analysis) button")
+          )
         )
       )
     )
