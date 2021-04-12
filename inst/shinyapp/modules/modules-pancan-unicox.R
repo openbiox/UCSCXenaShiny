@@ -5,29 +5,33 @@ ui.modules_pancan_unicox <- function(id) {
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidRow(
-          column(9,
-        selectizeInput(
-          inputId = ns("Pancan_search"),
-          label = NULL,
-          choices = NULL,
-          width = "100%",
-          options = list(
-            create = TRUE,
-            maxOptions = 5,
-            placeholder = "Enter a gene symbol, e.g. TP53",
-            plugins = list("restore_on_backspace")
+          column(
+            9,
+            selectizeInput(
+              inputId = ns("Pancan_search"),
+              label = NULL,
+              choices = NULL,
+              width = "100%",
+              options = list(
+                create = TRUE,
+                maxOptions = 5,
+                placeholder = "Enter a gene symbol, e.g. TP53",
+                plugins = list("restore_on_backspace")
+              )
+            )
+          ),
+          column(
+            3,
+            shinyWidgets::actionBttn(
+              inputId = ns("search_bttn"), label = NULL,
+              style = "simple",
+              icon = icon("search"),
+              color = "primary",
+              block = FALSE,
+              size = "sm"
+            )
           )
-        )),
-        column(3,
-               shinyWidgets::actionBttn(
-                 inputId = ns("search_bttn"), label = NULL,
-                 style = "simple",
-                 icon = icon("search"),
-                 color = "primary",
-                 block = FALSE,
-                 size = "sm")
-        ))
-        ,
+        ),
         shinyBS::bsPopover(ns("Pancan_search"),
           title = "Tips",
           content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
@@ -81,7 +85,7 @@ ui.modules_pancan_unicox <- function(id) {
 
 server.modules_pancan_unicox <- function(input, output, session) {
   ns <- session$ns
-  
+
   observe({
     updateSelectizeInput(
       session,
@@ -91,7 +95,7 @@ server.modules_pancan_unicox <- function(input, output, session) {
       server = TRUE
     )
   })
-  
+
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("unicox_gene_tree"), html = waiter::spin_hexdots(), color = "white")
 
@@ -127,9 +131,8 @@ server.modules_pancan_unicox <- function(input, output, session) {
         threshold = input$threshold,
         values = colors()
       )
-      
-      p = p + theme_cowplot()
-      
+
+      p <- p + theme_cowplot()
     }
 
     return(p)
