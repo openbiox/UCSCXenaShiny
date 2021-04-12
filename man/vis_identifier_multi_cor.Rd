@@ -22,7 +22,9 @@ vis_identifier_multi_cor(
 \arguments{
 \item{dataset}{the dataset to obtain identifiers.}
 
-\item{ids}{the first molecule identifiers.}
+\item{ids}{the molecule identifiers.}
+
+\item{samples}{default is \code{NULL}, can be common sample names for two datasets.}
 
 \item{matrix.type}{Character, \code{"upper"} (default), \code{"lower"}, or \code{"full"},
 display full matrix, lower triangular or upper triangular matrix.}

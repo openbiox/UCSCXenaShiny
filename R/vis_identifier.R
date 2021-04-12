@@ -88,12 +88,13 @@ vis_identifier_cor <- function(dataset1, id1, dataset2, id2, samples = NULL,
   p
 }
 
-#' Visualize Correlation for Multiple Identifiers 
+#' Visualize Correlation for Multiple Identifiers
 #'
 #' NOTE: the dataset must be dense matrix in UCSC Xena data hubs.
 #'
 #' @inheritParams ggstatsplot::ggcorrmat
-#' @param ids the first molecule identifiers.
+#' @inheritParams vis_identifier_cor
+#' @param ids the molecule identifiers.
 #' @param dataset the dataset to obtain identifiers.
 #' @param ... other parameters passing to [ggstatsplot::ggcorrmat].
 #' @export
@@ -118,7 +119,7 @@ vis_identifier_multi_cor <- function(dataset, ids, samples = NULL,
   matrix.type <- match.arg(matrix.type)
   type <- match.arg(type)
   p.adjust.method <- match.arg(p.adjust.method)
-  
+
   df <- purrr:::map(ids, function(x) {
     message("Querying data of identifier ", x, " from dataset: ", dataset)
     data <- get_data(dataset, x)
@@ -128,26 +129,124 @@ vis_identifier_multi_cor <- function(dataset, ids, samples = NULL,
     )
     colnames(data)[2] <- x
     data
-  }) %>% 
+  }) %>%
     purrr::reduce(dplyr::full_join, by = "sample")
-  
+
   if (!is.null(samples)) {
     df <- dplyr::filter(df, .data$sample %in% samples)
   }
-  
+
   if (!requireNamespace("ggstatsplot")) {
     install.packages("ggstatsplot")
   }
-  
+
   p <- ggstatsplot::ggcorrmat(
     data = df,
     matrix.type = matrix.type,
     type = type,
     partial = partial,
     sig.level = sig.level,
-    p.adjust.method = p.adjust.method, 
+    p.adjust.method = p.adjust.method,
     ...
   )
+
+  p
+}
+
+#' Visualize Comparison of an Molecule Identifier between Groups
+#'
+#' NOTE: the dataset must be dense matrix in UCSC Xena data hubs.
+#'
+#' @inheritParams ggstatsplot::ggbetweenstats
+#' @inheritParams vis_identifier_cor
+#' @param ids the molecule identifier.
+#' @param dataset the dataset to obtain identifiers.
+#' @param grp_df a `data.frame` with 2 or 3 columns.
+#' The first column refers to sample ID.
+#' The second column refers groups indicated in axis X.
+#' The third column is optional, which indicates group (facet) variable.
+#' @param ... other parameters passing to [ggstatsplot::ggbetweenstats] or [ggstatsplot::ggwithinstats].
+#' @export
+#' @return a (gg)plot object.
+#' @examples
+#' \dontrun{
+#' expr_dataset <- "TCGA.LUAD.sampleMap/HiSeqV2_percentile"
+#' cli_dataset <- "TCGA.LUAD.sampleMap/LUAD_clinicalMatrix"
+#' id <- "TP53"
+#' cli_df <- XenaGenerate(
+#'   subset = XenaDatasets == "TCGA.LUAD.sampleMap/LUAD_clinicalMatrix"
+#' ) %>%
+#'   XenaQuery() %>%
+#'   XenaDownload() %>%
+#'   XenaPrepare()
+#' # group data.frame with 2 columns
+#' vis_identifier_grp_comparison(expr_dataset, id, cli_df[, c("sampleID", "gender")])
+#' # group data.frame with 3 columns
+#' vis_identifier_grp_comparison(
+#'   expr_dataset, id,
+#'   cli_df[, c("sampleID", "pathologic_M", "gender")] %>%
+#'     dplyr::filter(pathologic_M %in% c("M0", "MX"))
+#' )
+#' }
+vis_identifier_grp_comparison <- function(dataset, id, grp_df, samples = NULL,
+                                          fun_type = c("betweenstats", "withinstats"),
+                                          type = c("parametric", "nonparametric", "robust", "bayes"),
+                                          pairwise.comparisons = TRUE,
+                                          p.adjust.method = c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"),
+                                          ggtheme = cowplot::theme_cowplot(),
+                                          ...) {
+  stopifnot(length(id) == 1, ncol(grp_df) > 1)
+  fun_type <- match.arg(fun_type)
+  type <- match.arg(type)
+  p.adjust.method <- match.arg(p.adjust.method)
+  colnames(grp_df)[1] <- "sample"
+
+  message("Querying data of identifier ", id, " from dataset ", dataset, " for comparison")
+  id_value <- get_data(dataset, id)
+  df <- dplyr::tibble(
+    sample = names(id_value),
+    X = as.numeric(id_value)
+  )
+  colnames(df)[2] <- id
+
+  df <- dplyr::inner_join(df, grp_df, by = "sample")
+
+  if (!is.null(samples)) {
+    df <- dplyr::filter(df, .data$sample %in% samples)
+  }
+
+  if (!requireNamespace("ggstatsplot")) {
+    install.packages("ggstatsplot")
+  }
+
+  if (ncol(grp_df) == 3L) {
+    fun <- if (fun_type == "betweenstats") ggstatsplot::grouped_ggbetweenstats else ggstatsplot::grouped_ggwithinstats
+
+    p <- fun(
+      data = df,
+      x = !!colnames(df)[3],
+      y = !!colnames(df)[2],
+      grouping.var = !!colnames(df)[4],
+      type  = type,
+      pairwise.comparisons = pairwise.comparisons,
+      p.adjust.method = p.adjust.method,
+      ggtheme = ggtheme,
+      ...
+    )
+  } else {
+    fun <- if (fun_type == "betweenstats") ggstatsplot::ggbetweenstats else ggstatsplot::ggwithinstats
+
+    p <- fun(
+      data = df,
+      x = !!colnames(df)[3],
+      y = !!colnames(df)[2],
+      type  = type,
+      pairwise.comparisons = pairwise.comparisons,
+      p.adjust.method = p.adjust.method,
+      ggtheme = ggtheme,
+      ...
+    )
+  }
 
   p
 }
