@@ -39,6 +39,9 @@ Otherwise, data subtype will be labeled.}
 
 \item{...}{other parameters passing to \href{http://rpkgs.datanovia.com/ggpubr/reference/ggscatter.html}{ggscatter}.}
 }
+\value{
+a (gg)plot object.
+}
 \description{
 NOTE: the dataset must be dense matrix in UCSC Xena data hubs.
 }

@@ -13,6 +13,7 @@
 #' @param line_color set the color for regression line.
 #' @param alpha set the alpha for dots.
 #' @param ... other parameters passing to [ggscatter](http://rpkgs.datanovia.com/ggpubr/reference/ggscatter.html).
+#' @return a (gg)plot object.
 #' @export
 #' @examples
 #' \dontrun{
@@ -34,8 +35,7 @@
 #' id2 <- "KRAS"
 #' vis_identifier_cor(dataset1, id1, dataset2, id2)
 #' }
-vis_identifier_cor <- function(
-                               dataset1, id1, dataset2, id2, samples = NULL,
+vis_identifier_cor <- function(dataset1, id1, dataset2, id2, samples = NULL,
                                use_ggstats = FALSE,
                                use_simple_axis_label = TRUE,
                                line_color = "blue", alpha = 0.5, ...) {
@@ -85,5 +85,69 @@ vis_identifier_cor <- function(
       ...
     ))
   }
+  p
+}
+
+#' Visualize Correlation for Multiple Identifiers 
+#'
+#' NOTE: the dataset must be dense matrix in UCSC Xena data hubs.
+#'
+#' @inheritParams ggstatsplot::ggcorrmat
+#' @param ids the first molecule identifiers.
+#' @param dataset the dataset to obtain identifiers.
+#' @param ... other parameters passing to [ggstatsplot::ggcorrmat].
+#' @export
+#' @return a (gg)plot object.
+#' @examples
+#' \dontrun{
+#' dataset <- "TcgaTargetGtex_rsem_isoform_tpm"
+#' ids <- c("TP53", "KRAS", "PTEN")
+#' vis_identifier_multi_cor(dataset, ids)
+#' }
+vis_identifier_multi_cor <- function(dataset, ids, samples = NULL,
+                                     matrix.type = c("full", "upper", "lower"),
+                                     type = c("parametric", "nonparametric", "robust", "bayes"),
+                                     partial = FALSE,
+                                     sig.level = 0.05,
+                                     p.adjust.method = c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"),
+                                     color_low = "#E69F00",
+                                     color_high = "#009E73",
+                                     ...) {
+  stopifnot(length(ids) >= 2)
+  colors <- c(color_low, "white", color_high)
+  matrix.type <- match.arg(matrix.type)
+  type <- match.arg(type)
+  p.adjust.method <- match.arg(p.adjust.method)
+  
+  df <- purrr:::map(ids, function(x) {
+    message("Querying data of identifier ", x, " from dataset: ", dataset)
+    data <- get_data(dataset, x)
+    data <- dplyr::tibble(
+      sample = names(data),
+      y = as.numeric(data)
+    )
+    colnames(data)[2] <- x
+    data
+  }) %>% 
+    purrr::reduce(dplyr::full_join, by = "sample")
+  
+  if (!is.null(samples)) {
+    df <- dplyr::filter(df, .data$sample %in% samples)
+  }
+  
+  if (!requireNamespace("ggstatsplot")) {
+    install.packages("ggstatsplot")
+  }
+  
+  p <- ggstatsplot::ggcorrmat(
+    data = df,
+    matrix.type = matrix.type,
+    type = type,
+    partial = partial,
+    sig.level = sig.level,
+    p.adjust.method = p.adjust.method, 
+    ...
+  )
+
   p
 }
