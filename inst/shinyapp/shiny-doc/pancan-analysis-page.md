@@ -2,9 +2,9 @@
 
 This module provides survival analysis feature for TCGA cohort based on data from multiple types of molecules including mRNA, transcript, mutation, etc. Please note:
 
-1. In most cases, you can just put **gene symbol** (e.g., *TP53*). When you choose to explore the transcipt and miRNA expression, you need iuput the **Ensembl ID** (e.g., **ENST00000141510**) and **miRNA ID** (e.g., **hsa-miR-128-3p**).
+1. In most cases, you can just put **gene symbol** (e.g., *TP53*). When you choose to explore the transcipt and miRNA expression, you need iuput the **Ensembl ID** (e.g., **ENST00000000233**) and **miRNA ID** (e.g., **hsa-miR-128-3p**).
 
-2. The definition and data of four major clinical outcome endpoints are from reference ***doi: 10.1016/j.cell.2018.02.052***.
+2. The definition and data of four major clinical outcome endpoints are from reference [***doi: 10.1016/j.cell.2018.02.052***](https://pubmed.ncbi.nlm.nih.gov/29625055/).
 
 3. When you choose **Auto** for **cut off mode**, the function of **surv_cutpoint {survminer package}** will be called.
 
