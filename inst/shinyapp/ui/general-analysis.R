@@ -78,20 +78,20 @@ ui.page_general_analysis <- function() {
                 value = FALSE,
                 status = "primary"
               ),
+              tags$p("NOTE: The data table is not available when use ggstatsplot."),
               actionBttn(
                 inputId = "ga_go",
-                label = "Go!",
-                color = "primary",
-                style = "bordered",
+                label = "Submit",
+                style = "gradient",
+                icon = icon("check"),
+                color = "default",
+                block = TRUE,
                 size = "sm"
               )
             ),
             column(
               6,
               plotOutput("ga_output"),
-              tags$br(),
-              h6("NOTE: The data table is not available when use ggstatsplot."),
-              tags$br(),
               DT::dataTableOutput("ga_output_data")
             ),
             column(

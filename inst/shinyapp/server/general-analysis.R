@@ -195,7 +195,7 @@ observeEvent(input$ga_filter_button, {
           wellPanel(
           h4("1. Select available columns on the left to right"),
           uiOutput("ga_col_chooser"),
-          tags$hr(),
+          tags$br(),
           actionBttn(
             inputId = "show_or_update_ptable",
             label = "Show/Update Phenotype Table",

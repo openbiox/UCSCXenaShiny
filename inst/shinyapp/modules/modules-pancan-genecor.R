@@ -8,62 +8,39 @@ ui.modules_pancan_gene_cor <- function(id) {
     titlePanel("Module: TCGA Gene-Gene Correlation"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
-        fluidRow(
-          column(
-            9,
-            selectizeInput(
-              inputId = ns("pancan_search1"),
-              label = NULL,
-              choices = NULL,
-              width = "100%",
-              options = list(
-                create = TRUE,
-                maxOptions = 5,
-                placeholder = "Enter a gene symbol, e.g. CSF1R",
-                plugins = list("restore_on_backspace")
-              )
-            )
-          ),
-          column(
-            3,
-            shinyWidgets::actionBttn(
-              inputId = ns("search_bttn"), label = NULL,
-              style = "simple",
-              icon = icon("search"),
-              color = "primary",
-              block = FALSE,
-              size = "sm"
-            )
+        selectizeInput(
+          inputId = ns("pancan_search1"),
+          label = NULL,
+          choices = NULL,
+          width = "100%",
+          options = list(
+            create = TRUE,
+            maxOptions = 5,
+            placeholder = "Enter a gene symbol, e.g. CSF1R",
+            plugins = list("restore_on_backspace")
           )
         ),
-        fluidRow(
-          column(
-            9,
-            selectizeInput(
-              inputId = ns("pancan_search2"),
-              label = NULL,
-              choices = NULL,
-              width = "100%",
-              options = list(
-                create = TRUE,
-                maxOptions = 5,
-                placeholder = "Enter a gene symbol, e.g. JAK3",
-                plugins = list("restore_on_backspace")
-              )
-            )
-          ),
-          column(
-            3,
-            shinyWidgets::actionBttn(
-              inputId = ns("search_bttn"), label = NULL,
-              style = "simple",
-              icon = icon("search"),
-              color = "primary",
-              block = FALSE,
-              size = "sm"
-            )
+        selectizeInput(
+          inputId = ns("pancan_search2"),
+          label = NULL,
+          choices = NULL,
+          width = "100%",
+          options = list(
+            create = TRUE,
+            maxOptions = 5,
+            placeholder = "Enter a gene symbol, e.g. JAK3",
+            plugins = list("restore_on_backspace")
           )
         ),
+        shinyWidgets::actionBttn(
+          inputId = ns("search_bttn"), label = NULL,
+          style = "simple",
+          icon = icon("search"),
+          color = "primary",
+          block = T,
+          size = "sm"
+        ),
+        tags$br(),
         materialSwitch(ns("purity_adj"), "Adjust Purity", inline = TRUE),
         selectInput(inputId = ns("Cancer"), label = "Filter Cancer", choices = choices, selected = "ACC"),
         selectInput(
