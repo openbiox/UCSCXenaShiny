@@ -47,6 +47,7 @@ pacman::p_load(
   fs,
   RColorBrewer,
   gganatogram,
+  ggstatsplot,
   zip
 )
 
