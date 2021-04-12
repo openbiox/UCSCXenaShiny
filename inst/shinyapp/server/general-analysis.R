@@ -4,24 +4,23 @@ selected_database_add_url_and_phenotype <- reactive({
     # Add phenotype datasets
     # Type == "clinicalMatrix"
     add_datasets <- dplyr::filter(
-      XenaData,
+      XenaData, 
       XenaCohorts %in% unique(data$XenaCohorts),
       Type == "clinicalMatrix",
-      !XenaDatasets %in% data$XenaDatasets
-    )
-
+      !XenaDatasets %in% data$XenaDatasets)
+    
     if (nrow(add_datasets) > 0) {
       message("Querying extra Phenotype datasets for pre-selected datasets.")
       add_query <- xe_query_url(add_datasets)
-
+      
       add_datasets$download <- unlist(lapply(add_query$url, function(x) {
         as.character(tags$a(href = x, "download link"))
       }))
       add_datasets$browse <- unlist(lapply(add_query$browse, function(x) {
         as.character(tags$a(href = x, "browse Xena dataset page"))
-      }))
-
-      data <- dplyr::bind_rows(data, add_datasets) %>%
+      })) 
+      
+      data <- dplyr::bind_rows(data, add_datasets) %>% 
         dplyr::arrange(XenaCohorts)
     }
   }
@@ -38,25 +37,20 @@ selected_database_rm_phenotype <- reactive({
   data
 })
 
-output$ga_dataset_table <- DT::renderDataTable(
-  {
-    show_table <- selected_database_add_url_and_phenotype()
-    if (!is.null(show_table)) {
-      # 同时载入同队列的 phenotype (and probemap?)
-      show_table <- show_table %>%
-        dplyr::select(c("XenaCohorts", "XenaDatasets", "SampleCount", "DataSubtype", "Label", "Type", "download", "browse"))
-      colnames(show_table)[1:4] <- c("Cohort", "Dataset", "N", "Subtype")
-    } else {
-      sendSweetAlert(session,
-        title = "Warning!", text = "Please select datasets from Repository page firstly",
-        type = "warning"
-      )
-    }
-
-    show_table
-  },
-  escape = FALSE
-)
+output$ga_dataset_table <- DT::renderDataTable({
+  show_table <- selected_database_add_url_and_phenotype() 
+  if (!is.null(show_table)) {
+    # 同时载入同队列的 phenotype (and probemap?)
+    show_table <- show_table %>% 
+      dplyr::select(c("XenaCohorts", "XenaDatasets", "SampleCount", "DataSubtype", "Label", "Type", "download", "browse"))
+    colnames(show_table)[1:4] <- c("Cohort", "Dataset", "N", "Subtype")
+  } else {
+    sendSweetAlert(session, title = "Warning!", text = "Please select datasets from Repository page firstly",
+                   type = "warning")
+  }
+  
+  show_table
+}, escape = FALSE)
 
 
 # Scatter and Correlation -------------------------------------------------------------
@@ -114,11 +108,10 @@ p_scatter <- eventReactive(input$ga_go, {
     vis_identifier_cor(
       isolate(input$ga_data1_id),
       isolate(input$ga_data1_mid),
-      isolate(input$ga_data2_id),
+      isolate(input$ga_data2_id), 
       isolate(input$ga_data2_mid),
       samples = isolate(selected_samps$id),
-      use_ggstats = isolate(input$ga_use_ggstats)
-    ),
+      use_ggstats = isolate(input$ga_use_ggstats)),
     error = function(e) {
       message("General analysis plot error:")
       print(e$message)
@@ -137,11 +130,10 @@ observeEvent(input$ga_go, {
         session,
         title = "Error",
         text = "Error to query data and plot. Please make sure the two selected datasets are 'genomicMatrix' type.",
-        type = "error"
-      )
+        type = "error")
     }
   )
-
+  
   output$ga_output_data <- DT::renderDataTable(server = FALSE, {
     if (inherits(p_scatter(), "ggplot")) {
       DT::datatable(
@@ -150,19 +142,17 @@ observeEvent(input$ga_go, {
         extensions = c("Buttons"),
         options = list(
           pageLength = 5,
-          dom = "Bfrtip",
+          dom = 'Bfrtip',
           buttons = list(
-            list(
-              extend = "csv", text = "Download Current Page", filename = "page",
-              exportOptions = list(
-                modifier = list(page = "current")
-              )
+            list(extend = "csv", text = "Download Current Page", filename = "page",
+                 exportOptions = list(
+                   modifier = list(page = "current")
+                 )
             ),
-            list(
-              extend = "csv", text = "Download Full Results", filename = "data",
-              exportOptions = list(
-                modifier = list(page = "all")
-              )
+            list(extend = "csv", text = "Download Full Results", filename = "data",
+                 exportOptions = list(
+                   modifier = list(page = "all")
+                 )
             )
           )
         )
@@ -225,65 +215,63 @@ observeEvent(input$ga_filter_button, {
         )
       )
     )
-
-    phenotype_table <- XenaGenerate(subset = XenaDatasets == pdataset) %>%
-      XenaQuery() %>%
-      XenaDownload(destdir = XENA_DEST) %>%
+    
+    phenotype_table <- XenaGenerate(subset = XenaDatasets == pdataset) %>% 
+      XenaQuery() %>% 
+      XenaDownload(destdir = XENA_DEST) %>% 
       XenaPrepare()
-
+    
     output$ga_col_chooser <- renderUI({
       all_cols <- colnames(phenotype_table)
       sel_idx <- seq_len(min(length(all_cols), 5))
       chooserInput("ga_col_chooser", "Available columns", "Selected columns",
-        if (length(all_cols) == length(sel_idx)) c() else all_cols[-sel_idx],
-        all_cols[sel_idx],
-        size = 5, multiple = TRUE
+                   if (length(all_cols) == length(sel_idx)) c() else all_cols[-sel_idx], 
+                   all_cols[sel_idx], size = 5, multiple = TRUE
       )
     })
-
+    
     observeEvent(input$show_or_update_ptable, {
       selected_cols <- isolate(input$ga_col_chooser$right)
       if (length(selected_cols)) {
         message("Following columns selected by users from sample filter window.")
         print(selected_cols)
-
+        
         output$ga_phenotype_data <- DT::renderDataTable(server = FALSE, {
           DT::datatable(
-            phenotype_table %>%
+            phenotype_table %>% 
               dplyr::select(all_of(selected_cols)),
             rownames = FALSE,
             extensions = c("Buttons", "Select", "SearchPanes"), # "Scroller" causes bug in searchPanel
             options = list(
-              dom = "Bfrtip", # P
+              dom = 'Bfrtip', # P
               buttons = list(
                 "searchPanes",
-                list(
-                  extend = "csv", text = "Download Current Page", filename = "page",
-                  exportOptions = list(
-                    modifier = list(page = "current")
-                  )
+                list(extend = "csv", text = "Download Current Page", filename = "page",
+                     exportOptions = list(
+                       modifier = list(page = "current")
+                     )
                 ),
-                list(
-                  extend = "csv", text = "Download Full Results", filename = "data",
-                  exportOptions = list(
-                    modifier = list(page = "all")
-                  )
+                list(extend = "csv", text = "Download Full Results", filename = "data",
+                     exportOptions = list(
+                       modifier = list(page = "all")
+                     )
                 )
               ),
               scrollY = 350,
               scrollX = 300,
               deferRender = TRUE,
-              # scroller = TRUE,
+              #scroller = TRUE,
               stateSave = TRUE
             ),
-            selection = "none"
+            selection = 'none'
           )
         })
+        
       } else {
         sendSweetAlert(session, title = "Warning", type = "warn", text = "Please select at least 1 column!")
       }
     })
-
+    
     output$ga_select_samp_col <- renderUI({
       selectInput(
         inputId = "ga_select_samp_col",
@@ -304,6 +292,7 @@ observeEvent(input$ga_filter_button, {
         selected_samps$id <- keep_samples
       }
     })
+    
   } else {
     sendSweetAlert(session, title = "Warning", type = "warn", text = "Please select a dataset!")
   }

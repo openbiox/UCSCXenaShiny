@@ -5,33 +5,29 @@ ui.modules_pancan_immune <- function(id) {
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidRow(
-          column(
-            9,
-            selectizeInput(
-              inputId = ns("Pancan_search"),
-              label = NULL,
-              choices = NULL,
-              width = "100%",
-              options = list(
-                create = TRUE,
-                maxOptions = 5,
-                placeholder = "Enter a gene symbol, e.g. TP53",
-                plugins = list("restore_on_backspace")
-              )
-            )
-          ),
-          column(
-            3,
-            shinyWidgets::actionBttn(
-              inputId = ns("search_bttn"), label = NULL,
-              style = "simple",
-              icon = icon("search"),
-              color = "primary",
-              block = FALSE,
-              size = "sm"
-            )
+          column(9,
+        selectizeInput(
+          inputId = ns("Pancan_search"),
+          label = NULL,
+          choices = NULL,
+          width = "100%",
+          options = list(
+            create = TRUE,
+            maxOptions = 5,
+            placeholder = "Enter a gene symbol, e.g. TP53",
+            plugins = list("restore_on_backspace")
           )
-        ),
+        )),
+        column(3,
+               shinyWidgets::actionBttn(
+                 inputId = ns("search_bttn"), label = NULL,
+                 style = "simple",
+                 icon = icon("search"),
+                 color = "primary",
+                 block = FALSE,
+                 size = "sm")
+        ))
+        ,
         shinyBS::bsPopover(ns("Pancan_search"),
           title = "Tips",
           content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
@@ -93,7 +89,7 @@ server.modules_pancan_immune <- function(input, output, session) {
   # })
   #
   ns <- session$ns
-
+  
   observe({
     updateSelectizeInput(
       session,
@@ -103,7 +99,7 @@ server.modules_pancan_immune <- function(input, output, session) {
       server = TRUE
     )
   })
-
+  
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("hm_gene_immune_cor"), html = waiter::spin_hexdots(), color = "white")
 

@@ -9,33 +9,29 @@ ui.modules_cancer_dist <- function(id) {
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidRow(
-          column(
-            9,
-            selectizeInput(
-              inputId = ns("Pancan_search"),
-              label = NULL,
-              choices = NULL,
-              width = "100%",
-              options = list(
-                create = TRUE,
-                maxOptions = 5,
-                placeholder = "Enter a gene symbol, e.g. TP53",
-                plugins = list("restore_on_backspace")
-              )
-            )
-          ),
-          column(
-            3,
-            shinyWidgets::actionBttn(
-              inputId = ns("search_bttn"), label = NULL,
-              style = "simple",
-              icon = icon("search"),
-              color = "primary",
-              block = FALSE,
-              size = "sm"
-            )
+          column(9,
+        selectizeInput(
+          inputId = ns("Pancan_search"),
+          label = NULL,
+          choices = NULL,
+          width = "100%",
+          options = list(
+            create = TRUE,
+            maxOptions = 5,
+            placeholder = "Enter a gene symbol, e.g. TP53",
+            plugins = list("restore_on_backspace")
           )
-        ),
+        )),
+        column(3,
+               shinyWidgets::actionBttn(
+                 inputId = ns("search_bttn"), label = NULL,
+                 style = "simple",
+                 icon = icon("search"),
+                 color = "primary",
+                 block = FALSE,
+                 size = "sm")
+        ))
+        ,
         shinyBS::bsPopover(ns("Pancan_search"),
           title = "Tips",
           content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
@@ -95,7 +91,7 @@ server.modules_cancer_dist <- function(input, output, session) {
       server = TRUE
     )
   })
-
+  
   colors <- reactive({
     c(input$tumor_col, input$normal_col)
   })
@@ -114,7 +110,7 @@ server.modules_cancer_dist <- function(input, output, session) {
         TCGA.only = input$pdist_dataset,
         values = colors()
       )
-      p <- p + theme_cowplot()
+      p = p + theme_cowplot()
     }
     return(p)
   })

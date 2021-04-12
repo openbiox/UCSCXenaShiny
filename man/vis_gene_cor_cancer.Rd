@@ -9,8 +9,7 @@ vis_gene_cor_cancer(
   Gene2 = "JAK3",
   purity_adj = TRUE,
   split = FALSE,
-  cancer_choose = "GBM",
-  cor_method = "spearman"
+  tissue = "ACC"
 )
 }
 \arguments{
