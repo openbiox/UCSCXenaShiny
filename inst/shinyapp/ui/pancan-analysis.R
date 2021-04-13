@@ -27,6 +27,10 @@ ui.page_pancan <- function() {
       ui.modules_pancan_immune("modules_pancan_immune")
     ),
     tabPanel(
+      "Module: Gene Pancan Expression vs TIL",
+      ui.modules_pancan_til("modules_pancan_til")
+    ),
+    tabPanel(
       "TCGA Survival Analysis",
       ui.modules_sur_plot("modules_sur_plot")
     ),
