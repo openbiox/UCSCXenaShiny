@@ -39,7 +39,7 @@ ui.modules_pancan_anatomy <- function(id) {
         ),
 
         selectInput(inputId = ns("Gender"), label = "Select Gender for plot", choices = c("Male", "Female"), selected = "Female"),
-        selectInput(inputId = ns("Pal"), label = "Select Color Palettes for plot", choices = c("A", "B", "C", "D", "E"), selected = "D"),
+        #selectInput(inputId = ns("Pal"), label = "Select Color Palettes for plot", choices = c("A", "B", "C", "D", "E"), selected = "D"),
         numericInput(inputId = ns("height"), label = "Height", value = 5),
         numericInput(inputId = ns("width"), label = "Width", value = 10),
         prettyRadioButtons(
@@ -90,8 +90,8 @@ server.modules_pancan_anatomy <- function(input, output, session) {
     if (nchar(input$Pancan_search) >= 1) {
       p <- vis_pancan_anatomy(
         Gene = input$Pancan_search,
-        Gender = input$Gender,
-        option = input$Pal
+        Gender = input$Gender
+        #option = input$Pal
       )
       return(p)
     }

@@ -100,7 +100,7 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
         split = FALSE
       )
     }
-    p <- p + theme_cowplot()
+    p <- p + theme_classic(base_size = 15)
     return(p)
   })
 
