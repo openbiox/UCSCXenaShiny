@@ -18,7 +18,7 @@ ui.modules_sur_plot <- function(id) {
         ),
         shinyBS::bsPopover(ns("item_input"),
           title = "Tips",
-          content = "Gene symbol: TP53; Ensembl: ENSG00000141510; miRNA ID: hsa-miR-128-3p;",
+          content = "e.g., Gene symbol: TP53; transcript: ENST00000000233; miRNA ID: hsa-miR-128-3p;",
           placement = "right", options = list(container = "body")
         ),
         shinyjs::hidden(
