@@ -170,6 +170,7 @@ vis_identifier_multi_cor <- function(dataset, ids, samples = NULL,
 #' @return a (gg)plot object.
 #' @examples
 #' \dontrun{
+#' library(UCSCXenaTools)
 #' expr_dataset <- "TCGA.LUAD.sampleMap/HiSeqV2_percentile"
 #' cli_dataset <- "TCGA.LUAD.sampleMap/LUAD_clinicalMatrix"
 #' id <- "TP53"

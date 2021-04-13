@@ -6,7 +6,7 @@
 \usage{
 query_value(
   identifier,
-  data_type = c("gene", "transcript", "protein", "mutation", "cnv", "methylation",
+  data_type = c("mRNA", "transcript", "protein", "mutation", "cnv", "methylation",
     "miRNA"),
   database = c("toil", "ccle")
 )

@@ -70,6 +70,7 @@ NOTE: the dataset must be dense matrix in UCSC Xena data hubs.
 }
 \examples{
 \dontrun{
+library(UCSCXenaTools)
 expr_dataset <- "TCGA.LUAD.sampleMap/HiSeqV2_percentile"
 cli_dataset <- "TCGA.LUAD.sampleMap/LUAD_clinicalMatrix"
 id <- "TP53"
