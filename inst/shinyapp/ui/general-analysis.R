@@ -43,71 +43,7 @@ ui.page_general_analysis <- function() {
     tabsetPanel(
       tabPanel(
         "Scatter-Correlation",
-        fluidPage(
-          fluidRow(
-            column(
-              3,
-              h4("Analysis Controls"),
-              uiOutput("ga_data1_id"),
-              selectizeInput(
-                inputId = "ga_data1_mid", # molecule identifier
-                label = "Dataset 1 molecule identifier:",
-                choices = NULL,
-                options = list(
-                  create = TRUE,
-                  maxOptions = 5,
-                  placeholder = "e.g. TP53",
-                  plugins = list("restore_on_backspace")
-                )
-              ),
-              uiOutput("ga_data2_id"),
-              selectizeInput(
-                inputId = "ga_data2_mid", # molecule identifier
-                label = "Dataset 2 molecule identifier:",
-                choices = NULL,
-                options = list(
-                  create = TRUE,
-                  maxOptions = 5,
-                  placeholder = "e.g. TP53",
-                  plugins = list("restore_on_backspace")
-                )
-              ),
-              materialSwitch(
-                inputId = "ga_use_ggstats",
-                label = "Use ggstatsplot?",
-                value = FALSE,
-                status = "primary"
-              ),
-              tags$p("NOTE: The data table is not available when use ggstatsplot."),
-              actionBttn(
-                inputId = "ga_go",
-                label = "Submit",
-                style = "gradient",
-                icon = icon("check"),
-                color = "default",
-                block = TRUE,
-                size = "sm"
-              )
-            ),
-            column(
-              6,
-              plotOutput("ga_output"),
-              DT::dataTableOutput("ga_output_data")
-            ),
-            column(
-              3,
-              h4("Sample Filters"),
-              uiOutput("ga_data_filter1_id"),
-              actionBttn(
-                inputId = "ga_filter_button",
-                label = "Click to filter!",
-                color = "primary",
-                style = "bordered",
-                size = "sm"
-              )
-            )
-          )
-        )
+        ui.modules_ga_scatter_correlation("module_ga_scatter_correlation")
       ),
       tabPanel(
         "Matrix-Correlation"
