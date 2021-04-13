@@ -55,6 +55,10 @@ the plot. Relevant only when \code{output = "plot"}.}
 comparisons. Possible methods are: \code{"holm"} (default), \code{"hochberg"},
 \code{"hommel"}, \code{"bonferroni"}, \code{"BH"}, \code{"BY"}, \code{"fdr"}, \code{"none"}.}
 
+\item{color_low}{the color code for lower value mapping.}
+
+\item{color_high}{the color code for higher value mapping.}
+
 \item{...}{other parameters passing to \link[ggstatsplot:ggcorrmat]{ggstatsplot::ggcorrmat}.}
 }
 \value{

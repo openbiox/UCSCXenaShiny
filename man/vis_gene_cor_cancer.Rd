@@ -22,7 +22,9 @@ vis_gene_cor_cancer(
 
 \item{split}{whether split by TCGA tumor tissue.}
 
-\item{tissue}{TCGA cohort name, e.g. "ACC".}
+\item{cancer_choose}{TCGA cohort name, e.g. "ACC".}
+
+\item{cor_method}{correlation method.}
 }
 \description{
 Visualize Gene-gene correlation in TCGA Cancer Type

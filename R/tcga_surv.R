@@ -16,6 +16,7 @@
 #' @param cutoff_mode mode for grouping samples, can be "Auto" (default) or "Custom".
 #' @param cutpoint cut point (in percent) for "Custom" mode, default is `c(50, 50)`.
 #' @param cnv_type only used when profile is "cnv", can select from `c("Duplicated", "Normal", "Deleted")`.
+#' @param data a subset of result from `tcga_surv_get()`.
 #'
 #' @return a `data.frame` or a plot.
 #' @export
@@ -55,7 +56,7 @@ tcga_surv_get <- function(item,
       LUNG = c("LUAD", "LUSC"),
       TCGA_cohort
     )
-    cliMat <- TCGA_cli_data %>% dplyr::filter(type %in% .type)
+    cliMat <- TCGA_cli_data %>% dplyr::filter(.data$type %in% .type)
   }
 
   message("Querying data of molecular ", item, " for survival analysis in TCGA cohort ", TCGA_cohort, ".")

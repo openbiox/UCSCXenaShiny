@@ -96,6 +96,8 @@ vis_identifier_cor <- function(dataset1, id1, dataset2, id2, samples = NULL,
 #' @inheritParams vis_identifier_cor
 #' @param ids the molecule identifiers.
 #' @param dataset the dataset to obtain identifiers.
+#' @param color_low the color code for lower value mapping.
+#' @param color_high the color code for higher value mapping.
 #' @param ... other parameters passing to [ggstatsplot::ggcorrmat].
 #' @export
 #' @return a (gg)plot object.
@@ -120,7 +122,7 @@ vis_identifier_multi_cor <- function(dataset, ids, samples = NULL,
   type <- match.arg(type)
   p.adjust.method <- match.arg(p.adjust.method)
 
-  df <- purrr:::map(ids, function(x) {
+  df <- purrr::map(ids, function(x) {
     message("Querying data of identifier ", x, " from dataset: ", dataset)
     data <- get_data(dataset, x)
     data <- dplyr::tibble(
@@ -159,8 +161,9 @@ vis_identifier_multi_cor <- function(dataset, ids, samples = NULL,
 #'
 #' @inheritParams ggstatsplot::ggbetweenstats
 #' @inheritParams vis_identifier_cor
-#' @param ids the molecule identifier.
+#' @param id the molecule identifier.
 #' @param dataset the dataset to obtain identifiers.
+#' @param fun_type select the function to compare groups.
 #' @param grp_df a `data.frame` with 2 or 3 columns.
 #' The first column refers to sample ID.
 #' The second column refers groups indicated in axis X.

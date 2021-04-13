@@ -35,6 +35,8 @@ tcga_surv_plot(
 \item{TCGA_cli_data}{a \code{data.frame} containing TCGA clinical data. Default use pre-compiled TCGA clinical data in
 this package.}
 
+\item{data}{a subset of result from \code{tcga_surv_get()}.}
+
 \item{time}{the column name for "time".}
 
 \item{status}{the column name for "status".}

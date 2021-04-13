@@ -21,12 +21,16 @@ vis_identifier_grp_comparison(
 \arguments{
 \item{dataset}{the dataset to obtain identifiers.}
 
+\item{id}{the molecule identifier.}
+
 \item{grp_df}{a \code{data.frame} with 2 or 3 columns.
 The first column refers to sample ID.
 The second column refers groups indicated in axis X.
 The third column is optional, which indicates group (facet) variable.}
 
 \item{samples}{default is \code{NULL}, can be common sample names for two datasets.}
+
+\item{fun_type}{select the function to compare groups.}
 
 \item{type}{A character specifying the type of statistical approach.
 Four possible options:
@@ -59,8 +63,6 @@ extension packages are allowed (e.g., \code{ggthemes::theme_fivethirtyeight()},
 \code{hrbrthemes::theme_ipsum_ps()}, etc.).}
 
 \item{...}{other parameters passing to \link[ggstatsplot:ggbetweenstats]{ggstatsplot::ggbetweenstats} or \link[ggstatsplot:ggwithinstats]{ggstatsplot::ggwithinstats}.}
-
-\item{ids}{the molecule identifier.}
 }
 \value{
 a (gg)plot object.

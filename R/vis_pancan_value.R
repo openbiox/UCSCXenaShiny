@@ -786,7 +786,8 @@ vis_gene_cor <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, spl
 #' @param Gene2 the second gene.
 #' @param purity_adj whether performing partial correlation adjusted by purity.
 #' @param split whether split by TCGA tumor tissue.
-#' @param tissue TCGA cohort name, e.g. "ACC".
+#' @param cancer_choose TCGA cohort name, e.g. "ACC".
+#' @param cor_method correlation method.
 #' @export
 vis_gene_cor_cancer <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, split = FALSE, cancer_choose = "GBM", cor_method = "spearman") {
   tcga_gtex <- load_data("tcga_gtex")
