@@ -435,7 +435,7 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_s
     cor_res_class_can <- purrr::map(cells, purrr::safely(function(i) {
       # i = cells[1]
       dd <- sss_can_class[sss_can_class$SetName == i, ]
-      dd <- stats::cor.test(dd$values, dd$score, method = Cor_method)
+      suppressWarnings(dd <- stats::cor.test(dd$values, dd$score, method = Cor_method))
       ddd <- data.frame(gene = Gene, immune_cells = i, cor = dd$estimate, p.value = dd$p.value, stringsAsFactors = FALSE)
       return(ddd)
     })) %>% magrittr::set_names(cells)
@@ -864,3 +864,91 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TR
   }
   return(p)
 }
+
+#' Heatmap visualization (correlation between immune signatures and gene)
+#'
+#' @inheritParams vis_toil_TvsN
+#' @param Cor_method correlation method
+#' @param sig Immune Signature, default: result from TIMER
+#' @examples
+#' \donttest{
+#' p <- vis_gene_TIL_cor(Gene = "TP53")
+#' }
+#' @export
+vis_gene_TIL_cor <- function(Gene = "TP53", Cor_method = "spearman", sig = c("B cell_TIMER",
+                                                                             "T cell CD4+_TIMER",
+                                                                             "T cell CD8+_TIMER",
+                                                                             "Neutrophil_TIMER", 
+                                                                             "Macrophage_TIMER",
+                                                                             "Myeloid dendritic cell_TIMER")) {
+  tcga_TIL <- load_data("tcga_TIL")
+  cell_type <- colnames(tcga_TIL)[-1]
+  source <- sapply(stringr::str_split(cell_type,"_"), function(x) x[2])
+  
+  tcga_gtex <- load_data("tcga_gtex")
+  
+  # we filter out normal tissue
+  tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
+  
+  t1 <- get_pancan_gene_value(identifier = Gene)$expression
+  
+  message(paste0("Get gene expression for ", Gene))
+  s <- data.frame(sample = names(t1), values = t1)
+  
+  ss <- s %>%
+    dplyr::inner_join(tcga_TIL, by = c("sample" = "cell_type")) %>%
+    dplyr::inner_join(tcga_gtex[, c("tissue", "sample")], by = "sample")
+  
+  sss <- split(ss, ss$tissue)
+  tissues <- names(sss)
+  cor_gene_immune <- purrr::map(tissues, purrr::safely(function(cancer) {
+    # cancer = "ACC"
+    sss_can <- sss[[cancer]]
+    ## filter cibersort data here
+    sss_can_class <- sss_can %>% select(c("sample","values",sig))
+    sss_can_class <- sss_can_class %>% pivot_longer(cols = c(3:ncol(.)), names_to = "SetName",values_to = "score")
+    sss_can_class <- sss_can_class[complete.cases(sss_can_class),]
+    cells <- unique(sss_can_class$SetName)
+    cor_res_class_can <- purrr::map(cells, purrr::safely(function(i) {
+      # i = cells[1]
+      dd <- sss_can_class[sss_can_class$SetName == i, ]
+      dd <- suppressWarnings(stats::cor.test(dd$values, dd$score, method = Cor_method))
+      ddd <- data.frame(gene = Gene, immune_cells = i, cor = dd$estimate, p.value = dd$p.value, stringsAsFactors = FALSE)
+      return(ddd)
+    })) %>% magrittr::set_names(cells)
+    cor_res_class_can <- cor_res_class_can %>%
+      purrr::map(~ .x$result) %>%
+      purrr::compact()
+    cor_res_class_can_df <- do.call(rbind.data.frame, cor_res_class_can)
+    cor_res_class_can_df$cancer <- cancer
+    return(cor_res_class_can_df)
+  })) %>% magrittr::set_names(tissues)
+  
+  cor_gene_immune <- cor_gene_immune %>%
+    purrr::map(~ .x$result) %>%
+    purrr::compact()
+  cor_gene_immune_df <- do.call(rbind.data.frame, cor_gene_immune)
+  data <- cor_gene_immune_df
+  data$pstar <- ifelse(data$p.value < 0.05,
+                       ifelse(data$p.value < 0.001, "***", ifelse(data$p.value < 0.01, "**", "*")),
+                       ""
+  )
+  
+  p <- ggplot2::ggplot(data, ggplot2::aes_string(x = "cancer", y = "immune_cells")) +
+    ggplot2::geom_tile(ggplot2::aes_string(fill = "cor"), colour = "white", size = 1) +
+    ggplot2::scale_fill_gradient2(low = "#377DB8", mid = "white", high = "#E31A1C") +
+    ggplot2::geom_text(ggplot2::aes_string(label = "pstar"), col = "black", size = 5) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
+      axis.title.x = ggplot2::element_blank(),
+      axis.ticks.x = ggplot2::element_blank(),
+      axis.title.y = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+      axis.text.y = ggplot2::element_text(size = 8)
+    ) +
+    ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "*** p < 0.001", "\n\n", "Correlation")) +
+    ggtitle(paste0("The correlation between ", Gene, " with immune signatures"))
+  
+  return(p)
+  
+  }
