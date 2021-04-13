@@ -5,7 +5,7 @@ output:
     toc: true
     toc_float: true
     toc_depth: 3
-author: ["Shixiang Wang", "XiongYi"]
+author: ["Shixiang Wang", "Yi Xiong", "Longfei Zhao", "Kai Gu", "Yin Li", "Fei Zhao"]
 date: "`r Sys.Date()`"
 vignette: >
   %\VignetteIndexEntry{Accessible Functions}
@@ -109,7 +109,7 @@ if (require("gganatogram")) {
 }
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, error=TRUE}
 tryCatch(
   knitr::include_graphics("https://gitee.com/ShixiangWang/ImageCollection/raw/master/png/20210322130516.png"),
   error = function(e) {
