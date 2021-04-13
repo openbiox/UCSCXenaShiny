@@ -4,13 +4,33 @@ ui.modules_pancan_unicox <- function(id) {
     titlePanel("Module: Gene Pancan Uni-cox analysis"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
-        shinyWidgets::searchInput(
-          inputId = ns("Pancan_search"),
-          label = NULL,
-          btnSearch = icon("search"),
-          btnReset = icon("remove"),
-          # placeholder = "Enter a gene symbol, e.g. TP53",
-          width = "100%"
+        fluidRow(
+          column(
+            9,
+            selectizeInput(
+              inputId = ns("Pancan_search"),
+              label = NULL,
+              choices = NULL,
+              width = "100%",
+              options = list(
+                create = TRUE,
+                maxOptions = 5,
+                placeholder = "Enter a gene symbol, e.g. TP53",
+                plugins = list("restore_on_backspace")
+              )
+            )
+          ),
+          column(
+            3,
+            shinyWidgets::actionBttn(
+              inputId = ns("search_bttn"), label = NULL,
+              style = "simple",
+              icon = icon("search"),
+              color = "primary",
+              block = FALSE,
+              size = "sm"
+            )
+          )
         ),
         shinyBS::bsPopover(ns("Pancan_search"),
           title = "Tips",
@@ -46,6 +66,9 @@ ui.modules_pancan_unicox <- function(id) {
       ),
       mainPanel = mainPanel(
         plotOutput(ns("unicox_gene_tree"), height = "500px"),
+        h5("NOTEs:"),
+        p("1. We define gene in certain cancer type as risky (log(Hazard Ratio) > 0) or protective (log(Hazard Ratio) < 0) or NS (No statistical significance, P value > 0.05)"),
+        p("2. We divide patients into different groups for comparison according to gene expression, you could choose the threshold for grouping (0.5 by default)"),
         DT::DTOutput(outputId = ns("tbl")),
         shinyjs::hidden(
           wellPanel(
@@ -53,7 +76,7 @@ ui.modules_pancan_unicox <- function(id) {
             downloadButton(ns("downloadTable"), "Save as csv")
           )
         ),
-        width = 9
+        width = 6
       )
     )
   )
@@ -62,6 +85,17 @@ ui.modules_pancan_unicox <- function(id) {
 
 server.modules_pancan_unicox <- function(input, output, session) {
   ns <- session$ns
+
+  observe({
+    updateSelectizeInput(
+      session,
+      "Pancan_search",
+      choices = pancan_identifiers$gene,
+      selected = "TP53",
+      server = TRUE
+    )
+  })
+
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("unicox_gene_tree"), html = waiter::spin_hexdots(), color = "white")
 
@@ -97,11 +131,14 @@ server.modules_pancan_unicox <- function(input, output, session) {
         threshold = input$threshold,
         values = colors()
       )
+
+      p <- p + theme_cowplot()
     }
+
     return(p)
   })
 
-  observeEvent(input$Pancan_search, {
+  observeEvent(input$search_bttn, {
     # output$colorvalues = reactive({c(input$tumor_col,input$normal_col)
     #   })
     output$unicox_gene_tree <- renderPlot({
@@ -130,11 +167,14 @@ server.modules_pancan_unicox <- function(input, output, session) {
     }
   )
 
-
-  output$tbl <- renderDT(
-    data <- return_data(),
-    options = list(lengthChange = FALSE)
-  )
+  observeEvent(input$search_bttn, {
+    output$tbl <- renderDT(
+      data <- return_data(),
+      options = list(lengthChange = FALSE)
+    )
+  })
+  
+ 
 
   output$downloadTable <- downloadHandler(
     filename = function() {

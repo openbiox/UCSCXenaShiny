@@ -101,19 +101,24 @@ selected_database <- reactive({
   }
 })
 
+selected_database_add_url <- reactive({
+  data <- selected_database()
+  if (!is.null(data)) {
+    data$download <- unlist(lapply(query_url()$url, function(x) {
+      as.character(tags$a(href = x, "download link"))
+    }))
+    data$browse <- unlist(lapply(query_url()$browse, function(x) {
+      as.character(tags$a(href = x, "browse Xena dataset page"))
+    }))
+  }
+  data
+})
+
+
 query_url <- reactive({
   s <- input$xena_table_rows_selected
   if (!is.null(s)) {
-    data <- selected_database()
-    xe <-
-      UCSCXenaTools::XenaGenerate(subset = XenaDatasets %in% data$XenaDatasets)
-    xe_query <- UCSCXenaTools::XenaQuery(xe)
-    xe_query$browse <- utils::URLencode(
-      paste0(
-        "https://xenabrowser.net/datapages/?",
-        "dataset=", xe_query$datasets, "&host=", xe_query$hosts
-      )
-    )
+    xe_query <- xe_query_url(selected_database())
     return(xe_query)
   }
 })
@@ -130,18 +135,18 @@ observe({
   s <- input$xena_table_rows_selected
 
   if (length(s) > 0) {
-    data <- selected_database()
+    data <- selected_database_add_url()
 
     w$show() # Waiter add-ins
-    urls <- unlist(lapply(query_url()$url, function(x) {
-      as.character(tags$a(href = x, "download link"))
-    }))
-    xena_pages <- unlist(lapply(query_url()$browse, function(x) {
-      as.character(tags$a(href = x, "browse Xena dataset page"))
-    }))
-    Sys.sleep(1)
+    # urls <- unlist(lapply(query_url()$url, function(x) {
+    #   as.character(tags$a(href = x, "download link"))
+    # }))
+    # xena_pages <- unlist(lapply(query_url()$browse, function(x) {
+    #   as.character(tags$a(href = x, "browse Xena dataset page"))
+    # }))
+    Sys.sleep(0.5)
 
-    if (length(urls) > 0) {
+    if (length(data$download) > 0) {
       output$table <- renderTable(
         {
           tryCatch(
@@ -149,8 +154,8 @@ observe({
               No = seq_along(s),
               CohortName = data$XenaCohorts,
               Label = data$Label,
-              Download = urls,
-              Browse = xena_pages
+              Download = data$download,
+              Browse = data$browse
             ),
             error = function(e) {
               message("Detect error from data.frame construction, no pain.")
@@ -322,7 +327,7 @@ if (xena.runMode == "client") {
               xe_download,
               UCSCXenaTools::XenaDownload(
                 query_url()[i, ],
-                destdir = path.expand("~/.xenashiny/datasets"),
+                destdir = XENA_DEST,
                 download_probeMap = TRUE,
                 trans_slash = TRUE
               )
@@ -331,12 +336,12 @@ if (xena.runMode == "client") {
             Sys.sleep(0.05)
           }
           zip::zipr(
-            zipfile = file.path(tempdir(), "xena-datasets.zip"),
+            zipfile = file.path(XENA_DEST, "xena-datasets.zip"),
             files = xe_download$destfiles, recurse = FALSE
           )
           incProgress(1 / 4)
-          file.copy(file.path(tempdir(), "xena-datasets.zip"), file)
-          file.remove(file.path(tempdir(), "xena-datasets.zip"))
+          file.copy(file.path(XENA_DEST, "xena-datasets.zip"), file)
+          file.remove(file.path(XENA_DEST, "xena-datasets.zip"))
           incProgress(1 / 4)
         }
       )
@@ -413,7 +418,7 @@ observeEvent(input$use_repository, {
       "Firstly, filter dataset table based on left filters or right search bar.",
       "Secondly, select datasets by clicking corresponding rows in dataset table.",
       "Lastly, click the button under the dataset table to check metadata or download datasets.",
-      sep = "\n"
+      sep = "\n\n"
     ),
     type = "info",
     timer = 0,

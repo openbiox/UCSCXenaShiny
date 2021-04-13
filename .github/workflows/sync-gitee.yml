@@ -16,3 +16,4 @@ jobs:
         dst_token: ${{ secrets.GITEE_TOKEN }}
         account_type: org
         white_list: 'UCSCXenaShiny'
+        force_update: true

@@ -4,13 +4,33 @@ ui.modules_pancan_anatomy <- function(id) {
     titlePanel("Module: Gene Pancan Expression Anatomy Visualization"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
-        shinyWidgets::searchInput(
-          inputId = ns("Pancan_search"),
-          label = NULL,
-          btnSearch = icon("search"),
-          btnReset = icon("remove"),
-          # placeholder = "Enter a gene symbol, e.g. TP53",
-          width = "100%"
+        fluidRow(
+          column(
+            9,
+            selectizeInput(
+              inputId = ns("Pancan_search"),
+              label = NULL,
+              choices = NULL,
+              width = "100%",
+              options = list(
+                create = TRUE,
+                maxOptions = 5,
+                placeholder = "Enter a gene symbol, e.g. TP53",
+                plugins = list("restore_on_backspace")
+              )
+            )
+          ),
+          column(
+            3,
+            shinyWidgets::actionBttn(
+              inputId = ns("search_bttn"), label = NULL,
+              style = "simple",
+              icon = icon("search"),
+              color = "primary",
+              block = FALSE,
+              size = "sm"
+            )
+          )
         ),
         shinyBS::bsPopover(ns("Pancan_search"),
           title = "Tips",
@@ -53,6 +73,16 @@ ui.modules_pancan_anatomy <- function(id) {
 server.modules_pancan_anatomy <- function(input, output, session) {
   ns <- session$ns
 
+  observe({
+    updateSelectizeInput(
+      session,
+      "Pancan_search",
+      choices = pancan_identifiers$gene,
+      selected = "TP53",
+      server = TRUE
+    )
+  })
+
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("pancan_anatomy"), html = waiter::spin_hexdots(), color = "white")
 
@@ -68,7 +98,7 @@ server.modules_pancan_anatomy <- function(input, output, session) {
   })
 
 
-  observeEvent(input$Pancan_search, {
+  observeEvent(input$search_bttn, {
     output$pancan_anatomy <- renderPlot({
       w$show() # Waiter add-ins
       plot_func()

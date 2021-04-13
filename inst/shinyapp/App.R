@@ -47,12 +47,14 @@ pacman::p_load(
   fs,
   RColorBrewer,
   gganatogram,
+  ggstatsplot,
   zip
 )
 
 if (packageVersion("UCSCXenaTools") < "1.4.4") {
-  warning("UCSCXenaTools <1.4.4, this shiny has a known issue (the download button cannot be used) to work with it. Please upate this package!", 
-          immediate. = TRUE)
+  warning("UCSCXenaTools <1.4.4, this shiny has a known issue (the download button cannot be used) to work with it. Please upate this package!",
+    immediate. = TRUE
+  )
 }
 
 message("Starting...")
@@ -88,6 +90,11 @@ pancan_identifiers <- readRDS(
     package = "UCSCXenaShiny"
   )
 )
+all_preload_identifiers <- c("NONE", as.character(unlist(pancan_identifiers)))
+
+phenotype_datasets <- UCSCXenaTools::XenaData %>%
+  dplyr::filter(Type == "clinicalMatrix") %>%
+  dplyr::pull(XenaDatasets)
 
 themes_list <- list(
   "cowplot" = cowplot::theme_cowplot(),
@@ -115,6 +122,17 @@ Xena_summary <- dplyr::group_by(xena_table, Hub) %>%
 # global color
 mycolor <- c(RColorBrewer::brewer.pal(12, "Paired"))
 
+# Cache file dest directory
+XENA_DEST <- if (xena.runMode == "client") {
+  file.path(tempdir(), "UCSCXenaShiny")
+} else {
+  path.expand("~/.xenashiny/datasets")
+}
+
+if (!dir.exists(XENA_DEST)) {
+  dir.create(XENA_DEST, recursive = TRUE)
+}
+
 # Put modules here --------------------------------------------------------
 modules_path <- system.file("shinyapp", "modules", package = "UCSCXenaShiny", mustWork = TRUE)
 modules_file <- dir(modules_path, pattern = "\\.R$", full.names = TRUE)
@@ -137,8 +155,41 @@ server_file <- function(x) {
 
 
 # Set utility functions ---------------------------------------------------
+QUERY_CACHE <- dplyr::tibble()
+xe_query_url <- function(data, use_cache = TRUE) {
+  if (use_cache) {
+    if (nrow(QUERY_CACHE) == 0) {
+      non_exist_idx <- !data$XenaDatasets %in% NULL
+    } else {
+      non_exist_idx <- !data$XenaDatasets %in% QUERY_CACHE$datasets
+    }
+    if (any(non_exist_idx)) {
+      non_exist_query <- xe_query_url(data[non_exist_idx, , drop = FALSE], use_cache = FALSE)
+      QUERY_CACHE <<- dplyr::bind_rows(
+        QUERY_CACHE,
+        non_exist_query
+      )
+    }
 
+    xe_query <- dplyr::filter(QUERY_CACHE, QUERY_CACHE$datasets %in% data$XenaDatasets)
+  } else {
+    xe <-
+      UCSCXenaTools::XenaGenerate(subset = XenaDatasets %in% data$XenaDatasets)
 
+    xe_query <- UCSCXenaTools::XenaQuery(xe)
+    xe_query$browse <- purrr::map2(
+      xe_query$datasets, xe_query$hosts,
+      ~ utils::URLencode(
+        paste0(
+          "https://xenabrowser.net/datapages/?",
+          "dataset=", .x, "&host=", .y
+        )
+      )
+    ) %>% unlist()
+  }
+
+  return(xe_query)
+}
 
 # UI part ----------------------------------------------------------------------
 ui <- tagList(
@@ -170,6 +221,7 @@ ui <- tagList(
     ui.page_help(),
     ui.page_developers(),
     footer = ui.footer(),
+    collapsible = TRUE,
     theme = shinythemes::shinytheme("flatly")
   )
 )
@@ -184,6 +236,7 @@ server <- function(input, output, session) {
   source(server_file("repository.R"), local = TRUE)
   source(server_file("modules.R"), local = TRUE)
   source(server_file("global.R"), local = TRUE)
+  source(server_file("general-analysis.R"), local = TRUE)
 }
 
 # Run web app -------------------------------------------------------------

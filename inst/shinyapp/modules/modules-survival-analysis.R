@@ -11,14 +11,14 @@ ui.modules_sur_plot <- function(id) {
         ),
 
         shinyWidgets::prettyRadioButtons(
-          inputId = ns("profiles"), label = "Select a genomic profiles:",
-          choiceValues = c("mRNA", "transcript", "miRNA", "mutation", "cnv", "met", "protein"),
+          inputId = ns("profile"), label = "Select a genomic profile:",
+          choiceValues = c("mRNA", "transcript", "miRNA", "mutation", "cnv", "methylation", "protein"),
           choiceNames = c("mRNA Expression", "Transcript Expression", "miRNA Expression", "Mutations", "Copy Number Variation", "DNA Methylation", "Protein Expression"),
           animation = "jelly"
         ),
         shinyBS::bsPopover(ns("item_input"),
           title = "Tips",
-          content = "Gene symbol: TP53; Ensembl: ENSG00000141510; miRNA ID: hsa-miR-128-3p;",
+          content = "e.g., Gene symbol: TP53; transcript: ENST00000000233; miRNA ID: hsa-miR-128-3p;",
           placement = "right", options = list(container = "body")
         ),
         shinyjs::hidden(
@@ -106,10 +106,10 @@ ui.modules_sur_plot <- function(id) {
           ),
 
           conditionalPanel(
-            condition = "input.profiles == 'mRNA' | input.profiles == 'protein' | input.profiles == 'miRNA' | input.profiles == 'met' | input.profiles == 'transcript'",
+            condition = "input.profile == 'mRNA' | input.profile == 'protein' | input.profile == 'miRNA' | input.profile == 'methylation' | input.profile == 'transcript'",
             ns = ns,
             shinyWidgets::prettyRadioButtons(
-              inputId = ns("cut_off_mode"),
+              inputId = ns("cutoff_mode"),
               label = "Cut off mode",
               choices = c("Auto", "Custom"),
               inline = TRUE,
@@ -117,7 +117,7 @@ ui.modules_sur_plot <- function(id) {
               animation = "jelly"
             ),
             conditionalPanel(
-              condition = "input.cut_off_mode == 'Custom'", ns = ns,
+              condition = "input.cutoff_mode == 'Custom'", ns = ns,
               sliderInput(
                 inputId = ns("cutpoint"), label = "Cut off (%)",
                 min = 25, max = 75, value = c(50, 50)
@@ -129,17 +129,17 @@ ui.modules_sur_plot <- function(id) {
           ),
 
           conditionalPanel(
-            condition = "input.profiles == 'mutation'", ns = ns,
+            condition = "input.profile == 'mutation'", ns = ns,
             tags$p("Note: In TCGA somatic mutation (SNP and INDEL) dataset, mutation type is represented by 1 and wild type is 0.")
           ),
 
           conditionalPanel(
-            condition = "input.profiles == 'cnv'", ns = ns,
+            condition = "input.profile == 'cnv'", ns = ns,
             awesomeCheckboxGroup(
               inputId = ns("cs_cnv"),
               label = "Select CNV type.",
-              choices = c("Normal", "duplicated", "deleted"),
-              selected = c("Normal", "duplicated", "deleted"),
+              choices = c("Normal", "Duplicated", "Deleted"),
+              selected = c("Normal", "Duplicated", "Deleted"),
               # status = "danger",
               width = "120%",
               inline = TRUE
@@ -194,7 +194,7 @@ server.modules_sur_plot <- function(input, output, session) {
   ns <- session$ns
   # Global monitoring
   observe({
-    if (input$profiles == "protein") {
+    if (input$profile == "protein") {
       shinyjs::hide(id = "item_input")
       shinyjs::show(id = "protein_input")
     } else {
@@ -228,7 +228,7 @@ server.modules_sur_plot <- function(input, output, session) {
 
   # Action monitoring
   observeEvent(input$submit_bt, {
-    if (input$profiles == "gene" & input$item_input == "") {
+    if (input$profile == "gene" & input$item_input == "") {
       sendSweetAlert(
         session = session,
         title = "Error...",
@@ -249,15 +249,15 @@ server.modules_sur_plot <- function(input, output, session) {
 
   # block
   sur_dat_pre <- eventReactive(input$submit_bt, {
-    if (input$profiles == "protein") {
-      sur_get(
+    if (input$profile == "protein") {
+      tcga_surv_get(
         TCGA_cohort = input$dataset, item = input$protein_input,
-        profile = input$profiles, TCGA_cli_data = TCGA_cli_merged
+        profile = input$profile, TCGA_cli_data = TCGA_cli_merged
       )
     } else {
-      sur_get(
+      tcga_surv_get(
         TCGA_cohort = input$dataset, item = input$item_input,
-        profile = input$profiles, TCGA_cli_data = TCGA_cli_merged
+        profile = input$profile, TCGA_cli_data = TCGA_cli_merged
       )
     }
   }, )
@@ -274,14 +274,14 @@ server.modules_sur_plot <- function(input, output, session) {
     )
   })
   plot_text <- eventReactive(input$go, {
-    if (input$profiles == "protein") {
+    if (input$profile == "protein") {
       item_show <- input$protein_input
     } else {
       item_show <- input$item_input
     }
     paste(
       paste("Dataset :", input$dataset),
-      paste("Profiles :", input$profiles),
+      paste("Profile :", input$profile),
       paste("Item :", item_show),
       paste("Number of cases :", nrow(filter_dat())),
       sep = "\n"
@@ -291,20 +291,18 @@ server.modules_sur_plot <- function(input, output, session) {
   plot_func <- eventReactive(input$go, {
     if (!is.null(filter_dat())) {
       if (nrow(filter_dat()) >= 10) {
-        if (input$profiles %in% c("mRNA", "miRNA", "met", "transcript", "protein")) {
-          p <- sur_plot(filter_dat(), input$cut_off_mode, input$cutpoint)
-        } else if (input$profiles == "mutation") {
-          p <- sur_plot_mut(filter_dat())
-          if (is.null(p)) {
-            sendSweetAlert(
-              session = session,
-              title = "Error...",
-              text = "There is only one genotype for this gene.",
-              type = "error"
-            )
-          }
-        } else if (input$profiles == "cnv") {
-          p <- sur_plot_cnv(filter_dat(), opt = input$cs_cnv)
+        p <- tcga_surv_plot(filter_dat(), 
+                            cutoff_mode = input$cutoff_mode,
+                            cutpoint = input$cutpoint,
+                            cnv_type = input$cs_cnv,
+                            profile = input$profile)
+        if (is.null(p)) {
+          sendSweetAlert(
+            session = session,
+            title = "Error...",
+            text = "Something wrong, maybe only one genotype for this gene or bad input item.",
+            type = "error"
+          )
         }
         return(p)
       } else {
@@ -359,66 +357,8 @@ server.modules_sur_plot <- function(input, output, session) {
   )
 }
 
-# data load ----------------------------------------------------------------
 
-
-# function ---------------------------------------------------------------------------
-
-## Retrieve and pre-download file
-sur_get <- function(TCGA_cohort, item, profile, TCGA_cli_data) {
-  print(head(TCGA_cli_data))
-  # type 有几种额外的 Xena 做过聚合的结果
-  # "COADREAD" "FPPP"     "GBMLGG"   "LUNG"     "PANCAN"
-  # FPPP 好像不是正常的样本，不推荐使用，已去除
-  if (TCGA_cohort == "PANCAN") {
-    cliMat <- TCGA_cli_data
-  } else {
-    .type <- switch(TCGA_cohort,
-      COADREAD = c("COAD", "READ"),
-      GBMLGG = c("GBM", "LGG"),
-      LUNG = c("LUAD", "LUSC"),
-      TCGA_cohort
-    )
-    cliMat <- TCGA_cli_data %>% dplyr::filter(type %in% .type)
-  }
-
-  if (profile == "mRNA") {
-    gd <- get_pancan_gene_value(item)$expression
-  } else if (profile == "mutation") {
-    gd <- get_pancan_mutation_status(item)
-  } else if (profile == "protein") {
-    gd <- get_pancan_protein_value(item)$expression
-  } else if (profile == "cnv") {
-    gd <- get_pancan_cn_value(item)$data
-  } else if (profile == "miRNA") {
-    gd <- get_pancan_miRNA_value(item)$expression
-  } else if (profile == "transcript") {
-    gd <- get_pancan_transcript_value(item)$expression
-  } else if (profile == "met") {
-    gd <- get_pancan_methylation_value(item)$data
-  }
-  if (all(is.na(gd))) {
-    return(NULL)
-  }
-  gd <- gd[nchar(names(gd)) == 15]
-  merged_data <- tibble(
-    sampleID = names(gd),
-    value = as.numeric(gd)
-  ) %>%
-    dplyr::filter(as.numeric(substr(sampleID, 14, 15)) < 10) %>%
-    dplyr::left_join(cliMat, by = c("sampleID" = "sample")) %>%
-    dplyr::select(sampleID, value, OS, OS.time, DSS, DSS.time, DFI, DFI.time, PFI, PFI.time,
-      gender,
-      age = age_at_initial_pathologic_diagnosis,
-      stage = ajcc_pathologic_tumor_stage
-    ) %>%
-    dplyr::mutate(stage = stringr::str_match(stage, "Stage\\s+(.*?)[ABC]?$")[, 2]) %>%
-    dplyr::mutate(
-      stage = ifelse(is.na(stage), "Unknown", stage),
-      gender = ifelse(is.na(gender), "Unknown", gender)
-    )
-  return(merged_data)
-}
+# Functions ---------------------------------------------------------------
 
 ## Data filter
 dat_filter <- function(data, age, gender, stage, endpoint) {
@@ -436,83 +376,3 @@ dat_filter <- function(data, age, gender, stage, endpoint) {
   return(dat)
 }
 
-## Survival analysis for mRNA and protein expression
-sur_plot <- function(data, cut_off_mode, cutpoint) {
-  data %<>% dplyr::arrange(value) %>%
-    dplyr::mutate(per_rank = 100 / nrow(.) * (1:nrow(.)))
-  # if (cut_off_mode == "Auto") {
-  # nd <- nrow(data)
-  # nr <- which(data$per_rank > 25 & data$per_rank < 75)
-  # p <- c()
-  # for (i in nr) {
-  #  dat <- data %>% mutate(group = c(rep("Low", i), rep("High", nd - i)))
-  #  sdf <- survdiff(Surv(time, status) ~ group, data = dat)
-  #  p.val <- 1 - pchisq(sdf$chisq, length(sdf$n) - 1)
-  #  p <- c(p, p.val)
-  # }
-  # nr <- nr[which.min(p)]
-  # data %<>% mutate(group = c(rep("Low", nr), rep("High", nd - nr)))
-  if (cut_off_mode == "Auto") {
-    data %<>% surv_cutpoint(
-      time = "time", event = "status",
-      variables = c("value"),
-      minprop = 0.25, progressbar = F
-    ) %>%
-      surv_categorize(labels = c("Low", "High")) %>%
-      data.frame() %>%
-      dplyr::rename(group = value)
-  } else {
-    data %<>% mutate(group = case_when(
-      per_rank > !!cutpoint[2] ~ "High",
-      per_rank <= !!cutpoint[1] ~ "Low",
-      TRUE ~ NA_character_
-    ))
-  }
-  p_survplot(data)
-}
-
-## Survival analysis for mutation DNA
-sur_plot_mut <- function(data) {
-  data %<>% dplyr::rename(mut = value) %>%
-    mutate(group = ifelse(mut == 1, "MT", "WT"))
-  if (length(table(data$group)) < 2) {
-    return(NULL)
-  }
-  p_survplot(data)
-}
-
-## Survival analysis for CNV
-sur_plot_cnv <- function(data, opt) {
-  data %<>% dplyr::rename(mut = value) %>%
-    mutate(group = ifelse(mut == 0, "Normal",
-      ifelse(mut > 0, "duplicated", "deleted")
-    )) %>%
-    filter(group %in% opt)
-  if (length(table(data$group)) < 2) {
-    return(NULL)
-  }
-  p_survplot(data)
-}
-
-## ggsurvplot
-p_survplot <- function(data) {
-  fit <- survival::survfit(Surv(time, status) ~ group, data = data)
-  survminer::ggsurvplot(fit,
-    data = data, pval = TRUE, pval.method = TRUE,
-    palette = "aaas",
-    size = 1.2, # change line size
-    font.legend = c(14, "black"),
-    font.x = c(14, "bold", "black"),
-    font.y = c(14, "bold", "black"),
-    font.tickslab = c(12, "bold", "black"),
-    xlab = "Duration overall survival (days)",
-    risk.table = TRUE,
-    risk.table.col = "strata", # Risk table color by groups
-    risk.table.y.text = FALSE, # show bars instead of names in text annotations
-    ncensor.plot = TRUE, # plot the number of censored subjects at time t
-    surv.plot.height = 0.7,
-    risk.table.height = 0.15,
-    ncensor.plot.height = 0.15,
-    ggtheme = theme_classic() # Change ggplot2 theme
-  )
-}

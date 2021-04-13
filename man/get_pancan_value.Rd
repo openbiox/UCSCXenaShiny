@@ -55,7 +55,7 @@ Gene symbol is highly recommended.}
 \item{dataset}{a length-1 chracter representing a regular expression for matching
 \code{XenaDatasets} of \link[UCSCXenaTools:XenaData]{UCSCXenaTools::XenaData}.}
 
-\item{host}{a length-1 character representing host name, e.g. "toilHub".}
+\item{host}{a character vector representing host name(s), e.g. "toilHub".}
 
 \item{samples}{a character vector representing samples want to be returned.}
 

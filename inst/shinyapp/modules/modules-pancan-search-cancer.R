@@ -8,15 +8,35 @@ ui.modules_cancer_dist <- function(id) {
     titlePanel("Module: Gene Cancer Expression Distribution"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
-        shinyWidgets::searchInput(
-          inputId = ns("pancan_search"),
-          label = NULL,
-          btnSearch = icon("search"),
-          btnReset = icon("remove"),
-          # placeholder = "Enter a gene symbol, e.g. TP53",
-          width = "100%"
+        fluidRow(
+          column(
+            9,
+            selectizeInput(
+              inputId = ns("Pancan_search"),
+              label = NULL,
+              choices = NULL,
+              width = "100%",
+              options = list(
+                create = TRUE,
+                maxOptions = 5,
+                placeholder = "Enter a gene symbol, e.g. TP53",
+                plugins = list("restore_on_backspace")
+              )
+            )
+          ),
+          column(
+            3,
+            shinyWidgets::actionBttn(
+              inputId = ns("search_bttn"), label = NULL,
+              style = "simple",
+              icon = icon("search"),
+              color = "primary",
+              block = FALSE,
+              size = "sm"
+            )
+          )
         ),
-        shinyBS::bsPopover(ns("pancan_search"),
+        shinyBS::bsPopover(ns("Pancan_search"),
           title = "Tips",
           content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
           placement = "right", options = list(container = "body")
@@ -52,6 +72,11 @@ ui.modules_cancer_dist <- function(id) {
       ),
       mainPanel = mainPanel(
         plotOutput(ns("gene_cancer_dist"), height = "600px"),
+        h5("NOTEs:"),
+        p("1. The data query may take some time based on your network. Wait until a plot shows"),
+        p("2. The unit of gene expression is log2(tpm+0.001)"),
+        p("3. You have to turn on both 'Show P value' and 'Show P label' to show significant labels"),
+        p("4. If a void plot shows, please check your input"),
         width = 9
       )
     )
@@ -61,6 +86,16 @@ ui.modules_cancer_dist <- function(id) {
 server.modules_cancer_dist <- function(input, output, session) {
   ns <- session$ns
 
+  observe({
+    updateSelectizeInput(
+      session,
+      "Pancan_search",
+      choices = pancan_identifiers$gene,
+      selected = "TP53",
+      server = TRUE
+    )
+  })
+
   colors <- reactive({
     c(input$tumor_col, input$normal_col)
   })
@@ -69,9 +104,9 @@ server.modules_cancer_dist <- function(input, output, session) {
   w <- waiter::Waiter$new(id = ns("gene_cancer_dist"), html = waiter::spin_hexdots(), color = "white")
 
   plot_func <- reactive({
-    if (nchar(input$pancan_search) >= 1) {
+    if (nchar(input$Pancan_search) >= 1) {
       p <- vis_toil_TvsN_cancer(
-        Gene = input$pancan_search,
+        Gene = input$Pancan_search,
         Cancer = input$Cancer,
         Mode = ifelse(input$pdist_mode, "Boxplot", "Violinplot"),
         Show.P.value = input$pdist_show_p_value,
@@ -79,11 +114,12 @@ server.modules_cancer_dist <- function(input, output, session) {
         TCGA.only = input$pdist_dataset,
         values = colors()
       )
+      p <- p + theme_cowplot()
     }
     return(p)
   })
 
-  observeEvent(input$pancan_search, {
+  observeEvent(input$search_bttn, {
     output$gene_cancer_dist <- renderPlot({
       w$show() # Waiter add-ins
       plot_func()
@@ -92,7 +128,7 @@ server.modules_cancer_dist <- function(input, output, session) {
 
   output$download <- downloadHandler(
     filename = function() {
-      paste0(input$pancan_search, " gene_cancer_dist.", input$device)
+      paste0(input$Pancan_search, " gene_cancer_dist.", input$device)
     },
     content = function(file) {
       p <- plot_func()

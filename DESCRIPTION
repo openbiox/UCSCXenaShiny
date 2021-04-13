@@ -59,14 +59,18 @@ Imports:
     utils
 Suggests: 
     covr (>= 3.2.1),
+    cowplot,
     DT (>= 0.5),
     furrr,
     future,
+    ggstatsplot,
     knitr,
     pacman,
     plyr,
     RColorBrewer (>= 1.1.2),
     rmarkdown,
+    survival,
+    survminer,
     testthat (>= 2.0.1)
 VignetteBuilder: 
     knitr

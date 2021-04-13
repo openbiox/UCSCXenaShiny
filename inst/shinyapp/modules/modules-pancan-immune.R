@@ -4,13 +4,33 @@ ui.modules_pancan_immune <- function(id) {
     titlePanel("Module: Gene Pancan Expression vs Immune Gene Signature"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
-        shinyWidgets::searchInput(
-          inputId = ns("Pancan_search"),
-          label = NULL,
-          btnSearch = icon("search"),
-          btnReset = icon("remove"),
-          # placeholder = "Enter a gene symbol, e.g. TP53"
-          width = "100%"
+        fluidRow(
+          column(
+            9,
+            selectizeInput(
+              inputId = ns("Pancan_search"),
+              label = NULL,
+              choices = NULL,
+              width = "100%",
+              options = list(
+                create = TRUE,
+                maxOptions = 5,
+                placeholder = "Enter a gene symbol, e.g. TP53",
+                plugins = list("restore_on_backspace")
+              )
+            )
+          ),
+          column(
+            3,
+            shinyWidgets::actionBttn(
+              inputId = ns("search_bttn"), label = NULL,
+              style = "simple",
+              icon = icon("search"),
+              color = "primary",
+              block = FALSE,
+              size = "sm"
+            )
+          )
         ),
         shinyBS::bsPopover(ns("Pancan_search"),
           title = "Tips",
@@ -51,6 +71,8 @@ ui.modules_pancan_immune <- function(id) {
       ),
       mainPanel(
         plotOutput(ns("hm_gene_immune_cor"), height = "500px"),
+        h5("NOTEs:"),
+        p("1. The immune signature data is from TCGA-Pancan Immune dataset"),
         width = 9
       )
     )
@@ -71,6 +93,17 @@ server.modules_pancan_immune <- function(input, output, session) {
   # })
   #
   ns <- session$ns
+
+  observe({
+    updateSelectizeInput(
+      session,
+      "Pancan_search",
+      choices = pancan_identifiers$gene,
+      selected = "TP53",
+      server = TRUE
+    )
+  })
+
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("hm_gene_immune_cor"), html = waiter::spin_hexdots(), color = "white")
 
@@ -85,7 +118,7 @@ server.modules_pancan_immune <- function(input, output, session) {
     return(p)
   })
 
-  observeEvent(input$Pancan_search, {
+  observeEvent(input$search_bttn, {
     # output$colorvalues = reactive({c(input$tumor_col,input$normal_col)
     #   })
     output$hm_gene_immune_cor <- renderPlot({

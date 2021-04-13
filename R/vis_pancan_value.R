@@ -46,7 +46,7 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
   tcga_gtex <- load_data("tcga_gtex")
 
   t1 <- get_pancan_gene_value(identifier = Gene)$expression
-  
+
   # if (all(is.na(t1))) {
   #   message("All NAs returned, return NULL instead.")
   #   return(NULL)
@@ -268,7 +268,7 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, valu
     ggplot2::theme_bw() +
     ggplot2::geom_pointrange() +
     ggplot2::coord_flip() +
-    ggplot2::labs(x = "", y = "log Hazard Ratio") +
+    ggplot2::labs(x = "", y = "log (Hazard Ratio)") +
     ggplot2::theme(
       axis.text.x = element_text(color = "black"),
       axis.text.y = element_text(color = "black"),
@@ -357,11 +357,11 @@ vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male"), opti
       fill = "value"
     ) +
       facet_wrap(~type) +
-      # scale_fill_gradient(low = "white", high = "red") +
       labs(fill = "Log2(TPM + 0.001)") +
       coord_cartesian(ylim = c(-120, 0)) +
       theme_void() +
-      scale_fill_viridis_c(option = option) +
+      #scale_fill_viridis_c(option = option) +
+      scale_fill_continuous(low = "#3CB371",high = "#DC143C")+
       ggtitle(paste0(Gene, " Male: TCGA + GTEX")) +
       theme(plot.title = element_text(hjust = 0.5))
 
@@ -378,11 +378,11 @@ vis_pancan_anatomy <- function(Gene = "TP53", Gender = c("Female", "Male"), opti
       fill = "value"
     ) +
       facet_wrap(~type) +
-      # scale_fill_gradient(low = "white", high = "red") +
       labs(fill = "Log2(TPM + 0.001)") +
       coord_cartesian(ylim = c(-120, 0)) +
       theme_void() +
-      scale_fill_viridis_c(option = option) +
+      #scale_fill_viridis_c(option = option) +
+      scale_fill_continuous(low = "#3CB371",high = "#DC143C")+
       ggtitle(paste0(Gene, " Female: TCGA + GTEX")) +
       theme(plot.title = element_text(hjust = 0.5))
     p2
@@ -773,6 +773,80 @@ vis_gene_cor <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, spl
         ggplot2::labs(x = Gene1, y = Gene2) +
         ggplot2::ggtitle("TCGA PANCAN dataset") +
         ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar), x = x + 1, y = y, size = 4, colour = "black")
+    }
+  }
+  return(p)
+}
+
+
+#' Visualize Gene-gene correlation in TCGA Cancer Type
+#'
+#' @import ggplot2 dplyr ppcor
+#' @param Gene1 the first gene.
+#' @param Gene2 the second gene.
+#' @param purity_adj whether performing partial correlation adjusted by purity.
+#' @param split whether split by TCGA tumor tissue.
+#' @param cancer_choose TCGA cohort name, e.g. "ACC".
+#' @param cor_method correlation method.
+#' @export
+vis_gene_cor_cancer <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, split = FALSE, cancer_choose = "GBM", cor_method = "spearman") {
+  tcga_gtex <- load_data("tcga_gtex")
+  tcga_purity <- load_data("tcga_purity")
+
+  tcga_purity$CPE <- as.numeric(tcga_purity$CPE)
+  tcga_gtex <- tcga_gtex %>%
+    dplyr::group_by(.data$tissue) %>%
+    dplyr::distinct(.data$sample, .keep_all = TRUE)
+  t1 <- get_pancan_gene_value(identifier = Gene1)$expression
+  t2 <- t1 %>%
+    as.data.frame() %>%
+    dplyr::rename("tpm" = ".") %>%
+    tibble::rownames_to_column(var = "sample") %>%
+    dplyr::inner_join(tcga_gtex, by = "sample")
+  t3 <- get_pancan_gene_value(identifier = Gene2)$expression
+  t4 <- t3 %>%
+    as.data.frame() %>%
+    dplyr::rename("tpm" = ".") %>%
+    tibble::rownames_to_column(var = "sample") %>%
+    dplyr::inner_join(tcga_gtex, by = "sample")
+
+  df <- data.frame(sample = t2$sample, tissue = t2$tissue, type2 = t2$type2, gene1 = t2$tpm, gene2 = t4$tpm, stringsAsFactors = F)
+
+  df %>%
+    dplyr::left_join(tcga_purity, by = "sample") %>%
+    dplyr::filter(.data$type2 == "tumor") -> df
+  df %>% dplyr::filter(.data$cancer_type == cancer_choose) -> df
+
+
+
+  # plot refer to https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
+  if (split == FALSE) {
+    if (purity_adj == TRUE) {
+      df %>% filter(!is.na(.data$CPE)) -> df
+      partial_cor_res <- ezcor_partial_cor(data = df, var1 = "gene1", var2 = "gene2", var3 = "CPE", sig_label = TRUE, cor_method = cor_method)
+      cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
+      df$pc <- predict(prcomp(~ gene1 + gene1, df))[, 1]
+      x <- quantile(df$gene1)[1]
+      y <- quantile(df$gene2)[5]
+      p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
+        ggplot2::geom_point(shape = 16, size = 1.5, show.legend = FALSE) +
+        ggplot2::theme_minimal() +
+        ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
+        ggplot2::labs(x = Gene1, y = Gene2) +
+        ggplot2::ggtitle(paste0("TCGA ", cancer_choose, " dataset")) +
+        ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar, "\n", "Cor_adj: ", round(partial_cor_res$cor_partial, 2), " ", partial_cor_res$pstar), x = x + 1, y = y, size = 5, colour = "black")
+    } else {
+      cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
+      df$pc <- predict(prcomp(~ gene1 + gene1, df))[, 1]
+      x <- quantile(df$gene1)[1]
+      y <- quantile(df$gene2)[5]
+      p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
+        ggplot2::geom_point(shape = 16, size = 1.5, show.legend = FALSE) +
+        ggplot2::theme_minimal() +
+        ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
+        ggplot2::labs(x = Gene1, y = Gene2) +
+        ggplot2::ggtitle(paste0("TCGA ", cancer_choose, " dataset")) +
+        ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar), x = x + 1, y = y, size = 10, colour = "black")
     }
   }
   return(p)

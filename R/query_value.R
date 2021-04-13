@@ -9,7 +9,7 @@
 #' @export
 query_value <- function(identifier,
                         data_type = c(
-                          "gene", "transcript", "protein",
+                          "mRNA", "transcript", "protein",
                           "mutation", "cnv", "methylation",
                           "miRNA"
                         ),
@@ -19,7 +19,7 @@ query_value <- function(identifier,
 
   if (database == "toil") {
     f <- switch(data_type,
-      gene = get_pancan_gene_value,
+      mRNA = get_pancan_gene_value,
       transcript = get_pancan_transcript_value,
       protein = get_pancan_protein_value,
       mutation = get_pancan_mutation_status,

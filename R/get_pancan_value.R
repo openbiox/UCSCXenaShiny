@@ -21,7 +21,7 @@ available_hosts <- function() {
 #' `DataSubtype` column of [UCSCXenaTools::XenaData].
 #' @param dataset a length-1 chracter representing a regular expression for matching
 #' `XenaDatasets` of [UCSCXenaTools::XenaData].
-#' @param host a length-1 character representing host name, e.g. "toilHub".
+#' @param host a character vector representing host name(s), e.g. "toilHub".
 #' @param samples a character vector representing samples want to be returned.
 #'
 #' @return a named vector or `list`
@@ -50,16 +50,16 @@ get_pancan_value <- function(identifier, subtype = NULL, dataset = NULL, host = 
   if (!"UCSCXenaTools" %in% .packages()) {
     attachNamespace("UCSCXenaTools")
   }
-  host <- match.arg(host)
+  host <- match.arg(host, choices = available_hosts(), several.ok = TRUE)
 
   data <- UCSCXenaTools::XenaData
   if (!is.null(subtype)) {
     data <- data %>%
-      dplyr::filter(XenaHostNames == host, grepl(subtype, DataSubtype))
+      dplyr::filter(XenaHostNames %in% host, grepl(subtype, DataSubtype))
   }
   if (!is.null(dataset)) {
     data <- data %>%
-      dplyr::filter(XenaHostNames == host, grepl(dataset, XenaDatasets))
+      dplyr::filter(XenaHostNames %in% host, grepl(dataset, XenaDatasets))
   }
 
   if (nrow(data) == 0) {
@@ -67,8 +67,7 @@ get_pancan_value <- function(identifier, subtype = NULL, dataset = NULL, host = 
   }
 
   if (nrow(data) > 1) {
-    data <- data %>%
-      dplyr::filter(XenaDatasets == dataset)
+    data <- dplyr::filter(.data$XenaDatasets == dataset)
   }
 
   res <- try_query_value(data[["XenaHosts"]], data[["XenaDatasets"]],
@@ -114,13 +113,7 @@ get_pancan_gene_value <- function(identifier) {
   host <- "toilHub"
   dataset <- "TcgaTargetGtex_rsem_gene_tpm"
 
-  res <- check_exist_data(identifier, dataset, host)
-  if (res$ok) {
-    expression <- res$data
-  } else {
-    expression <- get_pancan_value(identifier, dataset = dataset, host = host)
-    save_data(expression, identifier, dataset, host)
-  }
+  expression <- get_data(dataset, identifier, host)
   unit <- "log2(tpm+0.001)"
   report_dataset_info(dataset)
   res <- list(expression = expression, unit = unit)
@@ -147,13 +140,7 @@ get_pancan_transcript_value <- function(identifier) {
   identifier <- as.character(ids[identifier])
   if (is.na(identifier)) identifier <- id # roll back
 
-  res <- check_exist_data(identifier, dataset, host)
-  if (res$ok) {
-    expression <- res$data
-  } else {
-    expression <- get_pancan_value(identifier, dataset = dataset, host = host)
-    save_data(expression, identifier, dataset, host)
-  }
+  expression <- get_data(dataset, identifier, host)
   unit <- "log2(tpm+0.001)"
   report_dataset_info(dataset)
   res <- list(expression = expression, unit = unit)
@@ -167,13 +154,7 @@ get_pancan_protein_value <- function(identifier) {
   host <- "pancanAtlasHub"
   dataset <- "TCGA-RPPA-pancan-clean.xena"
 
-  res <- check_exist_data(identifier, dataset, host)
-  if (res$ok) {
-    expression <- res$data
-  } else {
-    expression <- get_pancan_value(identifier, dataset = dataset, host = host)
-    save_data(expression, identifier, dataset, host)
-  }
+  expression <- get_data(dataset, identifier, host)
 
   unit <- "norm_value"
   report_dataset_info(dataset)
@@ -239,13 +220,7 @@ get_pancan_mutation_status <- function(identifier) {
   dataset <- "mc3.v0.2.8.PUBLIC.nonsilentGene.xena"
   report_dataset_info(dataset)
 
-  res <- check_exist_data(identifier, dataset, host)
-  if (res$ok) {
-    data <- res$data
-  } else {
-    data <- get_pancan_value(identifier, dataset = dataset, host = host)
-    save_data(data, identifier, dataset, host)
-  }
+  data <- get_data(dataset, identifier, host)
 
   return(data)
 }
@@ -256,14 +231,7 @@ get_pancan_cn_value <- function(identifier) {
   host <- "tcgaHub"
   dataset <- "TCGA.PANCAN.sampleMap/Gistic2_CopyNumber_Gistic2_all_thresholded.by_genes"
 
-  res <- check_exist_data(identifier, dataset, host)
-  if (res$ok) {
-    data <- res$data
-  } else {
-    data <- get_pancan_value(identifier, dataset = dataset, host = host)
-    save_data(data, identifier, dataset, host)
-  }
-
+  data <- get_data(dataset, identifier, host)
   unit <- "-2,-1,0,1,2: 2 copy del,1 copy del,no change,amplification,high-amplification"
   report_dataset_info(dataset)
   res <- list(data = data, unit = unit)
@@ -285,13 +253,7 @@ get_pancan_methylation_value <- function(identifier, type = c("450K", "27K")) {
     dataset <- "TCGA.PANCAN.sampleMap/HumanMethylation27"
   }
 
-  res <- check_exist_data(identifier, dataset, host)
-  if (res$ok) {
-    data <- res$data
-  } else {
-    data <- get_pancan_value(identifier, dataset = dataset, host = host)
-    save_data(data, identifier, dataset, host)
-  }
+  data <- get_data(dataset, identifier, host)
 
   unit <- "beta value"
   report_dataset_info(dataset)
@@ -304,13 +266,8 @@ get_pancan_methylation_value <- function(identifier, type = c("450K", "27K")) {
 get_pancan_miRNA_value <- function(identifier) {
   host <- "pancanAtlasHub"
   dataset <- "pancanMiRs_EBadjOnProtocolPlatformWithoutRepsWithUnCorrectMiRs_08_04_16.xena"
-  res <- check_exist_data(identifier, dataset, host)
-  if (res$ok) {
-    expression <- res$data
-  } else {
-    expression <- get_pancan_value(identifier, dataset = dataset, host = host)
-    save_data(data, identifier, dataset, host)
-  }
+
+  expression <- get_data(dataset, identifier, host)
 
   unit <- "log2(norm_value+1)"
   report_dataset_info(dataset)
@@ -390,4 +347,26 @@ save_data <- function(data, id, dataset, host) {
   }
 
   saveRDS(data, file = f)
+}
+
+get_data <- function(dataset, identifier, host = NULL) {
+  stopifnot(length(dataset) == 1)
+
+  if (is.null(host)) {
+    host <- UCSCXenaTools::XenaData %>%
+      dplyr::filter(.data$XenaDatasets == dataset) %>%
+      dplyr::pull(.data$XenaHostNames)
+  }
+  res <- check_exist_data(identifier, dataset, host)
+  if (res$ok) {
+    value <- res$data
+  } else {
+    value <- get_pancan_value(identifier, dataset = dataset, host = host)
+    label <- UCSCXenaTools::XenaData %>%
+      dplyr::filter(.data$XenaDatasets == dataset) %>%
+      dplyr::pull(.data$DataSubtype)
+    attr(value, "label") <- label
+    save_data(value, identifier, dataset, host)
+  }
+  value
 }

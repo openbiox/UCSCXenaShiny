@@ -13,7 +13,6 @@ ui.page_repository <- function() {
           color = "primary",
           size = "sm"
         ),
-        hr(),
         shinyWidgets::prettyCheckboxGroup("hubs_text", "Active Data Hub:",
           choiceNames = c(
             "UCSC Public", "TCGA",
@@ -71,22 +70,25 @@ ui.page_repository <- function() {
         hr(),
         fluidRow(
           column(
-            3,
+            offset = 1,
+            4,
             actionBttn(
               inputId = "show_met",
               label = "Show Metadata",
               style = "gradient",
               # color = "danger",
-              icon = icon("database")
+              icon = icon("database"),
+              size = "sm"
             )
           ),
           column(
-            3,
+            4,
             actionBttn(
               inputId = "req_data",
               label = "Request Data",
               style = "gradient",
-              icon = icon("file")
+              icon = icon("file"),
+              size = "sm"
             )
           ),
           column(
@@ -95,7 +97,8 @@ ui.page_repository <- function() {
               inputId = "analyze_data",
               label = "Analyze Data",
               style = "gradient",
-              icon = icon("chart-bar")
+              icon = icon("chart-bar"),
+              size = "sm"
             )
           )
         ),
@@ -105,7 +108,6 @@ ui.page_repository <- function() {
             id = "show_data",
             h4("Selected Data:", style = "font-size: 1.2em;font-weight: bold;margin-bottom: 5px;margin-top: 0;"),
             h6("Wait until a table shows..."),
-            h6("Of note, single dataset file can be downloaded by clicking URL"),
             tableOutput(
               "table"
             )
