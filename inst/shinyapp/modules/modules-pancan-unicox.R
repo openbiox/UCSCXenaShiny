@@ -167,11 +167,14 @@ server.modules_pancan_unicox <- function(input, output, session) {
     }
   )
 
-
-  output$tbl <- renderDT(
-    data <- return_data(),
-    options = list(lengthChange = FALSE)
-  )
+  observeEvent(input$search_bttn, {
+    output$tbl <- renderDT(
+      data <- return_data(),
+      options = list(lengthChange = FALSE)
+    )
+  })
+  
+ 
 
   output$downloadTable <- downloadHandler(
     filename = function() {
