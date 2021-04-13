@@ -109,14 +109,7 @@ if (require("gganatogram")) {
 }
 ```
 
-```{r echo=FALSE, error=TRUE}
-tryCatch(
-  knitr::include_graphics("https://gitee.com/ShixiangWang/ImageCollection/raw/master/png/20210322130516.png"),
-  error = function(e) {
-    print("Cannot query the figure, please type the URL by yourself: https://gitee.com/ShixiangWang/ImageCollection/raw/master/png/20210322130516.png")
-  }
-)
-```
+[Click to see the output](https://gitee.com/ShixiangWang/ImageCollection/raw/master/png/20210322130516.png)
 
 ### Visualize Relationship between Gene Expression and Prognosis in the PANCAN Dataset
 
