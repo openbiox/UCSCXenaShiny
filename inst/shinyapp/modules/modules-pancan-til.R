@@ -83,7 +83,7 @@ ui.modules_pancan_til <- function(id) {
       mainPanel(
         plotOutput(ns("hm_gene_immune_cor"), height = "500px"),
         h5("NOTEs:"),
-        p("1. The immune signature data is from XXXXXXX"),
+        p("1. The immune signature data is from http://timer.cistrome.org/"),
         DT::DTOutput(outputId = ns("tbl")),
         shinyjs::hidden(
           wellPanel(
