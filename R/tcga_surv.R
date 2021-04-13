@@ -110,6 +110,7 @@ tcga_surv_plot <- function(data,
     install.packages("survminer")
   }
 
+
   if (profile %in% c("mRNA", "miRNA", "methylation", "transcript", "protein")) {
     sur_plot(data, cutoff_mode, cutpoint)
   } else if (profile == "mutation") {
