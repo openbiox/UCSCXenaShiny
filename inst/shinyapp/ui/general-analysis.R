@@ -46,7 +46,8 @@ ui.page_general_analysis <- function() {
         ui.modules_ga_scatter_correlation("module_ga_scatter_correlation")
       ),
       tabPanel(
-        "Matrix-Correlation"
+        "Matrix-Correlation",
+        ui.modules_ga_matrix_correlation("module_ga_matrix_correlation")
       ),
       tabPanel(
         "Group-Comparison"

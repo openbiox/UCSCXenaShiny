@@ -62,6 +62,8 @@ output$ga_dataset_table <- DT::renderDataTable(
 # Scatter and Correlation -------------------------------------------------------------
 callModule(server.modules_ga_scatter_correlation, "module_ga_scatter_correlation", 
            selected_database_rm_phenotype, selected_database_add_url_and_phenotype)
+callModule(server.modules_ga_matrix_correlation, "module_ga_matrix_correlation", 
+           selected_database_rm_phenotype, selected_database_add_url_and_phenotype)
 
 # Show use alert ----------------------------------------------------------
 
