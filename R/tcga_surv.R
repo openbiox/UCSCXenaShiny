@@ -98,7 +98,7 @@ tcga_surv_plot <- function(data,
                            cutoff_mode = c("Auto", "Custom"),
                            cutpoint = c(50, 50),
                            cnv_type = c("Duplicated", "Normal", "Deleted"),
-                           profile = c("mRNA", "miRNA", "met", "transcript", "protein", "mutation", "cnv")) {
+                           profile = c("mRNA", "miRNA", "methylation", "transcript", "protein", "mutation", "cnv")) {
   cutoff_mode <- match.arg(cutoff_mode)
   profile <- match.arg(profile)
   kept_cols <- c("value", time, status)
@@ -110,7 +110,8 @@ tcga_surv_plot <- function(data,
     install.packages("survminer")
   }
 
-  if (profile %in% c("mRNA", "miRNA", "met", "transcript", "protein")) {
+
+  if (profile %in% c("mRNA", "miRNA", "methylation", "transcript", "protein")) {
     sur_plot(data, cutoff_mode, cutpoint)
   } else if (profile == "mutation") {
     sur_plot_mut(data)

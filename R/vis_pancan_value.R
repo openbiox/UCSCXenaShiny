@@ -362,6 +362,7 @@ vis_pancan_anatomy <- function(Gene = "TP53",
       labs(fill = "Log2(TPM + 0.001)") +
       coord_cartesian(ylim = c(-120, 0)) +
       theme_void(base_size = 15) +
+
       #scale_fill_viridis_c(option = option) +
       scale_fill_continuous(low = "#3CB371",high = "#DC143C")+
       ggtitle(paste0(Gene, " Male: TCGA + GTEX")) +
@@ -382,6 +383,7 @@ vis_pancan_anatomy <- function(Gene = "TP53",
       facet_wrap(~type) +
       labs(fill = "Log2(TPM + 0.001)") +
       coord_cartesian(ylim = c(-120, 0)) +
+
       theme_void(base_size = 15) +
       #scale_fill_viridis_c(option = option) +
       scale_fill_continuous(low = "#3CB371",high = "#DC143C")+
@@ -832,10 +834,12 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TR
       y <- quantile(df$gene2)[5]
       p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
         ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE) +
+
         ggplot2::theme_minimal() +
         ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
         ggplot2::labs(x = Gene1, y = Gene2) +
         ggplot2::ggtitle(paste0("TCGA ", cancer_choose, " dataset")) +
+
         ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar, "\n", "Cor_adj: ", round(partial_cor_res$cor_partial, 2), " ", partial_cor_res$pstar), x = x + 1, y = y, size = 5, colour = "black") +
         ggplot2::geom_smooth(method=lm) +
         ggplot2::labs(color = "")    
@@ -845,7 +849,9 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TR
       x <- quantile(df$gene1)[1]
       y <- quantile(df$gene2)[5]
       p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
+
         ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE) +
+
         ggplot2::theme_minimal() +
         ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
         ggplot2::labs(x = Gene1, y = Gene2) +
@@ -853,6 +859,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TR
         ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar), x = x + 1, y = y, size = 10, colour = "black") +
         ggplot2::geom_smooth(method=lm)+
         ggplot2::labs(color = "")    
+
     }
   }
   return(p)

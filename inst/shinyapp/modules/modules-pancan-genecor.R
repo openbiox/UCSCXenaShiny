@@ -101,6 +101,7 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
       )
     }
     p <- p + theme_classic(base_size = 15)
+
     return(p)
   })
 
