@@ -288,8 +288,8 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, valu
 #' @importFrom stats complete.cases median
 #' @export
 
-vis_pancan_anatomy <- function(Gene = "TP53", 
-                               Gender = c("Female", "Male"), 
+vis_pancan_anatomy <- function(Gene = "TP53",
+                               Gender = c("Female", "Male"),
                                option = "D") {
   Gender <- match.arg(Gender)
 
@@ -363,8 +363,8 @@ vis_pancan_anatomy <- function(Gene = "TP53",
       coord_cartesian(ylim = c(-120, 0)) +
       theme_void(base_size = 15) +
 
-      #scale_fill_viridis_c(option = option) +
-      scale_fill_continuous(low = "#3CB371",high = "#DC143C")+
+      # scale_fill_viridis_c(option = option) +
+      scale_fill_continuous(low = "#3CB371", high = "#DC143C") +
       ggtitle(paste0(Gene, " Male: TCGA + GTEX")) +
       theme(plot.title = element_text(hjust = 0.5))
 
@@ -385,8 +385,8 @@ vis_pancan_anatomy <- function(Gene = "TP53",
       coord_cartesian(ylim = c(-120, 0)) +
 
       theme_void(base_size = 15) +
-      #scale_fill_viridis_c(option = option) +
-      scale_fill_continuous(low = "#3CB371",high = "#DC143C")+
+      # scale_fill_viridis_c(option = option) +
+      scale_fill_continuous(low = "#3CB371", high = "#DC143C") +
       ggtitle(paste0(Gene, " Female: TCGA + GTEX")) +
       theme(plot.title = element_text(hjust = 0.5))
     p2
@@ -834,32 +834,27 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TR
       y <- quantile(df$gene2)[5]
       p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
         ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE) +
-
         ggplot2::theme_minimal() +
         ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
         ggplot2::labs(x = Gene1, y = Gene2) +
         ggplot2::ggtitle(paste0("TCGA ", cancer_choose, " dataset")) +
-
         ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar, "\n", "Cor_adj: ", round(partial_cor_res$cor_partial, 2), " ", partial_cor_res$pstar), x = x + 1, y = y, size = 5, colour = "black") +
-        ggplot2::geom_smooth(method=lm) +
-        ggplot2::labs(color = "")    
+        ggplot2::geom_smooth(method = stats::lm) +
+        ggplot2::labs(color = "")
     } else {
       cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
       df$pc <- predict(prcomp(~ gene1 + gene1, df))[, 1]
       x <- quantile(df$gene1)[1]
       y <- quantile(df$gene2)[5]
       p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
-
         ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE) +
-
         ggplot2::theme_minimal() +
         ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
         ggplot2::labs(x = Gene1, y = Gene2) +
         ggplot2::ggtitle(paste0("TCGA ", cancer_choose, " dataset")) +
         ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar), x = x + 1, y = y, size = 10, colour = "black") +
-        ggplot2::geom_smooth(method=lm)+
-        ggplot2::labs(color = "")    
-
+        ggplot2::geom_smooth(method = stats::lm) +
+        ggplot2::labs(color = "")
     }
   }
   return(p)
@@ -875,39 +870,44 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TR
 #' p <- vis_gene_TIL_cor(Gene = "TP53")
 #' }
 #' @export
-vis_gene_TIL_cor <- function(Gene = "TP53", Cor_method = "spearman", sig = c("B cell_TIMER",
-                                                                             "T cell CD4+_TIMER",
-                                                                             "T cell CD8+_TIMER",
-                                                                             "Neutrophil_TIMER", 
-                                                                             "Macrophage_TIMER",
-                                                                             "Myeloid dendritic cell_TIMER")) {
+vis_gene_TIL_cor <- function(
+                             Gene = "TP53",
+                             Cor_method = "spearman",
+                             sig = c(
+                               "B cell_TIMER",
+                               "T cell CD4+_TIMER",
+                               "T cell CD8+_TIMER",
+                               "Neutrophil_TIMER",
+                               "Macrophage_TIMER",
+                               "Myeloid dendritic cell_TIMER"
+                             )) {
   tcga_TIL <- load_data("tcga_TIL")
   cell_type <- colnames(tcga_TIL)[-1]
-  source <- sapply(stringr::str_split(cell_type,"_"), function(x) x[2])
-  
+  source <- sapply(stringr::str_split(cell_type, "_"), function(x) x[2])
+
   tcga_gtex <- load_data("tcga_gtex")
-  
+
   # we filter out normal tissue
   tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
-  
+
   t1 <- get_pancan_gene_value(identifier = Gene)$expression
-  
+
   message(paste0("Get gene expression for ", Gene))
   s <- data.frame(sample = names(t1), values = t1)
-  
+
   ss <- s %>%
     dplyr::inner_join(tcga_TIL, by = c("sample" = "cell_type")) %>%
     dplyr::inner_join(tcga_gtex[, c("tissue", "sample")], by = "sample")
-  
+
   sss <- split(ss, ss$tissue)
   tissues <- names(sss)
   cor_gene_immune <- purrr::map(tissues, purrr::safely(function(cancer) {
     # cancer = "ACC"
     sss_can <- sss[[cancer]]
     ## filter cibersort data here
-    sss_can_class <- sss_can %>% select(c("sample","values",sig))
-    sss_can_class <- sss_can_class %>% pivot_longer(cols = c(3:ncol(.)), names_to = "SetName",values_to = "score")
-    sss_can_class <- sss_can_class[complete.cases(sss_can_class),]
+    sss_can_class <- sss_can %>% select(c("sample", "values", sig))
+    sss_can_class <- sss_can_class %>% tidyr::pivot_longer(cols = c(3:ncol(.)), names_to = "SetName", values_to = "score")
+    sss_can_class <- sss_can_class[complete.cases(sss_can_class), ]
     cells <- unique(sss_can_class$SetName)
     cor_res_class_can <- purrr::map(cells, purrr::safely(function(i) {
       # i = cells[1]
@@ -923,17 +923,17 @@ vis_gene_TIL_cor <- function(Gene = "TP53", Cor_method = "spearman", sig = c("B 
     cor_res_class_can_df$cancer <- cancer
     return(cor_res_class_can_df)
   })) %>% magrittr::set_names(tissues)
-  
+
   cor_gene_immune <- cor_gene_immune %>%
     purrr::map(~ .x$result) %>%
     purrr::compact()
   cor_gene_immune_df <- do.call(rbind.data.frame, cor_gene_immune)
   data <- cor_gene_immune_df
   data$pstar <- ifelse(data$p.value < 0.05,
-                       ifelse(data$p.value < 0.001, "***", ifelse(data$p.value < 0.01, "**", "*")),
-                       ""
+    ifelse(data$p.value < 0.001, "***", ifelse(data$p.value < 0.01, "**", "*")),
+    ""
   )
-  
+
   p <- ggplot2::ggplot(data, ggplot2::aes_string(x = "cancer", y = "immune_cells")) +
     ggplot2::geom_tile(ggplot2::aes_string(fill = "cor"), colour = "white", size = 1) +
     ggplot2::scale_fill_gradient2(low = "#377DB8", mid = "white", high = "#E31A1C") +
@@ -948,7 +948,6 @@ vis_gene_TIL_cor <- function(Gene = "TP53", Cor_method = "spearman", sig = c("B 
     ) +
     ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "*** p < 0.001", "\n\n", "Correlation")) +
     ggtitle(paste0("The correlation between ", Gene, " with immune signatures"))
-  
+
   return(p)
-  
-  }
+}
