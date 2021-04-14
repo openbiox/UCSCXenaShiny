@@ -104,7 +104,7 @@ server.modules_ga_scatter_correlation <- function(
     show_table <- selected_database_rm_phenotype()
     selectInput(
       inputId = ns("ga_data1_id"),
-      label = "Select dataset 1:",
+      label = "Select dataset fox axis X:",
       choices = c("NONE", unique(show_table$XenaDatasets)),
       selected = "NONE",
       multiple = FALSE
@@ -125,7 +125,7 @@ server.modules_ga_scatter_correlation <- function(
     show_table <- selected_database_rm_phenotype()
     selectInput(
       inputId = ns("ga_data2_id"),
-      label = "Select dataset 2:",
+      label = "Select dataset for axis Y:",
       choices = c("NONE", unique(show_table$XenaDatasets)),
       selected = "NONE",
       multiple = FALSE
@@ -137,7 +137,7 @@ server.modules_ga_scatter_correlation <- function(
       session,
       "ga_data2_mid",
       choices = all_preload_identifiers,
-      selected = "TP53",
+      selected = "KRAS",
       server = TRUE
     )
   })

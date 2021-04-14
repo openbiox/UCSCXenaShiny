@@ -4,48 +4,49 @@ ui.modules_ga_group_comparison <- function(id) {
     fluidRow(
       column(
         3,
-        h4("Analysis Controls"),
-        uiOutput(ns("ga_data1_id")),
-        selectizeInput(
-          inputId = ns("ga_data1_mid"), # molecule identifier
-          label = "Molecule identifiers:",
-          choices = NULL,
-          multiple = TRUE,
-          options = list(
-            create = TRUE,
-            maxOptions = 5,
-            placeholder = "e.g. TP53, PTEN, KRAS",
-            plugins = list("restore_on_backspace")
+        wellPanel(
+          h4("Analysis Controls"),
+          uiOutput(ns("ga_data1_id")),
+          selectizeInput(
+            inputId = ns("ga_data1_mid"), # molecule identifier
+            label = "Molecule identifiers:",
+            choices = NULL,
+            multiple = TRUE,
+            options = list(
+              create = TRUE,
+              maxOptions = 5,
+              placeholder = "e.g. TP53, PTEN, KRAS",
+              plugins = list("restore_on_backspace")
+            )
+          ),
+          selectInput(ns("ga_matrix_type"), "Matrix Type",
+                      choices = c("full", "upper", "lower"), selected = "full", multiple = FALSE),
+          selectInput(ns("ga_test_type"), "Test Type",
+                      choices = c("parametric", "nonparametric", "robust", "bayes"),
+                      selected = "parametric", multiple = FALSE),
+          selectInput(ns("ga_test_adjust"), "Adjust Method",
+                      choices = c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr",
+                                  "none"),
+                      selected = "holm", multiple = FALSE),
+          sliderInput(ns("ga_sig_level"), "Signif Level", 0, 1, 0.05, step = 0.01),
+          materialSwitch(
+            inputId = ns("ga_use_partial"),
+            label = "Partial correlation?",
+            value = FALSE,
+            status = "primary"
+          ),
+          colourpicker::colourInput(inputId = ns("ga_lower_col"), "Color for negative", "#E69F00"),
+          colourpicker::colourInput(inputId = ns("ga_higher_col"), "Color for positive", "#009E73"),
+          actionBttn(
+            inputId = ns("ga_go"),
+            label = "Submit",
+            style = "gradient",
+            icon = icon("check"),
+            color = "default",
+            block = TRUE,
+            size = "sm"
           )
-        ),
-        selectInput(ns("ga_matrix_type"), "Matrix Type",
-                    choices = c("full", "upper", "lower"), selected = "full", multiple = FALSE),
-        selectInput(ns("ga_test_type"), "Test Type",
-                    choices = c("parametric", "nonparametric", "robust", "bayes"),
-                    selected = "parametric", multiple = FALSE),
-        selectInput(ns("ga_test_adjust"), "Adjust Method",
-                    choices = c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr",
-                                "none"),
-                    selected = "holm", multiple = FALSE),
-        sliderInput(ns("ga_sig_level"), "Signif Level", 0, 1, 0.05, step = 0.01),
-        materialSwitch(
-          inputId = ns("ga_use_partial"),
-          label = "Partial correlation?",
-          value = FALSE,
-          status = "primary"
-        ),
-        colourpicker::colourInput(inputId = ns("ga_lower_col"), "Color for negative", "#E69F00"),
-        colourpicker::colourInput(inputId = ns("ga_higher_col"), "Color for positive", "#009E73"),
-        actionBttn(
-          inputId = ns("ga_go"),
-          label = "Submit",
-          style = "gradient",
-          icon = icon("check"),
-          color = "default",
-          block = TRUE,
-          size = "sm"
-        )
-      ),
+        )),
       column(
         6,
         plotOutput(ns("ga_output")),
@@ -53,14 +54,38 @@ ui.modules_ga_group_comparison <- function(id) {
       ),
       column(
         3,
-        h4("Sample Filters"),
-        uiOutput(ns("ga_data_filter1_id")),
-        actionBttn(
-          inputId = ns("ga_filter_button"),
-          label = "Click to filter!",
-          color = "primary",
-          style = "bordered",
-          size = "sm"
+        wellPanel(
+          h4("Sample Filters"),
+          uiOutput(ns("ga_data_filter1_id")),
+          actionBttn(
+            inputId = ns("ga_filter_button"),
+            label = "Click to filter!",
+            color = "primary",
+            style = "bordered",
+            size = "sm"
+          ),
+          tags$hr(),
+          column(
+            width = 12, align = "center",
+            prettyRadioButtons(
+              inputId = ns("device"),
+              label = "Choose plot format",
+              choices = c("png", "pdf"),
+              selected = "png",
+              inline = TRUE,
+              icon = icon("check"),
+              animation = "jelly",
+              fill = TRUE
+            )
+          ),
+          downloadBttn(
+            outputId = ns("download"),
+            # label = "Download Plot",
+            style = "gradient",
+            color = "default",
+            block = TRUE,
+            size = "sm"
+          )
         )
       )
     )
@@ -122,6 +147,17 @@ server.modules_ga_group_comparison <- function(
       }
     )
   })
+  output$download <- downloadHandler(
+    filename = function() {
+      paste0("corplot.", input$device)
+    },
+    content = function(file) {
+      ggplot2::ggsave(
+        filename = file, plot = print(p_scatter(), newpage = F), device = input$device,
+        units = "cm", width = 20, height = 20, dpi = 600
+      )
+    }
+  )
   
   observeEvent(input$ga_go, {
     # Analyze correlation with 2 input datasets and identifiers

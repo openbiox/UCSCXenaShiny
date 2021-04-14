@@ -103,7 +103,7 @@ server.modules_ga_matrix_correlation <- function(
     show_table <- selected_database_rm_phenotype()
     selectInput(
       inputId = ns("ga_data1_id"),
-      label = "Select dataset 1:",
+      label = "Select dataset:",
       choices = c("NONE", unique(show_table$XenaDatasets)),
       selected = "NONE",
       multiple = FALSE
