@@ -5,8 +5,8 @@
 \title{Visualize Comparison of an Molecule Identifier between Groups}
 \usage{
 vis_identifier_grp_comparison(
-  dataset,
-  id,
+  dataset = NULL,
+  id = NULL,
   grp_df,
   samples = NULL,
   fun_type = c("betweenstats", "withinstats"),
@@ -23,10 +23,17 @@ vis_identifier_grp_comparison(
 
 \item{id}{the molecule identifier.}
 
-\item{grp_df}{a \code{data.frame} with 2 or 3 columns.
-The first column refers to sample ID.
-The second column refers groups indicated in axis X.
-The third column is optional, which indicates group (facet) variable.}
+\item{grp_df}{When \code{dataset} and \code{id} are all not \code{NULL}, it should be a \code{data.frame} with 2 or 3 columns.
+\itemize{
+\item The first column refers to sample ID.
+\item The second column refers to groups indicated in axis X.
+\item The third column is optional, which indicates group (facet) variable.
+When any of \code{dataset} and \code{id} is \code{NULL}, it should be a \code{data.frame} with 3 or 4 columns.
+\item The first column refers to sample ID.
+\item The second column refers to values indicated in axis Y.
+\item The third column refers to indicated in axis X.
+\item The fourth column is optional, which indicates group (facet) variable.
+}}
 
 \item{samples}{default is \code{NULL}, can be common sample names for two datasets.}
 
@@ -82,6 +89,7 @@ cli_df <- XenaGenerate(
   XenaQuery() \%>\%
   XenaDownload() \%>\%
   XenaPrepare()
+  
 # group data.frame with 2 columns
 vis_identifier_grp_comparison(expr_dataset, id, cli_df[, c("sampleID", "gender")])
 # group data.frame with 3 columns
@@ -90,5 +98,10 @@ vis_identifier_grp_comparison(
   cli_df[, c("sampleID", "pathologic_M", "gender")] \%>\%
     dplyr::filter(pathologic_M \%in\% c("M0", "MX"))
 )
+
+# When not use the value of `identifier` from `dataset`
+vis_identifier_grp_comparison(grp_df = cli_df[, c(1, 2, 71)])
+vis_identifier_grp_comparison(grp_df = cli_df[, c(1, 2, 71, 111)])
 }
+
 }

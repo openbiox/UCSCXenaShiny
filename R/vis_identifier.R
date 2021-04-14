@@ -164,10 +164,15 @@ vis_identifier_multi_cor <- function(dataset, ids, samples = NULL,
 #' @param id the molecule identifier.
 #' @param dataset the dataset to obtain identifiers.
 #' @param fun_type select the function to compare groups.
-#' @param grp_df a `data.frame` with 2 or 3 columns.
-#' The first column refers to sample ID.
-#' The second column refers groups indicated in axis X.
-#' The third column is optional, which indicates group (facet) variable.
+#' @param grp_df When `dataset` and `id` are all not `NULL`, it should be a `data.frame` with 2 or 3 columns.
+#' - The first column refers to sample ID.
+#' - The second column refers to groups indicated in axis X.
+#' - The third column is optional, which indicates group (facet) variable.
+#' When any of `dataset` and `id` is `NULL`, it should be a `data.frame` with 3 or 4 columns.
+#' - The first column refers to sample ID.
+#' - The second column refers to values indicated in axis Y.
+#' - The third column refers to indicated in axis X.
+#' - The fourth column is optional, which indicates group (facet) variable.
 #' @param ... other parameters passing to [ggstatsplot::ggbetweenstats] or [ggstatsplot::ggwithinstats].
 #' @export
 #' @return a (gg)plot object.
@@ -183,6 +188,7 @@ vis_identifier_multi_cor <- function(dataset, ids, samples = NULL,
 #'   XenaQuery() %>%
 #'   XenaDownload() %>%
 #'   XenaPrepare()
+#'   
 #' # group data.frame with 2 columns
 #' vis_identifier_grp_comparison(expr_dataset, id, cli_df[, c("sampleID", "gender")])
 #' # group data.frame with 3 columns
@@ -191,29 +197,42 @@ vis_identifier_multi_cor <- function(dataset, ids, samples = NULL,
 #'   cli_df[, c("sampleID", "pathologic_M", "gender")] %>%
 #'     dplyr::filter(pathologic_M %in% c("M0", "MX"))
 #' )
+#' 
+#' # When not use the value of `identifier` from `dataset`
+#' vis_identifier_grp_comparison(grp_df = cli_df[, c(1, 2, 71)])
+#' vis_identifier_grp_comparison(grp_df = cli_df[, c(1, 2, 71, 111)])
 #' }
-vis_identifier_grp_comparison <- function(dataset, id, grp_df, samples = NULL,
+#' 
+vis_identifier_grp_comparison <- function(dataset = NULL, id = NULL, grp_df, samples = NULL,
                                           fun_type = c("betweenstats", "withinstats"),
                                           type = c("parametric", "nonparametric", "robust", "bayes"),
                                           pairwise.comparisons = TRUE,
                                           p.adjust.method = c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"),
                                           ggtheme = cowplot::theme_cowplot(),
                                           ...) {
-  stopifnot(length(id) == 1, ncol(grp_df) > 1)
+  stopifnot(ncol(grp_df) > 1)
   fun_type <- match.arg(fun_type)
   type <- match.arg(type)
   p.adjust.method <- match.arg(p.adjust.method)
   colnames(grp_df)[1] <- "sample"
 
-  message("Querying data of identifier ", id, " from dataset ", dataset, " for comparison")
-  id_value <- get_data(dataset, id)
-  df <- dplyr::tibble(
-    sample = names(id_value),
-    X = as.numeric(id_value)
-  )
-  colnames(df)[2] <- id
-
-  df <- dplyr::inner_join(df, grp_df, by = "sample")
+  if (!is.null(dataset) && !is.null(id)) {
+    message("Querying data of identifier ", id, " from dataset ", dataset, " for comparison")
+    id_value <- get_data(dataset, id)
+    df <- dplyr::tibble(
+      sample = names(id_value),
+      X = as.numeric(id_value)
+    )
+    colnames(df)[2] <- id
+    
+    df <- dplyr::inner_join(df, grp_df, by = "sample")
+    
+    do_grp <- ncol(grp_df) >= 3
+  } else {
+    message("Directly use 'grp_df' for comparison analysis.")
+    df <- grp_df 
+    do_grp <- ncol(grp_df) >= 4
+  }
 
   if (!is.null(samples)) {
     df <- dplyr::filter(df, .data$sample %in% samples)
@@ -223,7 +242,7 @@ vis_identifier_grp_comparison <- function(dataset, id, grp_df, samples = NULL,
     install.packages("ggstatsplot")
   }
 
-  if (ncol(grp_df) == 3L) {
+  if (do_grp) {
     fun <- if (fun_type == "betweenstats") ggstatsplot::grouped_ggbetweenstats else ggstatsplot::grouped_ggwithinstats
 
     p <- fun(
