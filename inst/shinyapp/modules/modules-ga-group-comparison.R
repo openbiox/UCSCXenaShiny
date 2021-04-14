@@ -91,7 +91,10 @@ ui.modules_ga_group_comparison <- function(id) {
             style = "bordered",
             size = "sm"
           ),
-          tags$hr(),
+          tags$br(),
+          tags$br(),
+          numericInput(inputId = ns("height"), label = "Height", value = 20),
+          numericInput(inputId = ns("width"), label = "Width", value = 20),
           column(
             width = 12, align = "center",
             prettyRadioButtons(
@@ -536,8 +539,8 @@ server.modules_ga_group_comparison <- function(
       },
       content = function(file) {
         ggplot2::ggsave(
-          filename = file, plot = print(p_grp_comp(), newpage = F), device = input$device,
-          units = "cm", width = 20, height = 20, dpi = 600
+          filename = file, plot = p_grp_comp(), newpage = F, device = input$device,
+          units = "cm", width = input$width, height = input$height, dpi = 600
         )
       }
     )

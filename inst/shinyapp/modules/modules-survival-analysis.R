@@ -154,8 +154,9 @@ ui.modules_sur_plot <- function(id) {
             block = TRUE,
             size = "sm"
           ),
-
-          tags$hr(),
+          tags$br(),
+          numericInput(inputId = ns("height"), label = "Height", value = 25),
+          numericInput(inputId = ns("width"), label = "Width", value = 20),
           column(
             width = 12, align = "center",
             prettyRadioButtons(
@@ -351,7 +352,7 @@ server.modules_sur_plot <- function(input, output, session) {
       p <- plot_func()
       ggplot2::ggsave(
         filename = file, plot = print(p, newpage = F), device = input$device,
-        units = "cm", width = 20, height = 25, dpi = 600
+        units = "cm",  width = input$width, height = input$height, dpi = 600
       )
     }
   )
