@@ -4,6 +4,7 @@ ui.modules_ga_matrix_correlation <- function(id) {
     fluidRow(
       column(
         3,
+        wellPanel(
         h4("Analysis Controls"),
         uiOutput(ns("ga_data1_id")),
         selectizeInput(
@@ -45,7 +46,7 @@ ui.modules_ga_matrix_correlation <- function(id) {
           block = TRUE,
           size = "sm"
         )
-      ),
+      )),
       column(
         6,
         plotOutput(ns("ga_output")),
@@ -53,6 +54,7 @@ ui.modules_ga_matrix_correlation <- function(id) {
       ),
       column(
         3,
+        wellPanel(
         h4("Sample Filters"),
         uiOutput(ns("ga_data_filter1_id")),
         actionBttn(
@@ -61,7 +63,30 @@ ui.modules_ga_matrix_correlation <- function(id) {
           color = "primary",
           style = "bordered",
           size = "sm"
+        ),
+        tags$hr(),
+        column(
+          width = 12, align = "center",
+          prettyRadioButtons(
+            inputId = ns("device"),
+            label = "Choose plot format",
+            choices = c("png", "pdf"),
+            selected = "png",
+            inline = TRUE,
+            icon = icon("check"),
+            animation = "jelly",
+            fill = TRUE
+          )
+        ),
+        downloadBttn(
+          outputId = ns("download"),
+          # label = "Download Plot",
+          style = "gradient",
+          color = "default",
+          block = TRUE,
+          size = "sm"
         )
+      )
       )
     )
   )
@@ -122,6 +147,17 @@ server.modules_ga_matrix_correlation <- function(
       }
     )
   })
+  output$download <- downloadHandler(
+    filename = function() {
+      paste0("corplot.", input$device)
+    },
+    content = function(file) {
+      ggplot2::ggsave(
+        filename = file, plot = print(p_scatter(), newpage = F), device = input$device,
+        units = "cm", width = 20, height = 20, dpi = 600
+      )
+    }
+  )
   
   observeEvent(input$ga_go, {
     # Analyze correlation with 2 input datasets and identifiers
