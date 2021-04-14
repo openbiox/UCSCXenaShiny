@@ -284,7 +284,7 @@ server.modules_ga_group_comparison <- function(
               ), 
               shinyjs::hidden(
                 sliderInput(
-                  inputId = ns("group_col_cutpoint"), label = "Select cutoff (%) to classify samples:",
+                  inputId = ns("group_col_cutpoint"), label = "Select percent cutoff (%) to generate (High and Low) groups:",
                   min = 10, max = 90, value = c(50, 50)
                 )
               ),
@@ -439,7 +439,18 @@ server.modules_ga_group_comparison <- function(
           if (group_col_status$status != "Off") {
             if (group_col_status$status == "CO") {
               # 作为连续值处理，读取分割点
-              # TODO
+              data <- joined_data
+              data$.group <- joined_data[[3]]
+              data <- data %>%
+                dplyr::arrange(.data$.group) %>%
+                dplyr::mutate(per_rank = 100 / nrow(.) * (1:nrow(.))) %>% 
+                dplyr::mutate(.group = dplyr::case_when(
+                  .data$per_rank > !!input$group_col_cutpoint[2] ~ "High",
+                  .data$per_rank <= !!input$group_col_cutpoint[1] ~ "Low",
+                  TRUE ~ NA_character_
+                ))
+              joined_data[[3]] <- data$.group
+              joined_data <- na.omit(joined_data)
             } else {
               # 作为离散值处理
               message(length(input$group_col_groups), " groups remained.")
@@ -483,7 +494,7 @@ server.modules_ga_group_comparison <- function(
   selected_samps <- reactiveValues(id = NULL)
   grp_df <- reactiveValues(data = NULL)
   
-  p_scatter <- eventReactive(input$ga_go, {
+  p_grp_comp <- eventReactive(input$ga_go, {
     if (is.null(selected_samps$id)) {
       message("All samples selected for analysis.")
     } else {
@@ -508,8 +519,8 @@ server.modules_ga_group_comparison <- function(
   observeEvent(input$ga_go, {
     # Analyze correlation with 2 input datasets and identifiers
     output$ga_output <- renderPlot(
-      if (inherits(p_scatter(), c("ggplot", "grob"))) {
-        print(p_scatter())
+      if (inherits(p_grp_comp(), c("ggplot", "grob"))) {
+        print(p_grp_comp())
       } else {
         sendSweetAlert(
           session,
@@ -525,16 +536,16 @@ server.modules_ga_group_comparison <- function(
       },
       content = function(file) {
         ggplot2::ggsave(
-          filename = file, plot = print(p_scatter(), newpage = F), device = input$device,
+          filename = file, plot = print(p_grp_comp(), newpage = F), device = input$device,
           units = "cm", width = 20, height = 20, dpi = 600
         )
       }
     )
     
     output$ga_output_data <- DT::renderDataTable(server = FALSE, {
-      if (inherits(p_scatter(), "ggplot")) {
+      if (inherits(p_grp_comp(), "ggplot")) {
         DT::datatable(
-          p_scatter()$data,
+          p_grp_comp()$data,
           rownames = FALSE,
           extensions = c("Buttons"),
           options = list(
