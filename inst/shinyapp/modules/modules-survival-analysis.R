@@ -110,7 +110,7 @@ ui.modules_sur_plot <- function(id) {
             ns = ns,
             shinyWidgets::prettyRadioButtons(
               inputId = ns("cutoff_mode"),
-              label = "Cut off mode",
+              label = "Cutoff mode",
               choices = c("Auto", "Custom"),
               inline = TRUE,
               icon = icon("check"),
@@ -119,7 +119,7 @@ ui.modules_sur_plot <- function(id) {
             conditionalPanel(
               condition = "input.cutoff_mode == 'Custom'", ns = ns,
               sliderInput(
-                inputId = ns("cutpoint"), label = "Cut off (%)",
+                inputId = ns("cutpoint"), label = "Cutoff (%)",
                 min = 25, max = 75, value = c(50, 50)
               ),
               textOutput(ns("cutoff1")),

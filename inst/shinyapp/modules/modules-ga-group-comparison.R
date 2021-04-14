@@ -215,6 +215,8 @@ server.modules_ga_group_comparison <- function(
   })
   
   # Preprocessing
+  group_col_status <- reactiveValues(status = "Off") # Off, CO (连续值), CA（离散值）
+  
   observeEvent(input$ga_preprocess_data, {
     message("Preprocess button is clicked by user.")
     
@@ -278,18 +280,17 @@ server.modules_ga_group_comparison <- function(
                 shinyBS::bsPopover(ns("data1_facet_col"),
                                    title = "Note",
                                    content = "Two tables can only select 1 column for generating multiple sub-plots",
-                                   placement = "top", options = list(container = "body")
+                                   placement = "top", options = list(container = "body"))
+              ), 
+              shinyjs::hidden(
+                sliderInput(
+                  inputId = ns("group_col_cutpoint"), label = "Select cutoff (%) to classify samples:",
+                  min = 10, max = 90, value = c(50, 50)
                 )
+              ),
+              shinyjs::hidden(
+                uiOutput(ns("group_col_groups"))
               )
-              # conditionalPanel(
-              #   condition = "input.dataset1_phenotype == 'YES'",
-              #   ns = ns,
-              #   sliderInput(
-              #     inputId = ns("cutpoint"), label = "Cut off (%)",
-              #     min = 10, max = 90, value = c(50, 50)
-              #   ),
-              #   hr()
-              # )
             ),
             wellPanel(
               h3("2. Process dataset 2 to determine the values indicated in axis Y"),
@@ -327,6 +328,46 @@ server.modules_ga_group_comparison <- function(
               DT::dataTableOutput(ns("joined_table"))
             )
             )))
+      
+      observe({
+        group_col <- setdiff(input$data1_group_col, "NONE")
+        if (length(group_col)) {
+          # A column has been selected by user
+          data <- na.omit(data1[[group_col]])
+          if (length(data)) {
+            if (is.numeric(data) && length(unique(data)) > 5) {
+              shinyjs::hide(id = "group_col_groups")
+              shinyjs::show(id = "group_col_cutpoint")
+              group_col_status$status <- "CO"
+            } else {
+              choices <- unique(data)
+              group_col_status$status <- "CA"
+              output$group_col_groups <- renderUI({
+                prettyCheckboxGroup(
+                  inputId = ns("group_col_groups"),
+                  label = "Select groups shown in X axis:",
+                  choices = choices, 
+                  selected = choices,
+                  animation = "jelly",
+                  status = "info"
+                )
+              })
+              shinyjs::hide(id = "group_col_cutpoint")
+              shinyjs::show(id = "group_col_groups")
+            }
+            message("Observe:")
+            print(group_col_status$status)
+          } else {
+            sendSweetAlert(session, title = "Warning", 
+                           text = "The group column you selected seems have no valid data!",
+                           type = "warning")
+          }
+        } else {
+          shinyjs::hide(id = "group_col_cutpoint")
+          shinyjs::hide(id = "group_col_groups")
+          group_col_status$status <- "Off"
+        }
+      })
       
       output$data1_table <- DT::renderDataTable(server = TRUE, {
         DT::datatable(
@@ -384,13 +425,29 @@ server.modules_ga_group_comparison <- function(
               dplyr::inner_join(
                 data1_copy, data2_copy, by = "sample"
               ) %>% 
-                dplyr::select(dplyr::all_of(col_order))
+                dplyr::select(dplyr::all_of(col_order)) %>% 
+                as.data.frame()
             },
             error = function(e) {
               message("Joining failed for group comparison analysis.")
               NULL
             }
           )
+          
+          message("Joining:")
+          print(group_col_status$status)
+          if (group_col_status$status != "Off") {
+            if (group_col_status$status == "CO") {
+              # 作为连续值处理，读取分割点
+              # TODO
+            } else {
+              # 作为离散值处理
+              message(length(input$group_col_groups), " groups remained.")
+              joined_data <- joined_data[joined_data[[3]] %in% input$group_col_groups, ]
+              print(nrow(joined_data))
+            }
+          }
+          
           grp_df$data <- joined_data
           
           if (!is.null(joined_data)) {
@@ -436,6 +493,7 @@ server.modules_ga_group_comparison <- function(
       vis_identifier_grp_comparison(
         grp_df = grp_df$data,
         type = isolate(input$ga_test_type),
+        pairwise.comparisons = isolate(input$ga_use_pairwise),
         p.adjust.method = isolate(input$ga_test_adjust),
         samples = isolate(selected_samps$id)
       ),
