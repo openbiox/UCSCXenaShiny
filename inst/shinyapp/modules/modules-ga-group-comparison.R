@@ -9,18 +9,37 @@ ui.modules_ga_group_comparison <- function(id) {
           uiOutput(ns("ga_data1_id")),
           selectizeInput(
             inputId = ns("ga_data1_mid"), # molecule identifier
-            label = "Molecule identifiers:",
+            label = "Molecule identifier",
             choices = NULL,
-            multiple = TRUE,
             options = list(
               create = TRUE,
               maxOptions = 5,
-              placeholder = "e.g. TP53, PTEN, KRAS",
+              placeholder = "e.g. TP53",
               plugins = list("restore_on_backspace")
             )
           ),
-          selectInput(ns("ga_matrix_type"), "Matrix Type",
-                      choices = c("full", "upper", "lower"), selected = "full", multiple = FALSE),
+          shinyBS::bsPopover(ns("ga_data1_mid"),
+                             title = "Note",
+                             content = "Ignore this option when you select a phenotype dataset",
+                             placement = "right", options = list(container = "body")
+          ),
+          uiOutput(ns("ga_data2_id")),
+          selectizeInput(
+            inputId = ns("ga_data2_mid"), # molecule identifier
+            label = "Molecule identifier",
+            choices = NULL,
+            options = list(
+              create = TRUE,
+              maxOptions = 5,
+              placeholder = "e.g. TP53",
+              plugins = list("restore_on_backspace")
+            )
+          ),
+          shinyBS::bsPopover(ns("ga_data2_mid"),
+                             title = "Note",
+                             content = "Ignore this option when you select a phenotype dataset",
+                             placement = "right", options = list(container = "body")
+          ),
           selectInput(ns("ga_test_type"), "Test Type",
                       choices = c("parametric", "nonparametric", "robust", "bayes"),
                       selected = "parametric", multiple = FALSE),
@@ -28,15 +47,22 @@ ui.modules_ga_group_comparison <- function(id) {
                       choices = c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr",
                                   "none"),
                       selected = "holm", multiple = FALSE),
-          sliderInput(ns("ga_sig_level"), "Signif Level", 0, 1, 0.05, step = 0.01),
           materialSwitch(
-            inputId = ns("ga_use_partial"),
-            label = "Partial correlation?",
-            value = FALSE,
+            inputId = ns("ga_use_pairwise"),
+            label = "Display pairwise comparisons?",
+            value = TRUE,
             status = "primary"
           ),
-          colourpicker::colourInput(inputId = ns("ga_lower_col"), "Color for negative", "#E69F00"),
-          colourpicker::colourInput(inputId = ns("ga_higher_col"), "Color for positive", "#009E73"),
+          actionBttn(
+            inputId = ns("ga_preprocess_data"),
+            label = "Preprocess",
+            style = "gradient",
+            icon = icon("check"),
+            color = "default",
+            block = TRUE,
+            size = "sm"
+          ),
+          tags$br(),
           actionBttn(
             inputId = ns("ga_go"),
             label = "Submit",
@@ -46,7 +72,8 @@ ui.modules_ga_group_comparison <- function(id) {
             block = TRUE,
             size = "sm"
           )
-        )),
+        )
+      ),
       column(
         6,
         plotOutput(ns("ga_output")),
@@ -100,27 +127,305 @@ server.modules_ga_group_comparison <- function(
   ns <- session$ns
   
   output$ga_data1_id <- renderUI({
-    show_table <- selected_database_rm_phenotype()
+    show_table <- selected_database_add_url_and_phenotype()
     selectInput(
       inputId = ns("ga_data1_id"),
-      label = "Select dataset 1:",
+      label = "Select dataset for groups:",
       choices = c("NONE", unique(show_table$XenaDatasets)),
       selected = "NONE",
       multiple = FALSE
     )
   })
   
+  id1_choices <- eventReactive(input$ga_data1_id, {
+    if (!identical(input$ga_data1_id, "NONE")) {
+      if (input$ga_data1_id %in% phenotype_datasets) {
+        # A phenotype data is selected
+        return(list(
+          all = "NONE",
+          selected = "NONE"
+        ))
+      } else {
+        # !!Assume a dense matrix dataset is selected
+        return(list(
+          all = all_preload_identifiers,
+          selected = "TP53"
+        ))
+      }
+    } else {
+      return(list(
+        all = "NONE",
+        selected = "NONE"
+      ))
+    }
+  })
+  
   observe({
     updateSelectizeInput(
       session,
       "ga_data1_mid",
-      choices = all_preload_identifiers,
-      selected = c("TP53", "KRAS", "PTEN"),
+      choices = id1_choices()$all,
+      selected = id1_choices()$selected,
       server = TRUE
     )
   })
   
+  output$ga_data2_id <- renderUI({
+    show_table <- selected_database_add_url_and_phenotype()
+    selectInput(
+      inputId = ns("ga_data2_id"),
+      label = "Select dataset for axis Y:",
+      choices = c("NONE", unique(show_table$XenaDatasets)),
+      selected = "NONE",
+      multiple = FALSE
+    )
+  })
+  
+  id2_choices <- eventReactive(input$ga_data2_id, {
+    if (!identical(input$ga_data2_id, "NONE")) {
+      if (input$ga_data2_id %in% phenotype_datasets) {
+        # A phenotype data is selected
+        return(list(
+          all = "NONE",
+          selected = "NONE"
+        ))
+      } else {
+        # !!Assume a dense matrix dataset is selected
+        return(list(
+          all = all_preload_identifiers,
+          selected = "TP53"
+        ))
+      }
+    } else {
+      return(list(
+        all = "NONE",
+        selected = "NONE"
+      ))
+    }
+  })
+  
+  observe({
+    updateSelectizeInput(
+      session,
+      "ga_data2_mid",
+      choices = id2_choices()$all,
+      selected = id2_choices()$selected,
+      server = TRUE
+    )
+  })
+  
+  # Preprocessing
+  observeEvent(input$ga_preprocess_data, {
+    message("Preprocess button is clicked by user.")
+    
+    dataset1 <- setdiff(input$ga_data1_id, "NONE")
+    dataset1_id <- setdiff(input$ga_data1_mid, "NONE")
+    dataset1_phenotype <- if (dataset1 %in% phenotype_datasets) "YES" else "NO"
+    
+    if (dataset1_phenotype == "YES") {
+      data1 <- XenaGenerate(subset = XenaDatasets == dataset1) %>%
+        XenaQuery() %>%
+        XenaDownload(destdir = XENA_DEST) %>%
+        XenaPrepare() %>% 
+        as.data.frame()
+    } else {
+      if (length(dataset1_id)) {
+        data1 <- get_data_df(dataset1, dataset1_id)
+      } else {
+        sendSweetAlert(session, title = "Warning", 
+                       text = "Please input a ID (e.g., gene symbol) for axis X when you select a non-phenotype dataset")
+      }
+    }
+    print(head(data1))
+    
+    dataset2 <- setdiff(input$ga_data2_id, "NONE")
+    dataset2_id <- setdiff(input$ga_data2_mid, "NONE")
+    dataset2_phenotype <- if (dataset2 %in% phenotype_datasets) "YES" else "NO"
+    if (dataset2_phenotype == "YES") {
+      data2 <- XenaGenerate(subset = XenaDatasets == dataset2) %>%
+        XenaQuery() %>%
+        XenaDownload(destdir = XENA_DEST) %>%
+        XenaPrepare() %>% 
+        as.data.frame()
+    } else {
+      if (length(dataset2_id)) {
+        data2 <- get_data_df(dataset2, dataset2_id)
+      } else {
+        sendSweetAlert(session, title = "Warning", 
+                       text = "Please input a ID (e.g., gene symbol) for axis Y when you select a non-phenotype dataset")
+      }
+    }
+    print(head(data2))
+    
+    if (length(dataset1) && length(dataset2)) {
+      showModal(
+        modalDialog(
+          title = "Preprocessing",
+          size = "l",
+          fluidPage(
+            wellPanel(
+              h3("1. Process dataset 1 to determine the groups indicated in axis X"),
+              DT::dataTableOutput(ns("data1_table")),
+              fluidRow(
+                column(4, selectInput(ns("data1_sample_col"), "Sample column", choices = colnames(data1), selected = colnames(data2)[1])),
+                shinyBS::bsPopover(ns("data1_sample_col"),
+                                   title = "Note",
+                                   content = "The sample IDs in this column must match with the second table",
+                                   placement = "top", options = list(container = "body")
+                ),
+                column(4, selectInput(ns("data1_group_col"), "Group column", choices = c("NONE", colnames(data1)), selected = "NONE")),
+                column(4, selectInput(ns("data1_facet_col"), "Facet column (optional)", choices = c("NONE", colnames(data1)), selected = "NONE")),
+                shinyBS::bsPopover(ns("data1_facet_col"),
+                                   title = "Note",
+                                   content = "Two tables can only select 1 column for generating multiple sub-plots",
+                                   placement = "top", options = list(container = "body")
+                )
+              )
+              # conditionalPanel(
+              #   condition = "input.dataset1_phenotype == 'YES'",
+              #   ns = ns,
+              #   sliderInput(
+              #     inputId = ns("cutpoint"), label = "Cut off (%)",
+              #     min = 10, max = 90, value = c(50, 50)
+              #   ),
+              #   hr()
+              # )
+            ),
+            wellPanel(
+              h3("2. Process dataset 2 to determine the values indicated in axis Y"),
+              DT::dataTableOutput(ns("data2_table")),
+              fluidRow(
+                column(4, selectInput(ns("data2_sample_col"), "Sample column", choices = colnames(data2), selected = colnames(data2)[1])),
+                shinyBS::bsPopover(ns("data2_sample_col"),
+                                   title = "Note",
+                                   content = "The sample IDs in this column must match with the first table",
+                                   placement = "top", options = list(container = "body")
+                ),
+                column(4, selectInput(ns("data2_value_col"), "Value column", choices = c("NONE", colnames(data2)), selected = colnames(data2)[2])),
+                column(4, selectInput(ns("data2_facet_col"), "Facet column (optional)", choices = c("NONE", colnames(data2)), selected = "NONE")),
+                shinyBS::bsPopover(ns("data2_facet_col"),
+                                   title = "Note",
+                                   content = "Two tables can only select 1 column for generating multiple sub-plots",
+                                   placement = "top", options = list(container = "body")
+                )
+              )
+            ),
+            wellPanel(
+              h3("3. Join selected columns in the two tables"),
+              actionBttn(
+                inputId = ns("join_table_button"),
+                label = "Click to join the data",
+                color = "primary",
+                style = "bordered", size = "sm",
+                block = F
+              ),
+              h4("If the table below is right, dismiss this page and click submit button to plot"),
+              markdown("- The first column refers to sample ID.
+                       - The second column refers to values indicated in axis Y.
+                       - The third column refers to groups indicated in axis X.
+                       - The fourth column is optional, which indicates facet variable."),
+              DT::dataTableOutput(ns("joined_table"))
+            )
+            )))
+      
+      output$data1_table <- DT::renderDataTable(server = TRUE, {
+        DT::datatable(
+          data1,
+          rownames = FALSE,
+          options = list(
+            scrollY = 350,
+            scrollX = 300,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().header()).css({'font-size': '90%'});",
+              "$(this.api().table().body()).css({'font-size': '85%'});",
+              "}"
+            )
+          )
+        )
+      })
+      
+      output$data2_table <- DT::renderDataTable(server = TRUE, {
+        DT::datatable(
+          data2,
+          rownames = FALSE,
+          options = list(
+            scrollY = 350,
+            scrollX = 300
+          )
+        )
+      })
+      
+      observeEvent(input$join_table_button, {
+        data1_sample_col <- input$data1_sample_col
+        data2_sample_col <- input$data2_sample_col
+        data1_group_col <- setdiff(input$data1_group_col, "NONE")
+        data2_value_col <- setdiff(input$data2_value_col, "NONE")
+        data1_facet_col <- setdiff(input$data1_facet_col, "NONE")
+        data2_facet_col <- setdiff(input$data2_facet_col, "NONE")
+
+        if (length(data1_facet_col) && length(data2_facet_col)) {
+          sendSweetAlert(session, title = "Warning", 
+                         text = "Two tables can only select 1 column for generating multiple sub-plots!", type = "warning")
+        } else if (length(data1_group_col) > 0 && length(data2_value_col) > 0) {
+          data1_cols <- c(data1_sample_col, data1_group_col, data1_facet_col)
+          data2_cols <- c(data2_sample_col, data2_value_col, data2_facet_col)
+          col_order <- c("sample", data2_value_col, data1_group_col, data1_facet_col, data2_facet_col)
+          print("column order:")
+          print(col_order)
+          
+          data1_copy <- dplyr::select(data1, dplyr::all_of(data1_cols))
+          colnames(data1_copy)[1] <- "sample"
+          data2_copy <- dplyr::select(data2, dplyr::all_of(data2_cols))
+          colnames(data2_copy)[1] <- "sample"
+          
+          joined_data <- tryCatch(
+            {
+              dplyr::inner_join(
+                data1_copy, data2_copy, by = "sample"
+              ) %>% 
+                dplyr::select(dplyr::all_of(col_order))
+            },
+            error = function(e) {
+              message("Joining failed for group comparison analysis.")
+              NULL
+            }
+          )
+          grp_df$data <- joined_data
+          
+          if (!is.null(joined_data)) {
+            output$joined_table <- DT::renderDataTable(server = TRUE, {
+              DT::datatable(
+                joined_data,
+                rownames = FALSE,
+                options = list(
+                  scrollY = 350,
+                  scrollX = 300
+                )
+              )
+            })
+          } else {
+            sendSweetAlert(session, title = "Warning", 
+                           text = "Joining failed! Please check your selection, especially the sample ID column.", type = "warning")
+          }
+          
+        } else {
+          print(str(data1_group_col))
+          print(str(data2_value_col))
+          sendSweetAlert(session, title = "Warning", 
+                         text = "Some options have not been selected!", type = "warning")
+        }
+      })
+      
+    } else {
+      sendSweetAlert(session, title = "Warning", 
+                     text = "Two datasets must be selected.",
+                     type = "warning")
+    }})
+  
   selected_samps <- reactiveValues(id = NULL)
+  grp_df <- reactiveValues(data = NULL)
+  
   p_scatter <- eventReactive(input$ga_go, {
     if (is.null(selected_samps$id)) {
       message("All samples selected for analysis.")
@@ -128,16 +433,10 @@ server.modules_ga_group_comparison <- function(
       message(length(selected_samps$id), " samples selected for analysis.")
     }
     tryCatch(
-      vis_identifier_multi_cor(
-        isolate(input$ga_data1_id),
-        isolate(input$ga_data1_mid),
-        matrix.type = isolate(input$ga_matrix_type),
+      vis_identifier_grp_comparison(
+        grp_df = grp_df$data,
         type = isolate(input$ga_test_type),
-        partial = isolate(input$ga_use_partial),
-        sig.level = isolate(input$ga_sig_level),
         p.adjust.method = isolate(input$ga_test_adjust),
-        color_low = isolate(input$ga_lower_col),
-        color_high = isolate(input$ga_higher_col),
         samples = isolate(selected_samps$id)
       ),
       error = function(e) {
@@ -147,17 +446,6 @@ server.modules_ga_group_comparison <- function(
       }
     )
   })
-  output$download <- downloadHandler(
-    filename = function() {
-      paste0("corplot.", input$device)
-    },
-    content = function(file) {
-      ggplot2::ggsave(
-        filename = file, plot = print(p_scatter(), newpage = F), device = input$device,
-        units = "cm", width = 20, height = 20, dpi = 600
-      )
-    }
-  )
   
   observeEvent(input$ga_go, {
     # Analyze correlation with 2 input datasets and identifiers
@@ -168,8 +456,19 @@ server.modules_ga_group_comparison <- function(
         sendSweetAlert(
           session,
           title = "Error",
-          text = "Error to query data and plot. Please make sure the two selected datasets are 'genomicMatrix' type.",
+          text = "Error to plot. Please make sure you have go through the 'preprocess' step.",
           type = "error"
+        )
+      }
+    )
+    output$download <- downloadHandler(
+      filename = function() {
+        paste0(Sys.Date(), "_group_comparison_plot.", input$device)
+      },
+      content = function(file) {
+        ggplot2::ggsave(
+          filename = file, plot = print(p_scatter(), newpage = F), device = input$device,
+          units = "cm", width = 20, height = 20, dpi = 600
         )
       }
     )

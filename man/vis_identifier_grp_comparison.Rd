@@ -27,12 +27,12 @@ vis_identifier_grp_comparison(
 \itemize{
 \item The first column refers to sample ID.
 \item The second column refers to groups indicated in axis X.
-\item The third column is optional, which indicates group (facet) variable.
+\item The third column is optional, which indicates facet variable.
 When any of \code{dataset} and \code{id} is \code{NULL}, it should be a \code{data.frame} with 3 or 4 columns.
 \item The first column refers to sample ID.
 \item The second column refers to values indicated in axis Y.
-\item The third column refers to indicated in axis X.
-\item The fourth column is optional, which indicates group (facet) variable.
+\item The third column refers to groups indicated in axis X.
+\item The fourth column is optional, which indicates facet variable.
 }}
 
 \item{samples}{default is \code{NULL}, can be common sample names for two datasets.}

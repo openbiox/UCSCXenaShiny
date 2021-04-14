@@ -191,6 +191,17 @@ xe_query_url <- function(data, use_cache = TRUE) {
   return(xe_query)
 }
 
+get_data_df <- function(dataset, id) {
+  message("Querying data of identifier ", id, " from dataset ", dataset)
+  id_value <- get_data(dataset, id)
+  df <- dplyr::tibble(
+    sample = names(id_value),
+    X = as.numeric(id_value)
+  )
+  colnames(df)[2] <- id
+  df
+}
+ 
 # UI part ----------------------------------------------------------------------
 ui <- tagList(
   tags$head(

@@ -167,12 +167,12 @@ vis_identifier_multi_cor <- function(dataset, ids, samples = NULL,
 #' @param grp_df When `dataset` and `id` are all not `NULL`, it should be a `data.frame` with 2 or 3 columns.
 #' - The first column refers to sample ID.
 #' - The second column refers to groups indicated in axis X.
-#' - The third column is optional, which indicates group (facet) variable.
+#' - The third column is optional, which indicates facet variable.
 #' When any of `dataset` and `id` is `NULL`, it should be a `data.frame` with 3 or 4 columns.
 #' - The first column refers to sample ID.
 #' - The second column refers to values indicated in axis Y.
-#' - The third column refers to indicated in axis X.
-#' - The fourth column is optional, which indicates group (facet) variable.
+#' - The third column refers to groups indicated in axis X.
+#' - The fourth column is optional, which indicates facet variable.
 #' @param ... other parameters passing to [ggstatsplot::ggbetweenstats] or [ggstatsplot::ggwithinstats].
 #' @export
 #' @return a (gg)plot object.
