@@ -50,7 +50,8 @@ ui.page_general_analysis <- function() {
         ui.modules_ga_matrix_correlation("module_ga_matrix_correlation")
       ),
       tabPanel(
-        "Group-Comparison"
+        "Group-Comparison",
+        ui.modules_ga_group_comparison("module_ga_group_comparison")
       )
     )
   )
