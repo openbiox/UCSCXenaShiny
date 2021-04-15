@@ -67,8 +67,8 @@ ui.modules_ga_scatter_correlation <- function(id) {
         ),
         tags$br(),
         tags$br(),
-        numericInput(inputId = ns("height"), label = "Height", value = 20),
-        numericInput(inputId = ns("width"), label = "Width", value = 20),
+        numericInput(inputId = ns("height"), label = "Height", value = 8),
+        numericInput(inputId = ns("width"), label = "Width", value = 10),
         column(
           width = 12, align = "center",
           prettyRadioButtons(
@@ -107,7 +107,7 @@ server.modules_ga_scatter_correlation <- function(
     show_table <- selected_database_rm_phenotype()
     selectInput(
       inputId = ns("ga_data1_id"),
-      label = "Select dataset fox axis X:",
+      label = "Select dataset for axis X:",
       choices = c("NONE", unique(show_table$XenaDatasets)),
       selected = "NONE",
       multiple = FALSE

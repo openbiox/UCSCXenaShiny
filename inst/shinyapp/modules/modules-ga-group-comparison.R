@@ -93,8 +93,8 @@ ui.modules_ga_group_comparison <- function(id) {
           ),
           tags$br(),
           tags$br(),
-          numericInput(inputId = ns("height"), label = "Height", value = 20),
-          numericInput(inputId = ns("width"), label = "Width", value = 20),
+          numericInput(inputId = ns("height"), label = "Height", value = 8),
+          numericInput(inputId = ns("width"), label = "Width", value = 10),
           column(
             width = 12, align = "center",
             prettyRadioButtons(
