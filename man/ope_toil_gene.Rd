@@ -2,7 +2,7 @@
 % Please edit documentation in R/ope_pancan_value.R
 \name{ope_toil_gene}
 \alias{ope_toil_gene}
-\title{Obtain toilHub info for single gene}
+\title{Obtain ToilHub Info for Single Gene}
 \usage{
 ope_toil_gene(identifier = "TP53")
 }
@@ -14,7 +14,7 @@ Gene symbol is highly recommended.}
 a \code{tibble}
 }
 \description{
-Obtain toilHub info for single gene
+Obtain ToilHub Info for Single Gene
 }
 \examples{
 \donttest{

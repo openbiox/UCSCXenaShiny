@@ -2,7 +2,7 @@
 % Please edit documentation in R/vis_identifier.R
 \name{vis_identifier_cor}
 \alias{vis_identifier_cor}
-\title{Visualize Identifier-identifier Correlation}
+\title{Visualize Identifier-Identifier Correlation}
 \usage{
 vis_identifier_cor(
   dataset1,

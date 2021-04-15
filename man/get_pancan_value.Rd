@@ -13,7 +13,7 @@
 \alias{get_pancan_cn_value}
 \alias{get_pancan_methylation_value}
 \alias{get_pancan_miRNA_value}
-\title{Fetch identifier value from pan-cancer dataset}
+\title{Fetch Identifier Value from Pan-cancer Dataset}
 \usage{
 get_ccle_cn_value(identifier)
 

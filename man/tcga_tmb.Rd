@@ -3,7 +3,7 @@
 \docType{data}
 \name{tcga_tmb}
 \alias{tcga_tmb}
-\title{TCGA: TMB (tumor mutation burden) data}
+\title{TCGA: TMB (Tumor Mutation Burden) Data}
 \format{
 A \link{data.frame}
 }
@@ -11,7 +11,7 @@ A \link{data.frame}
 \url{https://gdc.cancer.gov/about-data/publications/panimmune}
 }
 \description{
-TCGA: TMB (tumor mutation burden) data
+TCGA: TMB (Tumor Mutation Burden) Data
 }
 \examples{
 data("tcga_tmb")

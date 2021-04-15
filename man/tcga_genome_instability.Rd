@@ -3,7 +3,7 @@
 \docType{data}
 \name{tcga_genome_instability}
 \alias{tcga_genome_instability}
-\title{TCGA: genome instability data}
+\title{TCGA: Genome Instability Data}
 \format{
 A \link{data.frame}
 }
@@ -11,7 +11,7 @@ A \link{data.frame}
 \url{https://gdc.cancer.gov/about-data/publications/PanCanStemness-2018}
 }
 \description{
-TCGA: genome instability data
+TCGA: Genome Instability Data
 }
 \examples{
 data("tcga_genome_instability")

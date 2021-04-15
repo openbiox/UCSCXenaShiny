@@ -3,7 +3,7 @@
 \docType{data}
 \name{tcga_clinical}
 \alias{tcga_clinical}
-\title{Toil Hub: TCGA clinical data}
+\title{Toil Hub: TCGA Clinical Data}
 \format{
 A \link{data.frame}
 }

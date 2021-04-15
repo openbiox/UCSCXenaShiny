@@ -143,15 +143,3 @@ get_ccle_mutation_status <- function(identifier) {
   report_dataset_info(dataset)
   data
 }
-
-# ## 直接下载整个数据吧？或者存到包里
-# get_ccle_phenotype <- function() {
-#
-# }
-
-# obtain ccle phenotype
-# ccle_info <- XenaGenerate(subset = XenaDatasets == "ccle/CCLE_sample_info_file_2012-10-18.txt") %>%
-#   XenaQuery() %>%
-#   XenaDownload() %>%
-#   XenaPrepare() %>%
-#   as.data.frame()

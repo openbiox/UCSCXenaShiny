@@ -1,4 +1,4 @@
-#' Visualize CCLE Gene Expression in TPM format
+#' Visualize CCLE Gene Expression in TPM Format
 #' @import ggplot2 dplyr tibble forcats
 #' @param Gene Gene symbal for comparision
 #' @param x.axis Different parameters for x.axis

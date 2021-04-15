@@ -3,7 +3,7 @@
 \docType{data}
 \name{ccle_absolute}
 \alias{ccle_absolute}
-\title{ABSOLUTE result of CCLE database}
+\title{ABSOLUTE Result of CCLE Database}
 \format{
 A \code{data.frame}
 }
@@ -11,7 +11,7 @@ A \code{data.frame}
 see "data_source" attribute.
 }
 \description{
-ABSOLUTE result of CCLE database
+ABSOLUTE Result of CCLE Database
 }
 \examples{
 data("ccle_absolute")

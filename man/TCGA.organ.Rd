@@ -3,12 +3,12 @@
 \docType{data}
 \name{TCGA.organ}
 \alias{TCGA.organ}
-\title{TCGA: organ data}
+\title{TCGA: Organ Data}
 \format{
 A \link{data.frame}
 }
 \description{
-TCGA: organ data
+TCGA: Organ Data
 }
 \examples{
 data("TCGA.organ")

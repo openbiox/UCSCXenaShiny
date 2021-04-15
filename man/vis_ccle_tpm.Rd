@@ -2,7 +2,7 @@
 % Please edit documentation in R/vis_ccle_value.R
 \name{vis_ccle_tpm}
 \alias{vis_ccle_tpm}
-\title{Visualize CCLE Gene Expression in TPM format}
+\title{Visualize CCLE Gene Expression in TPM Format}
 \usage{
 vis_ccle_tpm(Gene = "TP53", x.axis = "Type")
 }
@@ -15,5 +15,5 @@ vis_ccle_tpm(Gene = "TP53", x.axis = "Type")
 a \code{ggplot} object
 }
 \description{
-Visualize CCLE Gene Expression in TPM format
+Visualize CCLE Gene Expression in TPM Format
 }

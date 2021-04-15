@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_pancan_value.R
 \name{available_hosts}
 \alias{available_hosts}
-\title{Show available hosts}
+\title{Show Available Hosts}
 \usage{
 available_hosts()
 }
@@ -10,7 +10,7 @@ available_hosts()
 hosts
 }
 \description{
-Show available hosts
+Show Available Hosts
 }
 \examples{
 available_hosts()

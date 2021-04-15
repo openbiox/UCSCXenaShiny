@@ -3,7 +3,7 @@
 \docType{data}
 \name{ccle_info}
 \alias{ccle_info}
-\title{Phenotype info of CCLE database}
+\title{Phenotype Info of CCLE Database}
 \format{
 A \code{data.frame}
 }
@@ -11,7 +11,7 @@ A \code{data.frame}
 UCSC Xena.
 }
 \description{
-Phenotype info of CCLE database
+Phenotype Info of CCLE Database
 }
 \examples{
 data("ccle_info")

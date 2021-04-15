@@ -2,7 +2,7 @@
 % Please edit documentation in R/ezcor.R
 \name{ezcor}
 \alias{ezcor}
-\title{Run correlation between two variables and support group by a variable}
+\title{Run Correlation between Two Variables and Support Group by a Variable}
 \usage{
 ezcor(
   data = NULL,
@@ -42,7 +42,7 @@ ezcor(
 a \code{data.frame}
 }
 \description{
-Run correlation between two variables and support group by a variable
+Run Correlation between Two Variables and Support Group by a Variable
 }
 \author{
 Yi Xiong

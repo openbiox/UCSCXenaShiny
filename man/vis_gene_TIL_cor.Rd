@@ -2,7 +2,7 @@
 % Please edit documentation in R/vis_pancan_value.R
 \name{vis_gene_TIL_cor}
 \alias{vis_gene_TIL_cor}
-\title{Heatmap for correlation between gene and tumor immune signatures}
+\title{Heatmap for Correlation between Gene and Tumor Immune Infiltration (TIL)}
 \usage{
 vis_gene_TIL_cor(
   Gene = "TP53",
@@ -19,7 +19,7 @@ vis_gene_TIL_cor(
 \item{sig}{Immune Signature, default: result from TIMER}
 }
 \description{
-Heatmap for correlation between gene and tumor immune signatures
+Heatmap for Correlation between Gene and Tumor Immune Infiltration (TIL)
 }
 \examples{
 \donttest{

@@ -1,7 +1,7 @@
 ## how to document datasets: you need to specify @docType and @name; do not
 ## forget NULL in the end
 
-#' Phenotype info of CCLE database
+#' Phenotype Info of CCLE Database
 #' @docType data
 #' @name ccle_info
 #' @format A `data.frame`
@@ -10,7 +10,7 @@
 #' data("ccle_info")
 NULL
 
-#' ABSOLUTE result of CCLE database
+#' ABSOLUTE Result of CCLE Database
 #' @docType data
 #' @name ccle_absolute
 #' @format A `data.frame`
@@ -19,7 +19,7 @@ NULL
 #' data("ccle_absolute")
 NULL
 
-#' Toil Hub: TCGA TARGET GTEX selected phenotypes
+#' Toil Hub: TCGA TARGET GTEX Selected Phenotype
 #' @docType data
 #' @name toil_info
 #' @format A [data.frame]
@@ -29,7 +29,7 @@ NULL
 NULL
 
 
-#' Toil Hub: TCGA clinical data
+#' Toil Hub: TCGA Clinical Data
 #'
 #' See `tcga_surv` for TCGA survival data.
 #' @docType data
@@ -40,7 +40,7 @@ NULL
 #' data("tcga_clinical")
 NULL
 
-#' Toil Hub: TCGA survival data
+#' Toil Hub: TCGA Survival Data
 #' @docType data
 #' @name tcga_surv
 #' @format A [data.frame]
@@ -50,7 +50,7 @@ NULL
 NULL
 
 
-#' Toil Hub: merged TCGA GTEX selected phenotypes
+#' Toil Hub: Merged TCGA GTEx Selected Phenotype
 #' @docType data
 #' @name tcga_gtex
 #' @format A [data.frame]
@@ -58,7 +58,7 @@ NULL
 #' data("tcga_gtex")
 NULL
 
-#' TCGA: TMB (tumor mutation burden) data
+#' TCGA: TMB (Tumor Mutation Burden) Data
 #' @docType data
 #' @name  tcga_tmb
 #' @format A [data.frame]
@@ -68,7 +68,7 @@ NULL
 NULL
 
 
-#' TCGA: genome instability data
+#' TCGA: Genome Instability Data
 #' @docType data
 #' @name  tcga_genome_instability
 #' @format A [data.frame]
@@ -77,7 +77,7 @@ NULL
 #' @source <https://gdc.cancer.gov/about-data/publications/PanCanStemness-2018>
 NULL
 
-#' TCGA: purity data
+#' TCGA: Purity Data
 #' @docType data
 #' @name  tcga_purity
 #' @format A [data.frame]
@@ -86,7 +86,7 @@ NULL
 #' @source <https://www.nature.com/articles/ncomms9971#Sec14>
 NULL
 
-#' TCGA: organ data
+#' TCGA: Organ Data
 #' @docType data
 #' @name  TCGA.organ
 #' @format A [data.frame]
@@ -94,7 +94,7 @@ NULL
 #' data("TCGA.organ")
 NULL
 
-#' TCGA subtype data
+#' TCGA Subtype Data
 #' @docType data
 #' @name  tcga_subtypes
 #' @format A [data.frame]

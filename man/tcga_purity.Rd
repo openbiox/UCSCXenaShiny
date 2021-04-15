@@ -3,7 +3,7 @@
 \docType{data}
 \name{tcga_purity}
 \alias{tcga_purity}
-\title{TCGA: purity data}
+\title{TCGA: Purity Data}
 \format{
 A \link{data.frame}
 }
@@ -11,7 +11,7 @@ A \link{data.frame}
 \url{https://www.nature.com/articles/ncomms9971#Sec14}
 }
 \description{
-TCGA: purity data
+TCGA: Purity Data
 }
 \examples{
 data("tcga_purity")

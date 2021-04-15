@@ -5,7 +5,7 @@
 #########################################
 
 
-#' Run Xena Shiny App
+#' Run UCSC Xena Shiny App
 #'
 #' @importFrom shiny shinyAppFile
 #' @param runMode default is 'client' for personal user, set it to 'server' for running on server.
@@ -21,11 +21,3 @@ app_run <- function(runMode = "client") {
   options(xena.runMode = runMode)
   shiny::shinyAppFile(system.file("shinyapp", "App.R", package = "UCSCXenaShiny"))
 }
-
-# Global variables --------------------------------------------------------
-# This is used for passing package checks
-#   Fix problem caused by 'no visible binding for global variable'
-
-# utils::globalVariables(
-#   c("XenaData")
-# )

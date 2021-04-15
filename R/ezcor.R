@@ -1,4 +1,4 @@
-#' Run correlation between two variables and support group by a variable
+#' Run Correlation between Two Variables and Support Group by a Variable
 #'
 #' @param data a `data.frame` containing variables
 #' @param split whether perform correlation grouped by a variable, default is 'FALSE'

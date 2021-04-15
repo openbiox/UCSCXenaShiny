@@ -1,4 +1,4 @@
-#' Obtain toilHub info for single gene
+#' Obtain ToilHub Info for Single Gene
 #'
 #' @inheritParams get_pancan_value
 #' @importFrom utils data

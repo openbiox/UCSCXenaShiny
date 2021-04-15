@@ -1,4 +1,4 @@
-#' Visualize Identifier-identifier Correlation
+#' Visualize Identifier-Identifier Correlation
 #'
 #' NOTE: the dataset must be dense matrix in UCSC Xena data hubs.
 #'
@@ -274,7 +274,7 @@ vis_identifier_grp_comparison <- function(dataset = NULL, id = NULL, grp_df, sam
   p
 }
 
-#' Visualize Correlation for Multiple Identifiers
+#' Visualize Identifier Group Survival Difference
 #'
 #' NOTE: the dataset must be dense matrix in UCSC Xena data hubs.
 #'

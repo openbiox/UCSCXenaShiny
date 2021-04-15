@@ -3,12 +3,12 @@
 \docType{data}
 \name{tcga_gtex}
 \alias{tcga_gtex}
-\title{Toil Hub: merged TCGA GTEX selected phenotypes}
+\title{Toil Hub: Merged TCGA GTEx Selected Phenotype}
 \format{
 A \link{data.frame}
 }
 \description{
-Toil Hub: merged TCGA GTEX selected phenotypes
+Toil Hub: Merged TCGA GTEx Selected Phenotype
 }
 \examples{
 data("tcga_gtex")

@@ -2,7 +2,7 @@
 % Please edit documentation in R/vis_identifier.R
 \name{vis_identifier_grp_surv}
 \alias{vis_identifier_grp_surv}
-\title{Visualize Correlation for Multiple Identifiers}
+\title{Visualize Identifier Group Survival Difference}
 \usage{
 vis_identifier_grp_surv(
   dataset = NULL,

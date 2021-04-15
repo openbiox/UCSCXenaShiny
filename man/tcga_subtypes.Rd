@@ -3,7 +3,7 @@
 \docType{data}
 \name{tcga_subtypes}
 \alias{tcga_subtypes}
-\title{TCGA subtype data}
+\title{TCGA Subtype Data}
 \format{
 A \link{data.frame}
 }
@@ -11,7 +11,7 @@ A \link{data.frame}
 UCSC Xena.
 }
 \description{
-TCGA subtype data
+TCGA Subtype Data
 }
 \examples{
 data("tcga_subtypes")

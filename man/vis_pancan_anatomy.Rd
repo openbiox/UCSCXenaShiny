@@ -2,7 +2,7 @@
 % Please edit documentation in R/vis_pancan_value.R
 \name{vis_pancan_anatomy}
 \alias{vis_pancan_anatomy}
-\title{Visualize single gene expression in anatomy location}
+\title{Visualize Single Gene Expression in Anatomy Location}
 \usage{
 vis_pancan_anatomy(Gene = "TP53", Gender = c("Female", "Male"), option = "D")
 }
@@ -19,5 +19,5 @@ options are available: "magma" (or "A"), "inferno" (or "B"), "plasma" (or "C"),
 a \code{ggplot} object
 }
 \description{
-Visualize single gene expression in anatomy location
+Visualize Single Gene Expression in Anatomy Location
 }

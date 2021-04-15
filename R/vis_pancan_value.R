@@ -21,7 +21,7 @@ vis_toil_gene <- function(data, x = "primary_site",
     ggpubr::rotate_x_text(angle = angle.x)
 }
 
-#' Visualize Pan-cancer TPM (tumor (TCGA) vs normal (TCGA & GTEx))
+#' Visualize Pan-cancer TPM (tumor (TCGA) vs Normal (TCGA & GTEx))
 #' @import ggplot2 dplyr tibble
 #' @param Gene Gene symbal for comparision
 #' @param Mode Boxplot or Violinplot to represent data
@@ -187,7 +187,7 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
   return(p)
 }
 
-#' Visualize single gene univariable cox result from toil data hub
+#' Visualize Single Gene Univariable Cox Result from Toil Data Hub
 #'
 #' @inheritParams vis_toil_TvsN
 #' @param measure a survival measure, e.g. "OS".
@@ -277,7 +277,7 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, valu
   return(p)
 }
 
-#' Visualize single gene expression in anatomy location
+#' Visualize Single Gene Expression in Anatomy Location
 #'
 #' @inheritParams vis_toil_TvsN
 #' @inheritParams ggplot2::scale_colour_viridis_d
@@ -392,7 +392,7 @@ vis_pancan_anatomy <- function(Gene = "TP53",
   }
 }
 
-#' Heatmap for correlation between immune signatures and gene
+#' Heatmap for Correlation between Gene and Immune Signatures
 #'
 #' @inheritParams vis_toil_TvsN
 #' @param Cor_method correlation method
@@ -473,7 +473,7 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_s
 }
 
 
-#' Visualize correlation between gene and TMB (tumor mutation burden)
+#' Visualize Correlation between Gene and TMB (Tumor Mutation Burden)
 #'
 #' @inheritParams vis_gene_immune_cor
 #' @examples
@@ -528,7 +528,7 @@ vis_gene_tmb_cor <- function(Gene = "TP53", Cor_method = "spearman") {
   return(p)
 }
 
-#' Visualize correlation between gene and tumor stemness
+#' Visualize Correlation between Gene and Tumor Stemness
 #'
 #' @inheritParams vis_gene_immune_cor
 #' @examples
@@ -584,7 +584,7 @@ vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman") {
   return(p)
 }
 
-#' Visualize gene TPM in single cancer type (Tumor (TCGA) vs normal (TCGA & GTEX))
+#' Visualize Gene TPM in Single Cancer Type (Tumor (TCGA) vs Normal (TCGA & GTEx))
 #' @import ggplot2 dplyr tibble
 #' @param Gene Gene symbal for comparision
 #' @param Mode Boxplot or Violinplot to represent data
@@ -714,7 +714,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.valu
   return(p)
 }
 
-#' Visualize gene-gene correlation in TCGA
+#' Visualize Gene-Gene Correlation in TCGA
 #'
 #' @import ggplot2 dplyr ppcor
 #' @param Gene1 the first gene
@@ -780,7 +780,7 @@ vis_gene_cor <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, spl
 }
 
 
-#' Visualize gene-gene correlation in a TCGA cancer type
+#' Visualize Gene-Gene Correlation in a TCGA Cancer Type
 #'
 #' @import ggplot2 dplyr ppcor
 #' @param Gene1 the first gene.
@@ -855,7 +855,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TR
   return(p)
 }
 
-#' Heatmap for correlation between gene and tumor immune signatures
+#' Heatmap for Correlation between Gene and Tumor Immune Infiltration (TIL)
 #'
 #' @inheritParams vis_toil_TvsN
 #' @param Cor_method correlation method

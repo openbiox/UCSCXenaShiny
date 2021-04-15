@@ -3,7 +3,7 @@
 \docType{data}
 \name{toil_info}
 \alias{toil_info}
-\title{Toil Hub: TCGA TARGET GTEX selected phenotypes}
+\title{Toil Hub: TCGA TARGET GTEX Selected Phenotype}
 \format{
 A \link{data.frame}
 }
@@ -11,7 +11,7 @@ A \link{data.frame}
 Generate from data-raw
 }
 \description{
-Toil Hub: TCGA TARGET GTEX selected phenotypes
+Toil Hub: TCGA TARGET GTEX Selected Phenotype
 }
 \examples{
 data("toil_info")

@@ -3,7 +3,7 @@
 \docType{data}
 \name{tcga_surv}
 \alias{tcga_surv}
-\title{Toil Hub: TCGA survival data}
+\title{Toil Hub: TCGA Survival Data}
 \format{
 A \link{data.frame}
 }
@@ -11,7 +11,7 @@ A \link{data.frame}
 Generate from data-raw
 }
 \description{
-Toil Hub: TCGA survival data
+Toil Hub: TCGA Survival Data
 }
 \examples{
 data("tcga_surv")

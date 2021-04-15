@@ -1,4 +1,4 @@
-#' Show available hosts
+#' Show Available Hosts
 #'
 #' @return hosts
 #' @export
@@ -11,7 +11,7 @@ available_hosts <- function() {
 }
 
 
-#' Fetch identifier value from pan-cancer dataset
+#' Fetch Identifier Value from Pan-cancer Dataset
 #'
 #' Identifier includes gene/probe etc.
 #'
