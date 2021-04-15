@@ -64,6 +64,9 @@ vis_identifier_grp_surv(surv_df = surv_df1)
 # Use both dataset argument and vis_identifier_grp_surv(surv_df = surv_df1)
 surv_df2 <- surv_df1[, c(1, 3, 4)]
 vis_identifier_grp_surv(expr_dataset, id, surv_df = surv_df2)
-vis_identifier_grp_surv(expr_dataset, id, surv_df = surv_df2, cutoff_mode = "Custom", cutpoint = c(25, 75))
+vis_identifier_grp_surv(expr_dataset, id,
+  surv_df = surv_df2,
+  cutoff_mode = "Custom", cutpoint = c(25, 75)
+)
 }
 }
