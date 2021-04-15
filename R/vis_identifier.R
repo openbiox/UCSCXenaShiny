@@ -273,3 +273,80 @@ vis_identifier_grp_comparison <- function(dataset = NULL, id = NULL, grp_df, sam
 
   p
 }
+
+#' Visualize Correlation for Multiple Identifiers
+#'
+#' NOTE: the dataset must be dense matrix in UCSC Xena data hubs.
+#'
+#' @inheritParams vis_identifier_grp_comparison
+#' @inheritParams tcga_surv_plot
+#' @param surv_df a `data.frame`. The "time" should be in unit of "days".
+#' - If there are 3 columns, the names should be "sample", "time", "status". 
+#' - If there are 4 columns, the names should be "sample", "value", "time", "status". 
+#' @export
+#' @return a (gg)plot object.
+#' @examples
+#' \dontrun{
+#' library(UCSCXenaTools)
+#' expr_dataset <- "TCGA.LUAD.sampleMap/HiSeqV2_percentile"
+#' cli_dataset <- "TCGA.LUAD.sampleMap/LUAD_clinicalMatrix"
+#' id <- "KRAS"
+#' cli_df <- XenaGenerate(
+#'   subset = XenaDatasets == "TCGA.LUAD.sampleMap/LUAD_clinicalMatrix"
+#' ) %>%
+#'   XenaQuery() %>%
+#'   XenaDownload() %>%
+#'   XenaPrepare()
+#'   
+#' # Use individual survival data
+#' surv_df1 <- cli_df[, c("sampleID", "ABSOLUTE_Ploidy", "days_to_death", "vital_status")]
+#' surv_df1$vital_status <- ifelse(surv_df1$vital_status == "DECEASED", 1, 0)
+#' vis_identifier_grp_surv(surv_df = surv_df1)
+#' 
+#' # Use both dataset argument and vis_identifier_grp_surv(surv_df = surv_df1)
+#' surv_df2 <- surv_df1[, c(1, 3, 4)]
+#' vis_identifier_grp_surv(expr_dataset, id, surv_df = surv_df2)
+#' vis_identifier_grp_surv(expr_dataset, id, surv_df = surv_df2, cutoff_mode = "Custom", cutpoint = c(25, 75))
+#' }
+vis_identifier_grp_surv <- function(dataset = NULL,
+                                    id = NULL,
+                                    surv_df,
+                                    samples = NULL,
+                                    cutoff_mode = c("Auto", "Custom"),
+                                    cutpoint = c(50, 50)) {
+  
+  cutoff_mode <- match.arg(cutoff_mode)
+  
+  if (!is.null(dataset) && !is.null(id)) {
+    message("Querying data of identifier ", id, " from dataset ", dataset, " for survival analysis")
+    id_value <- get_data(dataset, id)
+    df <- dplyr::tibble(
+      sample = names(id_value),
+      value = as.numeric(id_value)
+    )
+    
+    if (ncol(surv_df) == 3) {
+      colnames(surv_df) <- c("sample", "time", "status")
+    } else {
+      stop("When only input both 'dataset' and 'surv_df', please make sure that your 'surv_df' have 3 columns with order 'sample', 'time', 'status'")
+    }
+    
+    df <- dplyr::inner_join(df, surv_df, by = "sample")
+  } else {
+    message("Directly use 'surv_df' for survival analysis.")
+    df <- surv_df
+    if (ncol(df) == 4) {
+      colnames(df) <- c("sample", "value", "time", "status")
+    } else {
+      stop("When only input 'surv_df', please make sure that you have 4 columns with order 'sample', 'value', 'time', 'status'")
+    }
+  }
+  
+  if (!is.null(samples)) {
+    df <- dplyr::filter(df, .data$sample %in% samples)
+  }
+  
+  p <- sur_plot(df, cutoff_mode, cutpoint)
+  
+  p
+}
