@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Load Dataset Provided by This Package — load_data • UCSCXenaShiny</title>
+<title>Visualize Correlation for Multiple Identifiers — vis_identifier_multi_cor • UCSCXenaShiny</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Load Dataset Provided by This Package — load_data" />
-<meta property="og:description" content="Load data from builtin or zenodo." />
+<meta property="og:title" content="Visualize Correlation for Multiple Identifiers — vis_identifier_multi_cor" />
+<meta property="og:description" content="NOTE: the dataset must be dense matrix in UCSC Xena data hubs." />
 
 
 
@@ -123,49 +123,107 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Load Dataset Provided by This Package</h1>
-    <small class="dont-index">Source: <a href='https://github.com/openbiox/UCSCXenaShiny/blob/master/R/load_data.R'><code>R/load_data.R</code></a></small>
-    <div class="hidden name"><code>load_data.Rd</code></div>
+    <h1>Visualize Correlation for Multiple Identifiers</h1>
+    <small class="dont-index">Source: <a href='https://github.com/openbiox/UCSCXenaShiny/blob/master/R/vis_identifier.R'><code>R/vis_identifier.R</code></a></small>
+    <div class="hidden name"><code>vis_identifier_multi_cor.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Load data from builtin or zenodo.</p>
+    <p>NOTE: the dataset must be dense matrix in UCSC Xena data hubs.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>load_data</span><span class='op'>(</span><span class='va'>name</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>vis_identifier_multi_cor</span><span class='op'>(</span>
+  <span class='va'>dataset</span>,
+  <span class='va'>ids</span>,
+  samples <span class='op'>=</span> <span class='cn'>NULL</span>,
+  matrix.type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"full"</span>, <span class='st'>"upper"</span>, <span class='st'>"lower"</span><span class='op'>)</span>,
+  type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"parametric"</span>, <span class='st'>"nonparametric"</span>, <span class='st'>"robust"</span>, <span class='st'>"bayes"</span><span class='op'>)</span>,
+  partial <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  sig.level <span class='op'>=</span> <span class='fl'>0.05</span>,
+  p.adjust.method <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"holm"</span>, <span class='st'>"hochberg"</span>, <span class='st'>"hommel"</span>, <span class='st'>"bonferroni"</span>, <span class='st'>"BH"</span>, <span class='st'>"BY"</span>, <span class='st'>"fdr"</span>,
+    <span class='st'>"none"</span><span class='op'>)</span>,
+  color_low <span class='op'>=</span> <span class='st'>"#E69F00"</span>,
+  color_high <span class='op'>=</span> <span class='st'>"#009E73"</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>name</th>
-      <td><p>dataset name, can be one of
-ccle_absolute
-ccle_info
-pancan_MSI
-tcga_chr_alteration
-tcga_clinical
-tcga_genome_instability
-tcga_gtex
-tcga_MSI
-tcga_pan_immune_signature
-tcga_purity
-tcga_stemness
-tcga_subtypes
-tcga_surv
-tcga_TIL
-tcga_tmb
-TCGA.organ
-toil_info</p></td>
+      <th>dataset</th>
+      <td><p>the dataset to obtain identifiers.</p></td>
+    </tr>
+    <tr>
+      <th>ids</th>
+      <td><p>the molecule identifiers.</p></td>
+    </tr>
+    <tr>
+      <th>samples</th>
+      <td><p>default is <code>NULL</code>, can be common sample names for two datasets.</p></td>
+    </tr>
+    <tr>
+      <th>matrix.type</th>
+      <td><p>Character, <code>"upper"</code> (default), <code>"lower"</code>, or <code>"full"</code>,
+display full matrix, lower triangular or upper triangular matrix.</p></td>
+    </tr>
+    <tr>
+      <th>type</th>
+      <td><p>A character specifying the type of statistical approach.
+Four possible options:</p>
+<ul>
+<li><p><code>"parametric"</code></p></li>
+<li><p><code>"nonparametric"</code></p></li>
+<li><p><code>"robust"</code></p></li>
+<li><p><code>"bayes"</code></p></li>
+</ul>
+
+<p>Corresponding abbreviations are also accepted: <code>"p"</code> (for parametric),
+<code>"np"</code> (for nonparametric), <code>"r"</code> (for robust), or <code>"bf"</code> (for Bayesian).</p></td>
+    </tr>
+    <tr>
+      <th>partial</th>
+      <td><p>Can be <code>TRUE</code> for partial correlations. For Bayesian partial
+correlations, "full" instead of pseudo-Bayesian partial correlations (i.e.,
+Bayesian correlation based on frequentist partialization) are returned.</p></td>
+    </tr>
+    <tr>
+      <th>sig.level</th>
+      <td><p>Significance level (Default: <code>0.05</code>). If the <em>p</em>-value in
+<em>p</em>-value matrix is bigger than <code>sig.level</code>, then the corresponding
+correlation coefficient is regarded as insignificant and flagged as such in
+the plot. Relevant only when <code>output = "plot"</code>.</p></td>
+    </tr>
+    <tr>
+      <th>p.adjust.method</th>
+      <td><p>Adjustment method for <em>p</em>-values for multiple
+comparisons. Possible methods are: <code>"holm"</code> (default), <code>"hochberg"</code>,
+<code>"hommel"</code>, <code>"bonferroni"</code>, <code>"BH"</code>, <code>"BY"</code>, <code>"fdr"</code>, <code>"none"</code>.</p></td>
+    </tr>
+    <tr>
+      <th>color_low</th>
+      <td><p>the color code for lower value mapping.</p></td>
+    </tr>
+    <tr>
+      <th>color_high</th>
+      <td><p>the color code for higher value mapping.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>other parameters passing to <a href='https://indrajeetpatil.github.io/ggstatsplot/reference/ggcorrmat.html'>ggstatsplot::ggcorrmat</a>.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a dataset, typically a <code>data.frame</code>.</p>
+    <p>a (gg)plot object.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='fu'>load_data</span><span class='op'>(</span><span class='st'>"tcga_surv"</span><span class='op'>)</span>
+    <pre class="examples"><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='va'>dataset</span> <span class='op'>&lt;-</span> <span class='st'>"TcgaTargetGtex_rsem_isoform_tpm"</span>
+<span class='va'>ids</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"TP53"</span>, <span class='st'>"KRAS"</span>, <span class='st'>"PTEN"</span><span class='op'>)</span>
+<span class='fu'>vis_identifier_multi_cor</span><span class='op'>(</span><span class='va'>dataset</span>, <span class='va'>ids</span><span class='op'>)</span>
+<span class='op'>}</span>
 </pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Load Dataset Provided by This Package — load_data • UCSCXenaShiny</title>
+<title>Visualize Identifier-identifier Correlation — vis_identifier_cor • UCSCXenaShiny</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Load Dataset Provided by This Package — load_data" />
-<meta property="og:description" content="Load data from builtin or zenodo." />
+<meta property="og:title" content="Visualize Identifier-identifier Correlation — vis_identifier_cor" />
+<meta property="og:description" content="NOTE: the dataset must be dense matrix in UCSC Xena data hubs." />
 
 
 
@@ -123,49 +123,98 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Load Dataset Provided by This Package</h1>
-    <small class="dont-index">Source: <a href='https://github.com/openbiox/UCSCXenaShiny/blob/master/R/load_data.R'><code>R/load_data.R</code></a></small>
-    <div class="hidden name"><code>load_data.Rd</code></div>
+    <h1>Visualize Identifier-identifier Correlation</h1>
+    <small class="dont-index">Source: <a href='https://github.com/openbiox/UCSCXenaShiny/blob/master/R/vis_identifier.R'><code>R/vis_identifier.R</code></a></small>
+    <div class="hidden name"><code>vis_identifier_cor.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Load data from builtin or zenodo.</p>
+    <p>NOTE: the dataset must be dense matrix in UCSC Xena data hubs.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>load_data</span><span class='op'>(</span><span class='va'>name</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>vis_identifier_cor</span><span class='op'>(</span>
+  <span class='va'>dataset1</span>,
+  <span class='va'>id1</span>,
+  <span class='va'>dataset2</span>,
+  <span class='va'>id2</span>,
+  samples <span class='op'>=</span> <span class='cn'>NULL</span>,
+  use_ggstats <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  use_simple_axis_label <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  line_color <span class='op'>=</span> <span class='st'>"blue"</span>,
+  alpha <span class='op'>=</span> <span class='fl'>0.5</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>name</th>
-      <td><p>dataset name, can be one of
-ccle_absolute
-ccle_info
-pancan_MSI
-tcga_chr_alteration
-tcga_clinical
-tcga_genome_instability
-tcga_gtex
-tcga_MSI
-tcga_pan_immune_signature
-tcga_purity
-tcga_stemness
-tcga_subtypes
-tcga_surv
-tcga_TIL
-tcga_tmb
-TCGA.organ
-toil_info</p></td>
+      <th>dataset1</th>
+      <td><p>the dataset to obtain <code>id1</code>.</p></td>
+    </tr>
+    <tr>
+      <th>id1</th>
+      <td><p>the first molecule identifier.</p></td>
+    </tr>
+    <tr>
+      <th>dataset2</th>
+      <td><p>the dataset to obtain <code>id2</code>.</p></td>
+    </tr>
+    <tr>
+      <th>id2</th>
+      <td><p>the second molecule identifier.</p></td>
+    </tr>
+    <tr>
+      <th>samples</th>
+      <td><p>default is <code>NULL</code>, can be common sample names for two datasets.</p></td>
+    </tr>
+    <tr>
+      <th>use_ggstats</th>
+      <td><p>if <code>TRUE</code>, use <a href='https://github.com/IndrajeetPatil/ggstatsplot'>ggstatsplot</a> package for plotting.</p></td>
+    </tr>
+    <tr>
+      <th>use_simple_axis_label</th>
+      <td><p>if <code>TRUE</code> (default), use simple axis labels.
+Otherwise, data subtype will be labeled.</p></td>
+    </tr>
+    <tr>
+      <th>line_color</th>
+      <td><p>set the color for regression line.</p></td>
+    </tr>
+    <tr>
+      <th>alpha</th>
+      <td><p>set the alpha for dots.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>other parameters passing to <a href='http://rpkgs.datanovia.com/ggpubr/reference/ggscatter.html'>ggscatter</a>.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a dataset, typically a <code>data.frame</code>.</p>
+    <p>a (gg)plot object.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='fu'>load_data</span><span class='op'>(</span><span class='st'>"tcga_surv"</span><span class='op'>)</span>
+    <pre class="examples"><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='va'>dataset</span> <span class='op'>&lt;-</span> <span class='st'>"TcgaTargetGtex_rsem_isoform_tpm"</span>
+<span class='va'>id1</span> <span class='op'>&lt;-</span> <span class='st'>"TP53"</span>
+<span class='va'>id2</span> <span class='op'>&lt;-</span> <span class='st'>"KRAS"</span>
+<span class='fu'>vis_identifier_cor</span><span class='op'>(</span><span class='va'>dataset</span>, <span class='va'>id1</span>, <span class='va'>dataset</span>, <span class='va'>id2</span><span class='op'>)</span>
+
+<span class='va'>samples</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>
+  <span class='st'>"TCGA-D5-5538-01"</span>, <span class='st'>"TCGA-VM-A8C8-01"</span>,
+  <span class='st'>"TCGA-ZN-A9VQ-01"</span>, <span class='st'>"TCGA-EE-A17X-06"</span>,
+  <span class='st'>"TCGA-05-4420-01"</span>
+<span class='op'>)</span>
+<span class='fu'>vis_identifier_cor</span><span class='op'>(</span><span class='va'>dataset</span>, <span class='va'>id1</span>, <span class='va'>dataset</span>, <span class='va'>id2</span>, <span class='va'>samples</span><span class='op'>)</span>
+
+<span class='va'>dataset1</span> <span class='op'>&lt;-</span> <span class='st'>"TCGA-BLCA.htseq_counts.tsv"</span>
+<span class='va'>dataset2</span> <span class='op'>&lt;-</span> <span class='st'>"TCGA-BLCA.gistic.tsv"</span>
+<span class='va'>id1</span> <span class='op'>&lt;-</span> <span class='st'>"TP53"</span>
+<span class='va'>id2</span> <span class='op'>&lt;-</span> <span class='st'>"KRAS"</span>
+<span class='fu'>vis_identifier_cor</span><span class='op'>(</span><span class='va'>dataset1</span>, <span class='va'>id1</span>, <span class='va'>dataset2</span>, <span class='va'>id2</span><span class='op'>)</span>
+<span class='op'>}</span>
 </pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

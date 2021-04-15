@@ -139,7 +139,9 @@
   Show.P.label <span class='op'>=</span> <span class='cn'>TRUE</span>,
   Method <span class='op'>=</span> <span class='st'>"wilcox.test"</span>,
   values <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"#DF2020"</span>, <span class='st'>"#DDDF21"</span><span class='op'>)</span>,
-  TCGA.only <span class='op'>=</span> <span class='cn'>FALSE</span>
+  TCGA.only <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  draw_quantiles <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0.25</span>, <span class='fl'>0.5</span>, <span class='fl'>0.75</span><span class='op'>)</span>,
+  trim <span class='op'>=</span> <span class='cn'>TRUE</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -172,6 +174,14 @@
     <tr>
       <th>TCGA.only</th>
       <td><p>include samples only from TCGA dataset</p></td>
+    </tr>
+    <tr>
+      <th>draw_quantiles</th>
+      <td><p>draw quantiles for violinplot</p></td>
+    </tr>
+    <tr>
+      <th>trim</th>
+      <td><p>whether trim the violin</p></td>
     </tr>
     </table>
 

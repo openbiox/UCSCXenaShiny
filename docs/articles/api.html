@@ -84,9 +84,13 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Accessible Functions</h1>
                         <h4 class="author">Shixiang Wang</h4>
-                        <h4 class="author">XiongYi</h4>
+                        <h4 class="author">Yi Xiong</h4>
+                        <h4 class="author">Longfei Zhao</h4>
+                        <h4 class="author">Kai Gu</h4>
+                        <h4 class="author">Yin Li</h4>
+                        <h4 class="author">Fei Zhao</h4>
             
-            <h4 class="date">2021-03-22</h4>
+            <h4 class="date">2021-04-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/openbiox/UCSCXenaShiny/blob/master/vignettes/api.Rmd"><code>vignettes/api.Rmd</code></a></small>
       <div class="hidden name"><code>api.Rmd</code></div>
@@ -105,8 +109,9 @@
 <p>Check parameters:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/args.html">args</a></span><span class="op">(</span><span class="va">query_value</span><span class="op">)</span>
-<span class="co">#&gt; function (identifier, data_type = c("gene", "transcript", "protein", </span>
-<span class="co">#&gt;     "mutation", "cnv", "methylation"), database = c("toil", "ccle")) </span>
+<span class="co">#&gt; function (identifier, data_type = c("mRNA", "transcript", "protein", </span>
+<span class="co">#&gt;     "mutation", "cnv", "methylation", "miRNA"), database = c("toil", </span>
+<span class="co">#&gt;     "ccle")) </span>
 <span class="co">#&gt; NULL</span></code></pre></div>
 <p>For TCGA gene expression data, we use Xena dataset with ID <code>TcgaTargetGtex_rsem_gene_tpm</code> which includes 19131 samples with tumor tissue samples and normal tissue samples. The expression value unit is <code><a href="https://rdrr.io/r/base/Log.html">log2(tpm+0.001)</a></code>.</p>
 <p>Let’s check several examples.</p>
@@ -117,7 +122,7 @@
 <code class="sourceCode R"><span class="va">gene_expr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/query_value.html">query_value</a></span><span class="op">(</span><span class="st">"TP53"</span><span class="op">)</span>
 <span class="co">#&gt; Running mode: client</span>
 <span class="co">#&gt; =========================================================================================</span>
-<span class="co">#&gt; UCSCXenaTools version 1.4.2</span>
+<span class="co">#&gt; UCSCXenaTools version 1.4.4</span>
 <span class="co">#&gt; Project URL: https://github.com/ropensci/UCSCXenaTools</span>
 <span class="co">#&gt; Usages: https://cran.r-project.org/web/packages/UCSCXenaTools/vignettes/USCSXenaTools.html</span>
 <span class="co">#&gt; </span>
@@ -139,6 +144,7 @@
 <span class="co">#&gt; List of 2</span>
 <span class="co">#&gt;  $ expression: Named num [1:19131] 4.79 5.89 5.52 4.43 2.38 ...</span>
 <span class="co">#&gt;   ..- attr(*, "names")= chr [1:19131] "GTEX-S4Q7-0003-SM-3NM8M" "TCGA-19-1787-01" "TCGA-S9-A7J2-01" "GTEX-QV31-1626-SM-2S1QC" ...</span>
+<span class="co">#&gt;   ..- attr(*, "label")= chr "gene expression RNAseq"</span>
 <span class="co">#&gt;  $ unit      : chr "log2(tpm+0.001)"</span></code></pre></div>
 </div>
 <div id="fetch-transcript-expression" class="section level3">
@@ -159,6 +165,12 @@
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">gene_mut</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/query_value.html">query_value</a></span><span class="op">(</span><span class="st">"TP53"</span>, data_type <span class="op">=</span> <span class="st">"mutation"</span><span class="op">)</span></code></pre></div>
 </div>
+<div id="fetch-mirna-mature-strand-expression" class="section level3">
+<h3 class="hasAnchor">
+<a href="#fetch-mirna-mature-strand-expression" class="anchor"></a>Fetch miRNA mature strand expression</h3>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">miRNA_expr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/query_value.html">query_value</a></span><span class="op">(</span><span class="st">"hsa-let-7a-2-3p"</span>, data_type <span class="op">=</span> <span class="st">"miRNA"</span><span class="op">)</span></code></pre></div>
+</div>
 </div>
 <div id="data-visualization" class="section level2">
 <h2 class="hasAnchor">
@@ -166,62 +178,18 @@
 <div id="visualize-single-gene-expression-in-pancan-dataset" class="section level3">
 <h3 class="hasAnchor">
 <a href="#visualize-single-gene-expression-in-pancan-dataset" class="anchor"></a>Visualize Single Gene Expression in PANCAN Dataset</h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/vis_toil_TvsN.html">vis_toil_TvsN</a></span><span class="op">(</span>Gene <span class="op">=</span> <span class="st">"TP53"</span>, Mode <span class="op">=</span> <span class="st">"Violinplot"</span>, Show.P.value <span class="op">=</span> <span class="cn">FALSE</span>, Show.P.label <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 <span class="co">#&gt; Running mode: client</span>
 <span class="co">#&gt; More info about dataset please run following commands:</span>
 <span class="co">#&gt;   library(UCSCXenaTools)</span>
-<span class="co">#&gt;   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span>
-<span class="co">#&gt; Warning in regularize.values(x, y, ties, missing(ties), na.rm = na.rm):</span>
-<span class="co">#&gt; collapsing to unique 'x' values</span>
-
-<span class="co">#&gt; Warning in regularize.values(x, y, ties, missing(ties), na.rm = na.rm):</span>
-<span class="co">#&gt; collapsing to unique 'x' values</span>
-
-<span class="co">#&gt; Warning in regularize.values(x, y, ties, missing(ties), na.rm = na.rm):</span>
-<span class="co">#&gt; collapsing to unique 'x' values</span>
-
-<span class="co">#&gt; Warning in regularize.values(x, y, ties, missing(ties), na.rm = na.rm):</span>
-<span class="co">#&gt; collapsing to unique 'x' values</span>
-
-<span class="co">#&gt; Warning in regularize.values(x, y, ties, missing(ties), na.rm = na.rm):</span>
-<span class="co">#&gt; collapsing to unique 'x' values</span>
-
-<span class="co">#&gt; Warning in regularize.values(x, y, ties, missing(ties), na.rm = na.rm):</span>
-<span class="co">#&gt; collapsing to unique 'x' values</span>
-
-<span class="co">#&gt; Warning in regularize.values(x, y, ties, missing(ties), na.rm = na.rm):</span>
-<span class="co">#&gt; collapsing to unique 'x' values</span>
-
-<span class="co">#&gt; Warning in regularize.values(x, y, ties, missing(ties), na.rm = na.rm):</span>
-<span class="co">#&gt; collapsing to unique 'x' values</span>
-
-<span class="co">#&gt; Warning in regularize.values(x, y, ties, missing(ties), na.rm = na.rm):</span>
-<span class="co">#&gt; collapsing to unique 'x' values</span>
-
-<span class="co">#&gt; Warning in regularize.values(x, y, ties, missing(ties), na.rm = na.rm):</span>
-<span class="co">#&gt; collapsing to unique 'x' values</span>
-
-<span class="co">#&gt; Warning in regularize.values(x, y, ties, missing(ties), na.rm = na.rm):</span>
-<span class="co">#&gt; collapsing to unique 'x' values</span>
-
-<span class="co">#&gt; Warning in regularize.values(x, y, ties, missing(ties), na.rm = na.rm):</span>
-<span class="co">#&gt; collapsing to unique 'x' values</span>
-
-<span class="co">#&gt; Warning in regularize.values(x, y, ties, missing(ties), na.rm = na.rm):</span>
-<span class="co">#&gt; collapsing to unique 'x' values</span>
-
-<span class="co">#&gt; Warning in regularize.values(x, y, ties, missing(ties), na.rm = na.rm):</span>
-<span class="co">#&gt; collapsing to unique 'x' values</span>
-
-<span class="co">#&gt; Warning in regularize.values(x, y, ties, missing(ties), na.rm = na.rm):</span>
-<span class="co">#&gt; collapsing to unique 'x' values</span></code></pre></div>
-<p><img src="api_files/figure-html/unnamed-chunk-8-1.png" width="1152" style="display: block; margin: auto;"></p>
+<span class="co">#&gt;   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span></code></pre></div>
+<p><img src="api_files/figure-html/unnamed-chunk-9-1.png" width="1152" style="display: block; margin: auto;"></p>
 </div>
 <div id="compare-gene-expression-level-in-single-cancer-type" class="section level3">
 <h3 class="hasAnchor">
 <a href="#compare-gene-expression-level-in-single-cancer-type" class="anchor"></a>Compare Gene Expression Level in Single Cancer Type</h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/vis_toil_TvsN_cancer.html">vis_toil_TvsN_cancer</a></span><span class="op">(</span>
   Gene <span class="op">=</span> <span class="st">"TP53"</span>,
   Mode <span class="op">=</span> <span class="st">"Violinplot"</span>,
@@ -238,22 +206,21 @@
 <span class="co">#&gt;   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span>
 <span class="co">#&gt; Counting P value</span>
 <span class="co">#&gt; Counting P value finished</span></code></pre></div>
-<p><img src="api_files/figure-html/unnamed-chunk-9-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="api_files/figure-html/unnamed-chunk-10-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div id="compare-gene-expression-level-in-different-anatomic-regions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#compare-gene-expression-level-in-different-anatomic-regions" class="anchor"></a>Compare Gene Expression Level in Different Anatomic Regions</h3>
 <p>This function needs <a href="https://github.com/jespermaag/gganatogram">gganatogram</a> package, which is not on CRAN. Please install it before using this function.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="st">"gganatogram"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="../reference/vis_pancan_anatomy.html">vis_pancan_anatomy</a></span><span class="op">(</span>Gene <span class="op">=</span> <span class="st">"TP53"</span>, Gender <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Female"</span>, <span class="st">"Male"</span><span class="op">)</span>, option <span class="op">=</span> <span class="st">"D"</span><span class="op">)</span>
-<span class="op">}</span></code></pre></div>
-<p><img src="https://gitee.com/ShixiangWang/ImageCollection/raw/master/png/20210322130516.png" style="display: block; margin: auto;"></p>
+<pre><code>if (require("gganatogram")) {
+  vis_pancan_anatomy(Gene = "TP53", Gender = c("Female", "Male"), option = "D")
+}</code></pre>
+<p><a href="https://gitee.com/ShixiangWang/ImageCollection/raw/master/png/20210322130516.png">Click to see the output</a></p>
 </div>
 <div id="visualize-relationship-between-gene-expression-and-prognosis-in-the-pancan-dataset" class="section level3">
 <h3 class="hasAnchor">
 <a href="#visualize-relationship-between-gene-expression-and-prognosis-in-the-pancan-dataset" class="anchor"></a>Visualize Relationship between Gene Expression and Prognosis in the PANCAN Dataset</h3>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/vis_unicox_tree.html">vis_unicox_tree</a></span><span class="op">(</span>
   Gene <span class="op">=</span> <span class="st">"TP53"</span>,
   measure <span class="op">=</span> <span class="st">"OS"</span>,
@@ -265,7 +232,7 @@
 <span class="co">#&gt;   library(UCSCXenaTools)</span>
 <span class="co">#&gt;   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span>
 <span class="co">#&gt; Get gene expression for TP53</span></code></pre></div>
-<p><img src="api_files/figure-html/unnamed-chunk-12-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="api_files/figure-html/unnamed-chunk-11-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 </div>
   </div>
