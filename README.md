@@ -8,22 +8,24 @@ status](https://www.r-pkg.org/badges/version/UCSCXenaShiny)](https://cran.r-proj
 [![Lines Of
 Code](https://tokei.rs/b1/github/openbiox/UCSCXenaShiny?category=code)](https://github.com/openbiox/UCSCXenaShiny)
 
-The goal of **UCSCXenaShiny** is to provide a web app for downloading,
+**UCSCXenaShiny** is an R package for interactively exploring UCSC Xena.
+It is mainly designed to provide a web app (built on the top of [`{shiny}`](https://shiny.rstudio.com/) framework and [`{UCSCXenaTools}`](https://github.com/ropensci/UCSCXenaTools/) package) for downloading,
 analyzing and visualizing datasets from [UCSC
-Xena](https://xenabrowser.net/datapages/), which is a collection of
-UCSC-hosted public databases such as TCGA, ICGC, TARGET, GTEx, CCLE, and
-others. Databases are normalized so they can be combined, linked,
-filtered, explored and downloaded.
+Xena](https://xenabrowser.net/datapages/).
 
-Please cite the following article when using `UCSCXenaShiny`:
+Please cite the following article when you used **UCSCXenaShiny** in your study:
+
+---------------
 
 Wang, S.; Xiong, Y.; Gu, K.; Zhao, L.; Li, Y.; Zhao, F.; Li, X.; Liu, X. UCSCXenaShiny: An R Package for Exploring and Analyzing UCSC Xena Public Datasets in Web Browser. Preprints 2020, 2020070179 (doi: 10.20944/preprints202007.0179.v1).
+
+---------------
 
 ## :cloud: Use on cloud
 
 If you don't want to install R and packages locally, or you have no programming experience, try using this tool on Hiplot platform: <https://shiny.hiplot.com.cn/ucsc-xena-shiny/>.
 
-## :arrow\_double\_down: Installation
+## :arrow_double_down: Installation
 
 You can install stable release of **UCSCXenaShiny** from CRAN with:
 
@@ -66,9 +68,11 @@ app_run()
 # app_run("server")
 ```
 
-For advanced users, useful functions for obtaining and analyzing data are described in vignette.
+For advanced users, examples for illustrating useful functions to obtain and analyze data are described in vignette.
 
-## :writing\_hand: Author
+All exported data and functions are organized at [here](https://openbiox.github.io/UCSCXenaShiny/reference/index.html).
+
+## :writing_hand: Author
 
   - [Shixiang Wang](https://github.com/ShixiangWang)
   - [Yi Xiong](https://github.com/Byronxy)
@@ -77,6 +81,6 @@ For advanced users, useful functions for obtaining and analyzing data are descri
   - [Yin Li](https://github.com/yinlisssss)
   - [Fei Zhao](https://github.com/fei0810)
 
-## :page\_with\_curl: LICENSE
+## :page_with_curl: LICENSE
 
 MIT © [Openbiox](https://github.com/openbiox)
