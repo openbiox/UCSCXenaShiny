@@ -2,7 +2,7 @@
 % Please edit documentation in R/vis_pancan_value.R
 \name{vis_gene_cor}
 \alias{vis_gene_cor}
-\title{Visualize Gene-gene correlation in TCGA dataset}
+\title{Visualize gene-gene correlation in TCGA}
 \usage{
 vis_gene_cor(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, split = FALSE)
 }
@@ -16,5 +16,5 @@ vis_gene_cor(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, split = FALSE)
 \item{split}{whether split by TCGA tumor tissue}
 }
 \description{
-Visualize Gene-gene correlation in TCGA dataset
+Visualize gene-gene correlation in TCGA
 }

@@ -5,7 +5,7 @@ output:
     toc: true
     toc_float: true
     toc_depth: 3
-author: ["Shixiang Wang", "Yi Xiong", "Longfei Zhao", "Kai Gu", "Yin Li", "Fei Zhao"]
+author: ["Shixiang Wang, Yi Xiong, Longfei Zhao, Kai Gu, Yin Li, Fei Zhao"]
 date: "`r Sys.Date()`"
 vignette: >
   %\VignetteIndexEntry{Accessible Functions}

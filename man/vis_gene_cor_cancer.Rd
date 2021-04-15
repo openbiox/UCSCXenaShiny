@@ -2,7 +2,7 @@
 % Please edit documentation in R/vis_pancan_value.R
 \name{vis_gene_cor_cancer}
 \alias{vis_gene_cor_cancer}
-\title{Visualize Gene-gene correlation in TCGA Cancer Type}
+\title{Visualize gene-gene correlation in a TCGA cancer type}
 \usage{
 vis_gene_cor_cancer(
   Gene1 = "CSF1R",
@@ -27,5 +27,5 @@ vis_gene_cor_cancer(
 \item{cor_method}{correlation method.}
 }
 \description{
-Visualize Gene-gene correlation in TCGA Cancer Type
+Visualize gene-gene correlation in a TCGA cancer type
 }

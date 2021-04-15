@@ -2,7 +2,7 @@
 % Please edit documentation in R/vis_pancan_value.R
 \name{vis_unicox_tree}
 \alias{vis_unicox_tree}
-\title{Visualize single gene uni-cox result}
+\title{Visualize single gene univariable cox result from toil data hub}
 \usage{
 vis_unicox_tree(
   Gene = "TP53",
@@ -24,7 +24,7 @@ vis_unicox_tree(
 a \code{ggplot} object
 }
 \description{
-Visualize single gene uni-cox result
+Visualize single gene univariable cox result from toil data hub
 }
 \examples{
 \donttest{

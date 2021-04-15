@@ -2,7 +2,7 @@
 % Please edit documentation in R/vis_pancan_value.R
 \name{vis_gene_immune_cor}
 \alias{vis_gene_immune_cor}
-\title{Heatmap visualization (correlation between immune signatures and gene)}
+\title{Heatmap for correlation between immune signatures and gene}
 \usage{
 vis_gene_immune_cor(
   Gene = "TP53",
@@ -18,7 +18,7 @@ vis_gene_immune_cor(
 \item{Immune_sig_type}{quantification method, default is "Cibersort"}
 }
 \description{
-Heatmap visualization (correlation between immune signatures and gene)
+Heatmap for correlation between immune signatures and gene
 }
 \examples{
 \donttest{

@@ -2,7 +2,7 @@
 % Please edit documentation in R/vis_pancan_value.R
 \name{vis_toil_TvsN_cancer}
 \alias{vis_toil_TvsN_cancer}
-\title{Visualize single gene expression from toil data hub (Single cancer type)}
+\title{Visualize gene TPM in single cancer type (Tumor (TCGA) vs normal (TCGA & GTEX))}
 \usage{
 vis_toil_TvsN_cancer(
   Gene = "TP53",
@@ -36,5 +36,5 @@ vis_toil_TvsN_cancer(
 a \code{ggplot} object
 }
 \description{
-Visualize single gene expression from toil data hub (Single cancer type)
+Visualize gene TPM in single cancer type (Tumor (TCGA) vs normal (TCGA & GTEX))
 }

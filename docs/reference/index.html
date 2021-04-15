@@ -6,6 +6,22 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- Inform modern browsers that this page supports both dark and light color schemes,
+  and the page author prefers light. -->
+<meta name="color-scheme" content="dark light">
+<script>
+  // If `prefers-color-scheme` is not supported, fall back to light mode.
+  // i.e. In this case, inject the `light` CSS before the others, with
+  // no media filter so that it will be downloaded with highest priority.
+  if (window.matchMedia("(prefers-color-scheme: dark)").media === "not all") {
+    document.documentElement.style.display = "none";
+    document.head.insertAdjacentHTML(
+      "beforeend",
+      "<link id=\"css\" rel=\"stylesheet\" href=\"https://bootswatch.com/3/flatly/bootstrap.css\" onload=\"document.documentElement.style.display = ''\">"
+    );
+  }
+</script>
+
 <title>Function reference • UCSCXenaShiny</title>
 
 
@@ -13,9 +29,20 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- Flatly Theme - Light  -->
+<link id="css-light" rel="stylesheet" href="https://bootswatch.com/3/flatly/bootstrap.css" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)">
+
+<!-- Darkly Theme - Dark -->
+<link id="css-dark" rel="stylesheet" href="https://bootswatch.com/3/darkly/bootstrap.css" media="(prefers-color-scheme: dark)">
+
+<!-- preferably CSS -->
+<link rel="stylesheet" href="../preferably.css">
+<link id="css-code-light" rel="stylesheet" href="../code-color-scheme-light.css" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)">
+<link id="css-code-dark" rel="stylesheet" href="../code-color-scheme-dark.css" media="(prefers-color-scheme: dark)">
+
+  <script src="../darkswitch.js"></script>
 
 <!-- bootstrap-toc -->
 <link rel="stylesheet" href="../bootstrap-toc.css">
@@ -47,6 +74,9 @@
 <!-- mathjax -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script>
+
+
+
 
 <!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -103,12 +133,23 @@
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
+        
+        <li>
+          <a href="#" id="css-toggle-btn">
+            <span class="fas fa-adjust fa-lg"></span>
+          </a>
+        </li>
+        
         <li>
   <a href="https://github.com/openbiox/UCSCXenaShiny/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
+        
+        
+
+
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -136,8 +177,8 @@
     <tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
+          <h2 id="section-data" class="hasAnchor"><a href="#section-data" class="anchor"></a>Data</h2>
+          <p class="section-desc"><p>Builtin datasets and functions to load data</p></p>
         </th>
       </tr>
       
@@ -148,93 +189,27 @@
       <tr>
         
         <td>
-          <p><code><a href="TCGA.organ.html">TCGA.organ</a></code> </p>
-        </td>
-        <td><p>TCGA: organ data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="UCSCXenaShiny.html">UCSCXenaShiny</a></code> </p>
-        </td>
-        <td><p>Xena Shiny App</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="app_run.html">app_run()</a></code> </p>
-        </td>
-        <td><p>Run Xena Shiny App</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="available_hosts.html">available_hosts()</a></code> </p>
-        </td>
-        <td><p>Show available hosts</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="ccle_absolute.html">ccle_absolute</a></code> </p>
-        </td>
-        <td><p>ABSOLUTE result of CCLE database</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="ccle_info.html">ccle_info</a></code> </p>
-        </td>
-        <td><p>Phenotype info of CCLE database</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="ezcor.html">ezcor()</a></code> </p>
-        </td>
-        <td><p>Run correlation between two variables and support group by a variable</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="ezcor_batch.html">ezcor_batch()</a></code> </p>
-        </td>
-        <td><p>Run correlation between two variables in a batch mode and support group by a variable</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="ezcor_partial_cor.html">ezcor_partial_cor()</a></code> </p>
-        </td>
-        <td><p>Run partial correlation</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="get_pancan_value.html">get_ccle_cn_value()</a></code> <code><a href="get_pancan_value.html">get_ccle_gene_value()</a></code> <code><a href="get_pancan_value.html">get_ccle_protein_value()</a></code> <code><a href="get_pancan_value.html">get_ccle_mutation_status()</a></code> <code><a href="get_pancan_value.html">get_pancan_value()</a></code> <code><a href="get_pancan_value.html">get_pancan_gene_value()</a></code> <code><a href="get_pancan_value.html">get_pancan_transcript_value()</a></code> <code><a href="get_pancan_value.html">get_pancan_protein_value()</a></code> <code><a href="get_pancan_value.html">get_pancan_mutation_status()</a></code> <code><a href="get_pancan_value.html">get_pancan_cn_value()</a></code> <code><a href="get_pancan_value.html">get_pancan_methylation_value()</a></code> <code><a href="get_pancan_value.html">get_pancan_miRNA_value()</a></code> </p>
-        </td>
-        <td><p>Fetch identifier value from pan-cancer dataset</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="keep_cat_cols.html">keep_cat_cols()</a></code> </p>
-        </td>
-        <td><p>Keep Only Columns Used for Sample Selection</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="load_data.html">load_data()</a></code> </p>
         </td>
         <td><p>Load Dataset Provided by This Package</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="ope_toil_gene.html">ope_toil_gene()</a></code> </p>
+          <p><code><a href="TCGA.organ.html">TCGA.organ</a></code> </p>
         </td>
-        <td><p>Obtain toilHub info for single gene</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="query_value.html">query_value()</a></code> </p>
-        </td>
-        <td><p>Query Single Identifier Value from Pan-cancer Database</p></td>
+        <td><p>TCGA: organ data</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="tcga_clinical.html">tcga_clinical</a></code> </p>
         </td>
         <td><p>Toil Hub: TCGA clinical data</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="tcga_surv.html">tcga_surv</a></code> </p>
+        </td>
+        <td><p>Toil Hub: TCGA survival data</p></td>
       </tr><tr>
         
         <td>
@@ -262,27 +237,83 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="tcga_surv.html">tcga_surv</a></code> </p>
-        </td>
-        <td><p>Toil Hub: TCGA survival data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="tcga_surv_analysis.html">tcga_surv_get()</a></code> <code><a href="tcga_surv_analysis.html">tcga_surv_plot()</a></code> </p>
-        </td>
-        <td><p>TCGA Survival Analysis</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="tcga_tmb.html">tcga_tmb</a></code> </p>
         </td>
         <td><p>TCGA: TMB (tumor mutation burden) data</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="ccle_absolute.html">ccle_absolute</a></code> </p>
+        </td>
+        <td><p>ABSOLUTE result of CCLE database</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ccle_info.html">ccle_info</a></code> </p>
+        </td>
+        <td><p>Phenotype info of CCLE database</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="toil_info.html">toil_info</a></code> </p>
         </td>
         <td><p>Toil Hub: TCGA TARGET GTEX selected phenotypes</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-data-query" class="hasAnchor"><a href="#section-data-query" class="anchor"></a>Data Query</h2>
+          <p class="section-desc"><p>Functions to query data from UCSC Xena data hubs in single molecular level. The functionality of functions below may overlap, we rank them by importance.</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="query_value.html">query_value()</a></code> </p>
+        </td>
+        <td><p>Query Single Identifier Value from Pan-cancer Database</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_pancan_value.html">get_ccle_cn_value()</a></code> <code><a href="get_pancan_value.html">get_ccle_gene_value()</a></code> <code><a href="get_pancan_value.html">get_ccle_protein_value()</a></code> <code><a href="get_pancan_value.html">get_ccle_mutation_status()</a></code> <code><a href="get_pancan_value.html">get_pancan_value()</a></code> <code><a href="get_pancan_value.html">get_pancan_gene_value()</a></code> <code><a href="get_pancan_value.html">get_pancan_transcript_value()</a></code> <code><a href="get_pancan_value.html">get_pancan_protein_value()</a></code> <code><a href="get_pancan_value.html">get_pancan_mutation_status()</a></code> <code><a href="get_pancan_value.html">get_pancan_cn_value()</a></code> <code><a href="get_pancan_value.html">get_pancan_methylation_value()</a></code> <code><a href="get_pancan_value.html">get_pancan_miRNA_value()</a></code> </p>
+        </td>
+        <td><p>Fetch identifier value from pan-cancer dataset</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ope_toil_gene.html">ope_toil_gene()</a></code> </p>
+        </td>
+        <td><p>Obtain toilHub info for single gene</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="available_hosts.html">available_hosts()</a></code> </p>
+        </td>
+        <td><p>Show available hosts</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-analysis-and-visualiation-for-pan-cancer-study" class="hasAnchor"><a href="#section-analysis-and-visualiation-for-pan-cancer-study" class="anchor"></a>Analysis and Visualiation for Pan-Cancer Study</h2>
+          <p class="section-desc"><p>Functions to analyze and visualize data mainly from TCGA and CCLE</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="tcga_surv_analysis.html">tcga_surv_get()</a></code> <code><a href="tcga_surv_analysis.html">tcga_surv_plot()</a></code> </p>
+        </td>
+        <td><p>TCGA Survival Analysis</p></td>
       </tr><tr>
         
         <td>
@@ -294,43 +325,86 @@
         <td>
           <p><code><a href="vis_gene_TIL_cor.html">vis_gene_TIL_cor()</a></code> </p>
         </td>
-        <td><p>Heatmap visualization (correlation between immune signatures and gene)</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="vis_gene_cor.html">vis_gene_cor()</a></code> </p>
-        </td>
-        <td><p>Visualize Gene-gene correlation in TCGA dataset</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="vis_gene_cor_cancer.html">vis_gene_cor_cancer()</a></code> </p>
-        </td>
-        <td><p>Visualize Gene-gene correlation in TCGA Cancer Type</p></td>
+        <td><p>Heatmap for correlation between gene and tumor immune signatures</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="vis_gene_immune_cor.html">vis_gene_immune_cor()</a></code> </p>
         </td>
-        <td><p>Heatmap visualization (correlation between immune signatures and gene)</p></td>
+        <td><p>Heatmap for correlation between immune signatures and gene</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="vis_gene_cor.html">vis_gene_cor()</a></code> </p>
+        </td>
+        <td><p>Visualize gene-gene correlation in TCGA</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="vis_gene_cor_cancer.html">vis_gene_cor_cancer()</a></code> </p>
+        </td>
+        <td><p>Visualize gene-gene correlation in a TCGA cancer type</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="vis_gene_stemness_cor.html">vis_gene_stemness_cor()</a></code> </p>
         </td>
-        <td><p>Visualize gene and stemness</p></td>
+        <td><p>Visualize correlation between gene and tumor stemness</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="vis_gene_tmb_cor.html">vis_gene_tmb_cor()</a></code> </p>
         </td>
-        <td><p>Visualize TMB and gene</p></td>
+        <td><p>Visualize correlation between gene and TMB (tumor mutation burden)</p></td>
       </tr><tr>
+        
+        <td>
+          <p><code><a href="vis_pancan_anatomy.html">vis_pancan_anatomy()</a></code> </p>
+        </td>
+        <td><p>Visualize single gene expression in anatomy location</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="vis_toil_TvsN.html">vis_toil_TvsN()</a></code> </p>
+        </td>
+        <td><p>Visualize Pan-cancer TPM (tumor (TCGA) vs normal (TCGA &amp; GTEx))</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="vis_toil_TvsN_cancer.html">vis_toil_TvsN_cancer()</a></code> </p>
+        </td>
+        <td><p>Visualize gene TPM in single cancer type (Tumor (TCGA) vs normal (TCGA &amp; GTEX))</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="vis_unicox_tree.html">vis_unicox_tree()</a></code> </p>
+        </td>
+        <td><p>Visualize single gene univariable cox result from toil data hub</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-general-analysis-and-visualiation" class="hasAnchor"><a href="#section-general-analysis-and-visualiation" class="anchor"></a>General Analysis and Visualiation</h2>
+          <p class="section-desc"><p>Functions to analyze and visualize general data, i.e., any valid data from UCSC Xena or users</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
         
         <td>
           <p><code><a href="vis_identifier_cor.html">vis_identifier_cor()</a></code> </p>
         </td>
         <td><p>Visualize Identifier-identifier Correlation</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="vis_identifier_multi_cor.html">vis_identifier_multi_cor()</a></code> </p>
+        </td>
+        <td><p>Visualize Correlation for Multiple Identifiers</p></td>
       </tr><tr>
         
         <td>
@@ -346,39 +420,65 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="vis_identifier_multi_cor.html">vis_identifier_multi_cor()</a></code> </p>
+          <p><code><a href="ezcor.html">ezcor()</a></code> </p>
         </td>
-        <td><p>Visualize Correlation for Multiple Identifiers</p></td>
+        <td><p>Run correlation between two variables and support group by a variable</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="vis_pancan_anatomy.html">vis_pancan_anatomy()</a></code> </p>
+          <p><code><a href="ezcor_batch.html">ezcor_batch()</a></code> </p>
         </td>
-        <td><p>Visualize single gene expression in anatomy location</p></td>
+        <td><p>Run correlation between two variables in a batch mode and support group by a variable</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="vis_toil_TvsN.html">vis_toil_TvsN()</a></code> </p>
+          <p><code><a href="ezcor_partial_cor.html">ezcor_partial_cor()</a></code> </p>
         </td>
-        <td><p>Visualize single gene expression from toil data hub</p></td>
+        <td><p>Run partial correlation</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-shiny-app" class="hasAnchor"><a href="#section-shiny-app" class="anchor"></a>Shiny App</h2>
+          <p class="section-desc"><p>Functions related to Xena Shiny App</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="app_run.html">app_run()</a></code> </p>
+        </td>
+        <td><p>Run Xena Shiny App</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-others" class="hasAnchor"><a href="#section-others" class="anchor"></a>Others</h2>
+          <p class="section-desc"><p>Other docs</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="UCSCXenaShiny.html">UCSCXenaShiny</a></code> </p>
+        </td>
+        <td><p>Xena Shiny App</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="vis_toil_TvsN_cancer.html">vis_toil_TvsN_cancer()</a></code> </p>
+          <p><code><a href="keep_cat_cols.html">keep_cat_cols()</a></code> </p>
         </td>
-        <td><p>Visualize single gene expression from toil data hub (Single cancer type)</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="vis_toil_gene.html">vis_toil_gene()</a></code> </p>
-        </td>
-        <td><p>Visualize single gene expression from toil data hub</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="vis_unicox_tree.html">vis_unicox_tree()</a></code> </p>
-        </td>
-        <td><p>Visualize single gene uni-cox result</p></td>
+        <td><p>Keep Only Columns Used for Sample Selection</p></td>
       </tr>
     </tbody>
     </table>
@@ -394,11 +494,11 @@
 
       <footer>
       <div class="copyright">
-  <p>Developed by Shixiang Wang, Yi Xiong, Longfei Zhao, Kai Gu, Yin Li, Fei Zhao.</p>
+  <p>Developed by <a href='https://orcid.org/0000-0001-9855-7357'>Shixiang Wang</a>, <a href='https://orcid.org/0000-0002-4370-9824'>Yi Xiong</a>, <a href='https://orcid.org/0000-0002-6277-0137'>Longfei Zhao</a>, <a href='https://orcid.org/0000-0002-0177-0774'>Kai Gu</a>, Yin Li, Fei Zhao.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p>Made with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1, using <a href="https://preferably.amirmasoudabdol.name/?source=footer">preferably</a> template.</p>
 </div>
 
       </footer>

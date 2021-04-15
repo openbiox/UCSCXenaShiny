@@ -2,7 +2,7 @@
 % Please edit documentation in R/vis_pancan_value.R
 \name{vis_gene_stemness_cor}
 \alias{vis_gene_stemness_cor}
-\title{Visualize gene and stemness}
+\title{Visualize correlation between gene and tumor stemness}
 \usage{
 vis_gene_stemness_cor(Gene = "TP53", Cor_method = "spearman")
 }
@@ -12,7 +12,7 @@ vis_gene_stemness_cor(Gene = "TP53", Cor_method = "spearman")
 \item{Cor_method}{correlation method}
 }
 \description{
-Visualize gene and stemness
+Visualize correlation between gene and tumor stemness
 }
 \examples{
 \donttest{

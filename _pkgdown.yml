@@ -1,0 +1,78 @@
+template:
+  package: preferably
+  params:
+    toggle: manual
+destination: docs
+
+authors:
+  Shixiang Wang:
+    href: https://orcid.org/0000-0001-9855-7357
+  Yi Xiong:
+    href: https://orcid.org/0000-0002-4370-9824
+  Longfei Zhao:
+    href: https://orcid.org/0000-0002-6277-0137
+  Kai Gu:
+    href: https://orcid.org/0000-0002-0177-0774
+reference:
+  - title: Data
+    desc: Builtin datasets and functions to load data
+    contents:
+    - load_data
+    - TCGA.organ
+    - tcga_clinical
+    - tcga_surv
+    - tcga_genome_instability
+    - tcga_gtex
+    - tcga_purity
+    - tcga_subtypes
+    - tcga_tmb
+    - ccle_absolute
+    - ccle_info
+    - toil_info
+    
+  - title: Data Query
+    desc: Functions to query data from UCSC Xena data hubs in single molecular level. The functionality of functions below may overlap, we rank them by importance.
+    contents:
+    - query_value
+    - get_pancan_value
+    - ope_toil_gene
+    - available_hosts
+    
+  - title: Analysis and Visualiation for Pan-Cancer Study
+    desc: Functions to analyze and visualize data mainly from TCGA and CCLE
+    contents:
+    - tcga_surv_get
+    - tcga_surv_plot
+    - vis_ccle_tpm
+    - vis_gene_TIL_cor
+    - vis_gene_immune_cor
+    - vis_gene_cor
+    - vis_gene_cor_cancer
+    - vis_gene_stemness_cor
+    - vis_gene_tmb_cor
+    - vis_pancan_anatomy
+    - vis_toil_TvsN
+    - vis_toil_TvsN_cancer
+    - vis_unicox_tree
+    
+  - title: General Analysis and Visualiation
+    desc: Functions to analyze and visualize general data, i.e., any valid data from UCSC Xena or users
+    contents:
+    - vis_identifier_cor
+    - vis_identifier_multi_cor
+    - vis_identifier_grp_comparison
+    - vis_identifier_grp_surv
+    - ezcor
+    - ezcor_batch
+    - ezcor_partial_cor
+    
+  - title: Shiny App
+    desc: Functions related to Xena Shiny App
+    contents:
+    - app_run
+    
+  - title: Others
+    desc: Other docs
+    contents:
+    - UCSCXenaShiny
+    - keep_cat_cols
