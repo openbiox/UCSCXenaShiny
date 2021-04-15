@@ -5,21 +5,19 @@ library(preprocessCore)
 # remove all the data/function --------------------------------------------
 
 rm(list = ls())
-
 # 1. load function for the analysis ---------------------------------------
 
 # https://github.com/cran/ppcor/blob/master/R/ppcor_v1.01.R
-source("./Drug_Resistant.v1/Drug_Resistant/codes/function/my_functions.r")
-source("./Drug_Resistant.v1/Drug_Resistant/codes/function/pcor.r") # modified a bit from ppcor
+source("ccle/function/my_functions.r")
+source("ccle/function/pcor.r") # modified a bit from ppcor
 
 # 2.import genes and prepare their expression data ------------------------
 # load CCLE data
+# source: https://data.broadinstitute.org/ccle/CCLE_DepMap_18Q2_RNAseq_RPKM_20180502.gct
 
-# CCLE_expr <- data.table::fread("../CCLE_DepMap_18Q2_RNAseq_reads_20180502.gct") %>%
-#   distinct(Description, .keep_all = T) %>%
-#   column_to_rownames(var = "Description") %>%
-#   select(-c("Name"))
-CCLE_expr <- data.table::fread("../CCLE_DepMap_18Q2_RNAseq_RPKM_20180502.gct") %>%
+CCLE_expr <- data.table::fread("~/Downloads/CCLE_DepMap_18Q2_RNAseq_RPKM_20180502.gct") 
+
+CCLE_expr <- CCLE_expr %>%
   distinct(Description, .keep_all = T) %>%
   column_to_rownames(var = "Description") %>%
   select(-c("Name"))
@@ -36,8 +34,8 @@ colnames(CCLE_mat) <- colnames(CCLE_expr)
 rownames(CCLE_mat) <- rownames(CCLE_expr)
 
 # only keep the cell lines with both expression data and IC50 values
-CCLE_sampleinfo <- data.table::fread("../CCLE_sample_info_file_2012-10-18.txt")
-CCLE_drug <- data.table::fread("../CCLE_NP24.2009_Drug_data_2015.02.24.csv") %>%
+CCLE_sampleinfo <- data.table::fread("ccle/CCLE_sample_info_file_2012-10-18.txt")
+CCLE_drug <- data.table::fread("ccle/CCLE_NP24.2009_Drug_data_2015.02.24.csv") %>%
   left_join(CCLE_sampleinfo, by = c("CCLE Cell Line Name" = "CCLE name"))
 
 iOrd <- intersect(colnames(CCLE_mat), CCLE_drug$`CCLE Cell Line Name`)
