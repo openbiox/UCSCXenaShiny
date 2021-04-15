@@ -29,7 +29,7 @@ query_value <- function(identifier,
     )
   } else {
     f <- switch(data_type,
-      gene = get_ccle_gene_value,
+      mRNA = get_ccle_gene_value,
       transcript = stop("Not support for database 'ccle'!"),
       protein = get_ccle_protein_value,
       mutation = get_ccle_mutation_status,
