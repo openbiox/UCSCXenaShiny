@@ -1,5 +1,3 @@
-sig_all = colnames(load_data("tcga_TIL"))[-1]
-
 ui.modules_pancan_til <- function(id) {
   ns <- NS(id)
   fluidPage(
@@ -48,7 +46,7 @@ ui.modules_pancan_til <- function(id) {
                       "Neutrophil_TIMER", 
                       "Macrophage_TIMER",
                       "Myeloid dendritic cell_TIMER"),
-          choices = sig_all,
+          choices = TIL_signatures,
           options = list(
             `actions-box` = TRUE),
           multiple = TRUE),

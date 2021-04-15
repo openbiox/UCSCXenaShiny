@@ -106,6 +106,8 @@ themes_list <- list(
   "minimal_grid" = cowplot::theme_minimal_grid()
 )
 
+TIL_signatures <- colnames(load_data("tcga_TIL"))[-1]
+
 ## data summary
 Data_hubs_number <- length(unique(xena_table$Hub))
 Cohorts_number <- length(unique(xena_table$Cohort))
