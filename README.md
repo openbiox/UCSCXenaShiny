@@ -27,14 +27,14 @@ If you don't want to install R and packages locally, or you have no programming 
 
 You can install stable release of **UCSCXenaShiny** from CRAN with:
 
-``` r
+```r
 install.packages("UCSCXenaShiny")
 ```
 
 You can install the development version of **UCSCXenaShiny** from Github
 with:
 
-``` r
+```r
 remotes::install_github("openbiox/XenaShiny")
 ```
 
@@ -48,14 +48,22 @@ remotes::install_git("https://gitee.com/XenaShiny/UCSCXenaShiny")
 
 First load package:
 
-``` r
+```r
 library(UCSCXenaShiny)
 ```
 
-Then run the following command in console:
+Start Shiny in your R console (ignore this if you just want to use functions in this package):
 
-``` r
+```r
 app_run()
+# At default, the Shiny is running under client mode
+# It means the data queried from remote UCSC Xena server will
+# be saved to temporary directory determined by R
+# If you frequently use this tool or deploy this tool as a web service for multiple users
+# It is recommended to run it with 'server' mode
+# i.e.,
+#
+# app_run("server")
 ```
 
 For advanced users, useful functions for obtaining and analyzing data are described in vignette.

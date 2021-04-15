@@ -52,6 +52,10 @@ ui.page_general_analysis <- function() {
       tabPanel(
         "Group-Comparison",
         ui.modules_ga_group_comparison("module_ga_group_comparison")
+      ),
+      tabPanel(
+        "Survival-Analysis",
+        ui.modules_ga_surv_analysis("module_ga_surv_analysis")
       )
     )
   )
