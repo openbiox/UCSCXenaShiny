@@ -1,5 +1,5 @@
 #' TCGA Survival Analysis
-#' 
+#'
 #' - Firstly, get merged data of one molecular profile value and associated clinical data from TCGA Pan-Cancer dataset.
 #' - Secondly, filter data as your wish.
 #' - Finally, show K-M plot.
@@ -20,12 +20,12 @@
 #'
 #' @return a `data.frame` or a plot.
 #' @export
-#' @examples 
+#' @examples
 #' \dontrun{
 #' # 1. get data
 #' data <- tcga_surv_get("TP53")
 #' # 2. filter data (optional)
-#' 
+#'
 #' # 3. show K-M plot
 #' tcga_surv_plot(data, time = "DSS.time", status = "DSS")
 #' }
@@ -60,10 +60,10 @@ tcga_surv_get <- function(item,
   }
 
   message("Querying data of molecular ", item, " for survival analysis in TCGA cohort ", TCGA_cohort, ".")
-  
+
   gd <- query_value(identifier = item, data_type = profile)
   if (is.list(gd)) gd <- gd[[1]]
-  
+
   if (all(is.na(gd))) {
     return(NULL)
   }
@@ -91,6 +91,9 @@ tcga_surv_get <- function(item,
 }
 
 #' @rdname tcga_surv_analysis
+#' @param palette color palette, can be "hue", "grey", "RdBu", "Blues", "npg", "aaas", etc.
+#' More see `?survminer::ggsurvplot`.
+#' @param ... other parameters passing to `survminer::ggsurvplot`
 #' @export
 tcga_surv_plot <- function(data,
                            time = "time",
@@ -98,7 +101,9 @@ tcga_surv_plot <- function(data,
                            cutoff_mode = c("Auto", "Custom"),
                            cutpoint = c(50, 50),
                            cnv_type = c("Duplicated", "Normal", "Deleted"),
-                           profile = c("mRNA", "miRNA", "methylation", "transcript", "protein", "mutation", "cnv")) {
+                           profile = c("mRNA", "miRNA", "methylation", "transcript", "protein", "mutation", "cnv"),
+                           palette = "aaas",
+                           ...) {
   cutoff_mode <- match.arg(cutoff_mode)
   profile <- match.arg(profile)
   kept_cols <- c("value", time, status)
@@ -110,47 +115,34 @@ tcga_surv_plot <- function(data,
     install.packages("survminer")
   }
 
-
   if (profile %in% c("mRNA", "miRNA", "methylation", "transcript", "protein")) {
-    sur_plot(data, cutoff_mode, cutpoint)
+    sur_plot(data, cutoff_mode, cutpoint, palette = palette, ...)
   } else if (profile == "mutation") {
-    sur_plot_mut(data)
+    sur_plot_mut(data, palette = palette, ...)
   } else {
-    sur_plot_cnv(data, cnv_type)
+    sur_plot_cnv(data, cnv_type, palette = palette, ...)
   }
 }
 
 ## Survival analysis for mRNA and protein expression
-sur_plot <- function(data, cutoff_mode, cutpoint) {
-  data <- data %>%
-    dplyr::arrange(.data$value) %>%
-    dplyr::mutate(per_rank = 100 / nrow(.) * (1:nrow(.)))
-  # if (cutoff_mode == "Auto") {
-  # nd <- nrow(data)
-  # nr <- which(data$per_rank > 25 & data$per_rank < 75)
-  # p <- c()
-  # for (i in nr) {
-  #  dat <- data %>% mutate(group = c(rep("Low", i), rep("High", nd - i)))
-  #  sdf <- survdiff(Surv(time, status) ~ group, data = dat)
-  #  p.val <- 1 - pchisq(sdf$chisq, length(sdf$n) - 1)
-  #  p <- c(p, p.val)
-  # }
-  # nr <- nr[which.min(p)]
-  # data %<>% mutate(group = c(rep("Low", nr), rep("High", nd - nr)))
+sur_plot <- function(data, cutoff_mode, cutpoint, palette = "aaas", ...) {
   if (cutoff_mode == "Auto") {
-    data <- data %>%
+    data2 <- data %>%
       survminer::surv_cutpoint(
         time = "time", event = "status",
         variables = c("value"),
         minprop = 0.25, progressbar = TRUE
       ) %>%
       survminer::surv_categorize(labels = c("Low", "High")) %>%
-      data.frame() %>%
-      dplyr::rename(group = .data$value)
+      data.frame()
+    data$group <- data2$value
   } else {
     if (length(cutpoint) == 1) {
       cutpoint <- c(cutpoint, cutpoint)
     }
+    data <- data %>%
+      dplyr::arrange(.data$value) %>%
+      dplyr::mutate(per_rank = 100 / nrow(.) * (1:nrow(.)))
     data <- data %>%
       dplyr::mutate(group = dplyr::case_when(
         .data$per_rank > !!cutpoint[2] ~ "High",
@@ -158,22 +150,22 @@ sur_plot <- function(data, cutoff_mode, cutpoint) {
         TRUE ~ NA_character_
       ))
   }
-  p_survplot(data)
+  p_survplot(data, palette = palette, ...)
 }
 
 ## Survival analysis for mutation DNA
-sur_plot_mut <- function(data) {
+sur_plot_mut <- function(data, palette = "aaas", ...) {
   data <- data %>%
     dplyr::rename(mut = .data$value) %>%
     dplyr::mutate(group = ifelse(.data$mut == 1, "MT", "WT"))
   if (length(table(data$group)) < 2) {
     return(NULL)
   }
-  p_survplot(data)
+  p_survplot(data, palette = palette, ...)
 }
 
 ## Survival analysis for CNV
-sur_plot_cnv <- function(data, cnv_type = c("Duplicated", "Normal", "Deleted")) {
+sur_plot_cnv <- function(data, cnv_type = c("Duplicated", "Normal", "Deleted"), palette = "aaas", ...) {
   data <- data %>%
     dplyr::rename(mut = .data$value) %>%
     dplyr::mutate(group = ifelse(.data$mut == 0, "Normal",
@@ -183,15 +175,15 @@ sur_plot_cnv <- function(data, cnv_type = c("Duplicated", "Normal", "Deleted")) 
   if (length(table(data$group)) < 2) {
     return(NULL)
   }
-  p_survplot(data)
+  p_survplot(data, palette = palette, ...)
 }
 
 ## ggsurvplot
-p_survplot <- function(data) {
+p_survplot <- function(data, palette = "aaas", ...) {
   fit <- survival::survfit(Surv(time, status) ~ group, data = data)
-  survminer::ggsurvplot(fit,
+  p <- survminer::ggsurvplot(fit,
     data = data, pval = TRUE, pval.method = TRUE,
-    palette = "aaas",
+    palette = palette,
     size = 1.2, # change line size
     font.legend = c(14, "black"),
     font.x = c(14, "bold", "black"),
@@ -205,6 +197,10 @@ p_survplot <- function(data) {
     surv.plot.height = 0.7,
     risk.table.height = 0.15,
     ncensor.plot.height = 0.15,
-    ggtheme = ggplot2::theme_classic() # Change ggplot2 theme
+    ggtheme = ggplot2::theme_classic(), # Change ggplot2 theme
+    ...
   )
+
+  attr(p, "data") <- data[!is.na(data$group), ]
+  p
 }

@@ -346,7 +346,7 @@ server.modules_sur_plot <- function(input, output, session) {
 
   output$download <- downloadHandler(
     filename = function() {
-      paste0("surplot.", input$device)
+      paste0(Sys.Date(), "_tcga_surplot.", input$device)
     },
     content = function(file) {
       p <- plot_func()

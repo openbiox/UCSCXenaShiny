@@ -89,7 +89,7 @@ cli_df <- XenaGenerate(
   XenaQuery() \%>\%
   XenaDownload() \%>\%
   XenaPrepare()
-  
+
 # group data.frame with 2 columns
 vis_identifier_grp_comparison(expr_dataset, id, cli_df[, c("sampleID", "gender")])
 # group data.frame with 3 columns

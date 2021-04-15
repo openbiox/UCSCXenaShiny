@@ -188,7 +188,7 @@ vis_identifier_multi_cor <- function(dataset, ids, samples = NULL,
 #'   XenaQuery() %>%
 #'   XenaDownload() %>%
 #'   XenaPrepare()
-#'   
+#'
 #' # group data.frame with 2 columns
 #' vis_identifier_grp_comparison(expr_dataset, id, cli_df[, c("sampleID", "gender")])
 #' # group data.frame with 3 columns
@@ -197,12 +197,12 @@ vis_identifier_multi_cor <- function(dataset, ids, samples = NULL,
 #'   cli_df[, c("sampleID", "pathologic_M", "gender")] %>%
 #'     dplyr::filter(pathologic_M %in% c("M0", "MX"))
 #' )
-#' 
+#'
 #' # When not use the value of `identifier` from `dataset`
 #' vis_identifier_grp_comparison(grp_df = cli_df[, c(1, 2, 71)])
 #' vis_identifier_grp_comparison(grp_df = cli_df[, c(1, 2, 71, 111)])
 #' }
-#' 
+#'
 vis_identifier_grp_comparison <- function(dataset = NULL, id = NULL, grp_df, samples = NULL,
                                           fun_type = c("betweenstats", "withinstats"),
                                           type = c("parametric", "nonparametric", "robust", "bayes"),
@@ -224,13 +224,13 @@ vis_identifier_grp_comparison <- function(dataset = NULL, id = NULL, grp_df, sam
       X = as.numeric(id_value)
     )
     colnames(df)[2] <- id
-    
+
     df <- dplyr::inner_join(df, grp_df, by = "sample")
-    
+
     do_grp <- ncol(grp_df) >= 3
   } else {
     message("Directly use 'grp_df' for comparison analysis.")
-    df <- grp_df 
+    df <- grp_df
     do_grp <- ncol(grp_df) >= 4
   }
 
@@ -278,11 +278,12 @@ vis_identifier_grp_comparison <- function(dataset = NULL, id = NULL, grp_df, sam
 #'
 #' NOTE: the dataset must be dense matrix in UCSC Xena data hubs.
 #'
-#' @inheritParams vis_identifier_grp_comparison
 #' @inheritParams tcga_surv_plot
+#' @inheritParams vis_identifier_grp_comparison
 #' @param surv_df a `data.frame`. The "time" should be in unit of "days".
-#' - If there are 3 columns, the names should be "sample", "time", "status". 
-#' - If there are 4 columns, the names should be "sample", "value", "time", "status". 
+#' - If there are 3 columns, the names should be "sample", "time", "status".
+#' - If there are 4 columns, the names should be "sample", "value", "time", "status".
+#' @param cutoff_mode mode for grouping samples, can be "Auto" (default) or "Custom" or "None" (for groups have been prepared).
 #' @export
 #' @return a (gg)plot object.
 #' @examples
@@ -297,12 +298,12 @@ vis_identifier_grp_comparison <- function(dataset = NULL, id = NULL, grp_df, sam
 #'   XenaQuery() %>%
 #'   XenaDownload() %>%
 #'   XenaPrepare()
-#'   
+#'
 #' # Use individual survival data
 #' surv_df1 <- cli_df[, c("sampleID", "ABSOLUTE_Ploidy", "days_to_death", "vital_status")]
 #' surv_df1$vital_status <- ifelse(surv_df1$vital_status == "DECEASED", 1, 0)
 #' vis_identifier_grp_surv(surv_df = surv_df1)
-#' 
+#'
 #' # Use both dataset argument and vis_identifier_grp_surv(surv_df = surv_df1)
 #' surv_df2 <- surv_df1[, c(1, 3, 4)]
 #' vis_identifier_grp_surv(expr_dataset, id, surv_df = surv_df2)
@@ -312,11 +313,12 @@ vis_identifier_grp_surv <- function(dataset = NULL,
                                     id = NULL,
                                     surv_df,
                                     samples = NULL,
-                                    cutoff_mode = c("Auto", "Custom"),
-                                    cutpoint = c(50, 50)) {
-  
+                                    cutoff_mode = c("Auto", "Custom", "None"),
+                                    cutpoint = c(50, 50),
+                                    palette = "aaas",
+                                    ...) {
   cutoff_mode <- match.arg(cutoff_mode)
-  
+
   if (!is.null(dataset) && !is.null(id)) {
     message("Querying data of identifier ", id, " from dataset ", dataset, " for survival analysis")
     id_value <- get_data(dataset, id)
@@ -324,13 +326,13 @@ vis_identifier_grp_surv <- function(dataset = NULL,
       sample = names(id_value),
       value = as.numeric(id_value)
     )
-    
+
     if (ncol(surv_df) == 3) {
       colnames(surv_df) <- c("sample", "time", "status")
     } else {
       stop("When only input both 'dataset' and 'surv_df', please make sure that your 'surv_df' have 3 columns with order 'sample', 'time', 'status'")
     }
-    
+
     df <- dplyr::inner_join(df, surv_df, by = "sample")
   } else {
     message("Directly use 'surv_df' for survival analysis.")
@@ -341,12 +343,17 @@ vis_identifier_grp_surv <- function(dataset = NULL,
       stop("When only input 'surv_df', please make sure that you have 4 columns with order 'sample', 'value', 'time', 'status'")
     }
   }
-  
+
   if (!is.null(samples)) {
     df <- dplyr::filter(df, .data$sample %in% samples)
   }
-  
-  p <- sur_plot(df, cutoff_mode, cutpoint)
-  
+
+  if (cutoff_mode != "None") {
+    p <- sur_plot(df, cutoff_mode, cutpoint, palette = palette, ...)
+  } else {
+    colnames(df)[2] <- "group"
+    p <- p_survplot(df, palette = palette, ...)
+  }
+
   p
 }

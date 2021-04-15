@@ -185,7 +185,7 @@ server.modules_ga_scatter_correlation <- function(
     )
     output$download <- downloadHandler(
       filename = function() {
-        paste0("corplot.", input$device)
+        paste0(Sys.Date(), "_corplot.", input$device)
       },
       content = function(file) {
         ggplot2::ggsave(

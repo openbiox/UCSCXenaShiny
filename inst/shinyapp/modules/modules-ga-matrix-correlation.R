@@ -152,7 +152,7 @@ server.modules_ga_matrix_correlation <- function(
   })
   output$download <- downloadHandler(
     filename = function() {
-      paste0("corplot.", input$device)
+      paste0(Sys.Date(), "_cormat_heatmap.", input$device)
     },
     content = function(file) {
       ggplot2::ggsave(

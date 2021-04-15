@@ -9,8 +9,10 @@ vis_identifier_grp_surv(
   id = NULL,
   surv_df,
   samples = NULL,
-  cutoff_mode = c("Auto", "Custom"),
-  cutpoint = c(50, 50)
+  cutoff_mode = c("Auto", "Custom", "None"),
+  cutpoint = c(50, 50),
+  palette = "aaas",
+  ...
 )
 }
 \arguments{
@@ -26,9 +28,14 @@ vis_identifier_grp_surv(
 
 \item{samples}{default is \code{NULL}, can be common sample names for two datasets.}
 
-\item{cutoff_mode}{mode for grouping samples, can be "Auto" (default) or "Custom".}
+\item{cutoff_mode}{mode for grouping samples, can be "Auto" (default) or "Custom" or "None" (for groups have been prepared).}
 
 \item{cutpoint}{cut point (in percent) for "Custom" mode, default is \code{c(50, 50)}.}
+
+\item{palette}{color palette, can be "hue", "grey", "RdBu", "Blues", "npg", "aaas", etc.
+More see \code{?survminer::ggsurvplot}.}
+
+\item{...}{other parameters passing to \code{survminer::ggsurvplot}}
 }
 \value{
 a (gg)plot object.
@@ -48,7 +55,7 @@ cli_df <- XenaGenerate(
   XenaQuery() \%>\%
   XenaDownload() \%>\%
   XenaPrepare()
-  
+
 # Use individual survival data
 surv_df1 <- cli_df[, c("sampleID", "ABSOLUTE_Ploidy", "days_to_death", "vital_status")]
 surv_df1$vital_status <- ifelse(surv_df1$vital_status == "DECEASED", 1, 0)

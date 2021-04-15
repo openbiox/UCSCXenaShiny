@@ -23,7 +23,9 @@ tcga_surv_plot(
   cutpoint = c(50, 50),
   cnv_type = c("Duplicated", "Normal", "Deleted"),
   profile = c("mRNA", "miRNA", "methylation", "transcript", "protein", "mutation",
-    "cnv")
+    "cnv"),
+  palette = "aaas",
+  ...
 )
 }
 \arguments{
@@ -47,6 +49,11 @@ this package.}
 \item{cutpoint}{cut point (in percent) for "Custom" mode, default is \code{c(50, 50)}.}
 
 \item{cnv_type}{only used when profile is "cnv", can select from \code{c("Duplicated", "Normal", "Deleted")}.}
+
+\item{palette}{color palette, can be "hue", "grey", "RdBu", "Blues", "npg", "aaas", etc.
+More see \code{?survminer::ggsurvplot}.}
+
+\item{...}{other parameters passing to \code{survminer::ggsurvplot}}
 }
 \value{
 a \code{data.frame} or a plot.

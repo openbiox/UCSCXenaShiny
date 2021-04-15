@@ -287,7 +287,7 @@ server.modules_ga_group_comparison <- function(
               ), 
               shinyjs::hidden(
                 sliderInput(
-                  inputId = ns("group_col_cutpoint"), label = "Select percent cutoff (%) to generate (High and Low) groups:",
+                  inputId = ns("group_col_cutpoint"), label = "Select (min and max) percent cutoff (%) to generate (Low and High) groups:",
                   min = 10, max = 90, value = c(50, 50)
                 )
               ),
@@ -334,7 +334,7 @@ server.modules_ga_group_comparison <- function(
       
       observe({
         group_col <- setdiff(input$data1_group_col, "NONE")
-        if (length(group_col)) {
+        if (length(group_col) && group_col %in% colnames(data1)) {
           # A column has been selected by user
           data <- na.omit(data1[[group_col]])
           if (length(data)) {
@@ -415,69 +415,71 @@ server.modules_ga_group_comparison <- function(
           data1_cols <- c(data1_sample_col, data1_group_col, data1_facet_col)
           data2_cols <- c(data2_sample_col, data2_value_col, data2_facet_col)
           col_order <- c("sample", data2_value_col, data1_group_col, data1_facet_col, data2_facet_col)
-          print("column order:")
+          message("column order:")
           print(col_order)
           
-          data1_copy <- dplyr::select(data1, dplyr::all_of(data1_cols))
-          colnames(data1_copy)[1] <- "sample"
-          data2_copy <- dplyr::select(data2, dplyr::all_of(data2_cols))
-          colnames(data2_copy)[1] <- "sample"
-          
-          joined_data <- tryCatch(
-            {
-              dplyr::inner_join(
-                data1_copy, data2_copy, by = "sample"
-              ) %>% 
-                dplyr::select(dplyr::all_of(col_order)) %>% 
-                as.data.frame()
-            },
-            error = function(e) {
-              message("Joining failed for group comparison analysis.")
-              NULL
+          if (all(data1_cols %in% colnames(data1)) && all(data2_cols %in% colnames(data2))) {
+            data1_copy <- dplyr::select(data1, dplyr::all_of(data1_cols))
+            colnames(data1_copy)[1] <- "sample"
+            data2_copy <- dplyr::select(data2, dplyr::all_of(data2_cols))
+            colnames(data2_copy)[1] <- "sample"
+            
+            message("Joining:")
+            joined_data <- tryCatch(
+              {
+                dplyr::inner_join(
+                  data1_copy, data2_copy, by = "sample"
+                ) %>% 
+                  dplyr::select(dplyr::all_of(col_order)) %>% 
+                  as.data.frame()
+              },
+              error = function(e) {
+                message("Joining failed for group comparison analysis.")
+                NULL
+              }
+            )
+            
+            print(group_col_status$status)
+            if (group_col_status$status != "Off") {
+              if (group_col_status$status == "CO") {
+                # 作为连续值处理，读取分割点
+                data <- joined_data
+                data$.group <- joined_data[[3]]
+                data <- data %>%
+                  dplyr::arrange(.data$.group) %>%
+                  dplyr::mutate(per_rank = 100 / nrow(.) * (1:nrow(.))) %>% 
+                  dplyr::mutate(.group = dplyr::case_when(
+                    .data$per_rank > !!input$group_col_cutpoint[2] ~ "High",
+                    .data$per_rank <= !!input$group_col_cutpoint[1] ~ "Low",
+                    TRUE ~ NA_character_
+                  ))
+                joined_data[[3]] <- data$.group
+                joined_data <- na.omit(joined_data)
+              } else {
+                # 作为离散值处理
+                message(length(input$group_col_groups), " groups remained.")
+                joined_data <- joined_data[joined_data[[3]] %in% input$group_col_groups, ]
+                print(nrow(joined_data))
+              }
             }
-          )
-          
-          message("Joining:")
-          print(group_col_status$status)
-          if (group_col_status$status != "Off") {
-            if (group_col_status$status == "CO") {
-              # 作为连续值处理，读取分割点
-              data <- joined_data
-              data$.group <- joined_data[[3]]
-              data <- data %>%
-                dplyr::arrange(.data$.group) %>%
-                dplyr::mutate(per_rank = 100 / nrow(.) * (1:nrow(.))) %>% 
-                dplyr::mutate(.group = dplyr::case_when(
-                  .data$per_rank > !!input$group_col_cutpoint[2] ~ "High",
-                  .data$per_rank <= !!input$group_col_cutpoint[1] ~ "Low",
-                  TRUE ~ NA_character_
-                ))
-              joined_data[[3]] <- data$.group
-              joined_data <- na.omit(joined_data)
-            } else {
-              # 作为离散值处理
-              message(length(input$group_col_groups), " groups remained.")
-              joined_data <- joined_data[joined_data[[3]] %in% input$group_col_groups, ]
-              print(nrow(joined_data))
-            }
-          }
-          
-          grp_df$data <- joined_data
-          
-          if (!is.null(joined_data)) {
-            output$joined_table <- DT::renderDataTable(server = TRUE, {
-              DT::datatable(
-                joined_data,
-                rownames = FALSE,
-                options = list(
-                  scrollY = 350,
-                  scrollX = 300
+            
+            grp_df$data <- joined_data
+            
+            if (!is.null(joined_data)) {
+              output$joined_table <- DT::renderDataTable(server = TRUE, {
+                DT::datatable(
+                  joined_data,
+                  rownames = FALSE,
+                  options = list(
+                    scrollY = 350,
+                    scrollX = 300
+                  )
                 )
-              )
-            })
-          } else {
-            sendSweetAlert(session, title = "Warning", 
-                           text = "Joining failed! Please check your selection, especially the sample ID column.", type = "warning")
+              })
+            } else {
+              sendSweetAlert(session, title = "Warning", 
+                             text = "Joining failed! Please check your selection, especially the sample ID column.", type = "warning")
+            } 
           }
           
         } else {
@@ -512,7 +514,7 @@ server.modules_ga_group_comparison <- function(
         samples = isolate(selected_samps$id)
       ),
       error = function(e) {
-        message("General analysis plot error:")
+        message("General analysis group comparison plot error:")
         print(e$message)
         "Error"
       }
@@ -593,14 +595,6 @@ server.modules_ga_group_comparison <- function(
       }
     }
   })
-  # observe({
-  #   # If phenotype dataset has been reset, we use all samples for plotting
-  #   if (length(input$ga_data_filter1_id)) {
-  #     if (input$ga_data_filter1_id == "NONE") {
-  #       selected_samps$id <- NULL
-  #     }
-  #   }
-  # })
   
   observeEvent(input$ga_filter_button, {
     message("Sample filter button is clicked by user.")
