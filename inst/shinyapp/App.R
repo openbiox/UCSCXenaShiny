@@ -217,7 +217,8 @@ ui <- tagList(
     )
   ),
   shinyjs::useShinyjs(),
-  # use_waiter(),
+  use_waiter(),
+  waiter_on_busy(html= spin_3k(),color= transparent(0.7)),
   navbarPage(
     id = "navbar",
     title = div(
