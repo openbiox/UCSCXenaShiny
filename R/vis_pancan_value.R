@@ -429,7 +429,7 @@ vis_pancan_anatomy <- function(Gene = "TP53",
     dplyr::filter(complete.cases(.)) %>%
     dplyr::mutate(value = .data$tpmMedian)
   if (Gender == "Male") {
-    p1 <- gganatogram(
+    p <- gganatogram(
       data = Male_input,
       fillOutline = "white",
       organism = "human",
@@ -445,13 +445,16 @@ vis_pancan_anatomy <- function(Gene = "TP53",
       scale_fill_continuous(low = "#3CB371", high = "#DC143C") +
       ggtitle(paste0(Gene, " Male: TCGA + GTEX")) +
       theme(plot.title = element_text(hjust = 0.5))
-
-    p1
-    return(p1)
+    print(p)
+    data_input = Male_input
+    out = list(plot = p,data = data_input)
+    #p
+    
+    return(out)
   }
 
   if (Gender == "Female") {
-    p2 <- gganatogram(
+    p <- gganatogram(
       data = Female_input,
       fillOutline = "white",
       organism = "human",
@@ -467,8 +470,11 @@ vis_pancan_anatomy <- function(Gene = "TP53",
       scale_fill_continuous(low = "#3CB371", high = "#DC143C") +
       ggtitle(paste0(Gene, " Female: TCGA + GTEX")) +
       theme(plot.title = element_text(hjust = 0.5))
-    p2
-    return(p2)
+    print(p)
+    
+    data_input = Female_input
+    out = list(plot = p,data = data_input)
+    return(out)
   }
 }
 

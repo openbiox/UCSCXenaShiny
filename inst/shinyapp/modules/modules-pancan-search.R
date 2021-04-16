@@ -146,7 +146,7 @@ server.modules_pancan_dist <- function(input, output, session) {
 
   output$download <- downloadHandler(
     filename = function() {
-      paste0(input$Pancan_search, " gene_pancan_dist.", input$device)
+      paste0(input$Pancan_search,"_",input$profile,"_pancan_dist.", input$device)
     },
     content = function(file) {
       p <- plot_func()

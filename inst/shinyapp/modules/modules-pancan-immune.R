@@ -156,7 +156,7 @@ server.modules_pancan_immune <- function(input, output, session) {
 
   output$download <- downloadHandler(
     filename = function() {
-      paste0(input$Pancan_search, " gene_pancan_immune.", input$device)
+      paste0(input$Pancan_search,"_",input$profile,"_pancan_immune.", input$device)
     },
     content = function(file) {
       p <- plot_func()
@@ -201,7 +201,7 @@ server.modules_pancan_immune <- function(input, output, session) {
   ##downloadTable
   output$downloadTable <- downloadHandler(
     filename = function() {
-      paste0(input$Pancan_search,"_gene_pancan_immune.csv")
+      paste0(input$Pancan_search,"_",input$profile,"_pancan_immune.csv")
     },
     content = function(file) {
       write.csv(data <- return_data(), file, row.names = FALSE)
