@@ -7,7 +7,7 @@
 vis_gene_stemness_cor(Gene = "TP53", Cor_method = "spearman")
 }
 \arguments{
-\item{Gene}{Gene symbal for comparision}
+\item{Gene}{Molecule identifier (gene symbol in most cases)}
 
 \item{Cor_method}{correlation method}
 }

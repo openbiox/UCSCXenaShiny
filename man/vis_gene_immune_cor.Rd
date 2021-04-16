@@ -12,7 +12,7 @@ vis_gene_immune_cor(
 )
 }
 \arguments{
-\item{Gene}{Gene symbal for comparision}
+\item{Gene}{Molecule identifier (gene symbol in most cases)}
 
 \item{Cor_method}{correlation method}
 

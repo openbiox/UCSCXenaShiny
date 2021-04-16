@@ -13,7 +13,7 @@ vis_unicox_tree(
 )
 }
 \arguments{
-\item{Gene}{Gene symbal for comparision}
+\item{Gene}{Molecule identifier (gene symbol in most cases)}
 
 \item{measure}{a survival measure, e.g. "OS".}
 

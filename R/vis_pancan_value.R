@@ -24,8 +24,8 @@ vis_toil_gene <- function(data, x = "primary_site",
 #' Visualize Pan-cancer TPM (tumor (TCGA) vs Normal (TCGA & GTEx))
 #' @import ggplot2 dplyr tibble
 #' @inheritParams query_value
-#' @param Gene Gene symbal for comparision
-#' @param Mode Boxplot or Violinplot to represent data
+#' @param Gene Molecule identifier (gene symbol in most cases)
+#' @param Mode "Boxplot" or "Violinplot" to represent data
 #' @param Show.P.value `TRUE` or `FALSE` whether to count P value
 #' @param Method default method is wilcox.test
 #' @param Show.P.label `TRUE` or `FALSE` present p value with number or label `*`, `**`, `***` and `****`
@@ -246,24 +246,8 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", t
   tcga_surv <- load_data("tcga_surv")
   tcga_gtex <- load_data("tcga_gtex")
 
-  if (data_type == "mRNA") {
-    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
-  }
-  if (data_type == "transcript") {
-    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
-  }
-  if (data_type == "methylation") {
-    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$data
-  }
-  if (data_type == "miRNA") {
-    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
-  }
-  if (data_type == "protein") {
-    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
-  }
-  if (data_type == "cnv_gistic2") {
-    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$data
-  }
+  t1 <- query_value(identifier = Gene, data_type = data_type)
+  if (is.list(t1)) t1 <- t1[[1]]
 
   # we filter out normal tissue
   tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
