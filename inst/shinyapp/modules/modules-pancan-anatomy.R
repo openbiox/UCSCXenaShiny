@@ -70,7 +70,14 @@ ui.modules_pancan_anatomy <- function(id) {
       ),
       mainPanel = mainPanel(
         plotOutput(ns("pancan_anatomy"), height = "500px"),
-        width = 9
+        DT::DTOutput(outputId = ns("tbl")),
+        shinyjs::hidden(
+          wellPanel(
+            id = ns("save_csv"),
+            downloadButton(ns("downloadTable"), "Save as csv")
+          )
+        ),
+        width = 6
       )
     )
   )
@@ -105,15 +112,49 @@ server.modules_pancan_anatomy <- function(input, output, session) {
 
   plot_func <- reactive({
     if (nchar(input$Pancan_search) >= 1) {
-      p <- vis_pancan_anatomy(
+      out <- vis_pancan_anatomy(
         Gene = input$Pancan_search,
         Gender = input$Gender,
         data_type = input$profile
         #option = input$Pal
       )
+      p = out$plot
       return(p)
     }
   })
+  
+  return_data <- reactive({
+    if (nchar(input$Pancan_search) >= 1) {
+      shinyjs::show(id = "save_csv")
+      out <- vis_pancan_anatomy(
+        Gene = input$Pancan_search,
+        Gender = input$Gender,
+        data_type = input$profile
+        #option = input$Pal
+      )
+      data <- out$data
+  
+      return(data)
+    } else {
+      shinyjs::hide(id = "save_csv")
+    }
+  })
+  
+  observeEvent(input$search_bttn, {
+    output$tbl <- renderDT(
+      data <- return_data(),
+      options = list(lengthChange = FALSE)
+    )
+  })
+  
+  output$downloadTable <- downloadHandler(
+    filename = function() {
+      paste0(input$Pancan_search,"_",input$profile,"_pancan_anatomy.csv")
+    },
+    content = function(file) {
+      write.csv(data <- return_data(), file, row.names = FALSE)
+    }
+  )
   
   observeEvent(input$search_bttn, {
     output$pancan_anatomy <- renderPlot({
@@ -124,7 +165,7 @@ server.modules_pancan_anatomy <- function(input, output, session) {
 
   output$download <- downloadHandler(
     filename = function() {
-      paste0(input$Pancan_search, " gene_pancan_anatomy.", input$device)
+      paste0(input$Pancan_search,"_",input$profile,"_pancan_anatomy.", input$device)
     },
     content = function(file) {
       p <- plot_func()

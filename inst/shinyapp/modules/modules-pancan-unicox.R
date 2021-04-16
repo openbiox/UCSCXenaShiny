@@ -168,7 +168,7 @@ server.modules_pancan_unicox <- function(input, output, session) {
 
   output$download <- downloadHandler(
     filename = function() {
-      paste0(input$Pancan_search, " gene_pancan_unicox.", input$device)
+      paste0(input$Pancan_search,"_",input$profile, "_", input$measure, "_pancan_unicox.", input$device)
     },
     content = function(file) {
       p <- plot_func()
@@ -197,7 +197,7 @@ server.modules_pancan_unicox <- function(input, output, session) {
 
   output$downloadTable <- downloadHandler(
     filename = function() {
-      paste0(input$Pancan_search, "_", input$measure, "_gene_pancan_unicox.csv")
+      paste0(input$Pancan_search,"_",input$profile, "_", input$measure, "_pancan_unicox.csv")
     },
     content = function(file) {
       write.csv(data <- return_data(), file, row.names = FALSE)
