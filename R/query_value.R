@@ -10,8 +10,8 @@
 query_value <- function(identifier,
                         data_type = c(
                           "mRNA", "transcript", "protein",
-                          "mutation", "cnv", "methylation",
-                          "miRNA"
+                          "mutation", "cnv", "cnv_gistic2",
+                          "methylation", "miRNA"
                         ),
                         database = c("toil", "ccle")) {
   database <- match.arg(database)
@@ -24,6 +24,7 @@ query_value <- function(identifier,
       protein = get_pancan_protein_value,
       mutation = get_pancan_mutation_status,
       cnv = get_pancan_cn_value,
+      cnv_gistic2 = get_pancan_cn_value,
       methylation = get_pancan_methylation_value,
       miRNA = get_pancan_miRNA_value
     )
@@ -38,5 +39,9 @@ query_value <- function(identifier,
       miRNA = stop("Not support for database 'ccle'!")
     )
   }
-  f(identifier)
+  if (data_type == "cnv_gistic2") {
+    f(identifier, use_thresholded_data = FALSE)
+  } else {
+    f(identifier)
+  }
 }
