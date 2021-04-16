@@ -7,6 +7,12 @@ ui.modules_pancan_dist <- function(id) {
         fluidRow(
           column(
             9,
+            shinyWidgets::prettyRadioButtons(
+              inputId = ns("profile"), label = "Select a genomic profile:",
+              choiceValues = c("mRNA", "transcript", "methylation","protein","miRNA"),
+              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation","Protein Expression","miRNA Expression"),
+              animation = "jelly"
+            ),
             selectizeInput(
               inputId = ns("Pancan_search"),
               label = NULL,
@@ -36,12 +42,6 @@ ui.modules_pancan_dist <- function(id) {
           title = "Tips",
           content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
           placement = "right", options = list(container = "body")
-        ),
-        shinyWidgets::prettyRadioButtons(
-          inputId = ns("profile"), label = "Select a genomic profile:",
-          choiceValues = c("mRNA", "transcript", "methylation"),
-          choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation"),
-          animation = "jelly"
         ),
         materialSwitch(ns("pdist_mode"), "Show violin plot", inline = TRUE),
         materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = TRUE),
@@ -87,13 +87,23 @@ ui.modules_pancan_dist <- function(id) {
 
 server.modules_pancan_dist <- function(input, output, session) {
   ns <- session$ns
-
+  
+  profile_choices <- reactive({
+    switch(input$profile,
+           mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
+           methylation = list(all = pancan_identifiers$gene, default = "TP53"),
+           protein = list(all = pancan_identifiers$protein, default = "P53"),
+           transcript = list(all = "ENST00000000233", default = "ENST00000000233"), # 暂时
+           miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+           list(all = "NONE", default = "NONE"))
+  })
+  
   observe({
     updateSelectizeInput(
       session,
       "Pancan_search",
-      choices = pancan_identifiers$gene,
-      selected = "TP53",
+      choices = profile_choices()$all,
+      selected = profile_choices()$default,
       server = TRUE
     )
   })
