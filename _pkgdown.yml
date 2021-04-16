@@ -43,6 +43,7 @@ reference:
     contents:
     - tcga_surv_get
     - tcga_surv_plot
+    - analyze_gene_drug_response
     - vis_ccle_tpm
     - vis_gene_TIL_cor
     - vis_gene_immune_cor

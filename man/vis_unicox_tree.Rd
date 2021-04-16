@@ -17,6 +17,9 @@ vis_unicox_tree(
 
 \item{measure}{a survival measure, e.g. "OS".}
 
+\item{data_type}{data type. Can be one of "mRNA", "transcript", "protein",
+"mutation", "cnv" (-2, -1, 0, 1, 2), "cnv_gistic2", "methylation", "miRNA".}
+
 \item{threshold}{a expression cutoff, \code{0.5} for median.}
 
 \item{values}{the color to fill tumor or normal}

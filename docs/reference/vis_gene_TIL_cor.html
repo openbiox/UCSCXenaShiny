@@ -176,6 +176,7 @@
     <pre class="usage"><span class='fu'>vis_gene_TIL_cor</span><span class='op'>(</span>
   Gene <span class='op'>=</span> <span class='st'>"TP53"</span>,
   Cor_method <span class='op'>=</span> <span class='st'>"spearman"</span>,
+  data_type <span class='op'>=</span> <span class='st'>"mRNA"</span>,
   sig <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"B cell_TIMER"</span>, <span class='st'>"T cell CD4+_TIMER"</span>, <span class='st'>"T cell CD8+_TIMER"</span>, <span class='st'>"Neutrophil_TIMER"</span>,
     <span class='st'>"Macrophage_TIMER"</span>, <span class='st'>"Myeloid dendritic cell_TIMER"</span><span class='op'>)</span>
 <span class='op'>)</span></pre>
@@ -190,6 +191,11 @@
     <tr>
       <th>Cor_method</th>
       <td><p>correlation method</p></td>
+    </tr>
+    <tr>
+      <th>data_type</th>
+      <td><p>data type. Can be one of "mRNA", "transcript", "protein",
+"mutation", "cnv" (-2, -1, 0, 1, 2), "cnv_gistic2", "methylation", "miRNA".</p></td>
     </tr>
     <tr>
       <th>sig</th>

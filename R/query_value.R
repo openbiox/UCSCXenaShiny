@@ -1,7 +1,8 @@
 #' Query Single Identifier Value from Pan-cancer Database
 #'
 #' @param identifier a ID, e.g. gene symbol.
-#' @param data_type data type.
+#' @param data_type data type. Can be one of "mRNA", "transcript", "protein",
+#' "mutation", "cnv" (-2, -1, 0, 1, 2), "cnv_gistic2", "methylation", "miRNA".
 #' @param database database, either 'toil' for TCGA TARGET GTEx, or 'ccle' for
 #' CCLE.
 #'

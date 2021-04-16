@@ -17,6 +17,9 @@ vis_gene_TIL_cor(
 
 \item{Cor_method}{correlation method}
 
+\item{data_type}{data type. Can be one of "mRNA", "transcript", "protein",
+"mutation", "cnv" (-2, -1, 0, 1, 2), "cnv_gistic2", "methylation", "miRNA".}
+
 \item{sig}{Immune Signature, default: result from TIMER}
 }
 \description{

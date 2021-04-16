@@ -16,6 +16,9 @@ vis_pancan_anatomy(
 
 \item{Gender}{a string, "Female" (default) or "Male".}
 
+\item{data_type}{data type. Can be one of "mRNA", "transcript", "protein",
+"mutation", "cnv" (-2, -1, 0, 1, 2), "cnv_gistic2", "methylation", "miRNA".}
+
 \item{option}{A character string indicating the colormap option to use. Four
 options are available: "magma" (or "A"), "inferno" (or "B"), "plasma" (or "C"),
 "viridis" (or "D", the default option) and "cividis" (or "E").}

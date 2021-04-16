@@ -22,6 +22,9 @@ vis_toil_TvsN(
 
 \item{Mode}{Boxplot or Violinplot to represent data}
 
+\item{data_type}{data type. Can be one of "mRNA", "transcript", "protein",
+"mutation", "cnv" (-2, -1, 0, 1, 2), "cnv_gistic2", "methylation", "miRNA".}
+
 \item{Show.P.value}{\code{TRUE} or \code{FALSE} whether to count P value}
 
 \item{Show.P.label}{\code{TRUE} or \code{FALSE} present p value with number or label \code{*}, \verb{**}, \verb{***} and \verb{****}}

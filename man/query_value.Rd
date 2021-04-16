@@ -14,7 +14,8 @@ query_value(
 \arguments{
 \item{identifier}{a ID, e.g. gene symbol.}
 
-\item{data_type}{data type.}
+\item{data_type}{data type. Can be one of "mRNA", "transcript", "protein",
+"mutation", "cnv" (-2, -1, 0, 1, 2), "cnv_gistic2", "methylation", "miRNA".}
 
 \item{database}{database, either 'toil' for TCGA TARGET GTEx, or 'ccle' for
 CCLE.}

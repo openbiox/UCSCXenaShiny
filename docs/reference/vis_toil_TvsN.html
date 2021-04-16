@@ -176,6 +176,7 @@
     <pre class="usage"><span class='fu'>vis_toil_TvsN</span><span class='op'>(</span>
   Gene <span class='op'>=</span> <span class='st'>"TP53"</span>,
   Mode <span class='op'>=</span> <span class='st'>"Boxplot"</span>,
+  data_type <span class='op'>=</span> <span class='st'>"mRNA"</span>,
   Show.P.value <span class='op'>=</span> <span class='cn'>TRUE</span>,
   Show.P.label <span class='op'>=</span> <span class='cn'>TRUE</span>,
   Method <span class='op'>=</span> <span class='st'>"wilcox.test"</span>,
@@ -195,6 +196,11 @@
     <tr>
       <th>Mode</th>
       <td><p>Boxplot or Violinplot to represent data</p></td>
+    </tr>
+    <tr>
+      <th>data_type</th>
+      <td><p>data type. Can be one of "mRNA", "transcript", "protein",
+"mutation", "cnv" (-2, -1, 0, 1, 2), "cnv_gistic2", "methylation", "miRNA".</p></td>
     </tr>
     <tr>
       <th>Show.P.value</th>

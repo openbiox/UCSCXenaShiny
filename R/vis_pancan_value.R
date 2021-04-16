@@ -23,6 +23,7 @@ vis_toil_gene <- function(data, x = "primary_site",
 
 #' Visualize Pan-cancer TPM (tumor (TCGA) vs Normal (TCGA & GTEx))
 #' @import ggplot2 dplyr tibble
+#' @inheritParams query_value
 #' @param Gene Gene symbal for comparision
 #' @param Mode Boxplot or Violinplot to represent data
 #' @param Show.P.value `TRUE` or `FALSE` whether to count P value
