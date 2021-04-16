@@ -7,6 +7,12 @@ ui.modules_pancan_immune <- function(id) {
         fluidRow(
           column(
             9,
+            shinyWidgets::prettyRadioButtons(
+              inputId = ns("profile"), label = "Select a genomic profile:",
+              choiceValues = c("mRNA", "transcript", "methylation","protein","miRNA"),
+              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation","Protein Expression","miRNA Expression"),
+              animation = "jelly"
+            ),
             selectizeInput(
               inputId = ns("Pancan_search"),
               label = NULL,
@@ -100,13 +106,24 @@ server.modules_pancan_immune <- function(input, output, session) {
   # })
   #
   ns <- session$ns
-
+  
+  
+  profile_choices <- reactive({
+    switch(input$profile,
+           mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
+           methylation = list(all = pancan_identifiers$gene, default = "TP53"),
+           protein = list(all = pancan_identifiers$protein, default = "P53"),
+           transcript = list(all = "ENST00000000233", default = "ENST00000000233"), # 暂时
+           miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+           list(all = "NONE", default = "NONE"))
+  })
+  
   observe({
     updateSelectizeInput(
       session,
       "Pancan_search",
-      choices = pancan_identifiers$gene,
-      selected = "TP53",
+      choices = profile_choices()$all,
+      selected = profile_choices()$default,
       server = TRUE
     )
   })
@@ -120,7 +137,8 @@ server.modules_pancan_immune <- function(input, output, session) {
       p <- vis_gene_immune_cor(
         Gene = input$Pancan_search,
         Immune_sig_type = input$immune_sig,
-        Cor_method = input$Cor_method
+        Cor_method = input$Cor_method,
+        data_type = input$profile
       )
     }
     return(p)
@@ -162,7 +180,8 @@ server.modules_pancan_immune <- function(input, output, session) {
       p <- vis_gene_immune_cor(
         Gene = input$Pancan_search,
         Immune_sig_type = input$immune_sig,
-        Cor_method = input$Cor_method
+        Cor_method = input$Cor_method,
+        data_type = input$profile
       )
       data <- p$data
       return(data)

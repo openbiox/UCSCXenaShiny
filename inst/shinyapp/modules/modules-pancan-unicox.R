@@ -7,6 +7,12 @@ ui.modules_pancan_unicox <- function(id) {
         fluidRow(
           column(
             9,
+            shinyWidgets::prettyRadioButtons(
+              inputId = ns("profile"), label = "Select a genomic profile:",
+              choiceValues = c("mRNA", "transcript", "methylation","protein","miRNA"),
+              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation","Protein Expression","miRNA Expression"),
+              animation = "jelly"
+            ),
             selectizeInput(
               inputId = ns("Pancan_search"),
               label = NULL,
@@ -76,7 +82,7 @@ ui.modules_pancan_unicox <- function(id) {
             downloadButton(ns("downloadTable"), "Save as csv")
           )
         ),
-        width = 6
+        width = 4
       )
     )
   )
@@ -85,13 +91,23 @@ ui.modules_pancan_unicox <- function(id) {
 
 server.modules_pancan_unicox <- function(input, output, session) {
   ns <- session$ns
-
+  
+  profile_choices <- reactive({
+    switch(input$profile,
+           mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
+           methylation = list(all = pancan_identifiers$gene, default = "TP53"),
+           protein = list(all = pancan_identifiers$protein, default = "P53"),
+           transcript = list(all = "ENST00000000233", default = "ENST00000000233"), # 暂时
+           miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+           list(all = "NONE", default = "NONE"))
+  })
+  
   observe({
     updateSelectizeInput(
       session,
       "Pancan_search",
-      choices = pancan_identifiers$gene,
-      selected = "TP53",
+      choices = profile_choices()$all,
+      selected = profile_choices()$default,
       server = TRUE
     )
   })
@@ -110,6 +126,7 @@ server.modules_pancan_unicox <- function(input, output, session) {
         Gene = input$Pancan_search,
         measure = input$measure,
         threshold = input$threshold,
+        data_type = input$profile,
         values = colors()
       )
       data <- p$data
@@ -129,10 +146,11 @@ server.modules_pancan_unicox <- function(input, output, session) {
         Gene = input$Pancan_search,
         measure = input$measure,
         threshold = input$threshold,
+        data_type = input$profile,
         values = colors()
       )
 
-      p <- p + theme_cowplot()
+      # p <- p + theme_cowplot()
     }
 
     return(p)

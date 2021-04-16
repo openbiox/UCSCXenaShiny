@@ -111,17 +111,13 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", data_type = "mRNA", S
       ggplot2::geom_boxplot(data = tcga_gtex_UVM)
     if (data_type == "mRNA"){
       p = p + ggplot2::ylab(paste0(Gene, " mRNA expression (log2(TPM + 0.001))")) 
-    }
-    if (data_type == "transcript"){
+    } else if (data_type == "transcript"){
       p = p + ggplot2::ylab(paste0(Gene, " transcript expression")) 
-    }
-    if (data_type == "methylation"){
+    } else if (data_type == "methylation"){
       p = p + ggplot2::ylab(paste0(Gene, " beta value")) 
-    }
-    if (data_type == "miRNA"){
+    } else if (data_type == "miRNA"){
       p = p + ggplot2::ylab(paste0(Gene, " miRNA expression (log2(norm_value + 1))")) 
-    }
-    if (data_type == "protein"){
+    } else if (data_type == "protein"){
       p = p + ggplot2::ylab(paste0(Gene, " protein expression")) 
     }
     
@@ -241,12 +237,26 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", data_type = "mRNA", S
 #' p <- vis_unicox_tree(Gene = "TP53")
 #' }
 #' @export
-vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, values = c("grey", "#E31A1C", "#377DB8")) {
+vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", threshold = 0.5, values = c("grey", "#E31A1C", "#377DB8")) {
   ## 写在 R 内的数据集需要更严格的引用方式
   tcga_surv <- load_data("tcga_surv")
   tcga_gtex <- load_data("tcga_gtex")
 
-  t1 <- get_pancan_gene_value(Gene)$expression
+  if (data_type == "mRNA") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
+  if (data_type == "transcript") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
+  if (data_type == "methylation") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$data
+  }
+  if (data_type == "miRNA") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
+  if (data_type == "protein") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
 
   # we filter out normal tissue
   tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
@@ -310,13 +320,16 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, valu
     ggplot2::geom_pointrange() +
     ggplot2::coord_flip() +
     ggplot2::labs(x = "", y = "log (Hazard Ratio)") +
+    ggtitle(paste0(Gene, " Expression")) +
     ggplot2::theme(
       axis.text.x = element_text(color = "black"),
       axis.text.y = element_text(color = "black"),
       panel.grid.major = element_blank(),
-      panel.grid.minor = element_blank()
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(hjust = 0.5)
     ) +
-    ggplot2::scale_color_manual(values = values)
+    ggplot2::scale_color_manual(values = values) +
+    ggplot2::geom_hline(yintercept = c(0), linetype="dashed")
   return(p)
 }
 
@@ -331,6 +344,7 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", threshold = 0.5, valu
 
 vis_pancan_anatomy <- function(Gene = "TP53",
                                Gender = c("Female", "Male"),
+                               data_type = "mRNA",
                                option = "D") {
   Gender <- match.arg(Gender)
 
@@ -346,7 +360,21 @@ vis_pancan_anatomy <- function(Gene = "TP53",
   tcga_gtex <- load_data("tcga_gtex")
   tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
 
-  t1 <- get_pancan_gene_value(identifier = Gene)$expression
+  if (data_type == "mRNA") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
+  if (data_type == "transcript") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
+  if (data_type == "methylation") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$data
+  }
+  if (data_type == "miRNA") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
+  if (data_type == "protein") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
 
   message(paste0("Get gene expression for ", Gene))
   t2 <- t1 %>%
@@ -445,7 +473,7 @@ vis_pancan_anatomy <- function(Gene = "TP53",
 #' p <- vis_gene_immune_cor(Gene = "TP53")
 #' }
 #' @export
-vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_sig_type = "Cibersort") {
+vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type = "mRNA",Immune_sig_type = "Cibersort") {
   tcga_pan_immune_signature <- load_data("tcga_pan_immune_signature")
   tcga_gtex <- load_data("tcga_gtex")
 
@@ -456,7 +484,21 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", Immune_s
     tidyr::pivot_longer(3:ncol(.), names_to = "sample", values_to = "score") %>%
     dplyr::mutate(sample = stringr::str_sub(.data$sample, 1, 15))
 
-  t1 <- get_pancan_gene_value(identifier = Gene)$expression
+  if (data_type == "mRNA") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
+  if (data_type == "transcript") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
+  if (data_type == "methylation") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$data
+  }
+  if (data_type == "miRNA") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
+  if (data_type == "protein") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
 
   message(paste0("Get gene expression for ", Gene))
   s <- data.frame(sample = names(t1), values = t1)
@@ -640,10 +682,24 @@ vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman") {
 #' @return a `ggplot` object
 #' @export
 #'
-vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, Cancer = "ACC") {
+vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type = "mRNA", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, Cancer = "ACC") {
   tcga_gtex <- load_data("tcga_gtex")
 
-  t1 <- get_pancan_gene_value(identifier = Gene)$expression
+  if (data_type == "mRNA") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
+  if (data_type == "transcript") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
+  if (data_type == "methylation") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$data
+  }
+  if (data_type == "miRNA") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
+  if (data_type == "protein") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
 
   tcga_gtex <- tcga_gtex %>%
     dplyr::group_by(.data$tissue) %>%
@@ -685,7 +741,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.valu
       ggplot2::geom_dotplot(binaxis = "y", stackdir = "center", position = "identity") +
       # ggplot2::geom_jitter(aes_string(color = "type2"),shape=16, position=position_jitter(0.2), size = 2) +
       ggplot2::xlab(NULL) +
-      ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
+      #ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
       ggplot2::theme_set(theme_set(theme_classic(base_size = 20))) +
       ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5)) +
       ggplot2::guides(fill = guide_legend(title = NULL)) +
@@ -697,6 +753,18 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.valu
       ggplot2::scale_color_manual(values = values)
     # p <- p + ggplot2::geom_boxplot(data = tcga_gtex_MESO) +
     #   ggplot2::geom_boxplot(data = tcga_gtex_UVM)
+    if (data_type == "mRNA"){
+      p = p + ggplot2::ylab(paste0(Gene, " mRNA expression (log2(TPM + 0.001))")) 
+    } else if (data_type == "transcript"){
+      p = p + ggplot2::ylab(paste0(Gene, " transcript expression")) 
+    } else if (data_type == "methylation"){
+      p = p + ggplot2::ylab(paste0(Gene, " beta value")) 
+    } else if (data_type == "miRNA"){
+      p = p + ggplot2::ylab(paste0(Gene, " miRNA expression (log2(norm_value + 1))")) 
+    } else if (data_type == "protein"){
+      p = p + ggplot2::ylab(paste0(Gene, " protein expression")) 
+    }
+    
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       p <- p + ggplot2::geom_text(aes(
         x = 1.5,
@@ -722,7 +790,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.valu
     p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "type2", y = "tpm", fill = "type2")) +
       ggplot2::geom_violin(trim = FALSE) +
       ggplot2::geom_boxplot(width = 0.1, fill = "white") +
-      ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
+      #ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
       ggplot2::xlab("") +
       # ggplot2::ggtitle(.data$tissue) +
       ggplot2::scale_fill_manual(values = values) +
@@ -733,6 +801,19 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", Show.P.valu
         legend.background = ggplot2::element_blank(),
         legend.position = c(0, 0), legend.justification = c(0, 0)
       )
+    
+    if (data_type == "mRNA"){
+      p = p + ggplot2::ylab(paste0(Gene, " mRNA expression (log2(TPM + 0.001))")) 
+    } else if (data_type == "transcript"){
+      p = p + ggplot2::ylab(paste0(Gene, " transcript expression")) 
+    } else if (data_type == "methylation"){
+      p = p + ggplot2::ylab(paste0(Gene, " beta value")) 
+    } else if (data_type == "miRNA"){
+      p = p + ggplot2::ylab(paste0(Gene, " miRNA expression (log2(norm_value + 1))")) 
+    } else if (data_type == "protein"){
+      p = p + ggplot2::ylab(paste0(Gene, " protein expression")) 
+    }
+    
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       p <- p + ggplot2::geom_text(ggplot2::aes(
         x = 1.5,
@@ -910,6 +991,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TR
 #' @export
 vis_gene_TIL_cor <- function(Gene = "TP53",
                              Cor_method = "spearman",
+                             data_type = "mRNA",
                              sig = c(
                                "B cell_TIMER",
                                "T cell CD4+_TIMER",
@@ -927,7 +1009,21 @@ vis_gene_TIL_cor <- function(Gene = "TP53",
   # we filter out normal tissue
   tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
 
-  t1 <- get_pancan_gene_value(identifier = Gene)$expression
+  if (data_type == "mRNA") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
+  if (data_type == "transcript") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
+  if (data_type == "methylation") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$data
+  }
+  if (data_type == "miRNA") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
+  if (data_type == "protein") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
 
   message(paste0("Get gene expression for ", Gene))
   s <- data.frame(sample = names(t1), values = t1)
