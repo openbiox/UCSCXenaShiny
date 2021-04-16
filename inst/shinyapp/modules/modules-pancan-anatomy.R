@@ -9,8 +9,8 @@ ui.modules_pancan_anatomy <- function(id) {
             9,
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "transcript", "methylation","protein","miRNA"),
-              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation","Protein Expression","miRNA Expression"),
+              choiceValues = c("mRNA", "transcript", "methylation","protein","miRNA", "cnv_gistic2"),
+              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation","Protein Expression","miRNA Expression", "Copy Number Variation"),
               animation = "jelly"
             ),
             selectizeInput(
@@ -84,8 +84,9 @@ server.modules_pancan_anatomy <- function(input, output, session) {
            mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
            methylation = list(all = pancan_identifiers$gene, default = "TP53"),
            protein = list(all = pancan_identifiers$protein, default = "P53"),
-           transcript = list(all = "ENST00000000233", default = "ENST00000000233"), # 暂时
+           transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
            miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+           cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
            list(all = "NONE", default = "NONE"))
   })
   

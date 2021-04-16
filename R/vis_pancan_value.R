@@ -57,6 +57,9 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", data_type = "mRNA", S
   if (data_type == "protein") {
     t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
   }
+  if (data_type == "cnv_gistic2") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$data
+  }
   # if (all(is.na(t1))) {
   #   message("All NAs returned, return NULL instead.")
   #   return(NULL)
@@ -119,6 +122,8 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", data_type = "mRNA", S
       p = p + ggplot2::ylab(paste0(Gene, " miRNA expression (log2(norm_value + 1))")) 
     } else if (data_type == "protein"){
       p = p + ggplot2::ylab(paste0(Gene, " protein expression")) 
+    } else if (data_type == "cnv_gistic2"){
+      p = p + ggplot2::ylab(paste0(Gene, " Gistic2 copy number")) 
     }
     
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
@@ -189,18 +194,16 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", data_type = "mRNA", S
     # ggplot2::scale_x_discrete(limits = levels(tcga_gtex$tissue))
     if (data_type == "mRNA"){
       p = p + ggplot2::ylab(paste0(Gene, " mRNA expression (log2(TPM + 0.001))")) 
-    }
-    if (data_type == "transcript"){
+    } else if (data_type == "transcript"){
       p = p + ggplot2::ylab(paste0(Gene, " transcript expression")) 
-    }
-    if (data_type == "methylation"){
+    } else if (data_type == "methylation"){
       p = p + ggplot2::ylab(paste0(Gene, " beta value")) 
-    }
-    if (data_type == "miRNA"){
+    } else if (data_type == "miRNA"){
       p = p + ggplot2::ylab(paste0(Gene, " miRNA expression (log2(norm_value + 1))")) 
-    }
-    if (data_type == "protein"){
+    } else if (data_type == "protein"){
       p = p + ggplot2::ylab(paste0(Gene, " protein expression")) 
+    } else if (data_type == "cnv_gistic2"){
+      p = p + ggplot2::ylab(paste0(Gene, " Gistic2 copy number")) 
     }
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       p <- p + ggplot2::geom_text(ggplot2::aes(
@@ -256,6 +259,9 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", t
   }
   if (data_type == "protein") {
     t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
+  if (data_type == "cnv_gistic2") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$data
   }
 
   # we filter out normal tissue
@@ -375,6 +381,9 @@ vis_pancan_anatomy <- function(Gene = "TP53",
   if (data_type == "protein") {
     t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
   }
+  if (data_type == "cnv_gistic2") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$data
+  }
 
   message(paste0("Get gene expression for ", Gene))
   t2 <- t1 %>%
@@ -450,7 +459,7 @@ vis_pancan_anatomy <- function(Gene = "TP53",
       fill = "value"
     ) +
       facet_wrap(~type) +
-      labs(fill = "Log2(TPM + 0.001)") +
+      #labs(fill = "Log2(TPM + 0.001)") +
       coord_cartesian(ylim = c(-120, 0)) +
 
       theme_void(base_size = 15) +
@@ -498,6 +507,9 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", data_typ
   }
   if (data_type == "protein") {
     t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
+  if (data_type == "cnv_gistic2") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$data
   }
 
   message(paste0("Get gene expression for ", Gene))
@@ -700,6 +712,9 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type =
   if (data_type == "protein") {
     t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
   }
+  if (data_type == "cnv_gistic2") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$data
+  }
 
   tcga_gtex <- tcga_gtex %>%
     dplyr::group_by(.data$tissue) %>%
@@ -763,6 +778,8 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type =
       p = p + ggplot2::ylab(paste0(Gene, " miRNA expression (log2(norm_value + 1))")) 
     } else if (data_type == "protein"){
       p = p + ggplot2::ylab(paste0(Gene, " protein expression")) 
+    } else if (data_type == "cnv_gistic2"){
+      p = p + ggplot2::ylab(paste0(Gene, " Gistic2 copy number")) 
     }
     
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
@@ -812,6 +829,8 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type =
       p = p + ggplot2::ylab(paste0(Gene, " miRNA expression (log2(norm_value + 1))")) 
     } else if (data_type == "protein"){
       p = p + ggplot2::ylab(paste0(Gene, " protein expression")) 
+    } else if (data_type == "cnv_gistic2"){
+      p = p + ggplot2::ylab(paste0(Gene, " Gistic2 copy number")) 
     }
     
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
@@ -1023,6 +1042,9 @@ vis_gene_TIL_cor <- function(Gene = "TP53",
   }
   if (data_type == "protein") {
     t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
+  if (data_type == "cnv_gistic2") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$data
   }
 
   message(paste0("Get gene expression for ", Gene))
