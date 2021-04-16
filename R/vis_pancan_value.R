@@ -51,7 +51,12 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", data_type = "mRNA", S
   if (data_type == "methylation") {
     t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$data
   }
-
+  if (data_type == "miRNA") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
+  if (data_type == "protein") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
   # if (all(is.na(t1))) {
   #   message("All NAs returned, return NULL instead.")
   #   return(NULL)
@@ -105,13 +110,19 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", data_type = "mRNA", S
     p <- p + ggplot2::geom_boxplot(data = tcga_gtex_MESO) +
       ggplot2::geom_boxplot(data = tcga_gtex_UVM)
     if (data_type == "mRNA"){
-      p = p + ggplot2::ylab(paste0(Gene, " mRNA expression (TPM)")) 
+      p = p + ggplot2::ylab(paste0(Gene, " mRNA expression (log2(TPM + 0.001))")) 
     }
     if (data_type == "transcript"){
       p = p + ggplot2::ylab(paste0(Gene, " transcript expression")) 
     }
     if (data_type == "methylation"){
       p = p + ggplot2::ylab(paste0(Gene, " beta value")) 
+    }
+    if (data_type == "miRNA"){
+      p = p + ggplot2::ylab(paste0(Gene, " miRNA expression (log2(norm_value + 1))")) 
+    }
+    if (data_type == "protein"){
+      p = p + ggplot2::ylab(paste0(Gene, " protein expression")) 
     }
     
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
@@ -181,13 +192,19 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", data_type = "mRNA", S
       ) #+
     # ggplot2::scale_x_discrete(limits = levels(tcga_gtex$tissue))
     if (data_type == "mRNA"){
-      p = p + ggplot2::ylab(paste0(Gene, " mRNA expression (TPM)")) 
+      p = p + ggplot2::ylab(paste0(Gene, " mRNA expression (log2(TPM + 0.001))")) 
     }
     if (data_type == "transcript"){
       p = p + ggplot2::ylab(paste0(Gene, " transcript expression")) 
     }
     if (data_type == "methylation"){
       p = p + ggplot2::ylab(paste0(Gene, " beta value")) 
+    }
+    if (data_type == "miRNA"){
+      p = p + ggplot2::ylab(paste0(Gene, " miRNA expression (log2(norm_value + 1))")) 
+    }
+    if (data_type == "protein"){
+      p = p + ggplot2::ylab(paste0(Gene, " protein expression")) 
     }
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       p <- p + ggplot2::geom_text(ggplot2::aes(
