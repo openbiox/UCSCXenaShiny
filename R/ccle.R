@@ -119,7 +119,6 @@ get_ccle_mutation_status <- function(identifier) {
     stop("You need to update 'UCSCXenaTools' (>=1.3.2).", call. = FALSE)
   }
 
-  # host <- "publicHub"
   host <- "https://ucscpublic.xenahubs.net"
   dataset <- "ccle/CCLE_DepMap_18Q2_maf_20180502"
   report_dataset_info(dataset)

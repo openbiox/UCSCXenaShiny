@@ -37,6 +37,12 @@ ui.modules_pancan_dist <- function(id) {
           content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
           placement = "right", options = list(container = "body")
         ),
+        shinyWidgets::prettyRadioButtons(
+          inputId = ns("profile"), label = "Select a genomic profile:",
+          choiceValues = c("mRNA", "transcript", "methylation"),
+          choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation"),
+          animation = "jelly"
+        ),
         materialSwitch(ns("pdist_mode"), "Show violin plot", inline = TRUE),
         materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = TRUE),
         materialSwitch(ns("pdist_show_p_label"), "Show P label", inline = TRUE),
@@ -107,6 +113,7 @@ server.modules_pancan_dist <- function(input, output, session) {
     if (nchar(input$Pancan_search) >= 1) {
       p <- vis_toil_TvsN(
         Gene = input$Pancan_search,
+        data_type = input$profile,
         Mode = ifelse(input$pdist_mode, "Violinplot", "Boxplot"),
         Show.P.value = input$pdist_show_p_value,
         Show.P.label = input$pdist_show_p_label,

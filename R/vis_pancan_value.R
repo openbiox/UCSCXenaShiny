@@ -40,10 +40,17 @@ vis_toil_gene <- function(data, x = "primary_site",
 #' }
 #' @export
 #'
-vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, draw_quantiles = c(0.25, 0.5, 0.75), trim = TRUE) {
+vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", data_type = "mRNA", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, draw_quantiles = c(0.25, 0.5, 0.75), trim = TRUE) {
   tcga_gtex <- load_data("tcga_gtex")
-
-  t1 <- get_pancan_gene_value(identifier = Gene)$expression
+  if (data_type == "mRNA") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
+  if (data_type == "transcript") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  }
+  if (data_type == "methylation") {
+    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$data
+  }
 
   # if (all(is.na(t1))) {
   #   message("All NAs returned, return NULL instead.")
@@ -86,7 +93,7 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
     p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "tissue", y = "tpm", fill = "type2")) +
       ggplot2::geom_boxplot() +
       ggplot2::xlab(NULL) +
-      ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
+      #ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
       ggplot2::theme_set(theme_set(theme_classic(base_size = 20))) +
       ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5)) +
       ggplot2::guides(fill = guide_legend(title = NULL)) +
@@ -97,6 +104,16 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
       ggplot2::scale_fill_manual(values = values)
     p <- p + ggplot2::geom_boxplot(data = tcga_gtex_MESO) +
       ggplot2::geom_boxplot(data = tcga_gtex_UVM)
+    if (data_type == "mRNA"){
+      p = p + ggplot2::ylab(paste0(Gene, " mRNA expression (TPM)")) 
+    }
+    if (data_type == "transcript"){
+      p = p + ggplot2::ylab(paste0(Gene, " transcript expression")) 
+    }
+    if (data_type == "methylation"){
+      p = p + ggplot2::ylab(paste0(Gene, " beta value")) 
+    }
+    
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       p <- p + ggplot2::geom_text(aes(
         x = .data$tissue,
@@ -163,6 +180,15 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", Show.P.value = TRUE, 
         position = "identity"
       ) #+
     # ggplot2::scale_x_discrete(limits = levels(tcga_gtex$tissue))
+    if (data_type == "mRNA"){
+      p = p + ggplot2::ylab(paste0(Gene, " mRNA expression (TPM)")) 
+    }
+    if (data_type == "transcript"){
+      p = p + ggplot2::ylab(paste0(Gene, " transcript expression")) 
+    }
+    if (data_type == "methylation"){
+      p = p + ggplot2::ylab(paste0(Gene, " beta value")) 
+    }
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       p <- p + ggplot2::geom_text(ggplot2::aes(
         x = .data$tissue,

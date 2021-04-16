@@ -225,14 +225,20 @@ get_pancan_mutation_status <- function(identifier) {
   return(data)
 }
 
+#' @param use_thresholded_data if `TRUE` (default), use GISTIC2-thresholded value.
 #' @describeIn get_pancan_value Fetch gene copy number value from pan-cancer dataset processed by GISTIC 2.0
 #' @export
-get_pancan_cn_value <- function(identifier) {
+get_pancan_cn_value <- function(identifier, use_thresholded_data = TRUE) {
   host <- "tcgaHub"
-  dataset <- "TCGA.PANCAN.sampleMap/Gistic2_CopyNumber_Gistic2_all_thresholded.by_genes"
+  if (use_thresholded_data) {
+    dataset <- "TCGA.PANCAN.sampleMap/Gistic2_CopyNumber_Gistic2_all_thresholded.by_genes"
+    unit <- "-2,-1,0,1,2: 2 copy del,1 copy del,no change,amplification,high-amplification"
+  } else {
+    dataset <- "TCGA.PANCAN.sampleMap/Gistic2_CopyNumber_Gistic2_all_data_by_genes"
+    unit <- "Gistic2 copy number"
+  }
 
   data <- get_data(dataset, identifier, host)
-  unit <- "-2,-1,0,1,2: 2 copy del,1 copy del,no change,amplification,high-amplification"
   report_dataset_info(dataset)
   res <- list(data = data, unit = unit)
   res
