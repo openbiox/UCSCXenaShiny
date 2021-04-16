@@ -7,6 +7,7 @@
 vis_unicox_tree(
   Gene = "TP53",
   measure = "OS",
+  data_type = "mRNA",
   threshold = 0.5,
   values = c("grey", "#E31A1C", "#377DB8")
 )

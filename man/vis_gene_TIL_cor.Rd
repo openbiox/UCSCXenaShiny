@@ -7,6 +7,7 @@
 vis_gene_TIL_cor(
   Gene = "TP53",
   Cor_method = "spearman",
+  data_type = "mRNA",
   sig = c("B cell_TIMER", "T cell CD4+_TIMER", "T cell CD8+_TIMER", "Neutrophil_TIMER",
     "Macrophage_TIMER", "Myeloid dendritic cell_TIMER")
 )

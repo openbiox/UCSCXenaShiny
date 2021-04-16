@@ -7,6 +7,7 @@
 vis_gene_immune_cor(
   Gene = "TP53",
   Cor_method = "spearman",
+  data_type = "mRNA",
   Immune_sig_type = "Cibersort"
 )
 }
