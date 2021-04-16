@@ -89,24 +89,21 @@ server.modules_pancan_dist <- function(input, output, session) {
   ns <- session$ns
   
   profile_choices <- reactive({
-    a <- if (input$profile == "mRNA"){
-      pancan_identifiers$gene} 
-    else if (input$profile == "protein"){
-        pancan_identifiers$protein
-      } 
-    else if (input$profile == "miRNA"){
-        pancan_identifiers$miRNA
-      }
-    c(a)
+    switch(input$profile,
+           mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
+           methylation = list(all = pancan_identifiers$gene, default = "TP53"),
+           protein = list(all = pancan_identifiers$protein, default = "P53"),
+           transcript = list(all = "ENST00000000233", default = "ENST00000000233"), # 暂时
+           miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+           list(all = "NONE", default = "NONE"))
   })
   
-  
-  reactive({
+  observe({
     updateSelectizeInput(
       session,
       "Pancan_search",
-      choices =  profile_choices(),
-      selected = "TP53",
+      choices = profile_choices()$all,
+      selected = profile_choices()$default,
       server = TRUE
     )
   })
