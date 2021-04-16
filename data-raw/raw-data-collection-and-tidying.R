@@ -25,6 +25,15 @@ r <- lapply(r, function(x) {
 
 saveRDS(r, file = "inst/extdata/pancan_identifier_list.rds")
 
+# 单独补充转录本 ID，将其存储到 zenodo
+transcript <- XenaData %>%
+  filter(XenaDatasets == "tcga_Kallisto_tpm") %>%
+  XenaGenerate()
+
+r <- UCSCXenaTools::fetch_dataset_identifiers(hosts(transcript), datasets(transcript))
+r2 <- gsub("\\.*", "", r)
+save(r2, file = "data-raw/transcript_identifier.rda")
+
 # cohort: TCGA TARGET GTEx
 toil_info <- XenaGenerate(subset = XenaDatasets == "TcgaTargetGTEX_phenotype.txt") %>%
   XenaQuery() %>%

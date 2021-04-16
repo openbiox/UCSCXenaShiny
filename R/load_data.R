@@ -13,6 +13,7 @@ load_data <- function(name) {
   stopifnot(length(name) == 1)
   name2 <- paste0(name, ".rda")
   data_path <- file.path(system.file("extdata", package = "UCSCXenaShiny"), name2)
+  # builtin datasets
   available_datasets <- c(
     "ccle_absolute", "ccle_info",
     "tcga_clinical", "tcga_genome_instability",
@@ -27,7 +28,7 @@ load_data <- function(name) {
     if (!file.exists(data_path)) {
       # Download it to inst/extdata from zenodo
       # Then load it
-      data_url <- file.path("https://zenodo.org/record/4625640/files", name2)
+      data_url <- file.path("https://zenodo.org/record/4695945/files", name2)
       message("Loading data from remote: ", data_url, ", please wait...")
       name <- FALSE
       tryCatch(
