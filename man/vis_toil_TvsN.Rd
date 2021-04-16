@@ -7,6 +7,7 @@
 vis_toil_TvsN(
   Gene = "TP53",
   Mode = "Boxplot",
+  data_type = "mRNA",
   Show.P.value = TRUE,
   Show.P.label = TRUE,
   Method = "wilcox.test",

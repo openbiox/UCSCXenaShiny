@@ -39,7 +39,7 @@ get_pancan_protein_value(identifier)
 
 get_pancan_mutation_status(identifier)
 
-get_pancan_cn_value(identifier)
+get_pancan_cn_value(identifier, use_thresholded_data = TRUE)
 
 get_pancan_methylation_value(identifier, type = c("450K", "27K"))
 
@@ -58,6 +58,8 @@ Gene symbol is highly recommended.}
 \item{host}{a character vector representing host name(s), e.g. "toilHub".}
 
 \item{samples}{a character vector representing samples want to be returned.}
+
+\item{use_thresholded_data}{if \code{TRUE} (default), use GISTIC2-thresholded value.}
 
 \item{type}{methylation type, one of "450K" and "27K".}
 }
