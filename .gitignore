@@ -32,3 +32,4 @@ inst/extdata/tcga_chr_alteration.rda
 doc
 Meta
 ccle/CCLE_DepMap_18Q2_RNAseq_RPKM_20180502.gct
+ccle/ccle_expr_and_drug_response.rds
