@@ -2,6 +2,15 @@ library(tidyverse)
 library(gplots)
 library(preprocessCore)
 
+# 理了下逻辑：
+# 输入一个基因列表
+# 计算partial correlation of gene-drug association after controlling for tissue average expression
+# P 值校正
+# 将样本分组，计算高低组差异
+# 绘制火山图 Burble Plot of the drug-gene association、
+# 单独的箱线图 Boxplot for drug-gene pair in a specific cancer type
+# 需要注意的是这里好像对 pcor 包的偏相关做了修改，这个需要确定下
+
 # remove all the data/function --------------------------------------------
 
 rm(list = ls())
@@ -15,7 +24,7 @@ source("ccle/function/pcor.r") # modified a bit from ppcor
 # load CCLE data
 # source: https://data.broadinstitute.org/ccle/CCLE_DepMap_18Q2_RNAseq_RPKM_20180502.gct
 
-CCLE_expr <- data.table::fread("~/Downloads/CCLE_DepMap_18Q2_RNAseq_RPKM_20180502.gct") 
+CCLE_expr <- data.table::fread("ccle/CCLE_DepMap_18Q2_RNAseq_RPKM_20180502.gct") 
 
 CCLE_expr <- CCLE_expr %>%
   distinct(Description, .keep_all = T) %>%
@@ -23,12 +32,16 @@ CCLE_expr <- CCLE_expr %>%
   select(-c("Name"))
 
 # import selected resistant genes:
-geneids <- read.table(file = "./Drug_Resistant.v1/Drug_Resistant/data/cisplatin_resistant_list.txt", sep = "\t", header = T, colClasses = "character")
+geneids <- read.table(
+  file = "ccle/cisplatin_resistant_list.txt", 
+  sep = "\t", header = T, 
+  colClasses = "character")
 geneids <- geneids$Genes
 geneids <- geneids[is.element(geneids, rownames(CCLE_expr))]
 head(geneids)
 
 # quantile normalize the microarray data among all different cell lines
+# ref: http://www.bio-info-trainee.com/2043.html
 CCLE_mat <- preprocessCore::normalize.quantiles(as.matrix(CCLE_expr), copy = TRUE)
 colnames(CCLE_mat) <- colnames(CCLE_expr)
 rownames(CCLE_mat) <- rownames(CCLE_expr)
@@ -51,10 +64,28 @@ CCLE_mat.sel <- CCLE_mat[geneids, ]
 CCLE_drug_mat <- pivot_wider(CCLE_drug[, c("CCLE Cell Line Name", "Compound", "IC50 (uM)")],
   names_from = "Compound", values_from = "IC50 (uM)", values_fill = NA
 )
+
+########################### 把核心数据保留
+ccle_expr_and_drug_response <- list(
+  expr = CCLE_mat,
+  drug_ic50 = CCLE_drug_mat %>% 
+    tibble::column_to_rownames("CCLE Cell Line Name") %>% 
+    as.matrix(),
+  drug_info = unique(CCLE_drug[, c("CCLE Cell Line Name", "Site Primary", "Compound", "Target")]) %>% 
+    as.data.frame()
+)
+# site primary 包内置的 ccle_info 也有该数据
+# drug_info <- unique(CCLE_drug[, c("CCLE Cell Line Name", "Site Primary", "Compound", "Target")])
+
+str(ccle_expr_and_drug_response, max.level = 1)
+saveRDS(ccle_expr_and_drug_response, file = "ccle/ccle_expr_and_drug_response.rds")
+#########################
+
 # row.names(CCLE_drug_mat) <- CCLE_drug_mat$`CCLE Cell Line Name`
 tissues <- as.character(unique(CCLE_drug[, c("CCLE Cell Line Name", "Site Primary")])[["Site Primary"]])
 drugCor <- c()
 # partial correlation of gene-drug association after controlling for tissue average expression.
+
 for (i in 1:nrow(CCLE_mat.sel)) {
   gene.exp <- CCLE_mat.sel[i, ]
   tissues.mean <- aggregate(gene.exp, by = list(tissues), mean)
@@ -121,7 +152,7 @@ for (i in 1:nrow(drugCor)) {
     if (length(d.IC50.tissue) >= 5) { # at least 5 cell lines in the tissue
       d.IC50.tissue <- sort(d.IC50.tissue)
       l <- length(d.IC50.tissue)
-      l <- floor(l / 2)
+      l <- floor(l / 2) # 按中位分的
       highIC50.cells <- head(names(d.IC50.tissue), l)
       lowIC50.cells <- tail(names(d.IC50.tissue), l)
       # mean(CCLE_mat.sel.n[g,highIC50.cells]) - mean(CCLE_mat.sel.n[g,lowIC50.cells])
@@ -137,23 +168,27 @@ colnames(drugCor)[8:9] <- c("mean.diff", "median.diff")
 # for example, a gene attribution in variable Info, with rownames being gene symbols
 # We can provide logFC value from another study (cisplatin resistant) or
 # from same GDSC database by selecting gene expression from resistant high and low celllines.
-GeneInfo <- read.csv(file = "./Drug_Resistant.v1/Drug_Resistant/data/gene_value.csv", colClasses = c("character", rep("numeric", 10)))
+GeneInfo <- read.csv(file = "ccle/gene_value.csv", colClasses = c("character", rep("numeric", 10)))
 GeneInfo$logFC <- rowMeans(GeneInfo[, 2:6]) - rowMeans(GeneInfo[, 7:11])
 rownames(GeneInfo) <- GeneInfo$Gene
-drugCor$geneInfo <- GeneInfo[drugCor$genes, "logFC"]
+drugCor$geneInfo <- GeneInfo[drugCor$genes, "logFC"] # 算了基因在两组表达的 fold change 这个是用户自定义数据
 save(drugCor, file = "./drugCor.rda")
 write.csv(drugCor, file = "./drug_gene_corr.csv")
 
 
 # 5. Burble Plot of the drug-gene association -----------------------------
 
-range(drugCor$geneInfo)
+# 下面就是构造一个火山图
+# 横坐标可以是前面算的平均/中位数差异，纵轴是P值，根据 FC 上填充色
+# 文字标记显著的
+
+range(drugCor$geneInfo) # 需要 fold change 数据
 bins <- seq(-4, 4, by = 8 / 20) # 21 color bins given the range [-5.463484  6.312507]
 # divid genes into different bins according to their expression value:
 my.bg <- c()
 for (i in drugCor$geneInfo) {
-  x <- abs(bins - i)
-  iOrd <- which(x == min(x))
+  x <- abs(bins - i) # 区间点与 FC 的绝对差
+  iOrd <- which(x == min(x)) # 最小的那个
   my.bg <- c(my.bg, iOrd)
 }
 # Give each gene a color code according to their bins:
@@ -213,7 +248,7 @@ plot(gene.exp, IC50)
 # box plot
 gene.high <- IC50[gene.exp >= median(gene.exp)]
 gene.low <- IC50[gene.exp < median(gene.exp)]
-# BoxJetter(gene.high,gene.low,"high","low","IC50 between high and low gene exp","red")
+BoxJetter(gene.high,gene.low,"high","low","red")
 # or color cells by gene expression:
 bins <- cutbin(gene.exp, 20)
 # gene.min <- sort(gene.exp)[2]; gene.max <- tail(sort(gene.exp),2)[1] # the 2nd biggest and smallest value to avoid single outliers.
