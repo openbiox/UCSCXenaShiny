@@ -694,7 +694,7 @@ vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman") {
 #' @return a `ggplot` object
 #' @export
 #'
-vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type = "mRNA", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, Cancer = "ACC") {
+vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type = "mRNA", Show.P.value = FALSE, Show.P.label = FALSE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, Cancer = "ACC") {
   tcga_gtex <- load_data("tcga_gtex")
 
   if (data_type == "mRNA") {

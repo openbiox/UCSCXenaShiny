@@ -129,7 +129,8 @@ server.modules_cancer_dist <- function(input, output, session) {
         Show.P.value = input$pdist_show_p_value,
         Show.P.label = input$pdist_show_p_label,
         TCGA.only = input$pdist_dataset,
-        values = colors()
+        values = colors(),
+        data_type = input$profile
       )
       p <- p + theme_cowplot()
     }
