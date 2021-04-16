@@ -29,7 +29,13 @@ inst/extdata/tcga_stemness.rda
 inst/extdata/tcga_TIL.rda
 inst/extdata/tcga_tmb.rda
 inst/extdata/tcga_chr_alteration.rda
+inst/extdata/ccle_expr_and_drug_response.rda
+inst/extdata/transcript_identifier.rda
+
 doc
 Meta
+
 ccle/CCLE_DepMap_18Q2_RNAseq_RPKM_20180502.gct
 ccle/ccle_expr_and_drug_response.rds
+data-raw/ccle/
+data-raw/transcript_identifier.rda
