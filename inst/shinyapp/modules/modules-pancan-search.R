@@ -7,6 +7,12 @@ ui.modules_pancan_dist <- function(id) {
         fluidRow(
           column(
             9,
+            shinyWidgets::prettyRadioButtons(
+              inputId = ns("profile"), label = "Select a genomic profile:",
+              choiceValues = c("mRNA", "transcript", "methylation","protein","miRNA"),
+              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation","Protein Expression","miRNA Expression"),
+              animation = "jelly"
+            ),
             selectizeInput(
               inputId = ns("Pancan_search"),
               label = NULL,
@@ -36,12 +42,6 @@ ui.modules_pancan_dist <- function(id) {
           title = "Tips",
           content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
           placement = "right", options = list(container = "body")
-        ),
-        shinyWidgets::prettyRadioButtons(
-          inputId = ns("profile"), label = "Select a genomic profile:",
-          choiceValues = c("mRNA", "transcript", "methylation"),
-          choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation"),
-          animation = "jelly"
         ),
         materialSwitch(ns("pdist_mode"), "Show violin plot", inline = TRUE),
         materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = TRUE),
@@ -87,12 +87,25 @@ ui.modules_pancan_dist <- function(id) {
 
 server.modules_pancan_dist <- function(input, output, session) {
   ns <- session$ns
-
-  observe({
+  
+  profile_choices <- reactive({
+    a <- if (input$profile == "mRNA"){
+      pancan_identifiers$gene} 
+    else if (input$profile == "protein"){
+        pancan_identifiers$protein
+      } 
+    else if (input$profile == "miRNA"){
+        pancan_identifiers$miRNA
+      }
+    c(a)
+  })
+  
+  
+  reactive({
     updateSelectizeInput(
       session,
       "Pancan_search",
-      choices = pancan_identifiers$gene,
+      choices =  profile_choices(),
       selected = "TP53",
       server = TRUE
     )
