@@ -21,6 +21,8 @@ vis_toil_TvsN_cancer(
 
 \item{Mode}{Boxplot or Violinplot to represent data}
 
+\item{data_type}{choose gene profile type, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"}
+
 \item{Show.P.value}{\code{TRUE} or \code{FALSE} whether to count P value}
 
 \item{Show.P.label}{\code{TRUE} or \code{FALSE} present p value with number or label \code{*}, \verb{**}, \verb{***} and \verb{****}}

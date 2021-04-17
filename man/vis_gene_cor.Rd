@@ -4,12 +4,23 @@
 \alias{vis_gene_cor}
 \title{Visualize Gene-Gene Correlation in TCGA}
 \usage{
-vis_gene_cor(Gene1 = "CSF1R", Gene2 = "JAK3", purity_adj = TRUE, split = FALSE)
+vis_gene_cor(
+  Gene1 = "CSF1R",
+  Gene2 = "JAK3",
+  data_type1 = "mRNA",
+  data_type2 = "mRNA",
+  purity_adj = TRUE,
+  split = FALSE
+)
 }
 \arguments{
 \item{Gene1}{the first gene}
 
 \item{Gene2}{the second gene}
+
+\item{data_type1}{choose gene profile type for the first gene, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"}
+
+\item{data_type2}{choose gene profile type for the second gene, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"}
 
 \item{purity_adj}{whether performing partial correlation adjusted by purity}
 
