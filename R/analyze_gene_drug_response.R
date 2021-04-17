@@ -208,6 +208,7 @@ analyze_gene_drug_response_diff <- function(gene_list,
       TRUE ~ NA_character_
     )) %>%
     dplyr::ungroup() %>%
+    dplyr::filter(!is.na(.data$group)) %>% 
     as.data.frame()
 
   df
