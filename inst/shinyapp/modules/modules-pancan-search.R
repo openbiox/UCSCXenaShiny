@@ -49,7 +49,7 @@ ui.modules_pancan_dist <- function(id) {
         materialSwitch(ns("pdist_dataset"), "TCGA Dataset only", inline = FALSE),
         colourpicker::colourInput(inputId = ns("tumor_col"), "Tumor sample color", "#DF2020"),
         colourpicker::colourInput(inputId = ns("normal_col"), "Normal sample color", "#DDDF21"),
-        selectInput(inputId = ns("theme"), label = "Select theme for plot", choices = names(themes_list), selected = "cowplot"),
+        #selectInput(inputId = ns("theme"), label = "Select theme for plot", choices = names(themes_list), selected = "cowplot"),
         numericInput(inputId = ns("height"), label = "Height", value = 5),
         numericInput(inputId = ns("width"), label = "Width", value = 12),
         prettyRadioButtons(
@@ -76,9 +76,9 @@ ui.modules_pancan_dist <- function(id) {
         plotOutput(ns("gene_pancan_dist"), height = "500px"),
         h5("NOTEs:"),
         p("1. The data query may take some time based on your network. Wait until a plot shows"),
-        p("2. The unit of gene expression is log2(tpm+0.001)"),
-        p("3. You have to turn on both 'Show P value' and 'Show P label' to show significant labels"),
-        p("4. If a void plot shows, please check your input"),
+        #p("2. The unit of gene expression is log2(tpm+0.001)"),
+        p("2. You have to turn on both 'Show P value' and 'Show P label' to show significant labels"),
+        p("3. If a void plot shows, please check your input"),
         width = 9
       )
     )
@@ -125,12 +125,12 @@ server.modules_pancan_dist <- function(input, output, session) {
       p <- vis_toil_TvsN(
         Gene = input$Pancan_search,
         data_type = input$profile,
-        #Mode = ifelse(input$pdist_mode, "Violinplot", "Boxplot"),
+        Mode = ifelse(input$pdist_mode, "Violinplot", "Boxplot"),
         Show.P.value = input$pdist_show_p_value,
         Show.P.label = input$pdist_show_p_label,
         TCGA.only = input$pdist_dataset,
         values = colors(),
-      ) #+ plot_theme()
+      ) 
     }
     return(p)
   })
