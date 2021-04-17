@@ -45,7 +45,7 @@ analyze_gene_drug_response_asso <- function(gene_list, combine = FALSE) {
   drugCor <- c()
   for (i in 1:nrow(expr)) {
     gene.exp <- expr[i, ]
-    tissues.mean <- aggregate(gene.exp, by = list(tissues), mean)
+    tissues.mean <- stats::aggregate(gene.exp, by = list(tissues), mean)
     rownames(tissues.mean) <- tissues.mean[, 1]
     controls <- tissues.mean[tissues, 2] # control of partial correlation
 
@@ -233,7 +233,7 @@ gm_mean <- function(x, na.rm = TRUE, zero.propagate = FALSE) {
 
 # Z-score normalization
 Zscore <- function(x) {
-  y <- (x - mean(x)) / sd(x)
+  y <- (x - mean(x)) / stats::sd(x)
   return(y)
 }
 
@@ -287,7 +287,7 @@ pcor_test <- function(x, y, z, use = "mat", method = "p", na.rm = TRUE) {
   }
 
   # sample number
-  n <- dim(na.omit(data.frame(x, y, z)))[1]
+  n <- dim(stats::na.omit(data.frame(x, y, z)))[1]
 
   # given variables' number
   gn <- dim(z)[2]
@@ -295,10 +295,10 @@ pcor_test <- function(x, y, z, use = "mat", method = "p", na.rm = TRUE) {
   # p-value
   if (p.method == "Kendall") {
     statistic <- pcor / sqrt(2 * (2 * (n - gn) + 5) / (9 * (n - gn) * (n - 1 - gn)))
-    p.value <- 2 * pnorm(-abs(statistic))
+    p.value <- 2 * stats::pnorm(-abs(statistic))
   } else {
     statistic <- pcor * sqrt((n - 2 - gn) / (1 - pcor^2))
-    p.value <- 2 * pnorm(-abs(statistic))
+    p.value <- 2 * stats::pnorm(-abs(statistic))
   }
 
   data.frame(estimate = pcor, p.value = p.value, statistic = statistic, n = n, gn = gn, Method = p.method, Use = p.use)
@@ -317,19 +317,19 @@ pcor.mat <- function(x, y, z, method = "p", na.rm = T) {
   data <- data.frame(x, y, z)
 
   if (na.rm == T) {
-    data <- na.omit(data)
+    data <- stats::na.omit(data)
   }
 
-  xdata <- na.omit(data.frame(data[, c(1, 2)]))
-  Sxx <- cov(xdata, xdata, m = method)
+  xdata <- stats::na.omit(data.frame(data[, c(1, 2)]))
+  Sxx <- stats::cov(xdata, xdata, m = method)
 
-  xzdata <- na.omit(data)
+  xzdata <- stats::na.omit(data)
   xdata <- data.frame(xzdata[, c(1, 2)])
   zdata <- data.frame(xzdata[, -c(1, 2)])
-  Sxz <- cov(xdata, zdata, m = method)
+  Sxz <- stats::cov(xdata, zdata, m = method)
 
-  zdata <- na.omit(data.frame(data[, -c(1, 2)]))
-  Szz <- cov(zdata, zdata, m = method)
+  zdata <- stats::na.omit(data.frame(data[, -c(1, 2)]))
+  Szz <- stats::cov(zdata, zdata, m = method)
 
   # is Szz positive definite?
   zz.ev <- eigen(Szz)$values
@@ -340,7 +340,7 @@ pcor.mat <- function(x, y, z, method = "p", na.rm = T) {
   # partial correlation
   Sxx.z <- Sxx - Sxz %*% solve(Szz) %*% t(Sxz)
 
-  rxx.z <- cov2cor(Sxx.z)[1, 2]
+  rxx.z <- stats::cov2cor(Sxx.z)[1, 2]
 
   rxx.z
 }
@@ -360,19 +360,19 @@ pcor.rec <- function(x, y, z, method = "p", na.rm = T) {
   data <- data.frame(x, y, z)
 
   if (na.rm == T) {
-    data <- na.omit(data)
+    data <- stats::na.omit(data)
   }
 
   # recursive formula
   if (dim(z)[2] == 1) {
-    tdata <- na.omit(data.frame(data[, 1], data[, 2]))
-    rxy <- cor(tdata[, 1], tdata[, 2], m = method)
+    tdata <- stats::na.omit(data.frame(data[, 1], data[, 2]))
+    rxy <- stats::cor(tdata[, 1], tdata[, 2], m = method)
 
-    tdata <- na.omit(data.frame(data[, 1], data[, -c(1, 2)]))
-    rxz <- cor(tdata[, 1], tdata[, 2], m = method)
+    tdata <- stats::na.omit(data.frame(data[, 1], data[, -c(1, 2)]))
+    rxz <- stats::cor(tdata[, 1], tdata[, 2], m = method)
 
-    tdata <- na.omit(data.frame(data[, 2], data[, -c(1, 2)]))
-    ryz <- cor(tdata[, 1], tdata[, 2], m = method)
+    tdata <- stats::na.omit(data.frame(data[, 2], data[, -c(1, 2)]))
+    ryz <- stats::cor(tdata[, 1], tdata[, 2], m = method)
 
     rxy.z <- (rxy - rxz * ryz) / (sqrt(1 - rxz^2) * sqrt(1 - ryz^2))
 
