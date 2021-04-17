@@ -12,7 +12,7 @@ vis_pancan_anatomy(
 )
 }
 \arguments{
-\item{Gene}{input gene}
+\item{Gene}{Molecule identifier (gene symbol in most cases)}
 
 \item{Gender}{a string, "Female" (default) or "Male".}
 

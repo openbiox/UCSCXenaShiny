@@ -8,22 +8,22 @@ load_data(name)
 }
 \arguments{
 \item{name}{dataset name, can be one of
-TCGA.organ
 ccle_absolute
 ccle_info
 pancan_MSI
-tcga_MSI
-tcga_TIL
 tcga_chr_alteration
 tcga_clinical
 tcga_genome_instability
 tcga_gtex
+tcga_MSI
 tcga_pan_immune_signature
 tcga_purity
 tcga_stemness
 tcga_subtypes
 tcga_surv
+tcga_TIL
 tcga_tmb
+TCGA.organ
 toil_info}
 }
 \value{

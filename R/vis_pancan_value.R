@@ -23,7 +23,6 @@ vis_toil_gene <- function(data, x = "primary_site",
 
 #' Visualize Pan-cancer TPM (tumor (TCGA) vs Normal (TCGA & GTEx))
 #' @import ggplot2 dplyr tibble
-#' @inheritParams query_value
 #' @param Gene Molecule identifier (gene symbol in most cases)
 #' @param Mode "Boxplot" or "Violinplot" to represent data
 #' @param Show.P.value `TRUE` or `FALSE` whether to count P value
@@ -33,7 +32,9 @@ vis_toil_gene <- function(data, x = "primary_site",
 #' @param TCGA.only include samples only from TCGA dataset
 #' @param draw_quantiles draw quantiles for violinplot
 #' @param trim whether trim the violin
-#' @param data_type choose gene profile type, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"
+#' @param data_type choose gene profile type, 
+#' including mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
+#' "cnv_gistic2", "methylation", "miRNA".
 #' @return a `ggplot` object
 #' @examples
 #' \donttest{
@@ -44,47 +45,22 @@ vis_toil_gene <- function(data, x = "primary_site",
 #'
 vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", data_type = "mRNA", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, draw_quantiles = c(0.25, 0.5, 0.75), trim = TRUE) {
   tcga_gtex <- load_data("tcga_gtex")
-  
-  data_input <- function(Gene, data_type) {
-    switch(data_type,
-           mRNA = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                       unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           transcript = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                             unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           methylation = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$data, 
-                             unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           miRNA = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                             unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           protein = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                             unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           cnv_gistic2 = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$data, 
-                             unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),)
+
+  if (!data_type %in% c("mRNA", "miRNA", "transcript", "methylation")) {
+    stop("data_type ", data_type, " does not support in this function!")
   }
-  
-  t1 = data_input(Gene,data_type)[[1]]
-  unit = data_input(Gene,data_type)[[2]]
-  # if (data_type == "mRNA") {
-  #   t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
-  # }
-  # if (data_type == "transcript") {
-  #   t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
-  # }
-  # if (data_type == "methylation") {
-  #   t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$data
-  # }
-  # if (data_type == "miRNA") {
-  #   t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
-  # }
-  # if (data_type == "protein") {
-  #   t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
-  # }
-  # if (data_type == "cnv_gistic2") {
-  #   t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$data
-  # }
-  # if (all(is.na(t1))) {
-  #   message("All NAs returned, return NULL instead.")
-  #   return(NULL)
-  # }
+  t1 <- query_value(identifier = Gene, data_type = data_type)
+  unit <- switch(data_type,
+    cnv = NULL,
+    mutation = NULL,
+    t1[[2]]
+  )
+  if (is.list(t1)) t1 <- t1[[1]]
+
+  if (all(is.na(t1))) {
+    message("All NAs returned, return NULL instead.")
+    return(NULL)
+  }
 
   tcga_gtex <- tcga_gtex %>%
     dplyr::group_by(.data$tissue) %>%
@@ -122,7 +98,7 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", data_type = "mRNA", S
     p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "tissue", y = "tpm", fill = "type2")) +
       ggplot2::geom_boxplot() +
       ggplot2::xlab(NULL) +
-      #ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
+      # ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
       ggplot2::theme_set(theme_set(theme_classic(base_size = 20))) +
       ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5)) +
       ggplot2::guides(fill = guide_legend(title = NULL)) +
@@ -133,23 +109,11 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", data_type = "mRNA", S
       ggplot2::scale_fill_manual(values = values)
     p <- p + ggplot2::geom_boxplot(data = tcga_gtex_MESO) +
       ggplot2::geom_boxplot(data = tcga_gtex_UVM)
-    # if (data_type == "mRNA"){
-    #   p = p + ggplot2::ylab(paste0(Gene, " mRNA expression (log2(TPM + 0.001))")) 
-    # } else if (data_type == "transcript"){
-    #   p = p + ggplot2::ylab(paste0(Gene, " transcript expression")) 
-    # } else if (data_type == "methylation"){
-    #   p = p + ggplot2::ylab(paste0(Gene, " beta value")) 
-    # } else if (data_type == "miRNA"){
-    #   p = p + ggplot2::ylab(paste0(Gene, " miRNA expression (log2(norm_value + 1))")) 
-    # } else if (data_type == "protein"){
-    #   p = p + ggplot2::ylab(paste0(Gene, " protein expression")) 
-    # } else if (data_type == "cnv_gistic2"){
-    #   p = p + ggplot2::ylab(paste0(Gene, " Gistic2 copy number")) 
-    # }
-    
-    p = p + ggplot2::ylab(paste0(Gene, " ",data_type," ",unit)) 
-    
-    
+
+    p <- p + ggplot2::ylab(
+      if (is.null(unit)) Gene else paste0(Gene, " (", unit, ")")
+    )
+
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       p <- p + ggplot2::geom_text(aes(
         x = .data$tissue,
@@ -216,19 +180,10 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", data_type = "mRNA", S
         position = "identity"
       ) #+
     # ggplot2::scale_x_discrete(limits = levels(tcga_gtex$tissue))
-    if (data_type == "mRNA"){
-      p = p + ggplot2::ylab(paste0(Gene, " mRNA expression (log2(TPM + 0.001))")) 
-    } else if (data_type == "transcript"){
-      p = p + ggplot2::ylab(paste0(Gene, " transcript expression")) 
-    } else if (data_type == "methylation"){
-      p = p + ggplot2::ylab(paste0(Gene, " beta value")) 
-    } else if (data_type == "miRNA"){
-      p = p + ggplot2::ylab(paste0(Gene, " miRNA expression (log2(norm_value + 1))")) 
-    } else if (data_type == "protein"){
-      p = p + ggplot2::ylab(paste0(Gene, " protein expression")) 
-    } else if (data_type == "cnv_gistic2"){
-      p = p + ggplot2::ylab(paste0(Gene, " Gistic2 copy number")) 
-    }
+    p <- p + ggplot2::ylab(
+      if (is.null(unit)) Gene else paste0(Gene, " (", unit, ")")
+    )
+
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       p <- p + ggplot2::geom_text(ggplot2::aes(
         x = .data$tissue,
@@ -344,7 +299,7 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", t
       plot.title = element_text(hjust = 0.5)
     ) +
     ggplot2::scale_color_manual(values = values) +
-    ggplot2::geom_hline(yintercept = c(0), linetype="dashed")
+    ggplot2::geom_hline(yintercept = c(0), linetype = "dashed")
   return(p)
 }
 
@@ -368,34 +323,28 @@ vis_pancan_anatomy <- function(Gene = "TP53",
   if (eval(parse(text = "!requireNamespace('gganatogram')"))) {
     stop("Please install 'gganatogram' package firstly!")
   }
-  hgMale_key <- "gganatogram" %:::% "hgMale_key"
-  hgFemale_key <- "gganatogram" %:::% "hgFemale_key"
-  gganatogram <- "gganatogram" %:::% "gganatogram"
+  hgMale_key <- eval(parse(text = "gganatogram::hgMale_key"))
+  hgFemale_key <- eval(parse(text = "gganatogram::hgFemale_key"))
+  gganatogram <- eval(parse(text = "gganatogram::gganatogram"))
 
   TCGA.organ <- load_data("TCGA.organ")
   tcga_gtex <- load_data("tcga_gtex")
   tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
 
-  data_input <- function(Gene, data_type) {
-    switch(data_type,
-           mRNA = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                       unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           transcript = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                             unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           methylation = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$data, 
-                              unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           miRNA = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                        unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           protein = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                          unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           cnv_gistic2 = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$data, 
-                              unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),)
+  t1 <- query_value(identifier = Gene, data_type = data_type)
+  unit <- switch(data_type,
+    cnv = NULL,
+    mutation = NULL,
+    t1[[2]]
+  )
+  if (is.list(t1)) t1 <- t1[[1]]
+
+  if (all(is.na(t1))) {
+    message("All NAs returned, return NULL instead.")
+    return(NULL)
   }
-  
-  t1 = data_input(Gene,data_type)[[1]]
-  unit = data_input(Gene,data_type)[[2]]
-  
-  message(paste0("Get gene expression for ", Gene))
+
+  message(paste0("Get data value for ", Gene))
   t2 <- t1 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
@@ -453,17 +402,14 @@ vis_pancan_anatomy <- function(Gene = "TP53",
 
       # scale_fill_viridis_c(option = option) +
       scale_fill_continuous(low = "#3CB371", high = "#DC143C") +
-      ggtitle(paste0(Gene, " ",data_type," ",unit, " Male: TCGA + GTEX")) +
+      ggtitle(paste0(Gene, " ", data_type, " ", unit, " Male: TCGA + GTEX")) +
       theme(plot.title = element_text(hjust = 0.5))
     print(p)
-    data_input = Male_input
-    out = list(plot = p,data = data_input)
-    #p
-    
-    return(out)
-  }
+    data_input <- Male_input
+    out <- list(plot = p, data = data_input)
 
-  if (Gender == "Female") {
+    return(out)
+  } else {
     p <- gganatogram(
       data = Female_input,
       fillOutline = "white",
@@ -472,18 +418,18 @@ vis_pancan_anatomy <- function(Gene = "TP53",
       fill = "value"
     ) +
       facet_wrap(~type) +
-      #labs(fill = "Log2(TPM + 0.001)") +
+      # labs(fill = "Log2(TPM + 0.001)") +
       coord_cartesian(ylim = c(-120, 0)) +
 
       theme_void(base_size = 15) +
       # scale_fill_viridis_c(option = option) +
       scale_fill_continuous(low = "#3CB371", high = "#DC143C") +
-      ggtitle(paste0(Gene, " ",data_type," ",unit, " Female: TCGA + GTEX")) +
+      ggtitle(paste0(Gene, " ", data_type, " ", unit, " Female: TCGA + GTEX")) +
       theme(plot.title = element_text(hjust = 0.5))
     print(p)
-    
-    data_input = Female_input
-    out = list(plot = p,data = data_input)
+
+    data_input <- Female_input
+    out <- list(plot = p, data = data_input)
     return(out)
   }
 }
@@ -491,8 +437,6 @@ vis_pancan_anatomy <- function(Gene = "TP53",
 #' Heatmap for Correlation between Gene and Immune Signatures
 #'
 #' @inheritParams vis_toil_TvsN
-#' @param Gene input gene
-#' @param data_type choose gene profile type, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"
 #' @param Cor_method correlation method
 #' @param Immune_sig_type quantification method, default is "Cibersort"
 #' @examples
@@ -500,7 +444,7 @@ vis_pancan_anatomy <- function(Gene = "TP53",
 #' p <- vis_gene_immune_cor(Gene = "TP53")
 #' }
 #' @export
-vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type = "mRNA",Immune_sig_type = "Cibersort") {
+vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type = "mRNA", Immune_sig_type = "Cibersort") {
   tcga_pan_immune_signature <- load_data("tcga_pan_immune_signature")
   tcga_gtex <- load_data("tcga_gtex")
 
@@ -511,26 +455,15 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", data_typ
     tidyr::pivot_longer(3:ncol(.), names_to = "sample", values_to = "score") %>%
     dplyr::mutate(sample = stringr::str_sub(.data$sample, 1, 15))
 
-  data_input <- function(Gene, data_type) {
-    switch(data_type,
-           mRNA = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                       unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           transcript = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                             unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           methylation = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$data, 
-                              unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           miRNA = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                        unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           protein = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                          unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           cnv_gistic2 = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$data, 
-                              unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),)
-  }
-  
-  t1 = data_input(Gene,data_type)[[1]]
-  unit = data_input(Gene,data_type)[[2]]
+  t1 <- query_value(identifier = Gene, data_type = data_type)
+  if (is.list(t1)) t1 <- t1[[1]]
 
-  message(paste0("Get gene expression for ", Gene))
+  if (all(is.na(t1))) {
+    message("All NAs returned, return NULL instead.")
+    return(NULL)
+  }
+
+  message(paste0("Get data value for ", Gene))
   s <- data.frame(sample = names(t1), values = t1)
 
   ss <- s %>%
@@ -583,7 +516,7 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", data_typ
       axis.text.y = ggplot2::element_text(size = 8)
     ) +
     ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "*** p < 0.001", "\n\n", "Correlation")) +
-    ggtitle(paste0("The correlation between ", Gene, " ",data_type, " with immune signatures"))
+    ggtitle(paste0("The correlation between ", Gene, " ", data_type, " with immune signatures"))
   return(p)
 }
 
@@ -599,24 +532,15 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", data_typ
 vis_gene_tmb_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type = "mRNA") {
   tcga_tmb <- load_data("tcga_tmb")
   tcga_gtex <- load_data("tcga_gtex")
-  data_input <- function(Gene, data_type) {
-    switch(data_type,
-           mRNA = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                       unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           transcript = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                             unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           methylation = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$data, 
-                              unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           miRNA = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                        unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           protein = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                          unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           cnv_gistic2 = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$data, 
-                              unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),)
+
+  t1 <- query_value(identifier = Gene, data_type = data_type)
+  if (is.list(t1)) t1 <- t1[[1]]
+
+  if (all(is.na(t1))) {
+    message("All NAs returned, return NULL instead.")
+    return(NULL)
   }
-  
-  t1 = data_input(Gene,data_type)[[1]]
-  unit = data_input(Gene,data_type)[[2]]
+
   s <- data.frame(sample = names(t1), values = t1)
   ss <- s %>%
     dplyr::inner_join(tcga_tmb, by = c("sample" = "Tumor_Sample_ID")) %>%
@@ -672,24 +596,14 @@ vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman", data_t
   tcga_stemness <- load_data("tcga_stemness")
   tcga_gtex <- load_data("tcga_gtex")
 
-  data_input <- function(Gene, data_type) {
-    switch(data_type,
-           mRNA = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                       unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           transcript = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                             unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           methylation = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$data, 
-                              unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           miRNA = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                        unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           protein = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                          unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           cnv_gistic2 = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$data, 
-                              unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),)
+  t1 <- query_value(identifier = Gene, data_type = data_type)
+  if (is.list(t1)) t1 <- t1[[1]]
+
+  if (all(is.na(t1))) {
+    message("All NAs returned, return NULL instead.")
+    return(NULL)
   }
-  
-  t1 = data_input(Gene,data_type)[[1]]
-  unit = data_input(Gene,data_type)[[2]]
+
   s <- data.frame(sample = names(t1), values = t1)
   ss <- s %>%
     dplyr::inner_join(tcga_stemness, by = c("sample")) %>%
@@ -743,24 +657,18 @@ vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman", data_t
 vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type = "mRNA", Show.P.value = FALSE, Show.P.label = FALSE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, Cancer = "ACC") {
   tcga_gtex <- load_data("tcga_gtex")
 
-  data_input <- function(Gene, data_type) {
-    switch(data_type,
-           mRNA = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                       unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           transcript = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                             unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           methylation = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$data, 
-                              unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           miRNA = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                        unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           protein = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                          unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           cnv_gistic2 = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$data, 
-                              unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),)
+  t1 <- query_value(identifier = Gene, data_type = data_type)
+  unit <- switch(data_type,
+    cnv = NULL,
+    mutation = NULL,
+    t1[[2]]
+  )
+  if (is.list(t1)) t1 <- t1[[1]]
+
+  if (all(is.na(t1))) {
+    message("All NAs returned, return NULL instead.")
+    return(NULL)
   }
-  
-  t1 = data_input(Gene,data_type)[[1]]
-  unit = data_input(Gene,data_type)[[2]]
 
   tcga_gtex <- tcga_gtex %>%
     dplyr::group_by(.data$tissue) %>%
@@ -802,7 +710,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type =
       ggplot2::geom_dotplot(binaxis = "y", stackdir = "center", position = "identity") +
       # ggplot2::geom_jitter(aes_string(color = "type2"),shape=16, position=position_jitter(0.2), size = 2) +
       ggplot2::xlab(NULL) +
-      #ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
+      # ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
       ggplot2::theme_set(theme_set(theme_classic(base_size = 20))) +
       ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5)) +
       ggplot2::guides(fill = guide_legend(title = NULL)) +
@@ -814,7 +722,10 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type =
       ggplot2::scale_color_manual(values = values)
     # p <- p + ggplot2::geom_boxplot(data = tcga_gtex_MESO) +
     #   ggplot2::geom_boxplot(data = tcga_gtex_UVM)
-    p = p + ggplot2::ylab(paste0(Gene, " ",data_type," ",unit)) 
+    p <- p + ggplot2::ylab(
+      if (is.null(unit)) Gene else paste0(Gene, " (", unit, ")")
+    )
+
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       p <- p + ggplot2::geom_text(aes(
         x = 1.5,
@@ -840,7 +751,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type =
     p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "type2", y = "tpm", fill = "type2")) +
       ggplot2::geom_violin(trim = FALSE) +
       ggplot2::geom_boxplot(width = 0.1, fill = "white") +
-      #ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
+      # ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
       ggplot2::xlab("") +
       # ggplot2::ggtitle(.data$tissue) +
       ggplot2::scale_fill_manual(values = values) +
@@ -851,9 +762,11 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type =
         legend.background = ggplot2::element_blank(),
         legend.position = c(0, 0), legend.justification = c(0, 0)
       )
-    
-    p = p + ggplot2::ylab(paste0(Gene, " ",data_type," ",unit)) 
-    
+
+    p <- p + ggplot2::ylab(
+      if (is.null(unit)) Gene else paste0(Gene, " (", unit, ")")
+    )
+
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       p <- p + ggplot2::geom_text(ggplot2::aes(
         x = 1.5,
@@ -888,12 +801,14 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type =
 #' @param purity_adj whether performing partial correlation adjusted by purity
 #' @param split whether split by TCGA tumor tissue
 #' @export
-vis_gene_cor <- function(Gene1 = "CSF1R", 
-                         Gene2 = "JAK3", 
+vis_gene_cor <- function(Gene1 = "CSF1R",
+                         Gene2 = "JAK3",
                          data_type1 = "mRNA",
                          data_type2 = "mRNA",
-                         purity_adj = TRUE, 
+                         purity_adj = TRUE,
                          split = FALSE) {
+  # vis_gene_cor(data_type1 = "mutation") 报错，需要检查
+
   tcga_gtex <- load_data("tcga_gtex")
   tcga_purity <- load_data("tcga_purity")
 
@@ -901,31 +816,18 @@ vis_gene_cor <- function(Gene1 = "CSF1R",
   tcga_gtex <- tcga_gtex %>%
     dplyr::group_by(.data$tissue) %>%
     dplyr::distinct(.data$sample, .keep_all = TRUE)
-  data_input <- function(Gene, data_type) {
-    switch(data_type,
-           mRNA = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                       unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           transcript = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                             unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           methylation = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$data, 
-                              unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           miRNA = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                        unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           protein = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                          unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           cnv_gistic2 = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$data, 
-                              unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),)
-  }
-  
-  t1 = data_input(Gene1,data_type1)[[1]]
-  unit1 = data_input(Gene1,data_type1)[[2]]
+
+  t1 <- query_value(identifier = Gene1, data_type = data_type1)
+  if (is.list(t1)) t1 <- t1[[1]]
+  t3 <- query_value(identifier = Gene2, data_type = data_type2)
+  if (is.list(t3)) t3 <- t3[[1]]
+
   t2 <- t1 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
     tibble::rownames_to_column(var = "sample") %>%
     dplyr::inner_join(tcga_gtex, by = "sample")
-  t3 = data_input(Gene2,data_type2)[[1]]
-  unit2 = data_input(Gene2,data_type2)[[2]]
+
   t4 <- t3 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
@@ -975,14 +877,17 @@ vis_gene_cor <- function(Gene1 = "CSF1R",
 #' @inheritParams vis_gene_cor
 #' @param cancer_choose TCGA cohort name, e.g. "ACC".
 #' @export
-vis_gene_cor_cancer <- function(Gene1 = "CSF1R", 
-                                Gene2 = "JAK3", 
+vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
+                                Gene2 = "JAK3",
                                 data_type1 = "mRNA",
                                 data_type2 = "mRNA",
-                                purity_adj = TRUE, 
-                                split = FALSE, 
-                                cancer_choose = "GBM", 
+                                purity_adj = TRUE,
+                                split = FALSE,
+                                cancer_choose = "GBM",
                                 cor_method = "spearman") {
+
+  # vis_gene_cor_cancer(data_type1 = "mutation") 报错，需要检查
+
   tcga_gtex <- load_data("tcga_gtex")
   tcga_purity <- load_data("tcga_purity")
 
@@ -990,31 +895,18 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
   tcga_gtex <- tcga_gtex %>%
     dplyr::group_by(.data$tissue) %>%
     dplyr::distinct(.data$sample, .keep_all = TRUE)
-  data_input <- function(Gene, data_type) {
-    switch(data_type,
-           mRNA = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                       unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           transcript = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                             unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           methylation = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$data, 
-                              unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           miRNA = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                        unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           protein = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                          unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           cnv_gistic2 = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$data, 
-                              unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),)
-  }
-  
-  t1 = data_input(Gene1,data_type1)[[1]]
-  unit1 = data_input(Gene1,data_type1)[[2]]
+
+  t1 <- query_value(identifier = Gene1, data_type = data_type1)
+  if (is.list(t1)) t1 <- t1[[1]]
+  t3 <- query_value(identifier = Gene2, data_type = data_type2)
+  if (is.list(t3)) t3 <- t3[[1]]
+
   t2 <- t1 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
     tibble::rownames_to_column(var = "sample") %>%
     dplyr::inner_join(tcga_gtex, by = "sample")
-  t3 = data_input(Gene2,data_type2)[[1]]
-  unit2 = data_input(Gene2,data_type2)[[2]]
+
   t4 <- t3 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
@@ -1095,26 +987,15 @@ vis_gene_TIL_cor <- function(Gene = "TP53",
   # we filter out normal tissue
   tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
 
-  data_input <- function(Gene, data_type) {
-    switch(data_type,
-           mRNA = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                       unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           transcript = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                             unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           methylation = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$data, 
-                              unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           miRNA = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                        unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           protein = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
-                          unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
-           cnv_gistic2 = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$data, 
-                              unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),)
-  }
-  
-  t1 = data_input(Gene,data_type)[[1]]
-  unit = data_input(Gene,data_type)[[2]]
+  t1 <- query_value(identifier = Gene, data_type = data_type)
+  if (is.list(t1)) t1 <- t1[[1]]
 
-  message(paste0("Get gene expression for ", Gene))
+  if (all(is.na(t1))) {
+    message("All NAs returned, return NULL instead.")
+    return(NULL)
+  }
+
+  message(paste0("Get data value for ", Gene))
   s <- data.frame(sample = names(t1), values = t1)
 
   ss <- s %>%
@@ -1169,7 +1050,7 @@ vis_gene_TIL_cor <- function(Gene = "TP53",
       axis.text.y = ggplot2::element_text(size = 8)
     ) +
     ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "*** p < 0.001", "\n\n", "Correlation")) +
-    ggtitle(paste0("The correlation between ", Gene, " ",data_type, " with immune signatures"))
+    ggtitle(paste0("The correlation between ", Gene, " ", data_type, " with immune signatures"))
 
   return(p)
 }

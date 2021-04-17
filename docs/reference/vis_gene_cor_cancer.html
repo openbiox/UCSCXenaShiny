@@ -176,6 +176,8 @@
     <pre class="usage"><span class='fu'>vis_gene_cor_cancer</span><span class='op'>(</span>
   Gene1 <span class='op'>=</span> <span class='st'>"CSF1R"</span>,
   Gene2 <span class='op'>=</span> <span class='st'>"JAK3"</span>,
+  data_type1 <span class='op'>=</span> <span class='st'>"mRNA"</span>,
+  data_type2 <span class='op'>=</span> <span class='st'>"mRNA"</span>,
   purity_adj <span class='op'>=</span> <span class='cn'>TRUE</span>,
   split <span class='op'>=</span> <span class='cn'>FALSE</span>,
   cancer_choose <span class='op'>=</span> <span class='st'>"GBM"</span>,
@@ -187,27 +189,31 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>Gene1</th>
-      <td><p>the first gene.</p></td>
+      <td><p>the first gene</p></td>
     </tr>
     <tr>
       <th>Gene2</th>
-      <td><p>the second gene.</p></td>
+      <td><p>the second gene</p></td>
+    </tr>
+    <tr>
+      <th>data_type1</th>
+      <td><p>choose gene profile type for the first gene, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"</p></td>
+    </tr>
+    <tr>
+      <th>data_type2</th>
+      <td><p>choose gene profile type for the second gene, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"</p></td>
     </tr>
     <tr>
       <th>purity_adj</th>
-      <td><p>whether performing partial correlation adjusted by purity.</p></td>
+      <td><p>whether performing partial correlation adjusted by purity</p></td>
     </tr>
     <tr>
       <th>split</th>
-      <td><p>whether split by TCGA tumor tissue.</p></td>
+      <td><p>whether split by TCGA tumor tissue</p></td>
     </tr>
     <tr>
       <th>cancer_choose</th>
       <td><p>TCGA cohort name, e.g. "ACC".</p></td>
-    </tr>
-    <tr>
-      <th>cor_method</th>
-      <td><p>correlation method.</p></td>
     </tr>
     </table>
 

@@ -11,11 +11,13 @@ vis_gene_stemness_cor(
 )
 }
 \arguments{
-\item{Gene}{input gene}
+\item{Gene}{Molecule identifier (gene symbol in most cases)}
 
 \item{Cor_method}{correlation method}
 
-\item{data_type}{choose gene profile type, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"}
+\item{data_type}{choose gene profile type,
+including mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
+"cnv_gistic2", "methylation", "miRNA".}
 }
 \description{
 Visualize Correlation between Gene and Tumor Stemness
