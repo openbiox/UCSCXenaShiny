@@ -4,6 +4,6 @@
 #' @name UCSCXenaShiny
 #' @import ggplot2
 #' @importFrom psych corr.test
-#' @importFrom utils download.file head install.packages
+#' @importFrom utils download.file head install.packages tail
 #' @importFrom stats prcomp predict quantile
 NULL

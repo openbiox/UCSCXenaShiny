@@ -22,7 +22,7 @@
   }
 </script>
 
-<title>Visualize Gene TPM in Single Cancer Type (Tumor (TCGA) vs Normal (TCGA &amp; GTEx)) — vis_toil_TvsN_cancer • UCSCXenaShiny</title>
+<title>Analyze Difference of Drug Response between Gene (Signature) High and Low Expression — analyze_gene_drug_response_diff • UCSCXenaShiny</title>
 
 
 <!-- jquery -->
@@ -66,8 +66,8 @@
 
 
 
-<meta property="og:title" content="Visualize Gene TPM in Single Cancer Type (Tumor (TCGA) vs Normal (TCGA &amp; GTEx)) — vis_toil_TvsN_cancer" />
-<meta property="og:description" content="Visualize Gene TPM in Single Cancer Type (Tumor (TCGA) vs Normal (TCGA &amp;amp; GTEx))" />
+<meta property="og:title" content="Analyze Difference of Drug Response between Gene (Signature) High and Low Expression — analyze_gene_drug_response_diff" />
+<meta property="og:description" content="Analyze Difference of Drug Response between Gene (Signature) High and Low Expression" />
 
 
 
@@ -164,73 +164,63 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Visualize Gene TPM in Single Cancer Type (Tumor (TCGA) vs Normal (TCGA &amp; GTEx))</h1>
-    <small class="dont-index">Source: <a href='https://github.com/openbiox/UCSCXenaShiny/blob/master/R/vis_pancan_value.R'><code>R/vis_pancan_value.R</code></a></small>
-    <div class="hidden name"><code>vis_toil_TvsN_cancer.Rd</code></div>
+    <h1>Analyze Difference of Drug Response between Gene (Signature) High and Low Expression</h1>
+    <small class="dont-index">Source: <a href='https://github.com/openbiox/UCSCXenaShiny/blob/master/R/analyze_gene_drug_response.R'><code>R/analyze_gene_drug_response.R</code></a></small>
+    <div class="hidden name"><code>analyze_gene_drug_response_diff.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Visualize Gene TPM in Single Cancer Type (Tumor (TCGA) vs Normal (TCGA &amp; GTEx))</p>
+    <p>Analyze Difference of Drug Response between Gene (Signature) High and Low Expression</p>
     </div>
 
-    <pre class="usage"><span class='fu'>vis_toil_TvsN_cancer</span><span class='op'>(</span>
-  Gene <span class='op'>=</span> <span class='st'>"TP53"</span>,
-  Mode <span class='op'>=</span> <span class='st'>"Violinplot"</span>,
-  data_type <span class='op'>=</span> <span class='st'>"mRNA"</span>,
-  Show.P.value <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  Show.P.label <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  Method <span class='op'>=</span> <span class='st'>"wilcox.test"</span>,
-  values <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"#DF2020"</span>, <span class='st'>"#DDDF21"</span><span class='op'>)</span>,
-  TCGA.only <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  Cancer <span class='op'>=</span> <span class='st'>"ACC"</span>
+    <pre class="usage"><span class='fu'>analyze_gene_drug_response_diff</span><span class='op'>(</span>
+  <span class='va'>gene_list</span>,
+  drug <span class='op'>=</span> <span class='st'>"ALL"</span>,
+  tissue <span class='op'>=</span> <span class='st'>"ALL"</span>,
+  combine <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  cutpoint <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>50</span>, <span class='fl'>50</span><span class='op'>)</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>Gene</th>
-      <td><p>Molecule identifier (gene symbol in most cases)</p></td>
+      <th>gene_list</th>
+      <td><p>a gene symbol list.</p></td>
     </tr>
     <tr>
-      <th>Mode</th>
-      <td><p>"Boxplot" or "Violinplot" to represent data</p></td>
+      <th>drug</th>
+      <td><p>a drug name. Run example to check the list.</p></td>
     </tr>
     <tr>
-      <th>data_type</th>
-      <td><p>data type. Can be one of "mRNA", "transcript", "protein",
-"mutation", "cnv" (-2, -1, 0, 1, 2), "cnv_gistic2", "methylation", "miRNA".</p></td>
+      <th>tissue</th>
+      <td><p>a tissue name. Run example to check the list.</p></td>
     </tr>
     <tr>
-      <th>Show.P.value</th>
-      <td><p><code>TRUE</code> or <code>FALSE</code> whether to count P value</p></td>
+      <th>combine</th>
+      <td><p>if <code>TRUE</code>, combine the expression of gene list as
+a gene signature.</p></td>
     </tr>
     <tr>
-      <th>Show.P.label</th>
-      <td><p><code>TRUE</code> or <code>FALSE</code> present p value with number or label <code><a href='https://rdrr.io/r/base/Arithmetic.html'>*</a></code>, <code>**</code>, <code>***</code> and <code>****</code></p></td>
-    </tr>
-    <tr>
-      <th>Method</th>
-      <td><p>default method is wilcox.test</p></td>
-    </tr>
-    <tr>
-      <th>values</th>
-      <td><p>the color to fill tumor or normal</p></td>
-    </tr>
-    <tr>
-      <th>TCGA.only</th>
-      <td><p>include samples only from TCGA dataset</p></td>
-    </tr>
-    <tr>
-      <th>Cancer</th>
-      <td><p>select a cancer</p></td>
+      <th>cutpoint</th>
+      <td><p>cut point (in percent) for High and Low group, default is <code><a href='https://rdrr.io/r/base/c.html'>c(50, 50)</a></code>.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a <code>ggplot</code> object</p>
+    <p>a <code>data.frame</code>.</p>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'>analyze_gene_drug_response_diff</span><span class='op'>(</span><span class='st'>"TP53"</span><span class='op'>)</span>
+<span class='fu'>analyze_gene_drug_response_diff</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"TP53"</span>, <span class='st'>"KRAS"</span><span class='op'>)</span>, drug <span class='op'>=</span> <span class='st'>"AEW541"</span><span class='op'>)</span>
+<span class='fu'>analyze_gene_drug_response_diff</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"TP53"</span>, <span class='st'>"KRAS"</span><span class='op'>)</span>,
+  tissue <span class='op'>=</span> <span class='st'>"kidney"</span>,
+  combine <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span>
+<span class='op'>}</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -17,9 +17,12 @@ vis_toil_TvsN_cancer(
 )
 }
 \arguments{
-\item{Gene}{Gene symbal for comparision}
+\item{Gene}{Molecule identifier (gene symbol in most cases)}
 
-\item{Mode}{Boxplot or Violinplot to represent data}
+\item{Mode}{"Boxplot" or "Violinplot" to represent data}
+
+\item{data_type}{data type. Can be one of "mRNA", "transcript", "protein",
+"mutation", "cnv" (-2, -1, 0, 1, 2), "cnv_gistic2", "methylation", "miRNA".}
 
 \item{data_type}{choose gene profile type, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"}
 

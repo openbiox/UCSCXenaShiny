@@ -1,4 +1,5 @@
 ^codecov\.yml$
+^_pkgdown\.yml$
 ^LICENSE\.md$
 ^data-raw$
 ^appveyor\.yml$

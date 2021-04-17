@@ -7,6 +7,7 @@ utils::globalVariables(
     "XenaDatasets",
     ".",
     "Type",
-    "group"
+    "group",
+    ".env"
   )
 )

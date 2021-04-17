@@ -735,14 +735,7 @@ vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman", data_t
 
 #' Visualize Gene TPM in Single Cancer Type (Tumor (TCGA) vs Normal (TCGA & GTEx))
 #' @import ggplot2 dplyr tibble
-#' @param Gene Gene symbal for comparision
-#' @param Mode Boxplot or Violinplot to represent data
-#' @param Show.P.value `TRUE` or `FALSE` whether to count P value
-#' @param Method default method is wilcox.test
-#' @param Show.P.label `TRUE` or `FALSE` present p value with number or label `*`, `**`, `***` and `****`
-#' @param values the color to fill tumor or normal
-#' @param TCGA.only include samples only from TCGA dataset
-#' @param data_type choose gene profile type, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"
+#' @inheritParams vis_toil_TvsN
 #' @param Cancer select a cancer
 #' @return a `ggplot` object
 #' @export
