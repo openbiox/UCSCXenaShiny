@@ -49,7 +49,7 @@ ui.modules_pancan_dist <- function(id) {
         materialSwitch(ns("pdist_dataset"), "TCGA Dataset only", inline = FALSE),
         colourpicker::colourInput(inputId = ns("tumor_col"), "Tumor sample color", "#DF2020"),
         colourpicker::colourInput(inputId = ns("normal_col"), "Normal sample color", "#DDDF21"),
-        #selectInput(inputId = ns("theme"), label = "Select theme for plot", choices = names(themes_list), selected = "cowplot"),
+        selectInput(inputId = ns("theme"), label = "Select theme for plot", choices = names(themes_list), selected = "cowplot"),
         numericInput(inputId = ns("height"), label = "Height", value = 5),
         numericInput(inputId = ns("width"), label = "Width", value = 12),
         prettyRadioButtons(
@@ -130,7 +130,7 @@ server.modules_pancan_dist <- function(input, output, session) {
         Show.P.label = input$pdist_show_p_label,
         TCGA.only = input$pdist_dataset,
         values = colors(),
-      ) 
+      ) + plot_theme() + ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5)) 
     }
     return(p)
   })
