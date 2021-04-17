@@ -5,15 +5,19 @@
 #' a gene signature.
 #'
 #' @return a `data.frame`
+#' - If `combine` is `TRUE`, genes are combined as `signature`.
+#' - `mean.diff` and `median.diff` indicate mean and median of
+#' normalized expression difference between High IC50 cells and Low IC50 cells.
+#' The cutoff between High and Low are median IC50.
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' analyze_gene_drug_response("TP53")
-#' analyze_gene_drug_response(c("TP53", "KRAS"))
-#' analyze_gene_drug_response(c("TP53", "KRAS"), combine = TRUE)
+#' analyze_gene_drug_response_asso("TP53")
+#' analyze_gene_drug_response_asso(c("TP53", "KRAS"))
+#' analyze_gene_drug_response_asso(c("TP53", "KRAS"), combine = TRUE)
 #' }
-analyze_gene_drug_response <- function(gene_list, combine = FALSE) {
+analyze_gene_drug_response_asso <- function(gene_list, combine = FALSE) {
   stopifnot(length(gene_list) > 0)
   on.exit(invisible(gc()))
 
@@ -24,7 +28,7 @@ analyze_gene_drug_response <- function(gene_list, combine = FALSE) {
   } else {
     stop("None of your input genes exists in CCLE data.")
   }
-  
+
   if (combine) {
     expr <- t(apply(expr, 2, gm_mean))
     rownames(expr) <- "signature"
@@ -113,25 +117,116 @@ analyze_gene_drug_response <- function(gene_list, combine = FALSE) {
   }
   colnames(drugCor)[8:9] <- c("mean.diff", "median.diff")
 
-  
-  drugCor %>% 
+
+  drugCor %>%
     dplyr::arrange(.data$p.value, .data$fdr)
+}
+
+#' Analyze Difference of Drug Response between Gene (Signature) High and Low Expression
+#'
+#' @inheritParams analyze_gene_drug_response_asso
+#' @param drug a drug name. Run example to check the list.
+#' @param tissue a tissue name. Run example to check the list.
+#' @param cutpoint cut point (in percent) for High and Low group, default is `c(50, 50)`.
+#'
+#' @return a `data.frame`.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' analyze_gene_drug_response_diff("TP53")
+#' analyze_gene_drug_response_diff(c("TP53", "KRAS"), drug = "AEW541")
+#' analyze_gene_drug_response_diff(c("TP53", "KRAS"),
+#'   tissue = "kidney",
+#'   combine = TRUE
+#' )
+#' }
+analyze_gene_drug_response_diff <- function(gene_list,
+                                            drug = "ALL",
+                                            tissue = "ALL",
+                                            combine = FALSE, cutpoint = c(50, 50)) {
+  stopifnot(length(gene_list) > 0, length(cutpoint) > 0)
+  on.exit(invisible(gc()))
+  # 将基因表达按阈值分为高低两组，
+  # 然后比较它们的 IC50 差异
+  # 这里只要得到高低 2 组的 IC50 值即可，
+  # 差异可以直接通过 ggboxplot 比较实现
+
+  ccle_data <- load_data("ccle_expr_and_drug_response")
+
+  if (any(gene_list %in% rownames(ccle_data$expr))) {
+    expr <- ccle_data$expr[gene_list, , drop = FALSE]
+  } else {
+    stop("None of your input genes exists in CCLE data.")
+  }
+
+  if (combine) {
+    expr <- t(apply(expr, 2, gm_mean))
+    rownames(expr) <- "signature"
+  }
+
+  drug_ic50 <- ccle_data$drug_ic50
+  drug_info <- ccle_data$drug_info
+  rm(ccle_data)
+
+  df <- expr %>%
+    as.data.frame() %>%
+    tibble::rownames_to_column("genes") %>%
+    tidyr::pivot_longer(-"genes", names_to = "ccle_name", values_to = "expr") %>%
+    dplyr::inner_join(
+      unique(drug_info[, c("CCLE Cell Line Name", "Site Primary", "Compound")]),
+      by = c("ccle_name" = "CCLE Cell Line Name")
+    ) %>%
+    dplyr::inner_join(
+      drug_ic50 %>%
+        as.data.frame() %>%
+        tibble::rownames_to_column("ccle_name") %>%
+        tidyr::pivot_longer(-"ccle_name", names_to = "drug", values_to = "IC50"),
+      by = c("ccle_name" = "ccle_name", "Compound" = "drug")
+    )
+  colnames(df) <- c("genes", "ccle_name", "expression", "tissue", "drug", "IC50")
+
+  if (tissue != "ALL") {
+    df <- dplyr::filter(df, .data$tissue %in% .env$tissue)
+  }
+
+  if (drug != "ALL") {
+    df <- dplyr::filter(df, .data$drug %in% .env$drug)
+  }
+
+  if (length(cutpoint) == 1) {
+    cutpoint <- c(cutpoint, cutpoint)
+  }
+  cutpoint <- cutpoint / 100
+
+  # 分组要保证在不同的组织下进行（因为不同组织表达本身可能有差异）
+  df <- df %>%
+    dplyr::group_by(.data$genes, .data$drug, .data$tissue) %>%
+    dplyr::mutate(group = dplyr::case_when(
+      dplyr::percent_rank(.data$expression) > cutpoint[2] ~ "High",
+      dplyr::percent_rank(.data$expression) <= cutpoint[1] ~ "Low",
+      TRUE ~ NA_character_
+    )) %>%
+    dplyr::ungroup() %>%
+    as.data.frame()
+
+  df
 }
 
 # Functions ---------------------------------------------------------------
 
 # https://stackoverflow.com/questions/2602583/geometric-mean-is-there-a-built-in
-gm_mean <- function(x, na.rm=TRUE, zero.propagate = FALSE){
-  if(any(x < 0, na.rm = TRUE)){
+gm_mean <- function(x, na.rm = TRUE, zero.propagate = FALSE) {
+  if (any(x < 0, na.rm = TRUE)) {
     return(NaN)
   }
-  if(zero.propagate){
-    if(any(x == 0, na.rm = TRUE)){
+  if (zero.propagate) {
+    if (any(x == 0, na.rm = TRUE)) {
       return(0)
     }
     exp(mean(log(x), na.rm = na.rm))
   } else {
-    exp(sum(log(x[x > 0]), na.rm=na.rm) / length(x))
+    exp(sum(log(x[x > 0]), na.rm = na.rm) / length(x))
   }
 }
 
