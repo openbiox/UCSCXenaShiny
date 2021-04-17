@@ -16,7 +16,7 @@ vis_gene_stemness_cor(
 \item{Cor_method}{correlation method}
 
 \item{data_type}{choose gene profile type,
-including mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
+including "mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
 "cnv_gistic2", "methylation", "miRNA".}
 }
 \description{

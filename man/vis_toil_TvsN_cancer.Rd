@@ -22,7 +22,7 @@ vis_toil_TvsN_cancer(
 \item{Mode}{"Boxplot" or "Violinplot" to represent data}
 
 \item{data_type}{choose gene profile type,
-including mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
+including "mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
 "cnv_gistic2", "methylation", "miRNA".}
 
 \item{Show.P.value}{\code{TRUE} or \code{FALSE} whether to count P value}

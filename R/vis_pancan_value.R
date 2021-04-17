@@ -33,7 +33,7 @@ vis_toil_gene <- function(data, x = "primary_site",
 #' @param draw_quantiles draw quantiles for violinplot
 #' @param trim whether trim the violin
 #' @param data_type choose gene profile type, 
-#' including mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
+#' including "mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
 #' "cnv_gistic2", "methylation", "miRNA".
 #' @return a `ggplot` object
 #' @examples
