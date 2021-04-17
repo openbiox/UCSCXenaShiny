@@ -43,24 +43,43 @@ vis_toil_gene <- function(data, x = "primary_site",
 #'
 vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", data_type = "mRNA", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, draw_quantiles = c(0.25, 0.5, 0.75), trim = TRUE) {
   tcga_gtex <- load_data("tcga_gtex")
-  if (data_type == "mRNA") {
-    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  
+  data_input <- function(Gene, data_type) {
+    switch(data_type,
+           mRNA = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
+                       unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
+           transcript = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
+                             unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
+           methylation = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$data, 
+                             unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
+           miRNA = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
+                             unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
+           protein = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$expression, 
+                             unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),
+           cnv_gistic2 = list(t1 = query_value(identifier = Gene, data_type = data_type, database = "toil")$data, 
+                             unit = query_value(identifier = Gene, data_type = data_type, database = "toil")$unit),)
   }
-  if (data_type == "transcript") {
-    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
-  }
-  if (data_type == "methylation") {
-    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$data
-  }
-  if (data_type == "miRNA") {
-    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
-  }
-  if (data_type == "protein") {
-    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
-  }
-  if (data_type == "cnv_gistic2") {
-    t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$data
-  }
+  
+  t1 = data_input(Gene,data_type)[[1]]
+  unit = data_input(Gene,data_type)[[2]]
+  # if (data_type == "mRNA") {
+  #   t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  # }
+  # if (data_type == "transcript") {
+  #   t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  # }
+  # if (data_type == "methylation") {
+  #   t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$data
+  # }
+  # if (data_type == "miRNA") {
+  #   t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  # }
+  # if (data_type == "protein") {
+  #   t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$expression
+  # }
+  # if (data_type == "cnv_gistic2") {
+  #   t1 <- query_value(identifier = Gene, data_type = data_type, database = "toil")$data
+  # }
   # if (all(is.na(t1))) {
   #   message("All NAs returned, return NULL instead.")
   #   return(NULL)
@@ -113,19 +132,22 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", data_type = "mRNA", S
       ggplot2::scale_fill_manual(values = values)
     p <- p + ggplot2::geom_boxplot(data = tcga_gtex_MESO) +
       ggplot2::geom_boxplot(data = tcga_gtex_UVM)
-    if (data_type == "mRNA"){
-      p = p + ggplot2::ylab(paste0(Gene, " mRNA expression (log2(TPM + 0.001))")) 
-    } else if (data_type == "transcript"){
-      p = p + ggplot2::ylab(paste0(Gene, " transcript expression")) 
-    } else if (data_type == "methylation"){
-      p = p + ggplot2::ylab(paste0(Gene, " beta value")) 
-    } else if (data_type == "miRNA"){
-      p = p + ggplot2::ylab(paste0(Gene, " miRNA expression (log2(norm_value + 1))")) 
-    } else if (data_type == "protein"){
-      p = p + ggplot2::ylab(paste0(Gene, " protein expression")) 
-    } else if (data_type == "cnv_gistic2"){
-      p = p + ggplot2::ylab(paste0(Gene, " Gistic2 copy number")) 
-    }
+    # if (data_type == "mRNA"){
+    #   p = p + ggplot2::ylab(paste0(Gene, " mRNA expression (log2(TPM + 0.001))")) 
+    # } else if (data_type == "transcript"){
+    #   p = p + ggplot2::ylab(paste0(Gene, " transcript expression")) 
+    # } else if (data_type == "methylation"){
+    #   p = p + ggplot2::ylab(paste0(Gene, " beta value")) 
+    # } else if (data_type == "miRNA"){
+    #   p = p + ggplot2::ylab(paste0(Gene, " miRNA expression (log2(norm_value + 1))")) 
+    # } else if (data_type == "protein"){
+    #   p = p + ggplot2::ylab(paste0(Gene, " protein expression")) 
+    # } else if (data_type == "cnv_gistic2"){
+    #   p = p + ggplot2::ylab(paste0(Gene, " Gistic2 copy number")) 
+    # }
+    
+    p = p + ggplot2::ylab(paste0(Gene, " ",data_type," ",unit)) 
+    
     
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       p <- p + ggplot2::geom_text(aes(

@@ -31,7 +31,7 @@ transcript <- XenaData %>%
   XenaGenerate()
 
 r <- UCSCXenaTools::fetch_dataset_identifiers(hosts(transcript), datasets(transcript))
-r2 <- gsub("\\.*", "", r)
+r2 <- gsub("\\.[0-9]", "", r)
 save(r2, file = "data-raw/transcript_identifier.rda")
 
 # cohort: TCGA TARGET GTEx
