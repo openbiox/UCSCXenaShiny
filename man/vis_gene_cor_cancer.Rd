@@ -7,6 +7,8 @@
 vis_gene_cor_cancer(
   Gene1 = "CSF1R",
   Gene2 = "JAK3",
+  data_type1 = "mRNA",
+  data_type2 = "mRNA",
   purity_adj = TRUE,
   split = FALSE,
   cancer_choose = "GBM",
@@ -14,17 +16,19 @@ vis_gene_cor_cancer(
 )
 }
 \arguments{
-\item{Gene1}{the first gene.}
+\item{Gene1}{the first gene}
 
-\item{Gene2}{the second gene.}
+\item{Gene2}{the second gene}
 
-\item{purity_adj}{whether performing partial correlation adjusted by purity.}
+\item{data_type1}{choose gene profile type for the first gene, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"}
 
-\item{split}{whether split by TCGA tumor tissue.}
+\item{data_type2}{choose gene profile type for the second gene, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"}
+
+\item{purity_adj}{whether performing partial correlation adjusted by purity}
+
+\item{split}{whether split by TCGA tumor tissue}
 
 \item{cancer_choose}{TCGA cohort name, e.g. "ACC".}
-
-\item{cor_method}{correlation method.}
 }
 \description{
 Visualize Gene-Gene Correlation in a TCGA Cancer Type

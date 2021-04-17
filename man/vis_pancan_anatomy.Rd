@@ -12,12 +12,11 @@ vis_pancan_anatomy(
 )
 }
 \arguments{
-\item{Gene}{Molecule identifier (gene symbol in most cases)}
+\item{Gene}{input gene}
 
 \item{Gender}{a string, "Female" (default) or "Male".}
 
-\item{data_type}{data type. Can be one of "mRNA", "transcript", "protein",
-"mutation", "cnv" (-2, -1, 0, 1, 2), "cnv_gistic2", "methylation", "miRNA".}
+\item{data_type}{choose gene profile type, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"}
 
 \item{option}{A character string indicating the colormap option to use. Four
 options are available: "magma" (or "A"), "inferno" (or "B"), "plasma" (or "C"),
