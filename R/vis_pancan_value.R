@@ -396,13 +396,12 @@ vis_pancan_anatomy <- function(Gene = "TP53",
       fill = "value"
     ) +
       facet_wrap(~type) +
-      labs(fill = "Log2(TPM + 0.001)") +
+      labs(fill = unit) +
       coord_cartesian(ylim = c(-120, 0)) +
       theme_void(base_size = 15) +
-
-      # scale_fill_viridis_c(option = option) +
       scale_fill_continuous(low = "#3CB371", high = "#DC143C") +
-      ggtitle(paste0(Gene, " ", data_type, " ", unit, " Male: TCGA + GTEX")) +
+      ggtitle(paste0(data_type, " - ", Gene)) +
+      labs(caption = "data source: TCGA + GTEx") + 
       theme(plot.title = element_text(hjust = 0.5))
     print(p)
     data_input <- Male_input
@@ -418,13 +417,12 @@ vis_pancan_anatomy <- function(Gene = "TP53",
       fill = "value"
     ) +
       facet_wrap(~type) +
-      # labs(fill = "Log2(TPM + 0.001)") +
       coord_cartesian(ylim = c(-120, 0)) +
-
+      labs(fill = unit) +
       theme_void(base_size = 15) +
-      # scale_fill_viridis_c(option = option) +
       scale_fill_continuous(low = "#3CB371", high = "#DC143C") +
-      ggtitle(paste0(Gene, " ", data_type, " ", unit, " Female: TCGA + GTEX")) +
+      ggtitle(paste0(data_type, " - ", Gene)) +
+      labs(caption = "data source: TCGA + GTEx") + 
       theme(plot.title = element_text(hjust = 0.5))
     print(p)
 
