@@ -339,8 +339,8 @@ vis_pancan_anatomy <- function(Gene = "TP53",
   )
   if (is.list(t1)) t1 <- t1[[1]]
   
-  if (data_type == "cnv") data_type <- "GISTIC2 thresholded copy number"
-  if (data_type == "cnv_gistic2") data_type <- "GISTIC2 copy number"
+  if (data_type == "cnv") data_type <- "GISTIC2 thresholded CNV"
+  if (data_type == "cnv_gistic2") data_type <- "CNV"
 
   if (all(is.na(t1))) {
     message("All NAs returned, return NULL instead.")
@@ -463,6 +463,9 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", data_typ
     message("All NAs returned, return NULL instead.")
     return(NULL)
   }
+  
+  if (data_type == "cnv") data_type <- "GISTIC2 thresholded CNV"
+  if (data_type == "cnv_gistic2") data_type <- "CNV"
 
   message(paste0("Get data value for ", Gene))
   s <- data.frame(sample = names(t1), values = t1)
@@ -996,6 +999,9 @@ vis_gene_TIL_cor <- function(Gene = "TP53",
     return(NULL)
   }
 
+  if (data_type == "cnv") data_type <- "GISTIC2 thresholded CNV"
+  if (data_type == "cnv_gistic2") data_type <- "CNV"
+  
   message(paste0("Get data value for ", Gene))
   s <- data.frame(sample = names(t1), values = t1)
 
