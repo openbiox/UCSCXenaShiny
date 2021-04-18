@@ -77,8 +77,11 @@ ui.modules_pancan_immune <- function(id) {
       ),
       mainPanel(
         plotOutput(ns("hm_gene_immune_cor"), height = "500px"),
+        hr(),
         h5("NOTEs:"),
-        p("1. The immune signature data is from TCGA-Pancan Immune dataset"),
+        tags$a(href = "https://pancanatlas.xenahubs.net/", "Genomic profile data source"),
+        tags$br(),
+        tags$a(href = "https://gdc.cancer.gov/about-data/publications/panimmune/", "Immune signature data source"),
         DT::DTOutput(outputId = ns("tbl")),
         shinyjs::hidden(
           wellPanel(

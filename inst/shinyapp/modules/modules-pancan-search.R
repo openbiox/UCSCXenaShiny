@@ -75,11 +75,12 @@ ui.modules_pancan_dist <- function(id) {
       ),
       mainPanel = mainPanel(
         plotOutput(ns("gene_pancan_dist"), height = "500px"),
+        hr(),
         h5("NOTEs:"),
         p("1. The data query may take some time based on your network. Wait until a plot shows"),
-        #p("2. The unit of gene expression is log2(tpm+0.001)"),
         p("2. You have to turn on both 'Show P value' and 'Show P label' to show significant labels"),
         p("3. If a void plot shows, please check your input"),
+        p("4. ", tags$a(href = "https://toil.xenahubs.net/", "Genomic profile data source")),
         width = 9
       )
     )

@@ -86,8 +86,10 @@ ui.modules_pancan_til <- function(id) {
       ),
       mainPanel(
         plotOutput(ns("hm_gene_immune_cor"), height = "500px"),
+        hr(),
         h5("NOTEs:"),
-        p("1. The immune signature data is from http://timer.cistrome.org/"),
+        p("1. ", tags$a(href = "http://timer.cistrome.org/", "TIL data source")),
+        p("2. ", tags$a(href = "https://pancanatlas.xenahubs.net/", "Genomic profile data source")),
         DT::DTOutput(outputId = ns("tbl")),
         shinyjs::hidden(
           wellPanel(

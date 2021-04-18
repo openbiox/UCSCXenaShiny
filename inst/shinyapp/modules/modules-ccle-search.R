@@ -42,6 +42,8 @@ ui.modules_ccle_dist <- function(id) {
           block = TRUE,
           size = "sm"
         ),
+        hr(),
+        tags$a(href = "https://xenabrowser.net/datapages/?cohort=Cancer%20Cell%20Line%20Encyclopedia%20(CCLE)&removeHub=https%3A%2F%2Ficgc.xenahubs.net", "Genomic profile data source"),
         width = 3
       ),
       mainPanel = mainPanel(

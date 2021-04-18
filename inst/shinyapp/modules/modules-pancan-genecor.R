@@ -53,10 +53,11 @@ ui.modules_pancan_gene_cor <- function(id) {
       ),
       mainPanel = mainPanel(
         plotOutput(ns("gene_cor"), height = "600px"),
+        hr(),
         h5("NOTEs:"),
         p("1. The data query may take some time based on your network. Wait until a plot shows"),
-        p("2. The unit of gene expression is log2(tpm+0.001)"),
-        p("3. You could choose correlation method or whether adjust tumor purity when calculating"),
+        p("2. You could choose correlation method or whether adjust tumor purity when calculating"),
+        p("3. ", tags$a(href = "https://pancanatlas.xenahubs.net/", "Genomic profile data source")),
         width = 6
       )
     )

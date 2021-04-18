@@ -1,8 +1,7 @@
 ui.combo.sg.pancan.analysis <- function(id) {
   ns <- NS(id)
   fluidPage(
-    titlePanel("Single gene pan-cancer transcriptome analysis"),
-
+    titlePanel("Combo: Single Gene Pan-Cancer Analysis"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         ## input gene

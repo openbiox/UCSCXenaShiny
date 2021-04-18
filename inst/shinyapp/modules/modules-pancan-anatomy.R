@@ -66,6 +66,8 @@ ui.modules_pancan_anatomy <- function(id) {
           block = TRUE,
           size = "sm"
         ),
+        hr(),
+        tags$a(href = "https://toil.xenahubs.net/", "Genomic profile data source"),
         width = 3
       ),
       mainPanel = mainPanel(

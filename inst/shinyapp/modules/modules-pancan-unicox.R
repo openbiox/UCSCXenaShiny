@@ -72,9 +72,11 @@ ui.modules_pancan_unicox <- function(id) {
       ),
       mainPanel = mainPanel(
         plotOutput(ns("unicox_gene_tree"), height = "500px"),
+        hr(),
         h5("NOTEs:"),
         p("1. We define gene in certain cancer type as risky (log(Hazard Ratio) > 0) or protective (log(Hazard Ratio) < 0) or NS (No statistical significance, P value > 0.05)"),
         p("2. We divide patients into different groups for comparison according to gene expression, you could choose the threshold for grouping (0.5 by default)"),
+        p("3. ", tags$a(href = "https://pancanatlas.xenahubs.net/", "Genomic profile data source")),
         DT::DTOutput(outputId = ns("tbl")),
         shinyjs::hidden(
           wellPanel(
