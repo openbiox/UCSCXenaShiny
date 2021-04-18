@@ -9,8 +9,8 @@ ui.modules_pancan_anatomy <- function(id) {
             9,
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "transcript", "methylation","protein","miRNA", "cnv_gistic2"),
-              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation","Protein Expression","miRNA Expression", "Copy Number Variation"),
+              choiceValues = c("mRNA", "transcript", "methylation","protein","miRNA", "cnv_gistic2", "cnv"),
+              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation","Protein Expression","miRNA Expression", "Copy Number Variation", "Copy Number Variation (thresholded)"),
               animation = "jelly"
             ),
             selectizeInput(
@@ -72,6 +72,9 @@ ui.modules_pancan_anatomy <- function(id) {
       ),
       mainPanel = mainPanel(
         plotOutput(ns("pancan_anatomy"), height = "500px"),
+        hr(),
+        h5("NOTEs:"),
+        p("GISTIC2 thresholded copy number -2,-1,0,1,2, representing homozygous deletion,single copy deletion,diploid normal copy,low-level copy number amplification,or high-level copy number amplification"),
         DT::DTOutput(outputId = ns("tbl")),
         shinyjs::hidden(
           wellPanel(
@@ -96,6 +99,7 @@ server.modules_pancan_anatomy <- function(input, output, session) {
            transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
            miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
            cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
+           cnv = list(all = pancan_identifiers$gene, default = "TP53"),
            list(all = "NONE", default = "NONE"))
   })
   

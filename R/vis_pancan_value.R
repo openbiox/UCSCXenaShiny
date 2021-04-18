@@ -338,6 +338,9 @@ vis_pancan_anatomy <- function(Gene = "TP53",
     t1[[2]]
   )
   if (is.list(t1)) t1 <- t1[[1]]
+  
+  if (data_type == "cnv") data_type <- "GISTIC2 thresholded copy number"
+  if (data_type == "cnv_gistic2") data_type <- "GISTIC2 copy number"
 
   if (all(is.na(t1))) {
     message("All NAs returned, return NULL instead.")
