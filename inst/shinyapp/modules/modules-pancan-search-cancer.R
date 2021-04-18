@@ -120,7 +120,7 @@ server.modules_cancer_dist <- function(input, output, session) {
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("gene_cancer_dist"), html = waiter::spin_hexdots(), color = "white")
 
-  plot_func <- reactive({
+  plot_func <- eventReactive(input$search_bttn,{
     if (nchar(input$Pancan_search) >= 1) {
       p <- vis_toil_TvsN_cancer(
         Gene = input$Pancan_search,
@@ -137,12 +137,12 @@ server.modules_cancer_dist <- function(input, output, session) {
     return(p)
   })
 
-  observeEvent(input$search_bttn, {
-    output$gene_cancer_dist <- renderPlot({
-      w$show() # Waiter add-ins
-      plot_func()
-    })
+
+  output$gene_cancer_dist <- renderPlot({
+    w$show() # Waiter add-ins
+    plot_func()
   })
+
 
   output$download <- downloadHandler(
     filename = function() {

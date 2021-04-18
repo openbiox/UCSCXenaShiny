@@ -141,7 +141,7 @@ server.modules_pancan_til <- function(input, output, session) {
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("hm_gene_immune_cor"), html = waiter::spin_hexdots(), color = "white")
   
-  plot_func <- reactive({
+  plot_func <- eventReactive(input$search_bttn,{
     if (nchar(input$Pancan_search) >= 1) {
       p <- vis_gene_TIL_cor(
         Gene = input$Pancan_search,
@@ -153,17 +153,15 @@ server.modules_pancan_til <- function(input, output, session) {
     return(p)
   })
   
-  observeEvent(input$search_bttn, {
-    # output$colorvalues = reactive({c(input$tumor_col,input$normal_col)
-    #   })
-    output$hm_gene_immune_cor <- renderPlot({
-      w$show() # Waiter add-ins
-      plot_func()
-    })
+
+  output$hm_gene_immune_cor <- renderPlot({
+    w$show() # Waiter add-ins
+    plot_func()
   })
+
   
   ##return data
-  return_data <- reactive({
+  return_data <- eventReactive(input$search_bttn,{
     if (nchar(input$Pancan_search) >= 1) {
       shinyjs::show(id = "save_csv")
       p <- vis_gene_TIL_cor(
@@ -179,12 +177,12 @@ server.modules_pancan_til <- function(input, output, session) {
     }
   })
   
-  observeEvent(input$search_bttn, {
-    output$tbl <- renderDT(
-      data <- return_data(),
-      options = list(lengthChange = FALSE)
-    )
-  })
+
+  output$tbl <- renderDT(
+    data <- return_data(),
+    options = list(lengthChange = FALSE)
+  )
+
   
   ##downloadTable
   output$downloadTable <- downloadHandler(
