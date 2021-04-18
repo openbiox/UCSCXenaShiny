@@ -110,7 +110,7 @@ server.modules_pancan_anatomy <- function(input, output, session) {
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("pancan_anatomy"), html = waiter::spin_hexdots(), color = "white")
 
-  plot_func <- reactive({
+  plot_func <- eventReactive(input$search_bttn,{
     if (nchar(input$Pancan_search) >= 1) {
       out <- vis_pancan_anatomy(
         Gene = input$Pancan_search,
@@ -123,7 +123,7 @@ server.modules_pancan_anatomy <- function(input, output, session) {
     }
   })
   
-  return_data <- reactive({
+  return_data <- eventReactive(input$search_bttn,{
     if (nchar(input$Pancan_search) >= 1) {
       shinyjs::show(id = "save_csv")
       out <- vis_pancan_anatomy(
@@ -140,12 +140,12 @@ server.modules_pancan_anatomy <- function(input, output, session) {
     }
   })
   
-  observeEvent(input$search_bttn, {
-    output$tbl <- renderDT(
-      data <- return_data(),
-      options = list(lengthChange = FALSE)
-    )
-  })
+
+  output$tbl <- renderDT(
+    data <- return_data(),
+    options = list(lengthChange = FALSE)
+  )
+
   
   output$downloadTable <- downloadHandler(
     filename = function() {
@@ -156,12 +156,12 @@ server.modules_pancan_anatomy <- function(input, output, session) {
     }
   )
   
-  observeEvent(input$search_bttn, {
-    output$pancan_anatomy <- renderPlot({
-      w$show() # Waiter add-ins
-      plot_func()
-    })
+
+  output$pancan_anatomy <- renderPlot({
+    w$show() # Waiter add-ins
+    plot_func()
   })
+
 
   output$download <- downloadHandler(
     filename = function() {

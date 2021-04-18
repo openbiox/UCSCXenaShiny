@@ -120,7 +120,7 @@ server.modules_pancan_unicox <- function(input, output, session) {
     c(input$first_col, input$second_col, input$third_col)
   })
 
-  return_data <- reactive({
+  return_data <- eventReactive(input$search_bttn,{
     if (nchar(input$Pancan_search) >= 1) {
       shinyjs::show(id = "save_csv")
       p <- vis_unicox_tree(
@@ -141,7 +141,7 @@ server.modules_pancan_unicox <- function(input, output, session) {
   })
 
 
-  plot_func <- reactive({
+  plot_func <- eventReactive(input$search_bttn,{
     if (nchar(input$Pancan_search) >= 1) {
       p <- vis_unicox_tree(
         Gene = input$Pancan_search,
@@ -157,14 +157,12 @@ server.modules_pancan_unicox <- function(input, output, session) {
     return(p)
   })
 
-  observeEvent(input$search_bttn, {
-    # output$colorvalues = reactive({c(input$tumor_col,input$normal_col)
-    #   })
-    output$unicox_gene_tree <- renderPlot({
-      w$show() # Waiter add-ins
-      plot_func()
-    })
+
+  output$unicox_gene_tree <- renderPlot({
+    w$show() # Waiter add-ins
+    plot_func()
   })
+
 
   output$download <- downloadHandler(
     filename = function() {
@@ -186,12 +184,12 @@ server.modules_pancan_unicox <- function(input, output, session) {
     }
   )
 
-  observeEvent(input$search_bttn, {
-    output$tbl <- renderDT(
-      data <- return_data(),
-      options = list(lengthChange = FALSE)
-    )
-  })
+
+  output$tbl <- renderDT(
+    data <- return_data(),
+    options = list(lengthChange = FALSE)
+  )
+
   
  
 

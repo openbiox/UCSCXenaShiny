@@ -89,7 +89,7 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("gene_cor"), html = waiter::spin_hexdots(), color = "white")
 
-  plot_func <- reactive({
+  plot_func <- eventReactive(input$search_bttn,{
     if (nchar(input$pancan_search1) >= 1 & nchar(input$pancan_search2) >= 1) {
       p <- vis_gene_cor_cancer(
         Gene1 = input$pancan_search1,
@@ -105,10 +105,10 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
     return(p)
   })
 
-  observeEvent(input$search_bttn, {
-    output$gene_cor <- renderPlot({
-      w$show() # Waiter add-ins
-      plot_func()
-    })
+
+  output$gene_cor <- renderPlot({
+    w$show() # Waiter add-ins
+    plot_func()
   })
+
 }

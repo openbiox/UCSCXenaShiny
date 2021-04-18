@@ -35,7 +35,8 @@ ui.modules_pancan_dist <- function(id) {
               color = "primary",
               block = FALSE,
               size = "sm"
-            )
+            ),
+            # actionButton(ns("search_bttn"), "Go"),
           )
         ),
         shinyBS::bsPopover(ns("Pancan_search"),
@@ -119,8 +120,8 @@ server.modules_pancan_dist <- function(input, output, session) {
 
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("gene_pancan_dist"), html = waiter::spin_hexdots(), color = "black")
-
-  plot_func <- reactive({
+  
+  plot_func <- eventReactive(input$search_bttn,{
     if (nchar(input$Pancan_search) >= 1) {
       p <- vis_toil_TvsN(
         Gene = input$Pancan_search,
@@ -134,15 +135,15 @@ server.modules_pancan_dist <- function(input, output, session) {
     }
     return(p)
   })
-
-  observeEvent(input$search_bttn, {
-    # output$colorvalues = reactive({c(input$tumor_col,input$normal_col)
-    #   })
-    output$gene_pancan_dist <- renderPlot({
-      w$show() # Waiter add-ins
-      plot_func()
+  
+  output$colorvalues = reactive({c(input$tumor_col,input$normal_col)
     })
+  
+  output$gene_pancan_dist <- renderPlot({
+    w$show() # Waiter add-ins
+    plot_func()
   })
+
 
   output$download <- downloadHandler(
     filename = function() {
