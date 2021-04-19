@@ -11,12 +11,14 @@ ui.modules_ccle_dist <- function(id) {
         fluidRow(
           column(
             9,
-            # shinyWidgets::prettyRadioButtons(
-            #   inputId = ns("profile"), label = "Select a genomic profile:",
-            #   choiceValues = c("mRNA", "protein","cnv"),
-            #   choiceNames = c("mRNA Expression",  "Protein Expression", "Copy Number Variation"),
-            #   animation = "jelly"
-            # ),
+            shinyWidgets::prettyRadioButtons(
+              inputId = ns("profile"), label = "Select a genomic profile:",
+              choiceValues = c("mRNA"),
+              choiceNames = c("mRNA Expression"),
+              # choiceValues = c("mRNA", "protein","cnv"),
+              # choiceNames = c("mRNA Expression",  "Protein Expression", "Copy Number Variation"),
+              animation = "jelly"
+            ),
             selectizeInput(
               inputId = ns("ccle_search"),
               label = NULL,
@@ -94,7 +96,7 @@ server.modules_ccle_dist <- function(input, output, session) {
            cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
            list(all = "NONE", default = "NONE"))
   })
-  
+
   observe({
     updateSelectizeInput(
       session,
@@ -112,7 +114,8 @@ server.modules_ccle_dist <- function(input, output, session) {
     if (nchar(input$ccle_search) >= 1) {
       p <- vis_ccle_tpm(
         Gene = input$ccle_search,
-        data_type = input$profile,
+        #data_type = input$profile,
+        data_type = "mRNA",
         phenotype = input$phenotype
       )
     }
