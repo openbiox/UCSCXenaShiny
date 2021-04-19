@@ -812,7 +812,14 @@ vis_gene_cor <- function(Gene1 = "CSF1R",
                          purity_adj = TRUE,
                          split = FALSE) {
   # vis_gene_cor(data_type1 = "mutation") 报错，需要检查
-
+  if (!data_type %in% c("mRNA", "miRNA", "transcript", "methylation","protein","cnv_gistic2")) {
+    stop("data_type ", data_type, " does not support in this function!")
+  }
+  
+  if (!data_type %in% c("mRNA", "miRNA", "transcript", "methylation","protein","cnv_gistic2")) {
+    stop("data_type ", data_type, " does not support in this function!")
+  }
+  
   tcga_gtex <- load_data("tcga_gtex")
   tcga_purity <- load_data("tcga_purity")
 
@@ -916,8 +923,11 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
     dplyr::rename("tpm" = ".") %>%
     tibble::rownames_to_column(var = "sample") %>%
     dplyr::inner_join(tcga_gtex, by = "sample")
-
-  df <- data.frame(sample = t2$sample, tissue = t2$tissue, type2 = t2$type2, gene1 = t2$tpm, gene2 = t4$tpm, stringsAsFactors = F)
+  
+  #merge
+  t2 <- t2 %>% inner_join(t4[,c("sample","tpm")], by = "sample")
+  
+  df <- data.frame(sample = t2$sample, tissue = t2$tissue, type2 = t2$type2, gene1 = t2$tpm.x, gene2 = t2$tpm.y, stringsAsFactors = F)
 
   df %>%
     dplyr::left_join(tcga_purity, by = "sample") %>%
