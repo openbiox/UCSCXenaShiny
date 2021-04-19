@@ -8,20 +8,48 @@ ui.modules_ccle_dist <- function(id) {
     titlePanel("Module: Gene CCLE Expression Distribution"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
-        shinyWidgets::searchInput(
-          inputId = ns("ccle_search"),
-          label = NULL,
-          btnSearch = icon("search"),
-          btnReset = icon("remove"),
-          # placeholder = "Enter a gene symbol, e.g. TP53",
-          width = "100%"
+        fluidRow(
+          column(
+            9,
+            # shinyWidgets::prettyRadioButtons(
+            #   inputId = ns("profile"), label = "Select a genomic profile:",
+            #   choiceValues = c("mRNA", "protein","cnv"),
+            #   choiceNames = c("mRNA Expression",  "Protein Expression", "Copy Number Variation"),
+            #   animation = "jelly"
+            # ),
+            selectizeInput(
+              inputId = ns("ccle_search"),
+              label = NULL,
+              choices = NULL,
+              width = "100%",
+              options = list(
+                create = TRUE,
+                maxOptions = 5,
+                placeholder = "Enter a gene symbol, e.g. TP53",
+                plugins = list("restore_on_backspace")
+              )
+            ),
+          ),
+          column(
+            3,
+            shinyWidgets::actionBttn(
+              inputId = ns("search_bttn"), label = NULL,
+              style = "simple",
+              icon = icon("search"),
+              color = "primary",
+              block = FALSE,
+              size = "sm"
+            ),
+            # actionButton(ns("search_bttn"), "Go"),
+          ),
+          shinyBS::bsPopover(ns("ccle_search"),
+                             title = "Tips",
+                             content = "Enter a gene symbol to show its distribution, e.g. TP53",
+                             placement = "right", options = list(container = "body")
+          ),
         ),
-        shinyBS::bsPopover(ns("ccle_search"),
-          title = "Tips",
-          content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
-          placement = "right", options = list(container = "body")
-        ),
-        selectInput(inputId = ns("x.axis"), label = "x.axis", choices = ccle_choices, selected = "Type"),
+      
+        selectInput(inputId = ns("phenotype"), label = "phenotype", choices = ccle_choices, selected = "Type"),
         numericInput(inputId = ns("height"), label = "Height", value = 5),
         numericInput(inputId = ns("width"), label = "Width", value = 12),
         prettyRadioButtons(
@@ -55,26 +83,48 @@ ui.modules_ccle_dist <- function(id) {
 
 server.modules_ccle_dist <- function(input, output, session) {
   ns <- session$ns
-
+  
+  profile_choices <- reactive({
+    switch(input$profile,
+           mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
+           methylation = list(all = pancan_identifiers$gene, default = "TP53"),
+           protein = list(all = pancan_identifiers$protein, default = "P53"),
+           transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
+           miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+           cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
+           list(all = "NONE", default = "NONE"))
+  })
+  
+  observe({
+    updateSelectizeInput(
+      session,
+      "ccle_search",
+      choices = profile_choices()$all,
+      selected = profile_choices()$default,
+      server = TRUE
+    )
+  })
+  
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("gene_ccle_dist"), html = waiter::spin_hexdots(), color = "white")
 
-  plot_func <- reactive({
+  plot_func <- eventReactive(input$search_bttn,{
     if (nchar(input$ccle_search) >= 1) {
       p <- vis_ccle_tpm(
         Gene = input$ccle_search,
-        x.axis = input$x.axis
+        data_type = input$profile,
+        phenotype = input$phenotype
       )
     }
     return(p)
   })
 
-  observeEvent(input$ccle_search, {
-    output$gene_ccle_dist <- renderPlot({
-      w$show() # Waiter add-ins
-      plot_func()
-    })
+
+  output$gene_ccle_dist <- renderPlot({
+    w$show() # Waiter add-ins
+    plot_func()
   })
+
 
   output$download <- downloadHandler(
     filename = function() {

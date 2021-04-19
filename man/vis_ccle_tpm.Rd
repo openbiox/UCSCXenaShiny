@@ -4,12 +4,14 @@
 \alias{vis_ccle_tpm}
 \title{Visualize CCLE Gene Expression in TPM Format}
 \usage{
-vis_ccle_tpm(Gene = "TP53", x.axis = "Type")
+vis_ccle_tpm(Gene = "TP53", data_type = "mRNA", phenotype = "Type")
 }
 \arguments{
 \item{Gene}{Gene symbal for comparision}
 
-\item{x.axis}{Different parameters for x.axis}
+\item{data_type}{support genomic profile for CCLE, currently "mRNA", "protein","cnv" are supported}
+
+\item{phenotype}{Different parameters for phenotype}
 }
 \value{
 a \code{ggplot} object
