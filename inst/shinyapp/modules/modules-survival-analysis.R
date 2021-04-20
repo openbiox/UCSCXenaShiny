@@ -185,7 +185,15 @@ ui.modules_sur_plot <- function(id) {
       column(
         6,
         verbatimTextOutput(ns("plot_text")),
-        plotOutput(ns("surplot"), height = "600px")
+        plotOutput(ns("surplot"), height = "600px"),
+        tags$hr(),
+        DT::DTOutput(outputId = ns("tbl")),
+        shinyjs::hidden(
+          wellPanel(
+            id = ns("save_csv"),
+            downloadButton(ns("downloadTable"), "Save as csv")
+          )
+        )
       )
     )
   )
@@ -313,6 +321,17 @@ server.modules_sur_plot <- function(input, output, session) {
       return(NULL)
     }
   })
+  
+  return_data <- eventReactive(input$go, {
+    if (!is.null(filter_dat()) & nrow(filter_dat()) >= 10) {
+      shinyjs::show(id = "save_csv")
+      select_data <- dplyr::select(filter_dat(),sampleID,value,status,time)
+      return(select_data)
+    }else{
+        return(NULL)
+      }
+    }
+    )
 
   # output
   w <- waiter::Waiter$new(
@@ -354,6 +373,26 @@ server.modules_sur_plot <- function(input, output, session) {
         filename = file, plot = print(p, newpage = F), device = input$device,
         units = "cm",  width = input$width, height = input$height, dpi = 600
       )
+    }
+  )
+  
+  output$tbl <- renderDT(
+    data <- return_data(),
+    options = list(lengthChange = FALSE)
+  )
+  
+  ##downloadTable
+  output$downloadTable <- downloadHandler(
+    filename = function() {
+      if (input$profile == "protein") {
+        item_show <- input$protein_input
+      } else {
+        item_show <- input$item_input
+      }
+      paste0(item_show,"_",input$profile,"_sur.csv")
+    },
+    content = function(file) {
+      write.csv(data <- return_data(), file, row.names = FALSE)
     }
   )
 }
