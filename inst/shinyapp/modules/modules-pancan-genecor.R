@@ -55,6 +55,7 @@ ui.modules_pancan_gene_cor <- function(id) {
         tags$br(),
         materialSwitch(ns("purity_adj"), "Adjust Purity", inline = TRUE),
         selectInput(inputId = ns("Cancer"), label = "Filter Cancer", choices = choices, selected = "ACC"),
+        materialSwitch(ns("use_regline"), "Use regression line", inline = TRUE),
         selectInput(
           inputId = ns("cor_method"),
           label = "Select Correlation method",
@@ -155,7 +156,8 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
         data_type2 = input$profile2,
         purity_adj = input$purity_adj,
         cancer_choose = input$Cancer,
-        cor_method = input$cor_method
+        cor_method = input$cor_method,
+        use_regline = input$use_regline
       )
     }
     p <- p + theme_classic(base_size = 20)

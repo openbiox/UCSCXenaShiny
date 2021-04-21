@@ -128,8 +128,10 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
     ggplot2::labs(x = Gene1, y = Gene2) +
     # ggplot2::ggtitle(paste0("CCLE ", cancer_choose, " dataset")) +
     ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar), x = x + 20, y = y, size = 10, colour = "black") +
-    ggplot2::geom_smooth(method = stats::lm) +
+    # ggplot2::geom_smooth(method = stats::lm) +
     ggplot2::labs(color = "")
-
+  
+  if (use_regline) p <- p + ggplot2::geom_smooth(method = stats::lm)
+  
   return(p)
 }

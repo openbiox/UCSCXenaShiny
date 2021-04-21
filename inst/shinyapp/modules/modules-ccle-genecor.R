@@ -72,6 +72,9 @@ ui.modules_ccle_genecor <- function(id) {
           choices = c("spearman", "pearson"),
           selected = "spearman"
         ),
+        materialSwitch(ns("use_log_x"), "x axis log", inline = FALSE),
+        materialSwitch(ns("use_log_y"), "y axis log", inline = FALSE),
+        materialSwitch(ns("use_regline"), "Use regression line", inline = TRUE),
         #selectInput(inputId = ns("phenotype"), label = "phenotype", choices = ccle_choices, selected = "Type"),
         numericInput(inputId = ns("height"), label = "Height", value = 8),
         numericInput(inputId = ns("width"), label = "Width", value = 8),
@@ -157,7 +160,10 @@ server.modules_ccle_genecor <- function(input, output, session) {
         Gene2 = input$ccle_search2,
         data_type1 = input$profile1,
         data_type2 = input$profile2,
-        cor_method = input$cor_method
+        cor_method = input$cor_method,
+        use_log_x = input$use_log_x,
+        use_log_y = input$use_log_y,
+        use_regline = input$use_regline
       )
     }
     p <- p + theme_classic(base_size = 20)
