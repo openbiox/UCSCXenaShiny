@@ -39,6 +39,10 @@ ui.page_pancan <- function() {
       ui.modules_pancan_gene_cor("modules_pancan_gene_cor")
     ),
     tabPanel(
+      "TCGA Gene Expression Radar",
+      ui.modules_pancan_radar("modules_pancan_radar")
+    ),
+    tabPanel(
       "CCLE Gene Expression Distribution",
       ui.modules_ccle_dist("modules_ccle_dist")
     ),

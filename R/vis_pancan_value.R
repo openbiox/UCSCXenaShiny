@@ -588,6 +588,71 @@ vis_gene_tmb_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type =
   return(p)
 }
 
+#' Visualize Correlation between Gene and MSI (Microsatellite instability)
+#'
+#' @inheritParams vis_gene_immune_cor
+#' @examples
+#' \donttest{
+#' p <- vis_gene_msi_cor(Gene = "TP53")
+#' }
+#' @export
+vis_gene_msi_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type = "mRNA") {
+  tcga_msi <- load_data("tcga_MSI")
+  tcga_gtex <- load_data("tcga_gtex")
+  
+  t1 <- query_value(identifier = Gene, data_type = data_type)
+  if (is.list(t1)) t1 <- t1[[1]]
+  
+  if (all(is.na(t1))) {
+    message("All NAs returned, return NULL instead.")
+    return(NULL)
+  }
+  
+  s <- data.frame(sample = names(t1), values = t1)
+  ss <- s %>%
+    mutate(Barcode = str_sub(sample,1,12)) %>%
+    dplyr::inner_join(tcga_msi, by = c("Barcode" = "Barcode")) %>%
+    dplyr::inner_join(tcga_gtex[, c("tissue", "sample")], by = "sample")
+  sss <- split(ss, ss$tissue)
+  tissues <- names(sss)
+  
+  cor_gene_msi <- purrr::map(tissues, purrr::safely(function(cancer) {
+    # cancer = "ACC"
+    sss_can <- sss[[cancer]]
+    dd <- stats::cor.test(sss_can$values, sss_can$Total_nb_MSI_events, type = Cor_method)
+    ddd <- data.frame(gene = Gene, cor = dd$estimate, p.value = dd$p.value, stringsAsFactors = F)
+    ddd$cancer <- cancer
+    return(ddd)
+  })) %>% magrittr::set_names(tissues)
+  
+  cor_gene_msi <- cor_gene_msi %>%
+    purrr::map(~ .x$result) %>%
+    purrr::compact()
+  cor_gene_msi_df <- do.call(rbind.data.frame, cor_gene_msi)
+  data <- cor_gene_msi_df
+  data$pstar <- ifelse(data$p.value < 0.05,
+                       ifelse(data$p.value < 0.01, "**", "*"),
+                       ""
+  )
+  
+  p <- ggplot2::ggplot(data, ggplot2::aes_string(x = "cancer", y = "gene")) +
+    ggplot2::geom_tile(ggplot2::aes_string(fill = "cor"), colour = "white", size = 1) +
+    ggplot2::scale_fill_gradient2(low = "#2b8cbe", mid = "white", high = "#e41a1c") +
+    ggplot2::geom_text(ggplot2::aes_string(label = "pstar"), col = "black", size = 5) +
+    ggplot2::theme_minimal() + # 不要背景
+    ggplot2::theme(
+      axis.title.x = ggplot2::element_blank(), # 不要title
+      axis.ticks.x = ggplot2::element_blank(), # 不要x轴
+      axis.title.y = ggplot2::element_blank(), # 不要y轴
+      axis.text.x = ggplot2::element_text(angle = 45, hjust = 1), # 调整x轴文字
+      axis.text.y = ggplot2::element_text(size = 8)
+    ) + # 调整y轴文字
+    # 调整legen
+    ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "Correlation"))
+  #p
+  return(p)
+}
+
 #' Visualize Correlation between Gene and Tumor Stemness
 #'
 #' @inheritParams vis_gene_immune_cor
