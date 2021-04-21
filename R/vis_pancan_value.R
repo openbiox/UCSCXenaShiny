@@ -1059,7 +1059,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
   # }
   
   if (use_regline) {p <- p + ggplot2::geom_smooth(method = stats::lm)}
-  p <- p + theme(legend.position = "none")
+  p <- p + ggplot2::theme(legend.position = "none")
   return(p)
 }
 

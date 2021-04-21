@@ -160,7 +160,7 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
         use_regline = input$use_regline
       )
     }
-    p <- p + theme_classic(base_size = 20)
+    p <- p + theme_classic(base_size = 20);p <- p + ggplot2::theme(legend.position = "none")
 
     return(p)
   })

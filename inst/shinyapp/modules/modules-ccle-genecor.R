@@ -9,10 +9,10 @@ ui.modules_ccle_genecor <- function(id) {
             9,
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile1"), label = "Select a genomic profile:",
-              # choiceValues = c("mRNA"),
-              # choiceNames = c("mRNA Expression"),
-              choiceValues = c("mRNA", "protein","cnv"),
-              choiceNames = c("mRNA Expression",  "Protein Expression", "Copy Number Variation"),
+              choiceValues = c("mRNA"),
+              choiceNames = c("mRNA Expression"),
+              # choiceValues = c("mRNA", "protein","cnv"),
+              # choiceNames = c("mRNA Expression",  "Protein Expression", "Copy Number Variation"),
               animation = "jelly"
             ),
             selectizeInput(
@@ -29,10 +29,10 @@ ui.modules_ccle_genecor <- function(id) {
             ),
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile2"), label = "Select a genomic profile:",
-              # choiceValues = c("mRNA"),
-              # choiceNames = c("mRNA Expression"),
-              choiceValues = c("mRNA", "protein","cnv"),
-              choiceNames = c("mRNA Expression",  "Protein Expression", "Copy Number Variation"),
+              choiceValues = c("mRNA"),
+              choiceNames = c("mRNA Expression"),
+              # choiceValues = c("mRNA", "protein","cnv"),
+              # choiceNames = c("mRNA Expression",  "Protein Expression", "Copy Number Variation"),
               animation = "jelly"
             ),
             selectizeInput(
@@ -166,7 +166,7 @@ server.modules_ccle_genecor <- function(input, output, session) {
         use_regline = input$use_regline
       )
     }
-    p <- p + theme_classic(base_size = 20)
+    p <- p + theme_classic(base_size = 20);p <- p + ggplot2::theme(legend.position = "none")
     
     return(p)
   })
