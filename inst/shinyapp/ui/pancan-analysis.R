@@ -41,6 +41,10 @@ ui.page_pancan <- function() {
     tabPanel(
       "CCLE Gene Expression Distribution",
       ui.modules_ccle_dist("modules_ccle_dist")
+    ),
+    tabPanel(
+      "CCLE Gene Expression Correlation",
+      ui.modules_ccle_genecor("modules_ccle_genecor")
     )
   )
 }
