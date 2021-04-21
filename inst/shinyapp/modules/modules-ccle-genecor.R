@@ -1,18 +1,14 @@
-ccle_choices <- c(
-  "Gender", "Site_Primary", "Histology", "Hist_Subtype1", "Source", "Expression_arrays", "SNP_arrays", "Hybrid_Capture_Sequencing", "Type"
-)
-
-ui.modules_ccle_dist <- function(id) {
+ui.modules_ccle_genecor <- function(id) {
   ns <- NS(id)
   fluidPage(
-    titlePanel("Module: Gene CCLE Expression Distribution"),
+    titlePanel("Module: Gene CCLE Expression Correlation"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidRow(
           column(
             9,
             shinyWidgets::prettyRadioButtons(
-              inputId = ns("profile"), label = "Select a genomic profile:",
+              inputId = ns("profile1"), label = "Select a genomic profile:",
               # choiceValues = c("mRNA"),
               # choiceNames = c("mRNA Expression"),
               choiceValues = c("mRNA", "protein","cnv"),
@@ -20,7 +16,27 @@ ui.modules_ccle_dist <- function(id) {
               animation = "jelly"
             ),
             selectizeInput(
-              inputId = ns("ccle_search"),
+              inputId = ns("ccle_search1"),
+              label = NULL,
+              choices = NULL,
+              width = "100%",
+              options = list(
+                create = TRUE,
+                maxOptions = 5,
+                placeholder = "Enter a gene symbol, e.g. TP53",
+                plugins = list("restore_on_backspace")
+              )
+            ),
+            shinyWidgets::prettyRadioButtons(
+              inputId = ns("profile2"), label = "Select a genomic profile:",
+              # choiceValues = c("mRNA"),
+              # choiceNames = c("mRNA Expression"),
+              choiceValues = c("mRNA", "protein","cnv"),
+              choiceNames = c("mRNA Expression",  "Protein Expression", "Copy Number Variation"),
+              animation = "jelly"
+            ),
+            selectizeInput(
+              inputId = ns("ccle_search2"),
               label = NULL,
               choices = NULL,
               width = "100%",
@@ -50,7 +66,12 @@ ui.modules_ccle_dist <- function(id) {
                              placement = "right", options = list(container = "body")
           ),
         ),
-      
+        selectInput(
+          inputId = ns("cor_method"),
+          label = "Select Correlation method",
+          choices = c("spearman", "pearson"),
+          selected = "spearman"
+        ),
         #selectInput(inputId = ns("phenotype"), label = "phenotype", choices = ccle_choices, selected = "Type"),
         numericInput(inputId = ns("height"), label = "Height", value = 5),
         numericInput(inputId = ns("width"), label = "Width", value = 12),
@@ -77,61 +98,84 @@ ui.modules_ccle_dist <- function(id) {
         width = 3
       ),
       mainPanel = mainPanel(
-        plotOutput(ns("gene_ccle_dist"), height = "600px")
+        plotOutput(ns("gene_ccle_gene_cor"), height = "600px")
       )
     )
   )
 }
 
-server.modules_ccle_dist <- function(input, output, session) {
+server.modules_ccle_genecor <- function(input, output, session) {
   ns <- session$ns
   
-  profile_choices <- reactive({
-    switch(input$profile,
-           mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
-           methylation = list(all = pancan_identifiers$gene, default = "TP53"),
+  profile_choices1 <- reactive({
+    switch(input$profile1,
+           mRNA = list(all = pancan_identifiers$gene, default = "CSF1R"),
+           methylation = list(all = pancan_identifiers$gene, default = "CSF1R"),
            protein = list(all = pancan_identifiers$protein, default = "P53"),
            transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
            miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
            cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
            list(all = "NONE", default = "NONE"))
   })
-
+  
   observe({
     updateSelectizeInput(
       session,
-      "ccle_search",
-      choices = profile_choices()$all,
-      selected = profile_choices()$default,
+      "ccle_search1",
+      choices = profile_choices1()$all,
+      selected = profile_choices1()$default,
       server = TRUE
     )
   })
   
-  # Show waiter for plot
-  w <- waiter::Waiter$new(id = ns("gene_ccle_dist"), html = waiter::spin_hexdots(), color = "white")
-
+  profile_choices2 <- reactive({
+    switch(input$profile2,
+           mRNA = list(all = pancan_identifiers$gene, default = "JAK3"),
+           methylation = list(all = pancan_identifiers$gene, default = "JAK3"),
+           protein = list(all = pancan_identifiers$protein, default = "P53"),
+           transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
+           miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+           cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
+           list(all = "NONE", default = "NONE"))
+  })
+  
+  observe({
+    updateSelectizeInput(
+      session,
+      "ccle_search2",
+      choices = profile_choices2()$all,
+      selected = profile_choices2()$default,
+      server = TRUE
+    )
+  })
+  
   plot_func <- eventReactive(input$search_bttn,{
-    if (nchar(input$ccle_search) >= 1) {
-      p <- vis_ccle_tpm(
-        Gene = input$ccle_search,
-        #data_type = input$profile,
-        data_type = "mRNA",
-        phenotype = "Type",
+    if (nchar(input$ccle_search1) >= 1 & nchar(input$ccle_search2) >= 1) {
+      p <- vis_ccle_gene_cor(
+        Gene1 = input$ccle_search1,
+        Gene2 = input$ccle_search2,
+        data_type1 = input$profile1,
+        data_type2 = input$profile2,
+        cor_method = input$cor_method
       )
     }
+    p <- p + theme_classic(base_size = 15)
+    
     return(p)
   })
-
-
-  output$gene_ccle_dist <- renderPlot({
+  
+  # Show waiter for plot
+  w <- waiter::Waiter$new(id = ns("gene_ccle_gene_cor"), html = waiter::spin_hexdots(), color = "white")
+  
+  output$gene_ccle_gene_cor <- renderPlot({
     w$show() # Waiter add-ins
     plot_func()
   })
-
-
+  
+  
   output$download <- downloadHandler(
     filename = function() {
-      paste0(input$ccle_search, " gene_ccle_dist.", input$device)
+      paste0(input$ccle_search, " gene_ccle_genecor.", input$device)
     },
     content = function(file) {
       p <- plot_func()
@@ -144,7 +188,7 @@ server.modules_ccle_dist <- function(input, output, session) {
         print(p)
         dev.off()
       }
-
+      
       # ggplot2::ggsave(filename = file, plot = print(p), device = input$device, width = input$width, height = input$height, dpi = 600)
     }
   )
