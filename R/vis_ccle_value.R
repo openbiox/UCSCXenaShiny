@@ -15,7 +15,7 @@ vis_ccle_tpm <- function(Gene = "TP53", data_type = "mRNA", use_log = FALSE) {
   if (!data_type %in% c("mRNA", "protein", "cnv")) {
     stop("data_type ", data_type, " does not support in this function!")
   }
-  t1 <- query_value(identifier = Gene, data_type = data_type, database = "ccle")
+  t1 <- query_signature_value(Gene, data_type = data_type, database = "ccle")
   unit <- switch(data_type,
     cnv = NULL,
     mutation = NULL,
@@ -74,7 +74,7 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
     install.packages("cowplot")
   }
 
-  t1 <- query_value(identifier = Gene1, data_type = data_type1, database = "ccle")
+  t1 <- query_signature_value(Gene1, data_type = data_type1, database = "ccle")
   unit1 <- switch(data_type1,
     cnv = NULL,
     mutation = NULL,
@@ -94,7 +94,7 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
     tibble::rownames_to_column(var = "cell") %>%
     dplyr::inner_join(ccle_info, by = c("cell" = "CCLE_name"))
 
-  t3 <- query_value(identifier = Gene2, data_type = data_type2, database = "ccle")
+  t3 <- query_signature_value(Gene2, data_type = data_type2, database = "ccle")
   unit2 <- switch(data_type2,
     cnv = NULL,
     mutation = NULL,
