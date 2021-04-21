@@ -132,7 +132,7 @@ server.modules_pancan_radar <- function(input, output, session) {
       }
       plot <- ggradar::ggradar(
         df[1, ], 
-        font.radar = "Arial",
+        font.radar = "sans",
         values.radar = c("-1", "0", "1"),
         grid.min = -1, grid.mid = 0, grid.max = 1,
         # Background and grid lines
