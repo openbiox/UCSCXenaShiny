@@ -67,7 +67,7 @@ get_pancan_value <- function(identifier, subtype = NULL, dataset = NULL, host = 
   }
 
   if (nrow(data) > 1) {
-    data <- dplyr::filter(.data$XenaDatasets == dataset)
+    data <- dplyr::filter(data, .data$XenaDatasets == dataset)
   }
 
   res <- try_query_value(data[["XenaHosts"]], data[["XenaDatasets"]],

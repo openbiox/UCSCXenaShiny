@@ -41,7 +41,9 @@ vis_ccle_tpm <- function(Gene = "TP53", data_type = "mRNA", use_log = FALSE) {
   p <- t2 %>% ggplot2::ggplot(aes_string(x = "Site_Primary", y = "tpm", fill = "Site_Primary")) +
     ggplot2::geom_boxplot() +
     ggplot2::xlab(NULL) +
-    ggplot2::ylab(paste0(Gene, " ", data_type, " (", unit, ")")) +
+    ggplot2::ylab(paste0(Gene, " ", 
+                         if (data_type == "cnv") "CNV" else data_type,
+                         if (data_type == "cnv") "" else paste0(" (", unit, ")"))) +
     cowplot::theme_cowplot() +
     ggplot2::theme(
       legend.background = element_blank(),
