@@ -32,7 +32,8 @@ ope_toil_gene <- function(identifier = "TP53") {
       "Primary Tumor", "Normal Tissue", "Primary Solid Tumor", "Solid Tissue Normal",
       "Metastatic", "Cell Line", "Primary Blood Derived Cancer - Peripheral Blood",
       "Primary Blood Derived Cancer - Bone Marrow", "Recurrent Blood Derived Cancer - Bone Marrow"
-    )) %>% # Only keep samples with count > 100
+    )) %>%
+    # Only keep samples with count > 100
     dplyr::mutate(
       sample_type = factor(sample_type, levels = c(
         "Primary Tumor", "Normal Tissue", "Primary Solid Tumor", "Solid Tissue Normal",

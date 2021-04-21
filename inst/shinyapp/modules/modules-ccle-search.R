@@ -50,8 +50,6 @@ ui.modules_ccle_dist <- function(id) {
                              placement = "right", options = list(container = "body")
           ),
         ),
-      
-        #selectInput(inputId = ns("phenotype"), label = "phenotype", choices = ccle_choices, selected = "Type"),
         numericInput(inputId = ns("height"), label = "Height", value = 5),
         numericInput(inputId = ns("width"), label = "Width", value = 12),
         prettyRadioButtons(
@@ -114,9 +112,7 @@ server.modules_ccle_dist <- function(input, output, session) {
     if (nchar(input$ccle_search) >= 1) {
       p <- vis_ccle_tpm(
         Gene = input$ccle_search,
-        #data_type = input$profile,
-        data_type = "mRNA",
-        phenotype = "Type",
+        data_type = input$profile
       )
     }
     return(p)

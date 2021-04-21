@@ -10,8 +10,8 @@ vis_gene_cor_cancer(
   data_type1 = "mRNA",
   data_type2 = "mRNA",
   purity_adj = TRUE,
-  split = FALSE,
   cancer_choose = "GBM",
+  use_regline = TRUE,
   cor_method = "spearman"
 )
 }
@@ -26,9 +26,9 @@ vis_gene_cor_cancer(
 
 \item{purity_adj}{whether performing partial correlation adjusted by purity}
 
-\item{split}{whether split by TCGA tumor tissue}
-
 \item{cancer_choose}{TCGA cohort name, e.g. "ACC".}
+
+\item{use_regline}{if \code{TRUE}, add regression line.}
 }
 \description{
 Visualize Gene-Gene Correlation in a TCGA Cancer Type
