@@ -73,8 +73,8 @@ ui.modules_ccle_genecor <- function(id) {
           selected = "spearman"
         ),
         #selectInput(inputId = ns("phenotype"), label = "phenotype", choices = ccle_choices, selected = "Type"),
-        numericInput(inputId = ns("height"), label = "Height", value = 5),
-        numericInput(inputId = ns("width"), label = "Width", value = 12),
+        numericInput(inputId = ns("height"), label = "Height", value = 8),
+        numericInput(inputId = ns("width"), label = "Width", value = 8),
         prettyRadioButtons(
           inputId = ns("device"),
           label = "Choose plot format",
@@ -98,7 +98,8 @@ ui.modules_ccle_genecor <- function(id) {
         width = 3
       ),
       mainPanel = mainPanel(
-        plotOutput(ns("gene_ccle_gene_cor"), height = "600px")
+        plotOutput(ns("gene_ccle_gene_cor"), height = "600px"),
+        width = 6
       )
     )
   )
@@ -159,7 +160,7 @@ server.modules_ccle_genecor <- function(input, output, session) {
         cor_method = input$cor_method
       )
     }
-    p <- p + theme_classic(base_size = 15)
+    p <- p + theme_classic(base_size = 20)
     
     return(p)
   })

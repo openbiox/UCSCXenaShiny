@@ -117,18 +117,19 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
   df <- data.frame(sample = t2$cell, gene1 = t2$tpm.x, gene2 = t2$tpm.y, stringsAsFactors = F)
 
   cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
-  df$pc <- predict(prcomp(~ gene1 + gene1, df))[, 1]
+
+  df$pc <- predict(prcomp(~ gene1 + gene2, df))[, 1]
+  x <- quantile(df$gene1)[1]
+  y <- quantile(df$gene2)[5]
   p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
-    ggplot2::geom_point(shape = 16, size = 3) +
-    cowplot::theme_cowplot() +
+    ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE) +
+    ggplot2::theme_minimal(base_size = 20) +
     ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
     ggplot2::labs(x = Gene1, y = Gene2) +
-    ggplot2::annotate("text", 
-                      -Inf, Inf,
-                      label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar),
-                      size = 8, colour = "black", hjust = -0.1, vjust = 1)
-  
-  if (use_regline) p <- p + ggplot2::geom_smooth(method = stats::lm)
-  
+    # ggplot2::ggtitle(paste0("CCLE ", cancer_choose, " dataset")) +
+    ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar), x = x + 20, y = y, size = 10, colour = "black") +
+    ggplot2::geom_smooth(method = stats::lm) +
+    ggplot2::labs(color = "")
+
   return(p)
 }
