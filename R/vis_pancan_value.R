@@ -924,7 +924,7 @@ vis_gene_cor <- function(Gene1 = "CSF1R",
     filter(.data$type2 == "tumor") -> df
   # plot refer to https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
 
-  if (split == FALSE) {
+ 
     if (purity_adj == TRUE) {
       df %>% filter(!is.na(.data$CPE)) -> df
       partial_cor_res <- ezcor_partial_cor(data = df, var1 = "gene1", var2 = "gene2", var3 = "CPE", sig_label = TRUE)
@@ -953,7 +953,7 @@ vis_gene_cor <- function(Gene1 = "CSF1R",
         ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar), x = x + 1, y = y, size = 4, colour = "black")
     }
 
-  }
+  
   
   if (use_regline) p <- p + ggplot2::geom_smooth(method = stats::lm)
   
@@ -1023,7 +1023,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
   
   # plot refer to https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
 
-  if (split == FALSE) {
+  # if (split == FALSE) {
     if (purity_adj == TRUE) {
       df %>% filter(!is.na(.data$CPE)) -> df
       partial_cor_res <- ezcor_partial_cor(data = df, var1 = "gene1", var2 = "gene2", var3 = "CPE", sig_label = TRUE, cor_method = cor_method)
@@ -1056,7 +1056,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
         ggplot2::geom_smooth(method = stats::lm) +
         ggplot2::labs(color = "")
     }
-  }
+  # }
   
   if (use_regline) p <- p + ggplot2::geom_smooth(method = stats::lm)
   return(p)

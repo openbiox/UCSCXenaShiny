@@ -155,8 +155,7 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
         data_type2 = input$profile2,
         purity_adj = input$purity_adj,
         cancer_choose = input$Cancer,
-        cor_method = input$cor_method,
-        split = FALSE
+        cor_method = input$cor_method
       )
     }
     p <- p + theme_classic(base_size = 20)
