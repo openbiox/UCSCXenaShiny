@@ -24,7 +24,7 @@ source("ccle/function/pcor.r") # modified a bit from ppcor
 # load CCLE data
 # source: https://data.broadinstitute.org/ccle/CCLE_DepMap_18Q2_RNAseq_RPKM_20180502.gct
 
-CCLE_expr <- data.table::fread("ccle/CCLE_DepMap_18Q2_RNAseq_RPKM_20180502.gct") 
+CCLE_expr <- data.table::fread("ccle/CCLE_DepMap_18Q2_RNAseq_RPKM_20180502.gct")
 
 CCLE_expr <- CCLE_expr %>%
   distinct(Description, .keep_all = T) %>%
@@ -33,9 +33,10 @@ CCLE_expr <- CCLE_expr %>%
 
 # import selected resistant genes:
 geneids <- read.table(
-  file = "ccle/cisplatin_resistant_list.txt", 
-  sep = "\t", header = T, 
-  colClasses = "character")
+  file = "ccle/cisplatin_resistant_list.txt",
+  sep = "\t", header = T,
+  colClasses = "character"
+)
 geneids <- geneids$Genes
 geneids <- geneids[is.element(geneids, rownames(CCLE_expr))]
 head(geneids)
@@ -68,10 +69,10 @@ CCLE_drug_mat <- pivot_wider(CCLE_drug[, c("CCLE Cell Line Name", "Compound", "I
 ########################### 把核心数据保留
 ccle_expr_and_drug_response <- list(
   expr = CCLE_mat,
-  drug_ic50 = CCLE_drug_mat %>% 
-    tibble::column_to_rownames("CCLE Cell Line Name") %>% 
+  drug_ic50 = CCLE_drug_mat %>%
+    tibble::column_to_rownames("CCLE Cell Line Name") %>%
     as.matrix(),
-  drug_info = unique(CCLE_drug[, c("CCLE Cell Line Name", "Site Primary", "Compound", "Target")]) %>% 
+  drug_info = unique(CCLE_drug[, c("CCLE Cell Line Name", "Site Primary", "Compound", "Target")]) %>%
     as.data.frame()
 )
 # site primary 包内置的 ccle_info 也有该数据
@@ -232,7 +233,8 @@ gene <- "TM4SF1"
 drug <- "AEW541"
 tissue <- "lung"
 cells <- as.character(CCLE_drug[CCLE_drug$`Site Primary` == tissue, "CCLE Cell Line Name"][[1]]) %>%
-  unique() %>% na.omit()
+  unique() %>%
+  na.omit()
 
 # all the cells
 cells <- unique(as.character(CCLE_drug$`CCLE Cell Line Name`))
@@ -248,7 +250,7 @@ plot(gene.exp, IC50)
 # box plot
 gene.high <- IC50[gene.exp >= median(gene.exp)]
 gene.low <- IC50[gene.exp < median(gene.exp)]
-BoxJetter(gene.high,gene.low,"high","low","red")
+BoxJetter(gene.high, gene.low, "high", "low", "red")
 # or color cells by gene expression:
 bins <- cutbin(gene.exp, 20)
 # gene.min <- sort(gene.exp)[2]; gene.max <- tail(sort(gene.exp),2)[1] # the 2nd biggest and smallest value to avoid single outliers.

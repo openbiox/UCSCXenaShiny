@@ -2,9 +2,9 @@
 % Please edit documentation in R/vis_ccle_value.R
 \name{vis_ccle_tpm}
 \alias{vis_ccle_tpm}
-\title{Visualize CCLE Gene Expression in TPM Format}
+\title{Visualize CCLE Gene Expression}
 \usage{
-vis_ccle_tpm(Gene = "TP53", data_type = "mRNA", phenotype = "Type")
+vis_ccle_tpm(Gene = "TP53", data_type = "mRNA", use_log = FALSE)
 }
 \arguments{
 \item{Gene}{Gene symbal for comparision}
@@ -17,5 +17,5 @@ vis_ccle_tpm(Gene = "TP53", data_type = "mRNA", phenotype = "Type")
 a \code{ggplot} object
 }
 \description{
-Visualize CCLE Gene Expression in TPM Format
+Visualize CCLE Gene Expression
 }
