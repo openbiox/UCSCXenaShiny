@@ -117,7 +117,7 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
   cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
   df$pc <- predict(prcomp(~ gene1 + gene1, df))[, 1]
   p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
-    ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE) +
+    ggplot2::geom_point(shape = 16, size = 3) +
     cowplot::theme_cowplot() +
     ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
     ggplot2::labs(x = Gene1, y = Gene2) +
