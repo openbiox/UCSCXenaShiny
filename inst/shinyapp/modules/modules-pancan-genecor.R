@@ -159,7 +159,7 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
         split = FALSE
       )
     }
-    p <- p + theme_classic(base_size = 15)
+    p <- p + theme_classic(base_size = 20)
 
     return(p)
   })
