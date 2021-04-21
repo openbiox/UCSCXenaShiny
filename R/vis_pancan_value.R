@@ -14,9 +14,9 @@ vis_toil_gene <- function(data, x = "primary_site",
                           angle.x = 45,
                           ...) {
   ggpubr::ggboxplot(data,
-                    x = x, y = y, color = color,
-                    palette = palette, xlab = xlab, ylab = ylab,
-                    title = title, facet.by = NULL, ...
+    x = x, y = y, color = color,
+    palette = palette, xlab = xlab, ylab = ylab,
+    title = title, facet.by = NULL, ...
   ) +
     ggpubr::rotate_x_text(angle = angle.x)
 }
@@ -45,27 +45,27 @@ vis_toil_gene <- function(data, x = "primary_site",
 #'
 vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", data_type = "mRNA", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, draw_quantiles = c(0.25, 0.5, 0.75), trim = TRUE) {
   tcga_gtex <- load_data("tcga_gtex")
-  
+
   if (!data_type %in% c("mRNA", "miRNA", "transcript", "methylation")) {
     stop("data_type ", data_type, " does not support in this function!")
   }
   t1 <- query_value(identifier = Gene, data_type = data_type)
   unit <- switch(data_type,
-                 cnv = NULL,
-                 mutation = NULL,
-                 t1[[2]]
+    cnv = NULL,
+    mutation = NULL,
+    t1[[2]]
   )
   if (is.list(t1)) t1 <- t1[[1]]
-  
+
   if (all(is.na(t1))) {
     message("All NAs returned, return NULL instead.")
     return(NULL)
   }
-  
+
   tcga_gtex <- tcga_gtex %>%
     dplyr::group_by(.data$tissue) %>%
     dplyr::distinct(.data$sample, .keep_all = TRUE)
-  
+
   t2 <- t1 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
@@ -109,11 +109,11 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", data_type = "mRNA", S
       ggplot2::scale_fill_manual(values = values)
     p <- p + ggplot2::geom_boxplot(data = tcga_gtex_MESO) +
       ggplot2::geom_boxplot(data = tcga_gtex_UVM)
-    
+
     p <- p + ggplot2::ylab(
       if (is.null(unit)) Gene else paste0(Gene, " (", unit, ")")
     )
-    
+
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       p <- p + ggplot2::geom_text(aes(
         x = .data$tissue,
@@ -156,7 +156,7 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", data_type = "mRNA", S
         legend.background = ggplot2::element_blank(),
         legend.position = c(0, 0), legend.justification = c(0, 0)
       )
-    
+
     p + geom_split_violin(
       data = tcga_gtex_MESO,
       mapping = aes_string(x = "tissue", y = "tpm", fill = "type2"),
@@ -183,7 +183,7 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", data_type = "mRNA", S
     p <- p + ggplot2::ylab(
       if (is.null(unit)) Gene else paste0(Gene, " (", unit, ")")
     )
-    
+
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       p <- p + ggplot2::geom_text(ggplot2::aes(
         x = .data$tissue,
@@ -224,13 +224,13 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", t
   ## 写在 R 内的数据集需要更严格的引用方式
   tcga_surv <- load_data("tcga_surv")
   tcga_gtex <- load_data("tcga_gtex")
-  
+
   t1 <- query_value(identifier = Gene, data_type = data_type)
   if (is.list(t1)) t1 <- t1[[1]]
-  
+
   # we filter out normal tissue
   tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
-  
+
   message(paste0("Get gene expression for ", Gene))
   s <- data.frame(sample = names(t1), values = t1)
   ## we use median cutoff here
@@ -247,17 +247,17 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", t
         dplyr::mutate(group = ifelse(.data$values > stats::median(.data$values), "high", "low")) %>%
         dplyr::mutate(group = factor(.data$group, levels = c("low", "high")))
     }
-    
+
     if (threshold == 0.25) {
       sss_can <- sss_can %>%
         dplyr::mutate(group = ifelse(.data$values > stats::quantile(.data$values)[4], "high",
-                                     ifelse(.data$values < stats::quantile(.data$values)[2], "low", "middle")
+          ifelse(.data$values < stats::quantile(.data$values)[2], "low", "middle")
         )) %>%
         dplyr::filter(group != "middle") %>%
         dplyr::mutate(group = factor(.data$group, levels = c("low", "high")))
     }
-    
-    
+
+
     unicox_res_genes <- ezcox::ezcox(
       sss_can,
       covariates = "values",
@@ -265,12 +265,12 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", t
       status = measure,
       verbose = FALSE
     )
-    
+
     unicox_res_genes$cancer <- cancer
     unicox_res_genes$measure <- measure
     return(unicox_res_genes)
   })) %>% magrittr::set_names(tissues)
-  
+
   unicox_res_all_cancers <- unicox_res_all_cancers %>%
     purrr::map(~ .x$result) %>%
     purrr::compact()
@@ -318,7 +318,7 @@ vis_pancan_anatomy <- function(Gene = "TP53",
                                data_type = "mRNA",
                                option = "D") {
   Gender <- match.arg(Gender)
-  
+
   # Loading while pass checking
   if (eval(parse(text = "!requireNamespace('gganatogram')"))) {
     stop("Please install 'gganatogram' package firstly!")
@@ -326,27 +326,27 @@ vis_pancan_anatomy <- function(Gene = "TP53",
   hgMale_key <- eval(parse(text = "gganatogram::hgMale_key"))
   hgFemale_key <- eval(parse(text = "gganatogram::hgFemale_key"))
   gganatogram <- eval(parse(text = "gganatogram::gganatogram"))
-  
+
   TCGA.organ <- load_data("TCGA.organ")
   tcga_gtex <- load_data("tcga_gtex")
   tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
-  
+
   t1 <- query_value(identifier = Gene, data_type = data_type)
   unit <- switch(data_type,
-                 cnv = NULL,
-                 mutation = NULL,
-                 t1[[2]]
+    cnv = NULL,
+    mutation = NULL,
+    t1[[2]]
   )
   if (is.list(t1)) t1 <- t1[[1]]
-  
+
   if (data_type == "cnv") data_type <- "GISTIC2 thresholded CNV"
   if (data_type == "cnv_gistic2") data_type <- "CNV"
-  
+
   if (all(is.na(t1))) {
     message("All NAs returned, return NULL instead.")
     return(NULL)
   }
-  
+
   message(paste0("Get data value for ", Gene))
   t2 <- t1 %>%
     as.data.frame() %>%
@@ -409,7 +409,7 @@ vis_pancan_anatomy <- function(Gene = "TP53",
     print(p)
     data_input <- Male_input
     out <- list(plot = p, data = data_input)
-    
+
     return(out)
   } else {
     p <- gganatogram(
@@ -428,7 +428,7 @@ vis_pancan_anatomy <- function(Gene = "TP53",
       labs(caption = "data source: TCGA + GTEx") +
       theme(plot.title = element_text(hjust = 0.5))
     print(p)
-    
+
     data_input <- Female_input
     out <- list(plot = p, data = data_input)
     return(out)
@@ -448,32 +448,32 @@ vis_pancan_anatomy <- function(Gene = "TP53",
 vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type = "mRNA", Immune_sig_type = "Cibersort") {
   tcga_pan_immune_signature <- load_data("tcga_pan_immune_signature")
   tcga_gtex <- load_data("tcga_gtex")
-  
+
   # we filter out normal tissue
   tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
-  
+
   tcga_pan_immune_signature <- tcga_pan_immune_signature %>%
     tidyr::pivot_longer(3:ncol(.), names_to = "sample", values_to = "score") %>%
     dplyr::mutate(sample = stringr::str_sub(.data$sample, 1, 15))
-  
+
   t1 <- query_value(identifier = Gene, data_type = data_type)
   if (is.list(t1)) t1 <- t1[[1]]
-  
+
   if (all(is.na(t1))) {
     message("All NAs returned, return NULL instead.")
     return(NULL)
   }
-  
+
   if (data_type == "cnv") data_type <- "GISTIC2 thresholded CNV"
   if (data_type == "cnv_gistic2") data_type <- "CNV"
-  
+
   message(paste0("Get data value for ", Gene))
   s <- data.frame(sample = names(t1), values = t1)
-  
+
   ss <- s %>%
     dplyr::inner_join(tcga_pan_immune_signature, by = "sample") %>%
     dplyr::inner_join(tcga_gtex[, c("tissue", "sample")], by = "sample")
-  
+
   sss <- split(ss, ss$tissue)
   tissues <- names(sss)
   cor_gene_immune <- purrr::map(tissues, purrr::safely(function(cancer) {
@@ -496,17 +496,17 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", data_typ
     cor_res_class_can_df$cancer <- cancer
     return(cor_res_class_can_df)
   })) %>% magrittr::set_names(tissues)
-  
+
   cor_gene_immune <- cor_gene_immune %>%
     purrr::map(~ .x$result) %>%
     purrr::compact()
   cor_gene_immune_df <- do.call(rbind.data.frame, cor_gene_immune)
   data <- cor_gene_immune_df
   data$pstar <- ifelse(data$p.value < 0.05,
-                       ifelse(data$p.value < 0.001, "***", ifelse(data$p.value < 0.01, "**", "*")),
-                       ""
+    ifelse(data$p.value < 0.001, "***", ifelse(data$p.value < 0.01, "**", "*")),
+    ""
   )
-  
+
   p <- ggplot2::ggplot(data, ggplot2::aes_string(x = "cancer", y = "immune_cells")) +
     ggplot2::geom_tile(ggplot2::aes_string(fill = "cor"), colour = "white", size = 1) +
     ggplot2::scale_fill_gradient2(low = "#377DB8", mid = "white", high = "#E31A1C") +
@@ -536,22 +536,22 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", data_typ
 vis_gene_tmb_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type = "mRNA") {
   tcga_tmb <- load_data("tcga_tmb")
   tcga_gtex <- load_data("tcga_gtex")
-  
+
   t1 <- query_value(identifier = Gene, data_type = data_type)
   if (is.list(t1)) t1 <- t1[[1]]
-  
+
   if (all(is.na(t1))) {
     message("All NAs returned, return NULL instead.")
     return(NULL)
   }
-  
+
   s <- data.frame(sample = names(t1), values = t1)
   ss <- s %>%
     dplyr::inner_join(tcga_tmb, by = c("sample" = "Tumor_Sample_ID")) %>%
     dplyr::inner_join(tcga_gtex[, c("tissue", "sample")], by = "sample")
   sss <- split(ss, ss$tissue)
   tissues <- names(sss)
-  
+
   cor_gene_tmb <- purrr::map(tissues, purrr::safely(function(cancer) {
     # cancer = "ACC"
     sss_can <- sss[[cancer]]
@@ -560,17 +560,17 @@ vis_gene_tmb_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type =
     ddd$cancer <- cancer
     return(ddd)
   })) %>% magrittr::set_names(tissues)
-  
+
   cor_gene_tmb <- cor_gene_tmb %>%
     purrr::map(~ .x$result) %>%
     purrr::compact()
   cor_gene_tmb_df <- do.call(rbind.data.frame, cor_gene_tmb)
   data <- cor_gene_tmb_df
   data$pstar <- ifelse(data$p.value < 0.05,
-                       ifelse(data$p.value < 0.01, "**", "*"),
-                       ""
+    ifelse(data$p.value < 0.01, "**", "*"),
+    ""
   )
-  
+
   p <- ggplot2::ggplot(data, ggplot2::aes_string(x = "cancer", y = "gene")) +
     ggplot2::geom_tile(ggplot2::aes_string(fill = "cor"), colour = "white", size = 1) +
     ggplot2::scale_fill_gradient2(low = "#2b8cbe", mid = "white", high = "#e41a1c") +
@@ -599,15 +599,15 @@ vis_gene_tmb_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type =
 vis_gene_msi_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type = "mRNA") {
   tcga_msi <- load_data("tcga_MSI")
   tcga_gtex <- load_data("tcga_gtex")
-  
+
   t1 <- query_value(identifier = Gene, data_type = data_type)
   if (is.list(t1)) t1 <- t1[[1]]
-  
+
   if (all(is.na(t1))) {
     message("All NAs returned, return NULL instead.")
     return(NULL)
   }
-  
+
   s <- data.frame(sample = names(t1), values = t1)
   ss <- s %>%
     mutate(Barcode = str_sub(sample, 1, 12)) %>%
@@ -615,7 +615,7 @@ vis_gene_msi_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type =
     dplyr::inner_join(tcga_gtex[, c("tissue", "sample")], by = "sample")
   sss <- split(ss, ss$tissue)
   tissues <- names(sss)
-  
+
   cor_gene_msi <- purrr::map(tissues, purrr::safely(function(cancer) {
     # cancer = "ACC"
     sss_can <- sss[[cancer]]
@@ -624,17 +624,17 @@ vis_gene_msi_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type =
     ddd$cancer <- cancer
     return(ddd)
   })) %>% magrittr::set_names(tissues)
-  
+
   cor_gene_msi <- cor_gene_msi %>%
     purrr::map(~ .x$result) %>%
     purrr::compact()
   cor_gene_msi_df <- do.call(rbind.data.frame, cor_gene_msi)
   data <- cor_gene_msi_df
   data$pstar <- ifelse(data$p.value < 0.05,
-                       ifelse(data$p.value < 0.01, "**", "*"),
-                       ""
+    ifelse(data$p.value < 0.01, "**", "*"),
+    ""
   )
-  
+
   p <- ggplot2::ggplot(data, ggplot2::aes_string(x = "cancer", y = "gene")) +
     ggplot2::geom_tile(ggplot2::aes_string(fill = "cor"), colour = "white", size = 1) +
     ggplot2::scale_fill_gradient2(low = "#2b8cbe", mid = "white", high = "#e41a1c") +
@@ -664,22 +664,22 @@ vis_gene_msi_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type =
 vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type = "mRNA") {
   tcga_stemness <- load_data("tcga_stemness")
   tcga_gtex <- load_data("tcga_gtex")
-  
+
   t1 <- query_value(identifier = Gene, data_type = data_type)
   if (is.list(t1)) t1 <- t1[[1]]
-  
+
   if (all(is.na(t1))) {
     message("All NAs returned, return NULL instead.")
     return(NULL)
   }
-  
+
   s <- data.frame(sample = names(t1), values = t1)
   ss <- s %>%
     dplyr::inner_join(tcga_stemness, by = c("sample")) %>%
     dplyr::inner_join(tcga_gtex[, c("tissue", "sample")], by = "sample")
   sss <- split(ss, ss$tissue)
   tissues <- names(sss)
-  
+
   cor_gene_stemness <- purrr::map(tissues, purrr::safely(function(cancer) {
     # cancer = "ACC"
     sss_can <- sss[[cancer]]
@@ -688,17 +688,17 @@ vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman", data_t
     ddd$cancer <- cancer
     return(ddd)
   })) %>% magrittr::set_names(tissues)
-  
+
   cor_gene_stemness <- cor_gene_stemness %>%
     purrr::map(~ .x$result) %>%
     purrr::compact()
   cor_gene_stemness_df <- do.call(rbind.data.frame, cor_gene_stemness)
   data <- cor_gene_stemness_df
   data$pstar <- ifelse(data$p.value < 0.05,
-                       ifelse(data$p.value < 0.01, "**", "*"),
-                       ""
+    ifelse(data$p.value < 0.01, "**", "*"),
+    ""
   )
-  
+
   p <- ggplot2::ggplot(data, ggplot2::aes_string(x = "cancer", y = "gene")) +
     ggplot2::geom_tile(ggplot2::aes_string(fill = "cor"), colour = "white", size = 1) +
     ggplot2::scale_fill_gradient2(low = "#2b8cbe", mid = "white", high = "#e41a1c") +
@@ -725,26 +725,26 @@ vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman", data_t
 #'
 vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type = "mRNA", Show.P.value = FALSE, Show.P.label = FALSE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, Cancer = "ACC") {
   tcga_gtex <- load_data("tcga_gtex")
-  
+
   t1 <- query_value(identifier = Gene, data_type = data_type)
   unit <- switch(data_type,
-                 cnv = NULL,
-                 mutation = NULL,
-                 t1[[2]]
+    cnv = NULL,
+    mutation = NULL,
+    t1[[2]]
   )
   if (is.list(t1)) t1 <- t1[[1]]
-  
+
   if (all(is.na(t1))) {
     message("All NAs returned, return NULL instead.")
     return(NULL)
   }
-  
+
   tcga_gtex <- tcga_gtex %>%
     dplyr::group_by(.data$tissue) %>%
     dplyr::distinct(.data$sample, .keep_all = TRUE)
-  
+
   # tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
-  
+
   t2 <- t1 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
@@ -794,7 +794,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type =
     p <- p + ggplot2::ylab(
       if (is.null(unit)) Gene else paste0(Gene, " (", unit, ")")
     )
-    
+
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       p <- p + ggplot2::geom_text(aes(
         x = 1.5,
@@ -831,11 +831,11 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type =
         legend.background = ggplot2::element_blank(),
         legend.position = c(0, 0), legend.justification = c(0, 0)
       )
-    
+
     p <- p + ggplot2::ylab(
       if (is.null(unit)) Gene else paste0(Gene, " (", unit, ")")
     )
-    
+
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       p <- p + ggplot2::geom_text(ggplot2::aes(
         x = 1.5,
@@ -879,84 +879,85 @@ vis_gene_cor <- function(Gene1 = "CSF1R",
   if (!requireNamespace("cowplot")) {
     install.packages("cowplot")
   }
-  
+
   if (!data_type1 %in% c("mRNA", "miRNA", "transcript", "methylation", "protein", "cnv_gistic2")) {
     stop("data_type ", data_type1, " does not support in this function!")
   }
-  
+
   if (!data_type2 %in% c("mRNA", "miRNA", "transcript", "methylation", "protein", "cnv_gistic2")) {
     stop("data_type ", data_type2, " does not support in this function!")
   }
-  
+
   tcga_gtex <- load_data("tcga_gtex")
   tcga_purity <- load_data("tcga_purity")
-  
+
   tcga_purity$CPE <- as.numeric(tcga_purity$CPE)
   tcga_gtex <- tcga_gtex %>%
     dplyr::group_by(.data$tissue) %>%
     dplyr::distinct(.data$sample, .keep_all = TRUE)
-  
+
   t1 <- query_value(identifier = Gene1, data_type = data_type1)
   if (is.list(t1)) t1 <- t1[[1]]
   t3 <- query_value(identifier = Gene2, data_type = data_type2)
   if (is.list(t3)) t3 <- t3[[1]]
-  
+
   t2 <- t1 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
     tibble::rownames_to_column(var = "sample") %>%
     dplyr::inner_join(tcga_gtex, by = "sample")
-  
+
   t4 <- t3 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
     tibble::rownames_to_column(var = "sample") %>%
     dplyr::inner_join(tcga_gtex, by = "sample")
   df <- data.frame(
-    sample = t2$sample, 
+    sample = t2$sample,
     tissue = t2$tissue,
-    type2 = t2$type2, 
-    gene1 = t2$tpm, 
-    gene2 = t4$tpm, 
-    stringsAsFactors = F)
+    type2 = t2$type2,
+    gene1 = t2$tpm,
+    gene2 = t4$tpm,
+    stringsAsFactors = F
+  )
   df %>%
     dplyr::left_join(tcga_purity, by = "sample") %>%
     filter(.data$type2 == "tumor") -> df
   # plot refer to https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
 
- 
-    if (purity_adj == TRUE) {
-      df %>% filter(!is.na(.data$CPE)) -> df
-      partial_cor_res <- ezcor_partial_cor(data = df, var1 = "gene1", var2 = "gene2", var3 = "CPE", sig_label = TRUE)
-      cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2")
-      df$pc <- predict(prcomp(~ gene1 + gene2, df))[, 1]
-      x <- quantile(df$gene1)[1]
-      y <- quantile(df$gene2)[5]
-      p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
-        ggplot2::geom_point(shape = 16, size = 1.5, show.legend = FALSE) +
-        ggplot2::theme_minimal() +
-        ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
-        ggplot2::labs(x = Gene1, y = Gene2) +
-        ggplot2::ggtitle("TCGA PANCAN dataset") +
-        ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar, "\n", "Cor_adj: ", round(partial_cor_res$cor_partial, 2), " ", partial_cor_res$pstar), x = x + 1, y = y, size = 4, colour = "black")
-    } else {
-      cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2")
-      df$pc <- predict(prcomp(~ gene1 + gene2, df))[, 1]
-      x <- quantile(df$gene1)[1]
-      y <- quantile(df$gene2)[5]
-      p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
-        ggplot2::geom_point(shape = 16, size = 1.5, show.legend = FALSE) +
-        ggplot2::theme_minimal() +
-        ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
-        ggplot2::labs(x = Gene1, y = Gene2) +
-        ggplot2::ggtitle("TCGA PANCAN dataset") +
-        ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar), x = x + 1, y = y, size = 4, colour = "black")
-    }
 
-  
-  
+  if (purity_adj) {
+    df %>% filter(!is.na(.data$CPE)) -> df
+    partial_cor_res <- ezcor_partial_cor(data = df, var1 = "gene1", var2 = "gene2", var3 = "CPE", sig_label = TRUE)
+    cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2")
+    df$pc <- predict(prcomp(~ gene1 + gene2, df))[, 1]
+    x <- quantile(df$gene1)[1]
+    y <- quantile(df$gene2)[5]
+    p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
+      ggplot2::geom_point(shape = 16, size = 1.5, show.legend = FALSE) +
+      ggplot2::theme_minimal() +
+      ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
+      ggplot2::labs(x = Gene1, y = Gene2) +
+      ggplot2::ggtitle("TCGA PANCAN dataset") +
+      ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar, "\n", "Cor_adj: ", round(partial_cor_res$cor_partial, 2), " ", partial_cor_res$pstar), x = x + 1, y = y, size = 4, colour = "black")
+  } else {
+    cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2")
+    df$pc <- predict(prcomp(~ gene1 + gene2, df))[, 1]
+    x <- quantile(df$gene1)[1]
+    y <- quantile(df$gene2)[5]
+    p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
+      ggplot2::geom_point(shape = 16, size = 1.5, show.legend = FALSE) +
+      ggplot2::theme_minimal() +
+      ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
+      ggplot2::labs(x = Gene1, y = Gene2) +
+      ggplot2::ggtitle("TCGA PANCAN dataset") +
+      ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar), x = x + 1, y = y, size = 4, colour = "black")
+  }
+
+
+
   if (use_regline) p <- p + ggplot2::geom_smooth(method = stats::lm)
-  
+
   return(p)
 }
 
@@ -975,90 +976,90 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
                                 cancer_choose = "GBM",
                                 use_regline = TRUE,
                                 cor_method = "spearman") {
-  
   if (!requireNamespace("cowplot")) {
     install.packages("cowplot")
   }
-  
+
   tcga_gtex <- load_data("tcga_gtex")
   tcga_purity <- load_data("tcga_purity")
-  
+
   tcga_purity$CPE <- as.numeric(tcga_purity$CPE)
   tcga_gtex <- tcga_gtex %>%
     dplyr::group_by(.data$tissue) %>%
     dplyr::distinct(.data$sample, .keep_all = TRUE)
-  
+
   t1 <- query_value(identifier = Gene1, data_type = data_type1)
   if (is.list(t1)) t1 <- t1[[1]]
   t3 <- query_value(identifier = Gene2, data_type = data_type2)
   if (is.list(t3)) t3 <- t3[[1]]
-  
+
   t2 <- t1 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
     tibble::rownames_to_column(var = "sample") %>%
     dplyr::inner_join(tcga_gtex, by = "sample")
-  
+
   t4 <- t3 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
     tibble::rownames_to_column(var = "sample") %>%
     dplyr::inner_join(tcga_gtex, by = "sample")
-  
+
   # merge
   t2 <- t2 %>% inner_join(t4[, c("sample", "tpm")], by = "sample")
-  
+
   df <- data.frame(
     sample = t2$sample,
-                   tissue = t2$tissue, 
-                   type2 = t2$type2,
-                   gene1 = t2$tpm.x, 
-                   gene2 = t2$tpm.y, 
-                   stringsAsFactors = F)
-  
+    tissue = t2$tissue,
+    type2 = t2$type2,
+    gene1 = t2$tpm.x,
+    gene2 = t2$tpm.y,
+    stringsAsFactors = F
+  )
+
   df %>%
     dplyr::left_join(tcga_purity, by = "sample") %>%
     dplyr::filter(.data$type2 == "tumor") -> df
   df %>% dplyr::filter(.data$cancer_type == cancer_choose) -> df
-  
+
   # plot refer to https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
 
-  # if (split == FALSE) {
-    if (purity_adj == TRUE) {
-      df %>% filter(!is.na(.data$CPE)) -> df
-      partial_cor_res <- ezcor_partial_cor(data = df, var1 = "gene1", var2 = "gene2", var3 = "CPE", sig_label = TRUE, cor_method = cor_method)
-      cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
-      # https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
-      df$pc <- predict(prcomp(~ gene1 + gene2, df))[, 1]
-      x <- quantile(df$gene1)[1]
-      y <- quantile(df$gene2)[5]
-      p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
-        ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE) +
-        ggplot2::theme_minimal() +
-        ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
-        ggplot2::labs(x = Gene1, y = Gene2) +
-        ggplot2::ggtitle(paste0("TCGA ", cancer_choose, " dataset")) +
-        ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar, "\n", "Cor_adj: ", round(partial_cor_res$cor_partial, 2), " ", partial_cor_res$pstar), x = x + 1, y = y, size = 5, colour = "black") +
-        # ggplot2::geom_smooth(method = stats::lm) +
-        ggplot2::labs(color = "")
-    } else {
-      cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
-      df$pc <- predict(prcomp(~ gene1 + gene2, df))[, 1]
-      x <- quantile(df$gene1)[1]
-      y <- quantile(df$gene2)[5]
-      p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
-        ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE) +
-        ggplot2::theme_minimal() +
-        ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
-        ggplot2::labs(x = Gene1, y = Gene2) +
-        ggplot2::ggtitle(paste0("TCGA ", cancer_choose, " dataset")) +
-        ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar), x = x + 1, y = y, size = 10, colour = "black") +
-        # ggplot2::geom_smooth(method = stats::lm) +
-        ggplot2::labs(color = "")
-    }
-  # }
-  
-  if (use_regline) {p <- p + ggplot2::geom_smooth(method = stats::lm)}
+  if (purity_adj) {
+    df %>% filter(!is.na(.data$CPE)) -> df
+    partial_cor_res <- ezcor_partial_cor(data = df, var1 = "gene1", var2 = "gene2", var3 = "CPE", sig_label = TRUE, cor_method = cor_method)
+    cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
+    # https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
+    df$pc <- predict(prcomp(~ gene1 + gene2, df))[, 1]
+    x <- quantile(df$gene1)[1]
+    y <- quantile(df$gene2)[5]
+    p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
+      ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE) +
+      ggplot2::theme_minimal() +
+      ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
+      ggplot2::labs(x = Gene1, y = Gene2) +
+      ggplot2::ggtitle(paste0("TCGA ", cancer_choose, " dataset")) +
+      ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar, "\n", "Cor_adj: ", round(partial_cor_res$cor_partial, 2), " ", partial_cor_res$pstar), x = x + 1, y = y, size = 5, colour = "black") +
+      # ggplot2::geom_smooth(method = stats::lm) +
+      ggplot2::labs(color = "")
+  } else {
+    cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
+    df$pc <- predict(prcomp(~ gene1 + gene2, df))[, 1]
+    x <- quantile(df$gene1)[1]
+    y <- quantile(df$gene2)[5]
+    p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
+      ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE) +
+      ggplot2::theme_minimal() +
+      ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
+      ggplot2::labs(x = Gene1, y = Gene2) +
+      ggplot2::ggtitle(paste0("TCGA ", cancer_choose, " dataset")) +
+      ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar), x = x + 1, y = y, size = 10, colour = "black") +
+      # ggplot2::geom_smooth(method = stats::lm) +
+      ggplot2::labs(color = "")
+  }
+
+  if (use_regline) {
+    p <- p + ggplot2::geom_smooth(method = stats::lm)
+  }
   p <- p + ggplot2::theme(legend.position = "none")
   return(p)
 }
@@ -1087,30 +1088,30 @@ vis_gene_TIL_cor <- function(Gene = "TP53",
   tcga_TIL <- load_data("tcga_TIL")
   cell_type <- colnames(tcga_TIL)[-1]
   source <- sapply(stringr::str_split(cell_type, "_"), function(x) x[2])
-  
+
   tcga_gtex <- load_data("tcga_gtex")
-  
+
   # we filter out normal tissue
   tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
-  
+
   t1 <- query_value(identifier = Gene, data_type = data_type)
   if (is.list(t1)) t1 <- t1[[1]]
-  
+
   if (all(is.na(t1))) {
     message("All NAs returned, return NULL instead.")
     return(NULL)
   }
-  
+
   if (data_type == "cnv") data_type <- "GISTIC2 thresholded CNV"
   if (data_type == "cnv_gistic2") data_type <- "CNV"
-  
+
   message(paste0("Get data value for ", Gene))
   s <- data.frame(sample = names(t1), values = t1)
-  
+
   ss <- s %>%
     dplyr::inner_join(tcga_TIL, by = c("sample" = "cell_type")) %>%
     dplyr::inner_join(tcga_gtex[, c("tissue", "sample")], by = "sample")
-  
+
   sss <- split(ss, ss$tissue)
   tissues <- names(sss)
   cor_gene_immune <- purrr::map(tissues, purrr::safely(function(cancer) {
@@ -1135,17 +1136,17 @@ vis_gene_TIL_cor <- function(Gene = "TP53",
     cor_res_class_can_df$cancer <- cancer
     return(cor_res_class_can_df)
   })) %>% magrittr::set_names(tissues)
-  
+
   cor_gene_immune <- cor_gene_immune %>%
     purrr::map(~ .x$result) %>%
     purrr::compact()
   cor_gene_immune_df <- do.call(rbind.data.frame, cor_gene_immune)
   data <- cor_gene_immune_df
   data$pstar <- ifelse(data$p.value < 0.05,
-                       ifelse(data$p.value < 0.001, "***", ifelse(data$p.value < 0.01, "**", "*")),
-                       ""
+    ifelse(data$p.value < 0.001, "***", ifelse(data$p.value < 0.01, "**", "*")),
+    ""
   )
-  
+
   p <- ggplot2::ggplot(data, ggplot2::aes_string(x = "cancer", y = "immune_cells")) +
     ggplot2::geom_tile(ggplot2::aes_string(fill = "cor"), colour = "white", size = 1) +
     ggplot2::scale_fill_gradient2(low = "#377DB8", mid = "white", high = "#E31A1C") +
@@ -1160,6 +1161,6 @@ vis_gene_TIL_cor <- function(Gene = "TP53",
     ) +
     ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "*** p < 0.001", "\n\n", "Correlation")) +
     ggtitle(paste0("The correlation between ", Gene, " ", data_type, " with immune signatures"))
-  
+
   return(p)
 }
