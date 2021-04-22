@@ -439,14 +439,14 @@ vis_pancan_anatomy <- function(Gene = "TP53",
 #' Heatmap for Correlation between Gene and Immune Signatures
 #'
 #' @inheritParams vis_toil_TvsN
-#' @param Cor_method correlation method
+#' @param cor_method correlation method
 #' @param Immune_sig_type quantification method, default is "Cibersort"
 #' @examples
 #' \dontrun{
 #' p <- vis_gene_immune_cor(Gene = "TP53")
 #' }
 #' @export
-vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type = "mRNA", Immune_sig_type = "Cibersort") {
+vis_gene_immune_cor <- function(Gene = "TP53", cor_method = "spearman", data_type = "mRNA", Immune_sig_type = "Cibersort") {
   tcga_pan_immune_signature <- load_data("tcga_pan_immune_signature")
   tcga_gtex <- load_data("tcga_gtex")
 
@@ -486,7 +486,7 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", data_typ
     cor_res_class_can <- purrr::map(cells, purrr::safely(function(i) {
       # i = cells[1]
       dd <- sss_can_class[sss_can_class$SetName == i, ]
-      suppressWarnings(dd <- stats::cor.test(dd$values, dd$score, method = Cor_method))
+      suppressWarnings(dd <- stats::cor.test(dd$values, dd$score, method = cor_method))
       ddd <- data.frame(gene = Gene, immune_cells = i, cor = dd$estimate, p.value = dd$p.value, stringsAsFactors = FALSE)
       return(ddd)
     })) %>% magrittr::set_names(cells)
@@ -534,7 +534,7 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", data_typ
 #' p <- vis_gene_tmb_cor(Gene = "TP53")
 #' }
 #' @export
-vis_gene_tmb_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type = "mRNA") {
+vis_gene_tmb_cor <- function(Gene = "TP53", cor_method = "spearman", data_type = "mRNA") {
   tcga_tmb <- load_data("tcga_tmb")
   tcga_gtex <- load_data("tcga_gtex")
 
@@ -556,7 +556,7 @@ vis_gene_tmb_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type =
   cor_gene_tmb <- purrr::map(tissues, purrr::safely(function(cancer) {
     # cancer = "ACC"
     sss_can <- sss[[cancer]]
-    dd <- stats::cor.test(sss_can$values, sss_can$Non_silent_per_Mb, type = Cor_method)
+    dd <- stats::cor.test(sss_can$values, sss_can$Non_silent_per_Mb, type = cor_method)
     ddd <- data.frame(gene = Gene, cor = dd$estimate, p.value = dd$p.value, stringsAsFactors = F)
     ddd$cancer <- cancer
     return(ddd)
@@ -597,7 +597,7 @@ vis_gene_tmb_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type =
 #' p <- vis_gene_msi_cor(Gene = "TP53")
 #' }
 #' @export
-vis_gene_msi_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type = "mRNA") {
+vis_gene_msi_cor <- function(Gene = "TP53", cor_method = "spearman", data_type = "mRNA") {
   tcga_msi <- load_data("tcga_MSI")
   tcga_gtex <- load_data("tcga_gtex")
 
@@ -620,7 +620,7 @@ vis_gene_msi_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type =
   cor_gene_msi <- purrr::map(tissues, purrr::safely(function(cancer) {
     # cancer = "ACC"
     sss_can <- sss[[cancer]]
-    dd <- stats::cor.test(sss_can$values, sss_can$Total_nb_MSI_events, type = Cor_method)
+    dd <- stats::cor.test(sss_can$values, sss_can$Total_nb_MSI_events, type = cor_method)
     ddd <- data.frame(gene = Gene, cor = dd$estimate, p.value = dd$p.value, stringsAsFactors = F)
     ddd$cancer <- cancer
     return(ddd)
@@ -662,7 +662,7 @@ vis_gene_msi_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type =
 #' p <- vis_gene_stemness_cor(Gene = "TP53")
 #' }
 #' @export
-vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type = "mRNA") {
+vis_gene_stemness_cor <- function(Gene = "TP53", cor_method = "spearman", data_type = "mRNA") {
   tcga_stemness <- load_data("tcga_stemness")
   tcga_gtex <- load_data("tcga_gtex")
 
@@ -684,7 +684,7 @@ vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman", data_t
   cor_gene_stemness <- purrr::map(tissues, purrr::safely(function(cancer) {
     # cancer = "ACC"
     sss_can <- sss[[cancer]]
-    dd <- stats::cor.test(sss_can$values, sss_can$RNAss, type = Cor_method)
+    dd <- stats::cor.test(sss_can$values, sss_can$RNAss, type = cor_method)
     ddd <- data.frame(gene = Gene, cor = dd$estimate, p.value = dd$p.value, stringsAsFactors = FALSE)
     ddd$cancer <- cancer
     return(ddd)
@@ -970,7 +970,7 @@ vis_gene_cor <- function(Gene1 = "CSF1R",
 #' @import ggplot2 dplyr ppcor
 #' @inheritParams vis_gene_cor
 #' @param cancer_choose TCGA cohort name, e.g. "ACC".
-#' @param Cor_method correlation method
+#' @param cor_method correlation method
 #' @export
 vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
                                 Gene2 = "JAK3",
@@ -1071,7 +1071,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
 #' Heatmap for Correlation between Gene and Tumor Immune Infiltration (TIL)
 #'
 #' @inheritParams vis_toil_TvsN
-#' @param Cor_method correlation method
+#' @param cor_method correlation method
 #' @param sig Immune Signature, default: result from TIMER
 #' @examples
 #' \dontrun{
@@ -1079,7 +1079,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
 #' }
 #' @export
 vis_gene_TIL_cor <- function(Gene = "TP53",
-                             Cor_method = "spearman",
+                             cor_method = "spearman",
                              data_type = "mRNA",
                              sig = c(
                                "B cell_TIMER",
@@ -1129,7 +1129,7 @@ vis_gene_TIL_cor <- function(Gene = "TP53",
     cor_res_class_can <- purrr::map(cells, purrr::safely(function(i) {
       # i = cells[1]
       dd <- sss_can_class[sss_can_class$SetName == i, ]
-      dd <- suppressWarnings(stats::cor.test(dd$values, dd$score, method = Cor_method))
+      dd <- suppressWarnings(stats::cor.test(dd$values, dd$score, method = cor_method))
       ddd <- data.frame(gene = Gene, immune_cells = i, cor = dd$estimate, p.value = dd$p.value, stringsAsFactors = FALSE)
       return(ddd)
     })) %>% magrittr::set_names(cells)

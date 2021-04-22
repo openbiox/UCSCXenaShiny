@@ -48,7 +48,7 @@ ui.modules_pancan_immune <- function(id) {
           choices = c("Yasin", "Wolf", "Attractors", "ICR", "c7atoms", "Bindea", "Cibersort")
         ),
         selectInput(
-          inputId = ns("Cor_method"),
+          inputId = ns("cor_method"),
           label = "Select Correlation method",
           choices = c("spearman", "pearson"),
           selected = "spearman"
@@ -102,7 +102,7 @@ server.modules_pancan_immune <- function(input, output, session) {
   #       vis_gene_immune_cor(
   #         Gene = input$Pancan_search,
   #         Immune_sig_type = input$immune_sig,
-  #         Cor_method = input$Cor_method
+  #         cor_method = input$cor_method
   #       )
   #     })
   #   }
@@ -141,7 +141,7 @@ server.modules_pancan_immune <- function(input, output, session) {
       p <- vis_gene_immune_cor(
         Gene = input$Pancan_search,
         Immune_sig_type = input$immune_sig,
-        Cor_method = input$Cor_method,
+        cor_method = input$cor_method,
         data_type = input$profile
       )
     }
@@ -182,7 +182,7 @@ server.modules_pancan_immune <- function(input, output, session) {
       p <- vis_gene_immune_cor(
         Gene = input$Pancan_search,
         Immune_sig_type = input$immune_sig,
-        Cor_method = input$Cor_method,
+        cor_method = input$cor_method,
         data_type = input$profile
       )
       data <- p$data

@@ -119,11 +119,11 @@ server.modules_pancan_radar <- function(input, output, session) {
   plot_func <- eventReactive(input$search_bttn,{
     if (nchar(input$Pancan_search) >= 1) {
       if(input$Type == "stemness"){
-        p <- vis_gene_stemness_cor(Gene = input$Pancan_search, Cor_method = input$cor_method,data_type = input$profile)
+        p <- vis_gene_stemness_cor(Gene = input$Pancan_search, cor_method = input$cor_method,data_type = input$profile)
       } else if(input$Type == "tmb"){
-        p <- vis_gene_tmb_cor(Gene = input$Pancan_search, Cor_method = input$cor_method,data_type = input$profile)
+        p <- vis_gene_tmb_cor(Gene = input$Pancan_search, cor_method = input$cor_method,data_type = input$profile)
       } else if(input$Type == "msi"){
-        p <- vis_gene_msi_cor(Gene = input$Pancan_search, Cor_method = input$cor_method,data_type = input$profile)
+        p <- vis_gene_msi_cor(Gene = input$Pancan_search, cor_method = input$cor_method,data_type = input$profile)
       }
       pdata = p$data
       df = pdata %>% select(cor, cancer) %>% pivot_wider(names_from = cancer, values_from = cor)

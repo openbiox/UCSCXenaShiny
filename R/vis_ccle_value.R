@@ -60,7 +60,7 @@ vis_ccle_tpm <- function(Gene = "TP53", data_type = "mRNA", use_log = FALSE) {
 #' @import ggplot2 dplyr tibble forcats
 #' @import ggplot2 dplyr ppcor
 #' @inheritParams vis_gene_cor
-#' @param Cor_method correlation method
+#' @param cor_method correlation method
 #' @param use_log_x if `TRUE`, log X values.
 #' @param use_log_y if `TRUE`, log Y values.
 #' @return a `ggplot` object

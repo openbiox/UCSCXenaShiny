@@ -32,7 +32,7 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 
 \item{use_regline}{if \code{TRUE}, add regression line.}
 
-\item{Cor_method}{correlation method}
+\item{cor_method}{correlation method}
 }
 \description{
 Visualize Gene-Gene Correlation in a TCGA Cancer Type

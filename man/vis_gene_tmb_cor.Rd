@@ -4,13 +4,13 @@
 \alias{vis_gene_tmb_cor}
 \title{Visualize Correlation between Gene and TMB (Tumor Mutation Burden)}
 \usage{
-vis_gene_tmb_cor(Gene = "TP53", Cor_method = "spearman", data_type = "mRNA")
+vis_gene_tmb_cor(Gene = "TP53", cor_method = "spearman", data_type = "mRNA")
 }
 \arguments{
 \item{Gene}{a molecular identifier (e.g., "TP53") or a formula specifying
 genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 
-\item{Cor_method}{correlation method}
+\item{cor_method}{correlation method}
 
 \item{data_type}{choose gene profile type,
 including "mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
