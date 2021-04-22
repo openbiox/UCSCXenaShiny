@@ -127,9 +127,6 @@ server.modules_pancan_radar <- function(input, output, session) {
       }
       pdata = p$data
       df = pdata %>% select(cor, cancer) %>% pivot_wider(names_from = cancer, values_from = cor)
-      if (!requireNamespace("ggradar")) {
-        devtools::install_github("ricardo-bion/ggradar")
-      }
       plot <- ggradar::ggradar(
         df[1, ], 
         font.radar = "sans",

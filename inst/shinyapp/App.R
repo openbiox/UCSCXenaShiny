@@ -20,6 +20,16 @@ if (!requireNamespace("gganatogram")) {
   )
 }
 
+if (!requireNamespace("ggradar")) {
+  pacman::p_load(remotes)
+  tryCatch(
+    remotes::install_github("ricardo-bion/ggradar"),
+    error = function(e) {
+      remotes::install_git("https://gitee.com/XenaShiny/ggradar")
+    }
+  )
+}
+
 pacman::p_load(
   purrr,
   tidyr,
@@ -48,6 +58,7 @@ pacman::p_load(
   RColorBrewer,
   gganatogram,
   ggstatsplot,
+  ggradar,
   zip
 )
 

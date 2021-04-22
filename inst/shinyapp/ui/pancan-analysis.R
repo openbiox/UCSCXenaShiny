@@ -15,6 +15,10 @@ ui.page_pancan <- function() {
       ui.modules_cancer_dist("modules_cancer_dist")
     ),
     tabPanel(
+      "TCGA: Molecule-Molecule Correlation",
+      ui.modules_pancan_gene_cor("modules_pancan_gene_cor")
+    ),
+    tabPanel(
       "TCGA: Molecular Profile Anatomy",
       ui.modules_pancan_anatomy("modules_pancan_anatomy")
     ),
@@ -31,16 +35,12 @@ ui.page_pancan <- function() {
       ui.modules_pancan_til("modules_pancan_til")
     ),
     tabPanel(
+      "TCGA: Association Between Molecular Profile and TMB/Stemness/MSI (Radar Show)",
+      ui.modules_pancan_radar("modules_pancan_radar")
+    ),
+    tabPanel(
       "TCGA: Survival Analysis",
       ui.modules_sur_plot("modules_sur_plot")
-    ),
-    tabPanel(
-      "TCGA: Molecule-Molecule Correlation",
-      ui.modules_pancan_gene_cor("modules_pancan_gene_cor")
-    ),
-    tabPanel(
-      "TCGA: Molecular Profile Radar Show",
-      ui.modules_pancan_radar("modules_pancan_radar")
     ),
     tabPanel(
       "CCLE: Molecular Profile Distribution Across Cancer Primary Sites",
