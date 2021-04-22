@@ -33,8 +33,8 @@ reference:
   - title: Data Query
     desc: Functions to query data from UCSC Xena data hubs in single molecular level. The functionality of functions below may overlap, we rank them by importance.
     contents:
-    - get_signature_data
-    - query_value
+    - query_molecule_value
+    - query_pancan_value
     - get_pancan_value
     - ope_toil_gene
     - available_hosts

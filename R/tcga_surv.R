@@ -61,7 +61,7 @@ tcga_surv_get <- function(item,
 
   message("Querying data of molecular ", item, " for survival analysis in TCGA cohort ", TCGA_cohort, ".")
 
-  gd <- query_value(identifier = item, data_type = profile)
+  gd <- query_pancan_value(identifier = item, data_type = profile)
   if (is.list(gd)) gd <- gd[[1]]
 
   if (all(is.na(gd))) {

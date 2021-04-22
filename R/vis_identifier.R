@@ -2,7 +2,7 @@
 #'
 #' @param dataset a UCSC Xena dataset in dense matrix format (rows are features
 #' (e.g., gene, cell line) and columns are samples).
-#' @param signature a molecular identifier (e.g., "TP53") or a formula specifying
+#' @param molecule a molecular identifier (e.g., "TP53") or a formula specifying
 #' genomic signature (`"TP53 + 2 * KRAS - 1.3 \* PTEN"`).
 #' **NOTE**, when a signature is specified, a space must exist in the input.
 #' @param host a UCSC Xena host, default is `NULL`, auto-detect from the dataset.
@@ -13,17 +13,17 @@
 #' @examples
 #' \dontrun{
 #' dataset <- "ccle/CCLE_copynumber_byGene_2013-12-03"
-#' x <- get_signature_data(dataset, "TP53")
+#' x <- query_molecule_value(dataset, "TP53")
 #' head(x)
 #' 
 #' signature <- "TP53 + 2*KRAS - 1.3*PTEN" # a space must exist in the string
-#' y <- get_signature_data(dataset, signature)
+#' y <- query_molecule_value(dataset, signature)
 #' head(y)
 #' }
-get_signature_data <- function(dataset, signature, host = NULL) {
-  has_signature <- grepl(" ", signature)
+query_molecule_value <- function(dataset, molecule, host = NULL) {
+  has_signature <- grepl(" ", molecule)
   if (has_signature) {
-    fm <- parse(text = signature)
+    fm <- parse(text = molecule)
     ids <- all.vars(fm)
     message("Querying multiple identifiers at the same time for genomic signature...")
     message("IDs include ", paste(ids, collapse = ", "))
@@ -43,7 +43,7 @@ get_signature_data <- function(dataset, signature, host = NULL) {
     if (is.na(return_value)) sig_values <- NA
     return(sig_values)
   } else {
-    get_data(dataset, signature, host = host)
+    get_data(dataset, molecule, host = host)
   }
 }
 

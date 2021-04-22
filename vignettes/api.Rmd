@@ -34,7 +34,7 @@ We provide function to retrieve multi-dimensional data including genomic, epigen
 Check parameters:
 
 ```{r}
-args(query_value)
+args(query_pancan_value)
 ```
 
 For TCGA gene expression data, we use Xena dataset with ID `TcgaTargetGtex_rsem_gene_tpm` which includes 19131 samples with tumor tissue samples and normal tissue samples. The expression value unit is `log2(tpm+0.001)`.
@@ -44,7 +44,7 @@ Let's check several examples.
 ### Fetch Gene Expression
 
 ```{r}
-gene_expr <- query_value("TP53")
+gene_expr <- query_pancan_value("TP53")
 ```
 
 ```{r}
@@ -54,25 +54,25 @@ str(gene_expr)
 ### Fetch Transcript Expression
 
 ```{r eval=FALSE}
-transcript_expr <- query_value("ENST00000000233", data_type = "transcript")
+transcript_expr <- query_pancan_value("ENST00000000233", data_type = "transcript")
 ```
 
 ### Fetch Gene CNV
 
 ```{r eval=FALSE}
-gene_cnv <- query_value("TP53", data_type = "cnv")
+gene_cnv <- query_pancan_value("TP53", data_type = "cnv")
 ```
 
 ### Fetch Gene Mutation
 
 ```{r eval=FALSE}
-gene_mut <- query_value("TP53", data_type = "mutation")
+gene_mut <- query_pancan_value("TP53", data_type = "mutation")
 ```
 
 ### Fetch miRNA mature strand expression
 
 ```{r eval=FALSE}
-miRNA_expr <- query_value("hsa-let-7a-2-3p", data_type = "miRNA")
+miRNA_expr <- query_pancan_value("hsa-let-7a-2-3p", data_type = "miRNA")
 ```
 
 ## Data Visualization

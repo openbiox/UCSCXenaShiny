@@ -1,62 +1,3 @@
-# Genomic Signature Implementation
-query_signature_value <- function(signature,
-                                  data_type = c(
-                                    "mRNA", "transcript", "protein", "mutation", "cnv", "cnv_gistic2",
-                                    "methylation", "miRNA"
-                                  ),
-                                  database = c("toil", "ccle"),
-                                  reset_id = NULL) {
-  data_type <- match.arg(data_type)
-  database <- match.arg(database)
-  
-  # signature = "TP53 + 2*KRAS - 1.3*PTEN"
-  has_signature <- grepl(" ", signature)
-  if (has_signature) {
-    fm <- parse(text = signature)
-    ids <- all.vars(fm)
-    message("Querying multiple identifiers at the same time for genomic signature...")
-    message("IDs include ", paste(ids, collapse = ", "))
-    tryCatch(
-      {
-        values <- purrr::map(ids, ~ query_value(., data_type, database))
-        unit <- if (is.list(values[[1]]) && length(values[[1]]) > 1) values[[1]][[2]] else NULL
-        if (is.null(unit)) {
-          df <- as.data.frame(values %>% purrr::set_names(ids))
-        } else {
-          df <- as.data.frame(purrr::map(values, ~ .[[1]]) %>% purrr::set_names(ids))
-        }
-        sig_values <- eval(fm, envir = df)
-        names(sig_values) <- rownames(df)
-        0L
-      },
-      error = function(e) {
-        warning("Query and evaluate failed, bad IDs or formula or data values.", immediate. = TRUE)
-        return(NA)
-      }
-    ) -> return_value
-    if (is.na(return_value)) sig_values <- NA
-    if (!exists("unit")) unit <- NULL
-    
-    if (!is.null(reset_id)) {
-      assign(reset_id, "Signature", envir = parent.frame())
-    }
-    
-    if (is.null(unit)) {
-      return(sig_values)
-    } else {
-      return(
-        list(
-          value = sig_values,
-          unit = unit
-        )
-      )
-    }
-  } else {
-    query_value(signature, data_type, database)
-  }
-}
-
-
 #' Visualize single gene expression from toil data hub
 #' @inheritParams ggpubr::ggboxplot
 #' @param angle.x angle for x lab
@@ -108,7 +49,7 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", data_type = "mRNA", S
   if (!data_type %in% c("mRNA", "miRNA", "transcript", "methylation")) {
     stop("data_type ", data_type, " does not support in this function!")
   }
-  t1 <- query_signature_value(Gene, data_type = data_type)
+  t1 <- query_pancan_value(Gene, data_type = data_type)
   unit <- switch(data_type,
     cnv = NULL,
     mutation = NULL,
@@ -284,7 +225,7 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", t
   tcga_surv <- load_data("tcga_surv")
   tcga_gtex <- load_data("tcga_gtex")
 
-  t1 <- query_signature_value(Gene, data_type = data_type)
+  t1 <- query_pancan_value(Gene, data_type = data_type)
   if (is.list(t1)) t1 <- t1[[1]]
 
   # we filter out normal tissue
@@ -390,8 +331,7 @@ vis_pancan_anatomy <- function(Gene = "TP53",
   tcga_gtex <- load_data("tcga_gtex")
   tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
 
-  #t1 <- query_signature_value(Gene, data_type = data_type)
-  t1 <- query_signature_value(Gene, data_type = data_type)
+  t1 <- query_pancan_value(Gene, data_type = data_type)
   unit <- switch(data_type,
     cnv = NULL,
     mutation = NULL,
@@ -516,7 +456,7 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", data_typ
     tidyr::pivot_longer(3:ncol(.), names_to = "sample", values_to = "score") %>%
     dplyr::mutate(sample = stringr::str_sub(.data$sample, 1, 15))
 
-  t1 <- query_signature_value(Gene, data_type = data_type)
+  t1 <- query_pancan_value(Gene, data_type = data_type)
   if (is.list(t1)) t1 <- t1[[1]]
 
   if (all(is.na(t1))) {
@@ -597,7 +537,7 @@ vis_gene_tmb_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type =
   tcga_tmb <- load_data("tcga_tmb")
   tcga_gtex <- load_data("tcga_gtex")
 
-  t1 <- query_signature_value(Gene, data_type = data_type)
+  t1 <- query_pancan_value(Gene, data_type = data_type)
   if (is.list(t1)) t1 <- t1[[1]]
 
   if (all(is.na(t1))) {
@@ -660,7 +600,7 @@ vis_gene_msi_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type =
   tcga_msi <- load_data("tcga_MSI")
   tcga_gtex <- load_data("tcga_gtex")
 
-  t1 <- query_signature_value(Gene, data_type = data_type)
+  t1 <- query_pancan_value(Gene, data_type = data_type)
   if (is.list(t1)) t1 <- t1[[1]]
 
   if (all(is.na(t1))) {
@@ -725,7 +665,7 @@ vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman", data_t
   tcga_stemness <- load_data("tcga_stemness")
   tcga_gtex <- load_data("tcga_gtex")
 
-  t1 <- query_signature_value(Gene, data_type = data_type)
+  t1 <- query_pancan_value(Gene, data_type = data_type)
   if (is.list(t1)) t1 <- t1[[1]]
 
   if (all(is.na(t1))) {
@@ -786,7 +726,7 @@ vis_gene_stemness_cor <- function(Gene = "TP53", Cor_method = "spearman", data_t
 vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type = "mRNA", Show.P.value = FALSE, Show.P.label = FALSE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, Cancer = "ACC") {
   tcga_gtex <- load_data("tcga_gtex")
 
-  t1 <- query_signature_value(Gene, data_type = data_type)
+  t1 <- query_pancan_value(Gene, data_type = data_type)
   unit <- switch(data_type,
     cnv = NULL,
     mutation = NULL,
@@ -956,9 +896,9 @@ vis_gene_cor <- function(Gene1 = "CSF1R",
     dplyr::group_by(.data$tissue) %>%
     dplyr::distinct(.data$sample, .keep_all = TRUE)
 
-  t1 <- query_signature_value(Gene1, data_type = data_type1)
+  t1 <- query_pancan_value(Gene1, data_type = data_type1)
   if (is.list(t1)) t1 <- t1[[1]]
-  t3 <- query_signature_value(Gene2, data_type = data_type2)
+  t3 <- query_pancan_value(Gene2, data_type = data_type2)
   if (is.list(t3)) t3 <- t3[[1]]
 
   t2 <- t1 %>%
@@ -1048,9 +988,9 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
     dplyr::group_by(.data$tissue) %>%
     dplyr::distinct(.data$sample, .keep_all = TRUE)
 
-  t1 <- query_signature_value(Gene1, data_type = data_type1)
+  t1 <- query_pancan_value(Gene1, data_type = data_type1)
   if (is.list(t1)) t1 <- t1[[1]]
-  t3 <- query_signature_value(Gene2, data_type = data_type2)
+  t3 <- query_pancan_value(Gene2, data_type = data_type2)
   if (is.list(t3)) t3 <- t3[[1]]
 
   t2 <- t1 %>%
@@ -1154,7 +1094,7 @@ vis_gene_TIL_cor <- function(Gene = "TP53",
   # we filter out normal tissue
   tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
 
-  t1 <- query_signature_value(Gene, data_type = data_type)
+  t1 <- query_pancan_value(Gene, data_type = data_type)
   if (is.list(t1)) t1 <- t1[[1]]
 
   if (all(is.na(t1))) {
