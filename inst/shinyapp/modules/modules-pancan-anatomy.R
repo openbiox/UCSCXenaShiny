@@ -1,7 +1,7 @@
 ui.modules_pancan_anatomy <- function(id) {
   ns <- NS(id)
   fluidPage(
-    titlePanel("Module: Gene Pancan Expression Anatomy Visualization"),
+    #titlePanel("Module: Gene Pancan Expression Anatomy Visualization"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidRow(

@@ -5,7 +5,7 @@ ccle_choices <- c(
 ui.modules_ccle_dist <- function(id) {
   ns <- NS(id)
   fluidPage(
-    titlePanel("Module: Gene CCLE Expression Distribution"),
+    #titlePanel("Module: Gene CCLE Expression Distribution"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidRow(

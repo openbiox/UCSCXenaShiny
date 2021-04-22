@@ -5,7 +5,7 @@ choices <- c(
 ui.modules_pancan_gene_cor <- function(id) {
   ns <- NS(id)
   fluidPage(
-    titlePanel("Module: TCGA Gene-Gene Correlation"),
+    #titlePanel("Module: TCGA Gene-Gene Correlation"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         shinyWidgets::prettyRadioButtons(
@@ -90,8 +90,7 @@ ui.modules_pancan_gene_cor <- function(id) {
         h5("NOTEs:"),
         p("1. The data query may take some time based on your network. Wait until a plot shows"),
         p("2. You could choose correlation method or whether adjust tumor purity when calculating"),
-        p("3. ", tags$a(href = "https://pancanatlas.xenahubs.net/", "Genomic profile data source")),
-        width = 6
+        p("3. ", tags$a(href = "https://pancanatlas.xenahubs.net/", "Genomic profile data source"))
       )
     )
   )
@@ -160,7 +159,8 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
         use_regline = input$use_regline
       )
     }
-    p <- p + theme_classic(base_size = 20);p <- p + ggplot2::theme(legend.position = "none")
+    p <- p + theme_classic(base_size = 20) +
+      ggplot2::theme(legend.position = "none")
 
     return(p)
   })

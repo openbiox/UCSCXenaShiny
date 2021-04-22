@@ -2,7 +2,7 @@ ui.modules_sur_plot <- function(id) {
   ns <- NS(id)
 
   fluidPage(
-    titlePanel("Module: Surviva Analysis"),
+    #titlePanel("Module: Surviva Analysis"),
     fluidRow(
       column(3, wellPanel(
         selectInput(

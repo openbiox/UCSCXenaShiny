@@ -5,7 +5,7 @@ choices <- c(
 ui.modules_cancer_dist <- function(id) {
   ns <- NS(id)
   fluidPage(
-    titlePanel("Module: Gene Cancer Expression Distribution"),
+    #titlePanel("Module: Gene Cancer Expression Distribution"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidRow(

@@ -1,7 +1,7 @@
 ui.modules_pancan_til <- function(id) {
   ns <- NS(id)
   fluidPage(
-    titlePanel("Module: Gene Pancan Expression vs TIL"),
+    #titlePanel("Module: Gene Pancan Expression vs TIL"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidRow(

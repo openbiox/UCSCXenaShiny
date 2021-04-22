@@ -1,7 +1,7 @@
 ui.modules_pancan_dist <- function(id) {
   ns <- NS(id)
   fluidPage(
-    titlePanel("Module: Gene Pancan Expression Distribution"),
+    #titlePanel("Module: Gene Pancan Expression Distribution"),
     sidebarLayout(
       sidebarPanel(
         fluidRow(

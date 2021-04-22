@@ -7,47 +7,47 @@ ui.page_pancan <- function() {
     #   ui.combo.sg.pancan.analysis("combo.sg.pancan.analysis")
     # ),
     tabPanel(
-      "TCGA Gene Expression Distribution ",
+      "TCGA: Molecular Profile Distribution Across Cancer Types (Tumor VS Normal)",
       ui.modules_pancan_dist("module_gene_pancan_dist")
     ),
     tabPanel(
-      "TCGA Gene Cancer Expression Distribution",
+      "TCGA: Molecular Profile Distribution (Tumor VS Normal)",
       ui.modules_cancer_dist("modules_cancer_dist")
     ),
     tabPanel(
-      "TCGA Gene Expression Anatomy",
+      "TCGA: Molecular Profile Anatomy",
       ui.modules_pancan_anatomy("modules_pancan_anatomy")
     ),
     tabPanel(
-      "TCGA Gene Expression Cox Analysis",
+      "TCGA: Molecular Profile Cox Analysis",
       ui.modules_pancan_unicox("modules_pancan_unicox")
     ),
     tabPanel(
-      "TCGA Gene Expression vs Immune Correlation",
+      "TCGA: Association Between Molecular Profile and Immune Signature",
       ui.modules_pancan_immune("modules_pancan_immune")
     ),
     tabPanel(
-      "TCGA Gene Expression vs TIL",
+      "TCGA: Association Between Molecular Profile and Tumor Immune Infiltration",
       ui.modules_pancan_til("modules_pancan_til")
     ),
     tabPanel(
-      "TCGA Survival Analysis",
+      "TCGA: Survival Analysis",
       ui.modules_sur_plot("modules_sur_plot")
     ),
     tabPanel(
-      "TCGA Gene-Gene Correlation",
+      "TCGA: Molecule-Molecule Correlation",
       ui.modules_pancan_gene_cor("modules_pancan_gene_cor")
     ),
     tabPanel(
-      "TCGA Gene Expression Radar",
+      "TCGA: Molecular Profile Radar Show",
       ui.modules_pancan_radar("modules_pancan_radar")
     ),
     tabPanel(
-      "CCLE Gene Expression Distribution",
+      "CCLE: Molecular Profile Distribution Across Cancer Primary Sites",
       ui.modules_ccle_dist("modules_ccle_dist")
     ),
     tabPanel(
-      "CCLE Gene Expression Correlation",
+      "CCLE: Molecule-Molecule Correlation",
       ui.modules_ccle_genecor("modules_ccle_genecor")
     )
   )

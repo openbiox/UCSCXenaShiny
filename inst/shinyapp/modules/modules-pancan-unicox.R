@@ -1,7 +1,7 @@
 ui.modules_pancan_unicox <- function(id) {
   ns <- NS(id)
   fluidPage(
-    titlePanel("Module: Gene Pancan Uni-cox analysis"),
+    #titlePanel("Module: Gene Pancan Uni-cox analysis"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidRow(

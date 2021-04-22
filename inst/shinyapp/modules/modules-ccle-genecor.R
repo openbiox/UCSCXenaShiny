@@ -1,7 +1,7 @@
 ui.modules_ccle_genecor <- function(id) {
   ns <- NS(id)
   fluidPage(
-    titlePanel("Module: Gene CCLE Expression Correlation"),
+    #titlePanel("Module: Gene CCLE Expression Correlation"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidRow(
@@ -101,8 +101,7 @@ ui.modules_ccle_genecor <- function(id) {
         width = 3
       ),
       mainPanel = mainPanel(
-        plotOutput(ns("gene_ccle_gene_cor"), height = "600px"),
-        width = 6
+        plotOutput(ns("gene_ccle_gene_cor"), height = "600px")
       )
     )
   )
@@ -166,7 +165,8 @@ server.modules_ccle_genecor <- function(input, output, session) {
         use_regline = input$use_regline
       )
     }
-    p <- p + theme_classic(base_size = 20);p <- p + ggplot2::theme(legend.position = "none")
+    p <- p + theme_classic(base_size = 20) +
+      ggplot2::theme(legend.position = "none")
     
     return(p)
   })

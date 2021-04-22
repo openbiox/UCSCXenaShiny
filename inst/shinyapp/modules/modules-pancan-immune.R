@@ -1,7 +1,7 @@
 ui.modules_pancan_immune <- function(id) {
   ns <- NS(id)
   fluidPage(
-    titlePanel("Module: Gene Pancan Expression vs Immune Gene Signature"),
+    #titlePanel("Module: Gene Pancan Expression vs Immune Gene Signature"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidRow(

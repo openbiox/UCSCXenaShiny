@@ -1,7 +1,7 @@
 ui.modules_pancan_radar <- function(id) {
   ns <- NS(id)
   fluidPage(
-    titlePanel("Module: Gene Pancan Radar"),
+    #titlePanel("Module: Gene Pancan Radar"),
     sidebarLayout(
       sidebarPanel(
         fluidRow(
