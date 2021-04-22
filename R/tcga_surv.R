@@ -59,9 +59,9 @@ tcga_surv_get <- function(item,
     cliMat <- TCGA_cli_data %>% dplyr::filter(.data$type %in% .type)
   }
 
-  message("Querying data of molecular ", item, " for survival analysis in TCGA cohort ", TCGA_cohort, ".")
+  message("Querying data of molecule(s) ", item, " for survival analysis in TCGA cohort ", TCGA_cohort, ".")
 
-  gd <- query_pancan_value(identifier = item, data_type = profile)
+  gd <- query_pancan_value(item, data_type = profile)
   if (is.list(gd)) gd <- gd[[1]]
 
   if (all(is.na(gd))) {
