@@ -2,8 +2,8 @@
 #' @import ggplot2 dplyr tibble forcats
 #' @param Gene a molecular identifier (e.g., "TP53") or a formula specifying
 #' genomic signature (`"TP53 + 2 * KRAS - 1.3 * PTEN"`).
-#' @param phenotype Different parameters for phenotype
 #' @param data_type support genomic profile for CCLE, currently "mRNA", "protein","cnv" are supported
+#' @param use_log if `TRUE`, log values.
 #' @return a `ggplot` object
 #' @export
 vis_ccle_tpm <- function(Gene = "TP53", data_type = "mRNA", use_log = FALSE) {
@@ -60,6 +60,9 @@ vis_ccle_tpm <- function(Gene = "TP53", data_type = "mRNA", use_log = FALSE) {
 #' @import ggplot2 dplyr tibble forcats
 #' @import ggplot2 dplyr ppcor
 #' @inheritParams vis_gene_cor
+#' @param Cor_method correlation method
+#' @param use_log_x if `TRUE`, log X values.
+#' @param use_log_y if `TRUE`, log Y values.
 #' @return a `ggplot` object
 #' @export
 
@@ -74,6 +77,7 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
   if (!requireNamespace("cowplot")) {
     install.packages("cowplot")
   }
+  ccle_info <- load_data("ccle_info")
 
   t1 <- query_pancan_value(Gene1, data_type = data_type1, database = "ccle")
   unit1 <- switch(data_type1,

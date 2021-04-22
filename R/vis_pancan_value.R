@@ -38,7 +38,7 @@ vis_toil_gene <- function(data, x = "primary_site",
 #' "cnv_gistic2", "methylation", "miRNA".
 #' @return a `ggplot` object
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' p <- vis_toil_TvsN(Gene = "TP53", Mode = "Violinplot", Show.P.value = FALSE, Show.P.label = FALSE)
 #' p <- vis_toil_TvsN(Gene = "TP53", Mode = "Boxplot", Show.P.value = FALSE, Show.P.label = FALSE)
 #' }
@@ -217,7 +217,7 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", data_type = "mRNA", S
 #' @param data_type choose gene profile type, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"
 #' @return a `ggplot` object
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' p <- vis_unicox_tree(Gene = "TP53")
 #' }
 #' @export
@@ -442,7 +442,7 @@ vis_pancan_anatomy <- function(Gene = "TP53",
 #' @param Cor_method correlation method
 #' @param Immune_sig_type quantification method, default is "Cibersort"
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' p <- vis_gene_immune_cor(Gene = "TP53")
 #' }
 #' @export
@@ -530,7 +530,7 @@ vis_gene_immune_cor <- function(Gene = "TP53", Cor_method = "spearman", data_typ
 #'
 #' @inheritParams vis_gene_immune_cor
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' p <- vis_gene_tmb_cor(Gene = "TP53")
 #' }
 #' @export
@@ -593,7 +593,7 @@ vis_gene_tmb_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type =
 #'
 #' @inheritParams vis_gene_immune_cor
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' p <- vis_gene_msi_cor(Gene = "TP53")
 #' }
 #' @export
@@ -611,7 +611,7 @@ vis_gene_msi_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type =
 
   s <- data.frame(sample = names(t1), values = t1)
   ss <- s %>%
-    mutate(Barcode = str_sub(sample, 1, 12)) %>%
+    dplyr::mutate(Barcode = stringr::str_sub(sample, 1, 12)) %>%
     dplyr::inner_join(tcga_msi, by = c("Barcode" = "Barcode")) %>%
     dplyr::inner_join(tcga_gtex[, c("tissue", "sample")], by = "sample")
   sss <- split(ss, ss$tissue)
@@ -658,7 +658,7 @@ vis_gene_msi_cor <- function(Gene = "TP53", Cor_method = "spearman", data_type =
 #'
 #' @inheritParams vis_gene_immune_cor
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' p <- vis_gene_stemness_cor(Gene = "TP53")
 #' }
 #' @export
@@ -970,6 +970,7 @@ vis_gene_cor <- function(Gene1 = "CSF1R",
 #' @import ggplot2 dplyr ppcor
 #' @inheritParams vis_gene_cor
 #' @param cancer_choose TCGA cohort name, e.g. "ACC".
+#' @param Cor_method correlation method
 #' @export
 vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
                                 Gene2 = "JAK3",
@@ -1073,7 +1074,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
 #' @param Cor_method correlation method
 #' @param sig Immune Signature, default: result from TIMER
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' p <- vis_gene_TIL_cor(Gene = "TP53")
 #' }
 #' @export

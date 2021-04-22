@@ -20,7 +20,7 @@ including "mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
 Visualize Correlation between Gene and TMB (Tumor Mutation Burden)
 }
 \examples{
-\donttest{
+\dontrun{
 p <- vis_gene_tmb_cor(Gene = "TP53")
 }
 }

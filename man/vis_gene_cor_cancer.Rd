@@ -31,6 +31,8 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 \item{cancer_choose}{TCGA cohort name, e.g. "ACC".}
 
 \item{use_regline}{if \code{TRUE}, add regression line.}
+
+\item{Cor_method}{correlation method}
 }
 \description{
 Visualize Gene-Gene Correlation in a TCGA Cancer Type

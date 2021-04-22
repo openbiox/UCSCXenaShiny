@@ -6,7 +6,7 @@
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' t <- query_toil_value_df()
 #' t
 #' }

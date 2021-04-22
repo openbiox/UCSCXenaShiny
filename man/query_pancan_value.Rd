@@ -21,6 +21,8 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 
 \item{database}{database, either 'toil' for TCGA TARGET GTEx, or 'ccle' for
 CCLE.}
+
+\item{reset_id}{if not \code{NULL}, set the specified variable at parent frame to "Signature".}
 }
 \value{
 a list.

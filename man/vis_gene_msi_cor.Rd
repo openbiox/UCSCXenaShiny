@@ -20,7 +20,7 @@ including "mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
 Visualize Correlation between Gene and MSI (Microsatellite instability)
 }
 \examples{
-\donttest{
+\dontrun{
 p <- vis_gene_msi_cor(Gene = "TP53")
 }
 }

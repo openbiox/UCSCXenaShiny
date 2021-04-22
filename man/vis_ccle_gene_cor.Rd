@@ -26,7 +26,13 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 
 \item{data_type2}{choose gene profile type for the second gene, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"}
 
+\item{use_log_x}{if \code{TRUE}, log X values.}
+
+\item{use_log_y}{if \code{TRUE}, log Y values.}
+
 \item{use_regline}{if \code{TRUE}, add regression line.}
+
+\item{Cor_method}{correlation method}
 }
 \value{
 a \code{ggplot} object

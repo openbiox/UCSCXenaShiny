@@ -59,6 +59,7 @@ query_molecule_value <- function(dataset, molecule, host = NULL) {
 #' "mutation", "cnv" (-2, -1, 0, 1, 2), "cnv_gistic2", "methylation", "miRNA".
 #' @param database database, either 'toil' for TCGA TARGET GTEx, or 'ccle' for
 #' CCLE.
+#' @param reset_id if not `NULL`, set the specified variable at parent frame to "Signature".
 #'
 #' @return a list.
 #' @export

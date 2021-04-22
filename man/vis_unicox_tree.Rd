@@ -31,7 +31,7 @@ a \code{ggplot} object
 Visualize Single Gene Univariable Cox Result from Toil Data Hub
 }
 \examples{
-\donttest{
+\dontrun{
 p <- vis_unicox_tree(Gene = "TP53")
 }
 }

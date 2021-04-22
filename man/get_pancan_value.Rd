@@ -97,7 +97,7 @@ Identifier includes gene/probe etc.
 }}
 
 \examples{
-\donttest{
+\dontrun{
 # Fetch TP53 expression value from pan-cancer dataset
 t1 <- get_pancan_value("TP53",
   dataset = "TcgaTargetGtex_rsem_isoform_tpm",

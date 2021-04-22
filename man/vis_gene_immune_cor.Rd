@@ -27,7 +27,7 @@ including "mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
 Heatmap for Correlation between Gene and Immune Signatures
 }
 \examples{
-\donttest{
+\dontrun{
 p <- vis_gene_immune_cor(Gene = "TP53")
 }
 }

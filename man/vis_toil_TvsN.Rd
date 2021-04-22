@@ -48,7 +48,7 @@ a \code{ggplot} object
 Visualize Pan-cancer TPM (tumor (TCGA) vs Normal (TCGA & GTEx))
 }
 \examples{
-\donttest{
+\dontrun{
 p <- vis_toil_TvsN(Gene = "TP53", Mode = "Violinplot", Show.P.value = FALSE, Show.P.label = FALSE)
 p <- vis_toil_TvsN(Gene = "TP53", Mode = "Boxplot", Show.P.value = FALSE, Show.P.label = FALSE)
 }

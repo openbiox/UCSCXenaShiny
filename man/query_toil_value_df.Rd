@@ -23,11 +23,11 @@ Obtain ToilHub Info for Single Molecule
 Obtain ToilHub Info for Single Gene
 }
 \examples{
-\donttest{
+\dontrun{
 t <- query_toil_value_df()
 t
 }
-\donttest{
+\dontrun{
 t <- query_toil_value_df()
 t
 }

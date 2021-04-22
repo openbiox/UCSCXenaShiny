@@ -24,7 +24,7 @@ including "mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
 Visualize Correlation between Gene and Tumor Stemness
 }
 \examples{
-\donttest{
+\dontrun{
 p <- vis_gene_stemness_cor(Gene = "TP53")
 }
 }

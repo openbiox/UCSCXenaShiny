@@ -28,7 +28,7 @@ including "mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
 Heatmap for Correlation between Gene and Tumor Immune Infiltration (TIL)
 }
 \examples{
-\donttest{
+\dontrun{
 p <- vis_gene_TIL_cor(Gene = "TP53")
 }
 }

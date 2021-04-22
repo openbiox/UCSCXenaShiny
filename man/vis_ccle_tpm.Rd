@@ -12,7 +12,7 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 
 \item{data_type}{support genomic profile for CCLE, currently "mRNA", "protein","cnv" are supported}
 
-\item{phenotype}{Different parameters for phenotype}
+\item{use_log}{if \code{TRUE}, log values.}
 }
 \value{
 a \code{ggplot} object
