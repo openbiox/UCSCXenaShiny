@@ -22,7 +22,7 @@
   }
 </script>
 
-<title>Visualize CCLE Gene Expression — vis_ccle_tpm • UCSCXenaShiny</title>
+<title>Visualize CCLE Gene Expression Correlation — vis_ccle_gene_cor • UCSCXenaShiny</title>
 
 
 <!-- jquery -->
@@ -66,8 +66,8 @@
 
 
 
-<meta property="og:title" content="Visualize CCLE Gene Expression — vis_ccle_tpm" />
-<meta property="og:description" content="Visualize CCLE Gene Expression" />
+<meta property="og:title" content="Visualize CCLE Gene Expression Correlation — vis_ccle_gene_cor" />
+<meta property="og:description" content="Visualize CCLE Gene Expression Correlation" />
 
 
 
@@ -164,31 +164,48 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Visualize CCLE Gene Expression</h1>
+    <h1>Visualize CCLE Gene Expression Correlation</h1>
     <small class="dont-index">Source: <a href='https://github.com/openbiox/UCSCXenaShiny/blob/master/R/vis_ccle_value.R'><code>R/vis_ccle_value.R</code></a></small>
-    <div class="hidden name"><code>vis_ccle_tpm.Rd</code></div>
+    <div class="hidden name"><code>vis_ccle_gene_cor.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Visualize CCLE Gene Expression</p>
+    <p>Visualize CCLE Gene Expression Correlation</p>
     </div>
 
-    <pre class="usage"><span class='fu'>vis_ccle_tpm</span><span class='op'>(</span>Gene <span class='op'>=</span> <span class='st'>"TP53"</span>, data_type <span class='op'>=</span> <span class='st'>"mRNA"</span>, use_log <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>vis_ccle_gene_cor</span><span class='op'>(</span>
+  Gene1 <span class='op'>=</span> <span class='st'>"CSF1R"</span>,
+  Gene2 <span class='op'>=</span> <span class='st'>"JAK3"</span>,
+  data_type1 <span class='op'>=</span> <span class='st'>"mRNA"</span>,
+  data_type2 <span class='op'>=</span> <span class='st'>"mRNA"</span>,
+  cor_method <span class='op'>=</span> <span class='st'>"spearman"</span>,
+  use_log_x <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  use_log_y <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  use_regline <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>Gene</th>
-      <td><p>Gene symbal for comparision</p></td>
+      <th>Gene1</th>
+      <td><p>the first gene</p></td>
     </tr>
     <tr>
-      <th>data_type</th>
-      <td><p>support genomic profile for CCLE, currently "mRNA", "protein","cnv" are supported</p></td>
+      <th>Gene2</th>
+      <td><p>the second gene</p></td>
     </tr>
     <tr>
-      <th>phenotype</th>
-      <td><p>Different parameters for phenotype</p></td>
+      <th>data_type1</th>
+      <td><p>choose gene profile type for the first gene, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"</p></td>
+    </tr>
+    <tr>
+      <th>data_type2</th>
+      <td><p>choose gene profile type for the second gene, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"</p></td>
+    </tr>
+    <tr>
+      <th>use_regline</th>
+      <td><p>if <code>TRUE</code>, add regression line.</p></td>
     </tr>
     </table>
 

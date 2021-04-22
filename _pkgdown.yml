@@ -33,6 +33,7 @@ reference:
   - title: Data Query
     desc: Functions to query data from UCSC Xena data hubs in single molecular level. The functionality of functions below may overlap, we rank them by importance.
     contents:
+    - get_signature_data
     - query_value
     - get_pancan_value
     - ope_toil_gene
@@ -46,12 +47,14 @@ reference:
     - analyze_gene_drug_response_asso
     - analyze_gene_drug_response_diff
     - vis_ccle_tpm
+    - vis_ccle_gene_cor
     - vis_gene_TIL_cor
     - vis_gene_immune_cor
     - vis_gene_cor
     - vis_gene_cor_cancer
     - vis_gene_stemness_cor
     - vis_gene_tmb_cor
+    - vis_gene_msi_cor
     - vis_pancan_anatomy
     - vis_toil_TvsN
     - vis_toil_TvsN_cancer

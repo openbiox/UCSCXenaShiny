@@ -178,8 +178,8 @@
   Gene2 <span class='op'>=</span> <span class='st'>"JAK3"</span>,
   data_type1 <span class='op'>=</span> <span class='st'>"mRNA"</span>,
   data_type2 <span class='op'>=</span> <span class='st'>"mRNA"</span>,
-  purity_adj <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  split <span class='op'>=</span> <span class='cn'>FALSE</span>
+  use_regline <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  purity_adj <span class='op'>=</span> <span class='cn'>TRUE</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -202,12 +202,12 @@
       <td><p>choose gene profile type for the second gene, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"</p></td>
     </tr>
     <tr>
-      <th>purity_adj</th>
-      <td><p>whether performing partial correlation adjusted by purity</p></td>
+      <th>use_regline</th>
+      <td><p>if <code>TRUE</code>, add regression line.</p></td>
     </tr>
     <tr>
-      <th>split</th>
-      <td><p>whether split by TCGA tumor tissue</p></td>
+      <th>purity_adj</th>
+      <td><p>whether performing partial correlation adjusted by purity</p></td>
     </tr>
     </table>
 

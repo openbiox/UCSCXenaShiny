@@ -179,8 +179,8 @@
   data_type1 <span class='op'>=</span> <span class='st'>"mRNA"</span>,
   data_type2 <span class='op'>=</span> <span class='st'>"mRNA"</span>,
   purity_adj <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  split <span class='op'>=</span> <span class='cn'>FALSE</span>,
   cancer_choose <span class='op'>=</span> <span class='st'>"GBM"</span>,
+  use_regline <span class='op'>=</span> <span class='cn'>TRUE</span>,
   cor_method <span class='op'>=</span> <span class='st'>"spearman"</span>
 <span class='op'>)</span></pre>
 
@@ -208,12 +208,12 @@
       <td><p>whether performing partial correlation adjusted by purity</p></td>
     </tr>
     <tr>
-      <th>split</th>
-      <td><p>whether split by TCGA tumor tissue</p></td>
-    </tr>
-    <tr>
       <th>cancer_choose</th>
       <td><p>TCGA cohort name, e.g. "ACC".</p></td>
+    </tr>
+    <tr>
+      <th>use_regline</th>
+      <td><p>if <code>TRUE</code>, add regression line.</p></td>
     </tr>
     </table>
 
