@@ -1,6 +1,7 @@
 #' Query Single Identifier or Signature Value from Pan-cancer Database
 #'
-#' @param molecule a ID, e.g. gene symbol.
+#' @param molecule a molecular identifier (e.g., "TP53") or a formula specifying
+#' genomic signature (`"TP53 + 2 * KRAS - 1.3 * PTEN"`).
 #' @param data_type data type. Can be one of "mRNA", "transcript", "protein",
 #' "mutation", "cnv" (-2, -1, 0, 1, 2), "cnv_gistic2", "methylation", "miRNA".
 #' @param database database, either 'toil' for TCGA TARGET GTEx, or 'ccle' for
@@ -17,7 +18,7 @@ query_pancan_value <- function(molecule,
                                reset_id = NULL) {
   data_type <- match.arg(data_type)
   database <- match.arg(database)
-  
+
   # molecule = "TP53 + 2*KRAS - 1.3*PTEN"
   has_signature <- grepl(" ", molecule)
   if (has_signature) {
@@ -45,11 +46,11 @@ query_pancan_value <- function(molecule,
     ) -> return_value
     if (is.na(return_value)) sig_values <- NA
     if (!exists("unit")) unit <- NULL
-    
+
     if (!is.null(reset_id)) {
       assign(reset_id, "Signature", envir = parent.frame())
     }
-    
+
     if (is.null(unit)) {
       return(sig_values)
     } else {

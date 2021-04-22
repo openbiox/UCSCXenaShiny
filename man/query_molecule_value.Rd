@@ -11,7 +11,7 @@ query_molecule_value(dataset, molecule, host = NULL)
 (e.g., gene, cell line) and columns are samples).}
 
 \item{molecule}{a molecular identifier (e.g., "TP53") or a formula specifying
-genomic signature (\code{"TP53 + 2 * KRAS - 1.3 \\* PTEN"}).
+genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).
 \strong{NOTE}, when a signature is specified, a space must exist in the input.}
 
 \item{host}{a UCSC Xena host, default is \code{NULL}, auto-detect from the dataset.}

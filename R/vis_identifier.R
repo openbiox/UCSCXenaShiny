@@ -3,7 +3,7 @@
 #' @param dataset a UCSC Xena dataset in dense matrix format (rows are features
 #' (e.g., gene, cell line) and columns are samples).
 #' @param molecule a molecular identifier (e.g., "TP53") or a formula specifying
-#' genomic signature (`"TP53 + 2 * KRAS - 1.3 \* PTEN"`).
+#' genomic signature (`"TP53 + 2 * KRAS - 1.3 * PTEN"`).
 #' **NOTE**, when a signature is specified, a space must exist in the input.
 #' @param host a UCSC Xena host, default is `NULL`, auto-detect from the dataset.
 #'
@@ -15,7 +15,7 @@
 #' dataset <- "ccle/CCLE_copynumber_byGene_2013-12-03"
 #' x <- query_molecule_value(dataset, "TP53")
 #' head(x)
-#' 
+#'
 #' signature <- "TP53 + 2*KRAS - 1.3*PTEN" # a space must exist in the string
 #' y <- query_molecule_value(dataset, signature)
 #' head(y)

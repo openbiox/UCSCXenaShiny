@@ -17,7 +17,8 @@ vis_toil_TvsN_cancer(
 )
 }
 \arguments{
-\item{Gene}{Molecule identifier (gene symbol in most cases)}
+\item{Gene}{a molecular identifier (e.g., "TP53") or a formula specifying
+genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 
 \item{Mode}{"Boxplot" or "Violinplot" to represent data}
 

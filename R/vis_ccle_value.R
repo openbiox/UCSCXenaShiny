@@ -1,6 +1,7 @@
 #' Visualize CCLE Gene Expression
 #' @import ggplot2 dplyr tibble forcats
-#' @param Gene Gene symbal for comparision
+#' @param Gene a molecular identifier (e.g., "TP53") or a formula specifying
+#' genomic signature (`"TP53 + 2 * KRAS - 1.3 * PTEN"`).
 #' @param phenotype Different parameters for phenotype
 #' @param data_type support genomic profile for CCLE, currently "mRNA", "protein","cnv" are supported
 #' @return a `ggplot` object

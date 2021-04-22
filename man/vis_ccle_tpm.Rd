@@ -7,7 +7,8 @@
 vis_ccle_tpm(Gene = "TP53", data_type = "mRNA", use_log = FALSE)
 }
 \arguments{
-\item{Gene}{Gene symbal for comparision}
+\item{Gene}{a molecular identifier (e.g., "TP53") or a formula specifying
+genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 
 \item{data_type}{support genomic profile for CCLE, currently "mRNA", "protein","cnv" are supported}
 

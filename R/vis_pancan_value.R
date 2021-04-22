@@ -23,7 +23,8 @@ vis_toil_gene <- function(data, x = "primary_site",
 
 #' Visualize Pan-cancer TPM (tumor (TCGA) vs Normal (TCGA & GTEx))
 #' @import ggplot2 dplyr tibble
-#' @param Gene Molecule identifier (gene symbol in most cases)
+#' @param Gene a molecular identifier (e.g., "TP53") or a formula specifying
+#' genomic signature (`"TP53 + 2 * KRAS - 1.3 * PTEN"`).
 #' @param Mode "Boxplot" or "Violinplot" to represent data
 #' @param Show.P.value `TRUE` or `FALSE` whether to count P value
 #' @param Method default method is wilcox.test
@@ -863,8 +864,10 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type =
 #' Visualize Gene-Gene Correlation in TCGA
 #'
 #' @import ggplot2 dplyr ppcor
-#' @param Gene1 the first gene
-#' @param Gene2 the second gene
+#' @param Gene1 a molecular identifier (e.g., "TP53") or a formula specifying
+#' genomic signature (`"TP53 + 2 * KRAS - 1.3 * PTEN"`).
+#' @param Gene2 a molecular identifier (e.g., "TP53") or a formula specifying
+#' genomic signature (`"TP53 + 2 * KRAS - 1.3 * PTEN"`).
 #' @param data_type1 choose gene profile type for the first gene, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"
 #' @param data_type2 choose gene profile type for the second gene, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"
 #' @param purity_adj whether performing partial correlation adjusted by purity

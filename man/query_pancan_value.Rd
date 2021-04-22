@@ -13,7 +13,8 @@ query_pancan_value(
 )
 }
 \arguments{
-\item{molecule}{a ID, e.g. gene symbol.}
+\item{molecule}{a molecular identifier (e.g., "TP53") or a formula specifying
+genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 
 \item{data_type}{data type. Can be one of "mRNA", "transcript", "protein",
 "mutation", "cnv" (-2, -1, 0, 1, 2), "cnv_gistic2", "methylation", "miRNA".}

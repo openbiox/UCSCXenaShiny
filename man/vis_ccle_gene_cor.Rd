@@ -16,9 +16,11 @@ vis_ccle_gene_cor(
 )
 }
 \arguments{
-\item{Gene1}{the first gene}
+\item{Gene1}{a molecular identifier (e.g., "TP53") or a formula specifying
+genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 
-\item{Gene2}{the second gene}
+\item{Gene2}{a molecular identifier (e.g., "TP53") or a formula specifying
+genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 
 \item{data_type1}{choose gene profile type for the first gene, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"}
 
