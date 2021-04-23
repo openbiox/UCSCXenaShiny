@@ -1066,7 +1066,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
           cor_res$pstar, "\n", "Cor_adj: ",
           round(partial_cor_res$cor_partial, 2), " ", partial_cor_res$pstar
         ),
-        size = 5, colour = "black"
+        size = 10, colour = "black"
       ) +
       ggplot2::labs(color = "")
   } else {
@@ -1081,7 +1081,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
         -Inf, Inf,
         hjust = -0.1, vjust = 1,
         label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar),
-        size = 5, colour = "black"
+        size = 10, colour = "black"
       ) +
       ggplot2::labs(color = "")
   }

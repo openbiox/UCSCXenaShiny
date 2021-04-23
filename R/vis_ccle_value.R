@@ -133,7 +133,6 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
 
   cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
 
-  if (use_log_x) x.pos <- log2(x.pos + 1)
   p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2")) +
     ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE, alpha = alpha, color = color) +
     ggplot2::theme_minimal(base_size = 20) +
