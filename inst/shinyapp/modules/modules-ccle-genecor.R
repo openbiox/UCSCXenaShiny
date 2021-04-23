@@ -1,3 +1,17 @@
+choices_primary_site <- c("prostate","stomach",
+    "urinary_tract", "central_nervous_system",            
+    "ovary",   "haematopoietic_and_lymphoid_tissue",
+    "kidney",  "thyroid",
+    "skin",    "soft_tissue",                       
+    "salivary_gland","lung",   
+    "bone",    "pleura", 
+    "endometrium","pancreas",                          
+    "breast",  "upper_aerodigestive_tract",         
+    "large_intestine","autonomic_ganglia",                 
+    "oesophagus","liver",  
+    "biliary_tract","small_intestine")
+
+
 ui.modules_ccle_genecor <- function(id) {
   ns <- NS(id)
   fluidPage(
@@ -68,6 +82,8 @@ ui.modules_ccle_genecor <- function(id) {
           choices = c("spearman", "pearson"),
           selected = "spearman"
         ),
+        selectInput(inputId = ns("use_all"), label = "Use All Primary Sites", choices = c("TRUE","FALSE"), selected = "FALSE"),
+        selectInput(inputId = ns("SitePrimary"), label = "Filter Primary Site", choices = choices_primary_site, selected = "prostate"),
         materialSwitch(ns("use_log_x"), "x axis log", inline = FALSE),
         materialSwitch(ns("use_log_y"), "y axis log", inline = FALSE),
         materialSwitch(ns("use_regline"), "Use regression line", inline = TRUE),
@@ -109,6 +125,13 @@ ui.modules_ccle_genecor <- function(id) {
       ),
       mainPanel = mainPanel(
         plotOutput(ns("gene_ccle_gene_cor"), height = "600px"),
+        DT::DTOutput(outputId = ns("tbl")),
+        shinyjs::hidden(
+          wellPanel(
+            id = ns("save_csv"),
+            downloadButton(ns("downloadTable"), "Save as csv")
+          )
+        ),
         width = 6
       )
     )
@@ -166,7 +189,9 @@ server.modules_ccle_genecor <- function(input, output, session) {
         use_log_y = input$use_log_y,
         use_regline = input$use_regline,
         color = input$color,
-        alpha = input$alpha
+        alpha = input$alpha,
+        SitePrimary = input$SitePrimary,
+        use_all = input$use_all
       )
     }
     p <- p + theme_classic(base_size = 20) +
@@ -186,7 +211,7 @@ server.modules_ccle_genecor <- function(input, output, session) {
   
   output$download <- downloadHandler(
     filename = function() {
-      paste0(input$ccle_search, " gene_ccle_genecor.", input$device)
+      paste0(input$ccle_search1,"_",input$profile1,"_",input$ccle_search2,"_",input$profile2,"_gene_ccle_genecor.", input$device)
     },
     content = function(file) {
       p <- plot_func()
@@ -201,6 +226,34 @@ server.modules_ccle_genecor <- function(input, output, session) {
       }
       
       # ggplot2::ggsave(filename = file, plot = print(p), device = input$device, width = input$width, height = input$height, dpi = 600)
+    }
+  )
+  
+  ##return data
+  return_data <- eventReactive(input$search_bttn,{
+    if (nchar(input$ccle_search1) >= 1 & nchar(input$ccle_search2) >= 1) {
+      shinyjs::show(id = "save_csv")
+      p <- plot_func()
+      data <- p$data
+      return(data)
+    } else {
+      shinyjs::hide(id = "save_csv")
+    }
+  })
+  
+  
+  output$tbl <- renderDT(
+    data <- return_data(),
+    options = list(lengthChange = FALSE)
+  )
+  
+  ##downloadTable
+  output$downloadTable <- downloadHandler(
+    filename = function() {
+      paste0(input$ccle_search1,"_",input$profile1,"_",input$ccle_search2,"_",input$profile2,"_gene_ccle_genecor.csv")
+    },
+    content = function(file) {
+      write.csv(data <- return_data(), file, row.names = FALSE)
     }
   )
 }

@@ -73,7 +73,14 @@ ui.modules_ccle_dist <- function(id) {
         width = 3
       ),
       mainPanel = mainPanel(
-        plotOutput(ns("gene_ccle_dist"), height = "600px")
+        plotOutput(ns("gene_ccle_dist"), height = "600px"),
+        DT::DTOutput(outputId = ns("tbl")),
+        shinyjs::hidden(
+          wellPanel(
+            id = ns("save_csv"),
+            downloadButton(ns("downloadTable"), "Save as csv")
+          )
+        )
       )
     )
   )
@@ -122,7 +129,7 @@ server.modules_ccle_dist <- function(input, output, session) {
 
   output$download <- downloadHandler(
     filename = function() {
-      paste0(input$ccle_search, " gene_ccle_dist.", input$device)
+      paste0(input$ccle_search, "_gene_ccle_dist.", input$device)
     },
     content = function(file) {
       p <- plot_func()
@@ -139,4 +146,33 @@ server.modules_ccle_dist <- function(input, output, session) {
       # ggplot2::ggsave(filename = file, plot = print(p), device = input$device, width = input$width, height = input$height, dpi = 600)
     }
   )
+  
+  ##return data
+  return_data <- eventReactive(input$search_bttn,{
+    if (nchar(input$ccle_search) >= 1) {
+      shinyjs::show(id = "save_csv")
+      p <- plot_func()
+      data <- p$data
+      return(data)
+    } else {
+      shinyjs::hide(id = "save_csv")
+    }
+  })
+  
+  
+  output$tbl <- renderDT(
+    data <- return_data(),
+    options = list(lengthChange = FALSE)
+  )
+  
+  ##downloadTable
+  output$downloadTable <- downloadHandler(
+    filename = function() {
+      paste0(input$ccle_search, "_gene_ccle_dist.csv")
+    },
+    content = function(file) {
+      write.csv(data <- return_data(), file, row.names = FALSE)
+    }
+  )
+  
 }

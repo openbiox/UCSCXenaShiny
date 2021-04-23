@@ -84,6 +84,14 @@ ui.modules_cancer_dist <- function(id) {
         p("2. You have to turn on both 'Show P value' and 'Show P label' to show significant labels"),
         p("3. If a void plot shows, please check your input"),
         p("4. ", tags$a(href = "https://pancanatlas.xenahubs.net/", "Genomic profile data source")),
+        tags$br(),
+        DT::DTOutput(outputId = ns("tbl")),
+        shinyjs::hidden(
+          wellPanel(
+            id = ns("save_csv"),
+            downloadButton(ns("downloadTable"), "Save as csv")
+          )
+        ),
         width = 6
       )
     )
@@ -144,6 +152,14 @@ server.modules_cancer_dist <- function(input, output, session) {
     plot_func()
   })
 
+  output$downloadTable <- downloadHandler(
+    filename = function() {
+      paste0(input$Pancan_search,"_",input$profile,"_",input$Cancer,"_pancan_dist.csv")
+    },
+    content = function(file) {
+      write.csv(data <- return_data(), file, row.names = FALSE)
+    }
+  )
 
   output$download <- downloadHandler(
     filename = function() {
@@ -162,4 +178,23 @@ server.modules_cancer_dist <- function(input, output, session) {
       }
     }
   )
+  
+  ##return data
+  return_data <- eventReactive(input$search_bttn,{
+    if (nchar(input$Pancan_search) >= 1) {
+      shinyjs::show(id = "save_csv")
+      p <- plot_func()
+      data <- p$data
+      return(data)
+    } else {
+      shinyjs::hide(id = "save_csv")
+    }
+  })
+  
+  
+  output$tbl <- renderDT(
+    data <- return_data(),
+    options = list(lengthChange = FALSE)
+  )
+  
 }
