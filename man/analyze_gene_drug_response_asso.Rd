@@ -29,5 +29,8 @@ Analyze Association between Gene (Signature) and Drug Response
 analyze_gene_drug_response_asso("TP53")
 analyze_gene_drug_response_asso(c("TP53", "KRAS"))
 analyze_gene_drug_response_asso(c("TP53", "KRAS"), combine = TRUE)
+
+# Visualization
+analyze_gene_drug_response_asso("TP53")
 }
 }

@@ -45,7 +45,9 @@ reference:
     - tcga_surv_get
     - tcga_surv_plot
     - analyze_gene_drug_response_asso
+    - vis_gene_drug_response_asso
     - analyze_gene_drug_response_diff
+    - vis_gene_drug_response_diff
     - vis_ccle_tpm
     - vis_ccle_gene_cor
     - vis_gene_TIL_cor

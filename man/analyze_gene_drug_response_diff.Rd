@@ -38,5 +38,8 @@ analyze_gene_drug_response_diff(c("TP53", "KRAS"),
   tissue = "kidney",
   combine = TRUE
 )
+
+# Visualization
+vis_gene_drug_response_diff("TP53")
 }
 }
