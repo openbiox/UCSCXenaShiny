@@ -75,6 +75,17 @@ ui.modules_ccle_genecor <- function(id) {
         materialSwitch(ns("use_log_x"), "x axis log", inline = FALSE),
         materialSwitch(ns("use_log_y"), "y axis log", inline = FALSE),
         materialSwitch(ns("use_regline"), "Use regression line", inline = TRUE),
+        sliderTextInput(
+          inputId = ns("alpha"),
+          label = "Choose a transparent value", 
+          choices = seq(from = 0,
+                        to = 1,
+                        by = 0.1),
+          selected = "0.5",  
+          grid = TRUE
+        ),
+        colourpicker::colourInput(inputId = ns("color"), "Point color", "#000000"),
+        tags$br(),
         #selectInput(inputId = ns("phenotype"), label = "phenotype", choices = ccle_choices, selected = "Type"),
         numericInput(inputId = ns("height"), label = "Height", value = 8),
         numericInput(inputId = ns("width"), label = "Width", value = 8),
@@ -101,7 +112,8 @@ ui.modules_ccle_genecor <- function(id) {
         width = 3
       ),
       mainPanel = mainPanel(
-        plotOutput(ns("gene_ccle_gene_cor"), height = "600px")
+        plotOutput(ns("gene_ccle_gene_cor"), height = "600px"),
+        width = 6
       )
     )
   )
@@ -162,7 +174,9 @@ server.modules_ccle_genecor <- function(input, output, session) {
         cor_method = input$cor_method,
         use_log_x = input$use_log_x,
         use_log_y = input$use_log_y,
-        use_regline = input$use_regline
+        use_regline = input$use_regline,
+        color = input$color,
+        alpha = input$alpha
       )
     }
     p <- p + theme_classic(base_size = 20) +

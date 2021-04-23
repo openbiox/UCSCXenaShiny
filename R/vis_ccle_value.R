@@ -73,7 +73,8 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
                               cor_method = "spearman",
                               use_log_x = FALSE,
                               use_log_y = FALSE,
-                              use_regline = TRUE) {
+                              use_regline = TRUE,
+                              alpha = 0.5, color = "#000000") {
   if (!requireNamespace("cowplot")) {
     install.packages("cowplot")
   }
@@ -125,13 +126,12 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
 
   cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
 
-  df$pc <- predict(prcomp(~ gene1 + gene2, df))[, 1]
   # adjust text position
   x.pos <- quantile(df$gene1)[1] + 10
   y.pos <- quantile(df$gene2)[5]
   if (use_log_x) x.pos <- log2(x.pos + 1)
-  p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
-    ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE) +
+  p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2")) +
+    ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE, alpha = alpha, color = color) +
     ggplot2::theme_minimal(base_size = 20) +
     ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
     ggplot2::labs(x = Gene1, y = Gene2) +
