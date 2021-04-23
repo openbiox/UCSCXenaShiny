@@ -9,8 +9,9 @@ ui.modules_ccle_drug_response_diff <- function(id) {
             9,
             selectizeInput(
               inputId = ns("ccle_search"),
-              label = "Input a gene or signature",
+              label = "Input a gene or list (as signature)",
               choices = NULL,
+              multiple = TRUE,
               width = "100%",
               options = list(
                 create = TRUE,

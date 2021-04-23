@@ -4,7 +4,11 @@
 \alias{vis_gene_drug_response_asso}
 \title{Visualize Gene and Drug-Target Association}
 \usage{
-vis_gene_drug_response_asso(Gene = "TP53", output_form = "plotly")
+vis_gene_drug_response_asso(
+  Gene = "TP53",
+  x_axis_type = c("mean.diff", "median.diff"),
+  output_form = "plotly"
+)
 }
 \arguments{
 \item{Gene}{a molecular identifier (e.g., "TP53") or a formula specifying

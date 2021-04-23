@@ -6,30 +6,41 @@
 #' @param output_form `plotly` or `ggplot2`.
 #' @inheritParams vis_toil_TvsN
 #' @return `plotly` or `ggplot2` object.
-vis_gene_drug_response_asso <- function(Gene = "TP53", output_form = "plotly") {
-  df <- analyze_gene_drug_response_asso(Gene)
+vis_gene_drug_response_asso <- function(Gene = "TP53", 
+                                        x_axis_type = c("mean.diff", "median.diff"),
+                                        output_form = "plotly") {
+  x_axis_type <- match.arg(x_axis_type)
   if (!requireNamespace("plotly")) install.packages("plotly")
   if (!requireNamespace("ggrepel")) install.packages("ggrepel")
-  df$drugs_targets <- paste0(df$drugs, "_", df$Target)
+  
+  df <- analyze_gene_drug_response_asso(Gene)
+  df$drugs_targets <- paste0(df$drugs, "->", df$Target)
   df$cor_type <- ifelse(df$cor >= 0, "pos", "neg")
-  df$num_of_cells_scale <- scale(df$num_of_cells)
-  p <- ggplot(data = df, aes(
-    x = cor,
-    y = -log10(fdr),
-    size = num_of_cells_scale,
-    color = cor_type,
-    text = paste(
-      "Genes: ", genes,
-      "<br>Correlation: ", round(cor, digits = 3),
-      "<br>Drugs: ", drugs,
-      "<br>Target: ", Target,
-      "<br>FDR: ", round(fdr, digits = 3),
-      "<br>Number of Cells: ", num_of_cells
-    )
+  
+  df$fdr_log <- -log10(df$fdr)
+  df$text <- paste(
+    "Gene: ", df$genes,
+    "<br>Correlation: ", round(df$cor, digits = 3),
+    "<br>Drugs: ", df$drugs,
+    "<br>Target: ", df$Target,
+    "<br>FDR: ", round(df$fdr, digits = 3),
+    "<br>Number of Cells: ", df$num_of_cells
+  )
+  
+  p <- ggplot(data = df, aes_string(
+    x = x_axis_type,
+    y = "fdr_log",
+    size = "cor",
+    color = "cor_type",
+    text = "text"
   )) +
     geom_point() +
-    ggtitle(paste0(unique(df$genes), " Drug-Target Correlation")) +
-    labs(x = "Correlation", y = "-log10(FDR)") +
+    ggtitle(paste0(unique(df$genes), " and Drug-Target Response Association")) +
+    labs(x = if (x_axis_type == "mean.diff") {
+      "Mean of expression difference between high and low IC50 cells"
+    } else {
+      "Median of expression difference between high and low IC50 cells"
+    }, y = "-log10(FDR)") +
     theme_minimal(base_size = 15) +
     scale_color_manual(values = c("#377EB8", "#E41A1C")) +
     scale_size(range = c(1, 5)) +
@@ -55,10 +66,11 @@ vis_gene_drug_response_diff <- function(Gene = "TP53", tissue = "prostate",
                                         Method = "wilcox.test") {
   df <- analyze_gene_drug_response_diff(Gene, tissue = tissue)
 
-  p <- df %>% ggplot(aes(x = drug, y = IC50, color = group)) +
+  p <- df %>% ggplot(aes_string(x = "drug", y = "IC50", color = "group")) +
     geom_boxplot() +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = .5, vjust = .5))
-
+    labs(x = "Drug", y = "IC50 (uM)") +
+    ggpubr::rotate_x_text(45)
+    
   if (Show.P.value == TRUE) {
     message("Counting P value")
     pv <- df %>%

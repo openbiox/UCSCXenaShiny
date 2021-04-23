@@ -2,7 +2,7 @@
 % Please edit documentation in R/analyze_gene_drug_response.R
 \name{analyze_gene_drug_response_diff}
 \alias{analyze_gene_drug_response_diff}
-\title{Analyze Difference of Drug Response between Gene (Signature) High and Low Expression}
+\title{Analyze Difference of Drug Response (IC50 Value (uM)) between Gene (Signature) High and Low Expression}
 \usage{
 analyze_gene_drug_response_diff(
   gene_list,
@@ -28,7 +28,7 @@ a gene signature.}
 a \code{data.frame}.
 }
 \description{
-Analyze Difference of Drug Response between Gene (Signature) High and Low Expression
+Analyze Difference of Drug Response (IC50 Value (uM)) between Gene (Signature) High and Low Expression
 }
 \examples{
 \dontrun{

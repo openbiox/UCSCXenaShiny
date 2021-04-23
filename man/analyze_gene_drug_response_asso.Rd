@@ -22,7 +22,8 @@ The cutoff between High and Low are median IC50.
 }
 }
 \description{
-Analyze Association between Gene (Signature) and Drug Response
+Analyze partial correlation of gene-drug association after
+controlling for tissue average expression.
 }
 \examples{
 \dontrun{

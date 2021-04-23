@@ -51,7 +51,7 @@ ui.page_pancan <- function() {
       ui.modules_ccle_genecor("modules_ccle_genecor")
     ),
     tabPanel(
-      "CCLE: Drug-Target Correlation",
+      "CCLE: Drug Response Association",
       ui.modules_ccle_drug_target_asso("modules_ccle_drug_target_asso")
     ),
     tabPanel(

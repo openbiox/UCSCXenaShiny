@@ -1,5 +1,8 @@
 #' Analyze Association between Gene (Signature) and Drug Response
 #'
+#' Analyze partial correlation of gene-drug association after 
+#' controlling for tissue average expression.
+#'
 #' @param gene_list a gene symbol list.
 #' @param combine if `TRUE`, combine the expression of gene list as
 #' a gene signature.
@@ -125,7 +128,7 @@ analyze_gene_drug_response_asso <- function(gene_list, combine = FALSE) {
     dplyr::arrange(.data$p.value, .data$fdr)
 }
 
-#' Analyze Difference of Drug Response between Gene (Signature) High and Low Expression
+#' Analyze Difference of Drug Response (IC50 Value (uM)) between Gene (Signature) High and Low Expression
 #'
 #' @inheritParams analyze_gene_drug_response_asso
 #' @param drug a drug name. Run example to check the list.
