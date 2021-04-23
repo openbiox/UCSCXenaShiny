@@ -49,6 +49,10 @@ ui.page_pancan <- function() {
     tabPanel(
       "CCLE: Molecule-Molecule Correlation",
       ui.modules_ccle_genecor("modules_ccle_genecor")
+    ),
+    tabPanel(
+      "CCLE: Drug-Target Correlation",
+      ui.modules_ccle_drug_target_asso("modules_ccle_drug_target_asso")
     )
   )
 }
