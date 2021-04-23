@@ -9,10 +9,8 @@ ui.modules_ccle_genecor <- function(id) {
             9,
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile1"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA"),
-              choiceNames = c("mRNA Expression"),
-              # choiceValues = c("mRNA", "protein","cnv"),
-              # choiceNames = c("mRNA Expression",  "Protein Expression", "Copy Number Variation"),
+              choiceValues = c("mRNA", "protein","cnv"),
+              choiceNames = c("mRNA Expression",  "Protein Expression", "Copy Number Variation"),
               animation = "jelly"
             ),
             selectizeInput(
@@ -29,10 +27,8 @@ ui.modules_ccle_genecor <- function(id) {
             ),
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile2"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA"),
-              choiceNames = c("mRNA Expression"),
-              # choiceValues = c("mRNA", "protein","cnv"),
-              # choiceNames = c("mRNA Expression",  "Protein Expression", "Copy Number Variation"),
+              choiceValues = c("mRNA", "protein","cnv"),
+              choiceNames = c("mRNA Expression",  "Protein Expression", "Copy Number Variation"),
               animation = "jelly"
             ),
             selectizeInput(
@@ -125,11 +121,8 @@ server.modules_ccle_genecor <- function(input, output, session) {
   profile_choices1 <- reactive({
     switch(input$profile1,
            mRNA = list(all = pancan_identifiers$gene, default = "CSF1R"),
-           methylation = list(all = pancan_identifiers$gene, default = "CSF1R"),
            protein = list(all = pancan_identifiers$protein, default = "P53"),
-           transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
-           miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-           cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
+           cnv = list(all = pancan_identifiers$gene, default = "TP53"),
            list(all = "NONE", default = "NONE"))
   })
   
@@ -146,11 +139,8 @@ server.modules_ccle_genecor <- function(input, output, session) {
   profile_choices2 <- reactive({
     switch(input$profile2,
            mRNA = list(all = pancan_identifiers$gene, default = "JAK3"),
-           methylation = list(all = pancan_identifiers$gene, default = "JAK3"),
-           protein = list(all = pancan_identifiers$protein, default = "P53"),
-           transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
-           miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-           cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
+           protein = list(all = UCSCXenaShiny:::.all_ccle_proteins, default = "p53_Caution"),
+           cnv = list(all = pancan_identifiers$gene, default = "TP53"),
            list(all = "NONE", default = "NONE"))
   })
   

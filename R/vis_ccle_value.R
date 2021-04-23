@@ -79,6 +79,13 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
     install.packages("cowplot")
   }
   ccle_info <- load_data("ccle_info")
+  
+  if (!data_type1 %in% c("mRNA", "protein", "cnv")) {
+    stop("data_type ", data_type1, " does not support in this function!")
+  }
+  if (!data_type2 %in% c("mRNA", "protein", "cnv")) {
+    stop("data_type ", data_type2, " does not support in this function!")
+  }
 
   t1 <- query_pancan_value(Gene1, data_type = data_type1, database = "ccle")
   unit1 <- switch(data_type1,

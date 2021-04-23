@@ -13,8 +13,6 @@ ui.modules_ccle_dist <- function(id) {
             9,
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile"), label = "Select a genomic profile:",
-              # choiceValues = c("mRNA"),
-              # choiceNames = c("mRNA Expression"),
               choiceValues = c("mRNA", "protein","cnv"),
               choiceNames = c("mRNA Expression",  "Protein Expression", "Copy Number Variation"),
               animation = "jelly"
@@ -87,11 +85,8 @@ server.modules_ccle_dist <- function(input, output, session) {
   profile_choices <- reactive({
     switch(input$profile,
            mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
-           methylation = list(all = pancan_identifiers$gene, default = "TP53"),
-           protein = list(all = .all_ccle_proteins, default = "p53_Caution"),
-           transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
-           miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-           cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
+           protein = list(all = UCSCXenaShiny:::.all_ccle_proteins, default = "p53_Caution"),
+           cnv = list(all = pancan_identifiers$gene, default = "TP53"),
            list(all = "NONE", default = "NONE"))
   })
 
