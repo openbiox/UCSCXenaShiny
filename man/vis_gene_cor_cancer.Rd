@@ -12,7 +12,9 @@ vis_gene_cor_cancer(
   purity_adj = TRUE,
   cancer_choose = "GBM",
   use_regline = TRUE,
-  cor_method = "spearman"
+  cor_method = "spearman",
+  alpha = 0.5,
+  color = "#000000"
 )
 }
 \arguments{
@@ -33,6 +35,10 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 \item{use_regline}{if \code{TRUE}, add regression line.}
 
 \item{cor_method}{correlation method}
+
+\item{alpha}{dot alpha.}
+
+\item{color}{dot color.}
 }
 \description{
 Visualize Gene-Gene Correlation in a TCGA Cancer Type

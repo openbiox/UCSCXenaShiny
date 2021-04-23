@@ -10,7 +10,9 @@ vis_gene_cor(
   data_type1 = "mRNA",
   data_type2 = "mRNA",
   use_regline = TRUE,
-  purity_adj = TRUE
+  purity_adj = TRUE,
+  alpha = 0.5,
+  color = "#000000"
 )
 }
 \arguments{
@@ -27,6 +29,10 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 \item{use_regline}{if \code{TRUE}, add regression line.}
 
 \item{purity_adj}{whether performing partial correlation adjusted by purity}
+
+\item{alpha}{dot alpha.}
+
+\item{color}{dot color.}
 }
 \description{
 Visualize Gene-Gene Correlation in TCGA

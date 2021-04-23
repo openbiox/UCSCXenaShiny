@@ -26,7 +26,6 @@ Get Molecule or Signature Data Values from Dense (Genomic) Matrix Dataset of UCS
 # What does dense matrix mean?
 table(UCSCXenaTools::XenaData$Type)
 # It is a the UCSC Xena dataset with "Type" equals to "genomicMatrix"
-
 \dontrun{
 dataset <- "ccle/CCLE_copynumber_byGene_2013-12-03"
 x <- query_molecule_value(dataset, "TP53")

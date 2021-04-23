@@ -872,13 +872,17 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type =
 #' @param data_type2 choose gene profile type for the second gene, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"
 #' @param purity_adj whether performing partial correlation adjusted by purity
 #' @param use_regline if `TRUE`, add regression line.
+#' @param alpha dot alpha.
+#' @param color dot color.
 #' @export
 vis_gene_cor <- function(Gene1 = "CSF1R",
                          Gene2 = "JAK3",
                          data_type1 = "mRNA",
                          data_type2 = "mRNA",
                          use_regline = TRUE,
-                         purity_adj = TRUE) {
+                         purity_adj = TRUE,
+                         alpha = 0.5,
+                         color = "#000000") {
   if (!requireNamespace("cowplot")) {
     install.packages("cowplot")
   }
@@ -928,33 +932,46 @@ vis_gene_cor <- function(Gene1 = "CSF1R",
     filter(.data$type2 == "tumor") -> df
   # plot refer to https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
 
-
   if (purity_adj) {
     df %>% filter(!is.na(.data$CPE)) -> df
     partial_cor_res <- ezcor_partial_cor(data = df, var1 = "gene1", var2 = "gene2", var3 = "CPE", sig_label = TRUE)
     cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2")
-    df$pc <- predict(prcomp(~ gene1 + gene2, df))[, 1]
-    x <- quantile(df$gene1)[1]
-    y <- quantile(df$gene2)[5]
-    p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
-      ggplot2::geom_point(shape = 16, size = 1.5, show.legend = FALSE) +
+    p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2")) +
+      ggplot2::geom_point(shape = 16, size = 1.5, show.legend = FALSE, alpha = alpha, color = color) +
       ggplot2::theme_minimal() +
       ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
       ggplot2::labs(x = Gene1, y = Gene2) +
       ggplot2::ggtitle("TCGA PANCAN dataset") +
-      ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar, "\n", "Cor_adj: ", round(partial_cor_res$cor_partial, 2), " ", partial_cor_res$pstar), x = x + 1, y = y, size = 4, colour = "black")
+      ggplot2::annotate(
+        "text",
+        -Inf, Inf,
+        hjust = -0.1, vjust = 1,
+        label = paste0(
+          "Cor: ", round(cor_res$cor, 2),
+          " ", cor_res$pstar, "\n", "Cor_adj: ",
+          round(partial_cor_res$cor_partial, 2), " ",
+          partial_cor_res$pstar
+        ),
+        size = 5, colour = "black"
+      )
   } else {
     cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2")
-    df$pc <- predict(prcomp(~ gene1 + gene2, df))[, 1]
-    x <- quantile(df$gene1)[1]
-    y <- quantile(df$gene2)[5]
-    p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2", color = "pc")) +
-      ggplot2::geom_point(shape = 16, size = 1.5, show.legend = FALSE) +
+    p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2")) +
+      ggplot2::geom_point(shape = 16, size = 1.5, show.legend = FALSE, alpha = alpha, color = color) +
       ggplot2::theme_minimal() +
       ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
       ggplot2::labs(x = Gene1, y = Gene2) +
       ggplot2::ggtitle("TCGA PANCAN dataset") +
-      ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar), x = x + 1, y = y, size = 4, colour = "black")
+      ggplot2::annotate(
+        "text",
+        -Inf, Inf,
+        hjust = -0.1, vjust = 1,
+        label = paste0(
+          "Cor: ", round(cor_res$cor, 2), " ",
+          cor_res$pstar
+        ),
+        size = 5, colour = "black"
+      )
   }
 
 
@@ -1035,27 +1052,37 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
     partial_cor_res <- ezcor_partial_cor(data = df, var1 = "gene1", var2 = "gene2", var3 = "CPE", sig_label = TRUE, cor_method = cor_method)
     cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
     # https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
-    x <- quantile(df$gene1)[1]
-    y <- quantile(df$gene2)[5]
     p <- ggplot2::ggplot(df, aes(x = gene1, y = gene2)) +
       ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE, alpha = alpha, color = color) +
       ggplot2::theme_minimal() +
       ggplot2::labs(x = Gene1, y = Gene2) +
       ggplot2::ggtitle(paste0("TCGA ", cancer_choose, " dataset")) +
-      ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar, "\n", "Cor_adj: ", round(partial_cor_res$cor_partial, 2), " ", partial_cor_res$pstar), x = x + 1, y = y, size = 5, colour = "black") +
-      # ggplot2::geom_smooth(method = stats::lm) +
+      ggplot2::annotate(
+        "text",
+        -Inf, Inf,
+        hjust = -0.1, vjust = 1,
+        label = paste0(
+          "Cor: ", round(cor_res$cor, 2), " ",
+          cor_res$pstar, "\n", "Cor_adj: ",
+          round(partial_cor_res$cor_partial, 2), " ", partial_cor_res$pstar
+        ),
+        size = 5, colour = "black"
+      ) +
       ggplot2::labs(color = "")
   } else {
     cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
-    x <- quantile(df$gene1)[1]
-    y <- quantile(df$gene2)[5]
     p <- ggplot2::ggplot(df, aes(x = gene1, y = gene2)) +
       ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE, alpha = alpha, color = color) +
       ggplot2::theme_minimal() +
       ggplot2::labs(x = Gene1, y = Gene2) +
       ggplot2::ggtitle(paste0("TCGA ", cancer_choose, " dataset")) +
-      ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar), x = x + 1, y = y, size = 10, colour = "black") +
-      # ggplot2::geom_smooth(method = stats::lm) +
+      ggplot2::annotate(
+        "text",
+        -Inf, Inf,
+        hjust = -0.1, vjust = 1,
+        label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar),
+        size = 5, colour = "black"
+      ) +
       ggplot2::labs(color = "")
   }
 

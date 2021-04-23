@@ -126,16 +126,20 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
 
   cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
 
-  # adjust text position
-  x.pos <- quantile(df$gene1)[1] + 10
-  y.pos <- quantile(df$gene2)[5]
   if (use_log_x) x.pos <- log2(x.pos + 1)
   p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2")) +
     ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE, alpha = alpha, color = color) +
     ggplot2::theme_minimal(base_size = 20) +
     ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
     ggplot2::labs(x = Gene1, y = Gene2) +
-    ggplot2::annotate("text", label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar), x = x.pos, y = y.pos, size = 10, colour = "black") +
+    ggplot2::annotate(
+      "text",
+      -Inf, Inf,
+      hjust = -0.1, vjust = 1,
+      label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar),
+      size = 10,
+      colour = "black"
+    ) +
     ggplot2::labs(color = "")
 
   if (use_regline) p <- p + ggplot2::geom_smooth(method = stats::lm)
