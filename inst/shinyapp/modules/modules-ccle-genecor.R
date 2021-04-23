@@ -191,7 +191,7 @@ server.modules_ccle_genecor <- function(input, output, session) {
         color = input$color,
         alpha = input$alpha,
         SitePrimary = input$SitePrimary,
-        use_all = input$use_all
+        use_all = as.logical(input$use_all)
       )
     }
     p <- p + theme_classic(base_size = 20) +

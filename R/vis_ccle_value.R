@@ -63,7 +63,7 @@ vis_ccle_tpm <- function(Gene = "TP53", data_type = "mRNA", use_log = FALSE) {
 #' @param cor_method correlation method
 #' @param use_log_x if `TRUE`, log X values.
 #' @param use_log_y if `TRUE`, log Y values.
-#' @param Site_Primary select cell line origin tissue.
+#' @param SitePrimary select cell line origin tissue.
 #' @param use_all use all sample, default `FALSE`.
 #' @return a `ggplot` object
 #' @export
@@ -149,7 +149,7 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
       -Inf, Inf,
       hjust = -0.1, vjust = 1,
       label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar),
-      size = 10,
+      size = 8,
       colour = "black"
     ) +
     ggplot2::labs(color = "")

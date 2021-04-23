@@ -183,7 +183,7 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
         use_regline = input$use_regline,
         color = input$color,
         alpha = input$alpha,
-        use_all = input$use_all
+        use_all = as.logical(input$use_all)
       )
     }
     p <- p + theme_classic(base_size = 20) +

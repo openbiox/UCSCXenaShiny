@@ -38,13 +38,13 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 
 \item{use_regline}{if \code{TRUE}, add regression line.}
 
+\item{SitePrimary}{select cell line origin tissue.}
+
 \item{use_all}{use all sample, default \code{FALSE}.}
 
 \item{alpha}{dot alpha.}
 
 \item{color}{dot color.}
-
-\item{Site_Primary}{select cell line origin tissue.}
 }
 \value{
 a \code{ggplot} object

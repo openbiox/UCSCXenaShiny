@@ -1058,7 +1058,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
     partial_cor_res <- ezcor_partial_cor(data = df, var1 = "gene1", var2 = "gene2", var3 = "CPE", sig_label = TRUE, cor_method = cor_method)
     cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
     # https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
-    p <- ggplot2::ggplot(df, aes(x = gene1, y = gene2)) +
+    p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2")) +
       ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE, alpha = alpha, color = color) +
       ggplot2::theme_minimal() +
       ggplot2::labs(x = Gene1, y = Gene2) +
@@ -1072,12 +1072,12 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
           cor_res$pstar, "\n", "Cor_adj: ",
           round(partial_cor_res$cor_partial, 2), " ", partial_cor_res$pstar
         ),
-        size = 10, colour = "black"
+        size = 8, colour = "black"
       ) +
       ggplot2::labs(color = "")
   } else {
     cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
-    p <- ggplot2::ggplot(df, aes(x = gene1, y = gene2)) +
+    p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2")) +
       ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE, alpha = alpha, color = color) +
       ggplot2::theme_minimal() +
       ggplot2::labs(x = Gene1, y = Gene2) +
@@ -1087,7 +1087,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
         -Inf, Inf,
         hjust = -0.1, vjust = 1,
         label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar),
-        size = 10, colour = "black"
+        size = 8, colour = "black"
       ) +
       ggplot2::labs(color = "")
   }
