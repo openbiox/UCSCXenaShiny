@@ -53,6 +53,10 @@ ui.page_pancan <- function() {
     tabPanel(
       "CCLE: Drug-Target Correlation",
       ui.modules_ccle_drug_target_asso("modules_ccle_drug_target_asso")
+    ),
+    tabPanel(
+      "CCLE: Drug Response Difference",
+      ui.modules_ccle_drug_response_diff("modules_ccle_drug_response_diff")
     )
   )
 }

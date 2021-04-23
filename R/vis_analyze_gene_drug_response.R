@@ -1,5 +1,6 @@
 #' Visualize gene and drug-target association
 #' @export
+#' @param  output_form plotly or ggplot2
 #' @inheritParams vis_toil_TvsN
 vis_gene_drug_response_asso <- function(Gene = "TP53", output_form = "plotly"){
   df <- analyze_gene_drug_response_asso(Gene)
@@ -30,3 +31,34 @@ vis_gene_drug_response_asso <- function(Gene = "TP53", output_form = "plotly"){
   return(p)
 }
 
+
+#' Visualize gene and drug response difference
+#' @export
+#' @inheritParams vis_toil_TvsN
+vis_gene_drug_response_diff <- function(Gene = "TP53",tissue = "prostate",Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test"){
+  df <- analyze_gene_drug_response_diff(Gene, tissue = tissue)
+  
+  p = df %>% ggplot(aes(x = drug, y = IC50,color = group)) +
+    geom_boxplot() + 
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = .5, vjust = .5))
+  
+  if (Show.P.value == TRUE) {
+    message("Counting P value")
+    pv <- df %>%
+      ggpubr::compare_means(IC50 ~ group, data = ., method = Method, group.by = "drug")
+    pv <- pv %>% dplyr::select(c("drug", "p", "p.signif", "p.adj"))
+    message("Counting P value finished")
+  }
+  
+  if (Show.P.value == TRUE & Show.P.label == TRUE) {
+    p <- p + ggplot2::geom_text(aes(
+      x = .data$drug,
+      y = max(df$IC50) * 1.1,
+      label = .data$p.signif
+    ),
+    data = pv,
+    inherit.aes = FALSE
+    )
+  }
+  return(p)
+}
