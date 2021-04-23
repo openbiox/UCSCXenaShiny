@@ -88,7 +88,7 @@ server.modules_ccle_dist <- function(input, output, session) {
     switch(input$profile,
            mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
            methylation = list(all = pancan_identifiers$gene, default = "TP53"),
-           protein = list(all = pancan_identifiers$protein, default = "P53"),
+           protein = list(all = .all_ccle_proteins, default = "p53_Caution"),
            transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
            miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
            cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
