@@ -988,6 +988,7 @@ vis_gene_cor <- function(Gene1 = "CSF1R",
 #' @inheritParams vis_gene_cor
 #' @param cancer_choose TCGA cohort name, e.g. "ACC".
 #' @param cor_method correlation method
+#' @param use_all use all sample, default False
 #' @export
 vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
                                 Gene2 = "JAK3",
@@ -997,6 +998,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
                                 cancer_choose = "GBM",
                                 use_regline = TRUE,
                                 cor_method = "spearman",
+                                use_all = FALSE,
                                 alpha = 0.5,
                                 color = "#000000") {
   if (!requireNamespace("cowplot")) {
@@ -1043,7 +1045,10 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
   df %>%
     dplyr::left_join(tcga_purity, by = "sample") %>%
     dplyr::filter(.data$type2 == "tumor") -> df
-  df %>% dplyr::filter(.data$cancer_type == cancer_choose) -> df
+  if(use_all == FALSE){
+    df %>% dplyr::filter(.data$cancer_type == cancer_choose) -> df
+  }
+  
 
   # plot refer to https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
 
@@ -1056,7 +1061,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
       ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE, alpha = alpha, color = color) +
       ggplot2::theme_minimal() +
       ggplot2::labs(x = Gene1, y = Gene2) +
-      ggplot2::ggtitle(paste0("TCGA ", cancer_choose, " dataset")) +
+      #ggplot2::ggtitle(paste0("TCGA ", cancer_choose, " dataset")) +
       ggplot2::annotate(
         "text",
         -Inf, Inf,
@@ -1066,7 +1071,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
           cor_res$pstar, "\n", "Cor_adj: ",
           round(partial_cor_res$cor_partial, 2), " ", partial_cor_res$pstar
         ),
-        size = 5, colour = "black"
+        size = 10, colour = "black"
       ) +
       ggplot2::labs(color = "")
   } else {
@@ -1075,13 +1080,13 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
       ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE, alpha = alpha, color = color) +
       ggplot2::theme_minimal() +
       ggplot2::labs(x = Gene1, y = Gene2) +
-      ggplot2::ggtitle(paste0("TCGA ", cancer_choose, " dataset")) +
+      #ggplot2::ggtitle(paste0("TCGA ", cancer_choose, " dataset")) +
       ggplot2::annotate(
         "text",
         -Inf, Inf,
         hjust = -0.1, vjust = 1,
         label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar),
-        size = 5, colour = "black"
+        size = 10, colour = "black"
       ) +
       ggplot2::labs(color = "")
   }

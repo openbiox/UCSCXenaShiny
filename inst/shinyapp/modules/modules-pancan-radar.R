@@ -80,6 +80,14 @@ ui.modules_pancan_radar <- function(id) {
         p("1. The data query may take some time based on your network. Wait until a plot shows"),
         p("2. If a void plot shows, please check your input"),
         p("3. ", tags$a(href = "https://toil.xenahubs.net/", "Genomic profile data source")),
+        tags$br(),
+        DT::DTOutput(outputId = ns("tbl")),
+        shinyjs::hidden(
+          wellPanel(
+            id = ns("save_csv"),
+            downloadButton(ns("downloadTable"), "Save as csv")
+          )
+        ),
         width = 9
       )
     )
@@ -153,7 +161,7 @@ server.modules_pancan_radar <- function(input, output, session) {
   
   output$download <- downloadHandler(
     filename = function() {
-      paste0(input$Pancan_search,"_",input$profile,"_pancan_radar.", input$device)
+      paste0(input$Pancan_search,"_",input$profile,"_",input$Type,"_pancan_radar.", input$device)
     },
     content = function(file) {
       p <- plot_func()
@@ -170,4 +178,40 @@ server.modules_pancan_radar <- function(input, output, session) {
       # ggplot2::ggsave(filename = file, plot = print(p), device = input$device, width = input$width, height = input$height, dpi = 600)
     }
   )
+  
+  output$tbl <- renderDT(
+    data <- return_data(),
+    options = list(lengthChange = FALSE)
+  )
+  
+  ##return data
+  return_data <- eventReactive(input$search_bttn,{
+    if (nchar(input$Pancan_search) >= 1) {
+      shinyjs::show(id = "save_csv")
+      if(input$Type == "stemness"){
+        p <- vis_gene_stemness_cor(Gene = input$Pancan_search, cor_method = input$cor_method,data_type = input$profile)
+      } else if(input$Type == "tmb"){
+        p <- vis_gene_tmb_cor(Gene = input$Pancan_search, cor_method = input$cor_method,data_type = input$profile)
+      } else if(input$Type == "msi"){
+        p <- vis_gene_msi_cor(Gene = input$Pancan_search, cor_method = input$cor_method,data_type = input$profile)
+      }
+      data <- p$data
+      return(data)
+    } else {
+      shinyjs::hide(id = "save_csv")
+    }
+  })
+  
+  
+  
+  ##downloadTable
+  output$downloadTable <- downloadHandler(
+    filename = function() {
+      paste0(input$Pancan_search,"_",input$profile,"_",input$Type,"_pancan_radar.csv")
+    },
+    content = function(file) {
+      write.csv(data <- return_data(), file, row.names = FALSE)
+    }
+  )
+  
 }

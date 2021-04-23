@@ -63,6 +63,8 @@ vis_ccle_tpm <- function(Gene = "TP53", data_type = "mRNA", use_log = FALSE) {
 #' @param cor_method correlation method
 #' @param use_log_x if `TRUE`, log X values.
 #' @param use_log_y if `TRUE`, log Y values.
+#' @param Site_Primary select cell line origin tissue
+#' @param use_all use all sample, default False
 #' @return a `ggplot` object
 #' @export
 
@@ -74,6 +76,8 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
                               use_log_x = FALSE,
                               use_log_y = FALSE,
                               use_regline = TRUE,
+                              SitePrimary = "prostate",
+                              use_all = FALSE,
                               alpha = 0.5, color = "#000000") {
   if (!requireNamespace("cowplot")) {
     install.packages("cowplot")
@@ -129,11 +133,12 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
 
   t2 <- t2 %>% inner_join(t4[, c("cell", "tpm")], by = "cell")
 
-  df <- data.frame(sample = t2$cell, gene1 = t2$tpm.x, gene2 = t2$tpm.y, stringsAsFactors = F)
-
+  df <- data.frame(sample = t2$cell, gene1 = t2$tpm.x, gene2 = t2$tpm.y,Site_Primary = t2$Site_Primary,stringsAsFactors = F)
+  if(use_all == FALSE){
+  df %>% dplyr::filter(.data$Site_Primary == SitePrimary) -> df
+  }
   cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
 
-  if (use_log_x) x.pos <- log2(x.pos + 1)
   p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2")) +
     ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE, alpha = alpha, color = color) +
     ggplot2::theme_minimal(base_size = 20) +

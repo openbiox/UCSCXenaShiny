@@ -166,12 +166,7 @@ server.modules_pancan_til <- function(input, output, session) {
   return_data <- eventReactive(input$search_bttn,{
     if (nchar(input$Pancan_search) >= 1) {
       shinyjs::show(id = "save_csv")
-      p <- vis_gene_TIL_cor(
-        Gene = input$Pancan_search,
-        sig = input$immune_sig,
-        cor_method = input$cor_method,
-        data_type = input$profile
-      )
+      p <- plot_func()
       data <- p$data
       return(data)
     } else {

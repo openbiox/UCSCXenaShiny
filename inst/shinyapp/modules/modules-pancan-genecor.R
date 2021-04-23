@@ -57,6 +57,7 @@ ui.modules_pancan_gene_cor <- function(id) {
         ),
         tags$br(),
         materialSwitch(ns("purity_adj"), "Adjust Purity", inline = TRUE),
+        selectInput(inputId = ns("use_all"), label = "Use All Cancer Types", choices = c("TRUE","FALSE"), selected = "FALSE"),
         selectInput(inputId = ns("Cancer"), label = "Filter Cancer", choices = choices, selected = "ACC"),
         materialSwitch(ns("use_regline"), "Use regression line", inline = TRUE),
         selectInput(
@@ -105,6 +106,14 @@ ui.modules_pancan_gene_cor <- function(id) {
         p("1. The data query may take some time based on your network. Wait until a plot shows"),
         p("2. You could choose correlation method or whether adjust tumor purity when calculating"),
         p("3. ", tags$a(href = "https://pancanatlas.xenahubs.net/", "Genomic profile data source")),
+        tags$br(),
+        DT::DTOutput(outputId = ns("tbl")),
+        shinyjs::hidden(
+          wellPanel(
+            id = ns("save_csv"),
+            downloadButton(ns("downloadTable"), "Save as csv")
+          )
+        ),
         width = 6
       )
     )
@@ -173,7 +182,8 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
         cor_method = input$cor_method,
         use_regline = input$use_regline,
         color = input$color,
-        alpha = input$alpha
+        alpha = input$alpha,
+        use_all = input$use_all
       )
     }
     p <- p + theme_classic(base_size = 20) +
@@ -182,6 +192,15 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
     return(p)
   })
 
+  ##downloadTable
+  output$downloadTable <- downloadHandler(
+    filename = function() {
+      paste0(input$Pancan_search1,"_",input$profile1,"_",input$Pancan_search2,"_",input$profile2,"_pancan_gene_cor.csv")
+    },
+    content = function(file) {
+      write.csv(data <- return_data(), file, row.names = FALSE)
+    }
+  )
 
   output$gene_cor <- renderPlot({
     w$show() # Waiter add-ins
@@ -208,4 +227,23 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
       # ggplot2::ggsave(filename = file, plot = print(p), device = input$device, width = input$width, height = input$height, dpi = 600)
     }
   )
+  
+  ##return data
+  return_data <- eventReactive(input$search_bttn,{
+    if (nchar(input$Pancan_search1) >= 1 & nchar(input$Pancan_search2) >= 1) {
+      shinyjs::show(id = "save_csv")
+      p <- plot_func()
+      data <- p$data
+      return(data)
+    } else {
+      shinyjs::hide(id = "save_csv")
+    }
+  })
+  
+  
+  output$tbl <- renderDT(
+    data <- return_data(),
+    options = list(lengthChange = FALSE)
+  )
+  
 }

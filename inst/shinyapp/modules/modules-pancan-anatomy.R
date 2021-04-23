@@ -132,14 +132,8 @@ server.modules_pancan_anatomy <- function(input, output, session) {
   return_data <- eventReactive(input$search_bttn,{
     if (nchar(input$Pancan_search) >= 1) {
       shinyjs::show(id = "save_csv")
-      out <- vis_pancan_anatomy(
-        Gene = input$Pancan_search,
-        Gender = input$Gender,
-        data_type = input$profile
-        #option = input$Pal
-      )
-      data <- out$data
-  
+      p <- plot_func()
+      data <- p$data
       return(data)
     } else {
       shinyjs::hide(id = "save_csv")
