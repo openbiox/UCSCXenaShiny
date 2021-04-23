@@ -47,7 +47,7 @@ ui.modules_cancer_dist <- function(id) {
           content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
           placement = "right", options = list(container = "body")
         ),
-        materialSwitch(ns("pdist_mode"), "Show Box plot", inline = TRUE),
+        materialSwitch(ns("pdist_mode"), "Show Dot plot", inline = TRUE),
         materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = FALSE),
         materialSwitch(ns("pdist_show_p_label"), "Show P label", inline = FALSE),
         materialSwitch(ns("pdist_dataset"), "TCGA Dataset only", inline = FALSE),
@@ -84,7 +84,7 @@ ui.modules_cancer_dist <- function(id) {
         p("2. You have to turn on both 'Show P value' and 'Show P label' to show significant labels"),
         p("3. If a void plot shows, please check your input"),
         p("4. ", tags$a(href = "https://pancanatlas.xenahubs.net/", "Genomic profile data source")),
-        width = 9
+        width = 6
       )
     )
   )
@@ -133,7 +133,7 @@ server.modules_cancer_dist <- function(input, output, session) {
         values = colors(),
         data_type = input$profile
       )
-      p <- p + theme_cowplot()
+      p <- p + theme_classic(base_size = 15)
     }
     return(p)
   })
