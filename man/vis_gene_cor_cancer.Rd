@@ -13,6 +13,7 @@ vis_gene_cor_cancer(
   cancer_choose = "GBM",
   use_regline = TRUE,
   cor_method = "spearman",
+  use_all = FALSE,
   alpha = 0.5,
   color = "#000000"
 )
@@ -34,7 +35,9 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 
 \item{use_regline}{if \code{TRUE}, add regression line.}
 
-\item{cor_method}{correlation method}
+\item{cor_method}{correlation method.}
+
+\item{use_all}{use all sample, default \code{FALSE}.}
 
 \item{alpha}{dot alpha.}
 

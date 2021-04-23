@@ -987,8 +987,8 @@ vis_gene_cor <- function(Gene1 = "CSF1R",
 #' @import ggplot2 dplyr ppcor
 #' @inheritParams vis_gene_cor
 #' @param cancer_choose TCGA cohort name, e.g. "ACC".
-#' @param cor_method correlation method
-#' @param use_all use all sample, default False
+#' @param cor_method correlation method.
+#' @param use_all use all sample, default `FALSE`.
 #' @export
 vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
                                 Gene2 = "JAK3",
@@ -1045,10 +1045,11 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
   df %>%
     dplyr::left_join(tcga_purity, by = "sample") %>%
     dplyr::filter(.data$type2 == "tumor") -> df
-  if(use_all == FALSE){
+
+  if (!use_all) {
     df %>% dplyr::filter(.data$cancer_type == cancer_choose) -> df
   }
-  
+
 
   # plot refer to https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
 
@@ -1061,7 +1062,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
       ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE, alpha = alpha, color = color) +
       ggplot2::theme_minimal() +
       ggplot2::labs(x = Gene1, y = Gene2) +
-      #ggplot2::ggtitle(paste0("TCGA ", cancer_choose, " dataset")) +
+      # ggplot2::ggtitle(paste0("TCGA ", cancer_choose, " dataset")) +
       ggplot2::annotate(
         "text",
         -Inf, Inf,
@@ -1080,7 +1081,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
       ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE, alpha = alpha, color = color) +
       ggplot2::theme_minimal() +
       ggplot2::labs(x = Gene1, y = Gene2) +
-      #ggplot2::ggtitle(paste0("TCGA ", cancer_choose, " dataset")) +
+      # ggplot2::ggtitle(paste0("TCGA ", cancer_choose, " dataset")) +
       ggplot2::annotate(
         "text",
         -Inf, Inf,

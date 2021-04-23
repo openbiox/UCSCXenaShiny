@@ -63,8 +63,8 @@ vis_ccle_tpm <- function(Gene = "TP53", data_type = "mRNA", use_log = FALSE) {
 #' @param cor_method correlation method
 #' @param use_log_x if `TRUE`, log X values.
 #' @param use_log_y if `TRUE`, log Y values.
-#' @param Site_Primary select cell line origin tissue
-#' @param use_all use all sample, default False
+#' @param Site_Primary select cell line origin tissue.
+#' @param use_all use all sample, default `FALSE`.
 #' @return a `ggplot` object
 #' @export
 
@@ -83,7 +83,7 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
     install.packages("cowplot")
   }
   ccle_info <- load_data("ccle_info")
-  
+
   if (!data_type1 %in% c("mRNA", "protein", "cnv")) {
     stop("data_type ", data_type1, " does not support in this function!")
   }
@@ -133,9 +133,9 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
 
   t2 <- t2 %>% inner_join(t4[, c("cell", "tpm")], by = "cell")
 
-  df <- data.frame(sample = t2$cell, gene1 = t2$tpm.x, gene2 = t2$tpm.y,Site_Primary = t2$Site_Primary,stringsAsFactors = F)
-  if(use_all == FALSE){
-  df %>% dplyr::filter(.data$Site_Primary == SitePrimary) -> df
+  df <- data.frame(sample = t2$cell, gene1 = t2$tpm.x, gene2 = t2$tpm.y, Site_Primary = t2$Site_Primary, stringsAsFactors = F)
+  if (!use_all) {
+    df %>% dplyr::filter(.data$Site_Primary == SitePrimary) -> df
   }
   cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
 
