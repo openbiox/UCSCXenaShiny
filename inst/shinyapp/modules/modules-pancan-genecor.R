@@ -8,49 +8,52 @@ ui.modules_pancan_gene_cor <- function(id) {
     #titlePanel("Module: TCGA Gene-Gene Correlation"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
-        shinyWidgets::prettyRadioButtons(
-          inputId = ns("profile1"), label = "Select a genomic profile:",
-          choiceValues = c("mRNA", "transcript", "methylation","protein","miRNA", "cnv_gistic2"),
-          choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation","Protein Expression","miRNA Expression", "Copy Number Variation"),
-          animation = "jelly"
-        ),
-        selectizeInput(
-          inputId = ns("Pancan_search1"),
-          label = NULL,
-          choices = NULL,
-          width = "100%",
-          options = list(
-            create = TRUE,
-            maxOptions = 5,
-            placeholder = "Enter a gene symbol, e.g. CSF1R",
-            plugins = list("restore_on_backspace")
-          )
-        ),
-        shinyWidgets::prettyRadioButtons(
-          inputId = ns("profile2"), label = "Select a genomic profile:",
-          choiceValues = c("mRNA", "transcript", "methylation","protein","miRNA", "cnv_gistic2"),
-          choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation","Protein Expression","miRNA Expression", "Copy Number Variation"),
-          animation = "jelly"
-        ),
-        selectizeInput(
-          inputId = ns("Pancan_search2"),
-          label = NULL,
-          choices = NULL,
-          width = "100%",
-          options = list(
-            create = TRUE,
-            maxOptions = 5,
-            placeholder = "Enter a gene symbol, e.g. JAK3",
-            plugins = list("restore_on_backspace")
-          )
-        ),
-        shinyWidgets::actionBttn(
-          inputId = ns("search_bttn"), label = NULL,
-          style = "simple",
-          icon = icon("search"),
-          color = "primary",
-          block = T,
-          size = "sm"
+        fluidRow(
+          column(
+            9,shinyWidgets::prettyRadioButtons(
+              inputId = ns("profile1"), label = "Select a genomic profile:",
+              choiceValues = c("mRNA", "transcript", "methylation","protein","miRNA", "cnv_gistic2"),
+              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation","Protein Expression","miRNA Expression", "Copy Number Variation"),
+              animation = "jelly"
+            ),
+            selectizeInput(
+              inputId = ns("Pancan_search1"),
+              label = NULL,
+              choices = NULL,
+              width = "100%",
+              options = list(
+                create = TRUE,
+                maxOptions = 5,
+                placeholder = "Enter a gene symbol, e.g. CSF1R",
+                plugins = list("restore_on_backspace")
+              )
+            ),
+            shinyWidgets::prettyRadioButtons(
+              inputId = ns("profile2"), label = "Select a genomic profile:",
+              choiceValues = c("mRNA", "transcript", "methylation","protein","miRNA", "cnv_gistic2"),
+              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation","Protein Expression","miRNA Expression", "Copy Number Variation"),
+              animation = "jelly"
+            ),
+            selectizeInput(
+              inputId = ns("Pancan_search2"),
+              label = NULL,
+              choices = NULL,
+              width = "100%",
+              options = list(
+                create = TRUE,
+                maxOptions = 5,
+                placeholder = "Enter a gene symbol, e.g. JAK3",
+                plugins = list("restore_on_backspace")
+              )
+            )),
+          column(3,shinyWidgets::actionBttn(
+            inputId = ns("search_bttn"), label = NULL,
+            style = "simple",
+            icon = icon("search"),
+            color = "primary",
+            block = T,
+            size = "sm"
+          ))
         ),
         tags$br(),
         materialSwitch(ns("purity_adj"), "Adjust Purity", inline = TRUE),
@@ -62,6 +65,17 @@ ui.modules_pancan_gene_cor <- function(id) {
           choices = c("spearman", "pearson"),
           selected = "spearman"
         ),
+        sliderTextInput(
+          inputId = ns("alpha"),
+          label = "Choose a transparent value", 
+          choices = seq(from = 0,
+                        to = 1,
+                        by = 0.1),
+          selected = "0.5",  
+          grid = TRUE
+        ),
+        colourpicker::colourInput(inputId = ns("color"), "Point color", "#000000"),
+        tags$br(),
         numericInput(inputId = ns("height"), label = "Height", value = 8),
         numericInput(inputId = ns("width"), label = "Width", value = 8),
         prettyRadioButtons(
@@ -90,7 +104,8 @@ ui.modules_pancan_gene_cor <- function(id) {
         h5("NOTEs:"),
         p("1. The data query may take some time based on your network. Wait until a plot shows"),
         p("2. You could choose correlation method or whether adjust tumor purity when calculating"),
-        p("3. ", tags$a(href = "https://pancanatlas.xenahubs.net/", "Genomic profile data source"))
+        p("3. ", tags$a(href = "https://pancanatlas.xenahubs.net/", "Genomic profile data source")),
+        width = 6
       )
     )
   )
@@ -156,7 +171,9 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
         purity_adj = input$purity_adj,
         cancer_choose = input$Cancer,
         cor_method = input$cor_method,
-        use_regline = input$use_regline
+        use_regline = input$use_regline,
+        color = input$color,
+        alpha = input$alpha
       )
     }
     p <- p + theme_classic(base_size = 20) +
