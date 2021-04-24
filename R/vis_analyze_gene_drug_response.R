@@ -14,8 +14,8 @@ vis_gene_drug_response_asso <- function(Gene = "TP53",
   if (!requireNamespace("ggrepel")) install.packages("ggrepel")
   
   df <- analyze_gene_drug_response_asso(Gene)
-  df$drugs_targets <- paste0(df$drugs, "->", df$Target)
   df$cor_type <- ifelse(df$cor >= 0, "pos", "neg")
+  df$cor_abs <- abs(round(df$cor, digits = 3))
   
   df$fdr_log <- -log10(df$fdr)
   df$text <- paste(
@@ -30,7 +30,7 @@ vis_gene_drug_response_asso <- function(Gene = "TP53",
   p <- ggplot(data = df, aes_string(
     x = x_axis_type,
     y = "fdr_log",
-    size = "cor",
+    size = "cor_abs",
     color = "cor_type",
     text = "text"
   )) +
@@ -47,7 +47,7 @@ vis_gene_drug_response_asso <- function(Gene = "TP53",
     }, y = "-log10(FDR)") +
     theme_minimal(base_size = 15) +
     scale_color_manual(values = c("#377EB8", "#E41A1C")) +
-    scale_size(range = c(0.5, 4)) +
+    scale_size(range = c(0.1, 4)) +
     theme(
       legend.position = "none",
       plot.title = element_text(hjust = 0.5)
