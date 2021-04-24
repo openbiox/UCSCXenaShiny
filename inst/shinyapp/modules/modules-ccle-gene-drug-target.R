@@ -73,7 +73,7 @@ server.modules_ccle_drug_target_asso <- function(input, output, session) {
   #w <- waiter::Waiter$new(id = ns("gene_ccle_drug_target"), html = waiter::spin_hexdots(), color = "white")
   
   plot_func <- eventReactive(input$search_bttn,{
-    if (nchar(input$ccle_search) >= 1) {
+    if (nchar(input$ccle_search[1]) >= 1) {
       p <- vis_gene_drug_response_asso(Gene = input$ccle_search)
     }
     return(p)
