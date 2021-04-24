@@ -35,7 +35,11 @@ vis_gene_drug_response_asso <- function(Gene = "TP53",
     text = "text"
   )) +
     geom_point() +
-    ggtitle(paste0(unique(df$genes), " and Drug-Target Response Association")) +
+    ggtitle(paste0(
+      if (length(Gene) > 1) {
+        paste0("Signature (", paste(unique(df$genes), collapse = "&"), ")")
+      } else unique(df$genes),
+      " and Drug-Target Response Association")) +
     labs(x = if (x_axis_type == "mean.diff") {
       "Mean of expression difference between high and low IC50 cells"
     } else {
@@ -43,7 +47,7 @@ vis_gene_drug_response_asso <- function(Gene = "TP53",
     }, y = "-log10(FDR)") +
     theme_minimal(base_size = 15) +
     scale_color_manual(values = c("#377EB8", "#E41A1C")) +
-    scale_size(range = c(1, 5)) +
+    scale_size(range = c(0.5, 4)) +
     theme(
       legend.position = "none",
       plot.title = element_text(hjust = 0.5)
