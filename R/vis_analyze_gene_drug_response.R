@@ -21,7 +21,7 @@ vis_gene_drug_response_asso <- function(Gene = "TP53",
   df$text <- paste(
     "Gene: ", df$genes,
     "<br>Correlation: ", round(df$cor, digits = 3),
-    "<br>Drugs: ", df$drugs,
+    "<br>Drug: ", df$drugs,
     "<br>Target: ", df$Target,
     "<br>FDR: ", round(df$fdr, digits = 3),
     "<br>Number of Cells: ", df$num_of_cells
