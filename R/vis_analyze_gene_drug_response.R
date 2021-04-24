@@ -1,4 +1,4 @@
-#' Visualize Gene and Drug-Target Association
+#' Visualize Gene and Drug-Target Association with CCLE Data
 #'
 #' See [analyze_gene_drug_response_asso] for examples.
 #'
@@ -24,7 +24,7 @@ vis_gene_drug_response_asso <- function(Gene = "TP53",
     "<br>Drug: ", df$drugs,
     "<br>Target: ", df$Target,
     "<br>FDR: ", round(df$fdr, digits = 3),
-    "<br>Number of Cells: ", df$num_of_cells
+    "<br>Number of Cell Lines: ", df$num_of_cells
   )
   
   p <- ggplot(data = df, aes_string(
@@ -41,9 +41,9 @@ vis_gene_drug_response_asso <- function(Gene = "TP53",
       } else unique(df$genes),
       " and Drug-Target Response Association")) +
     labs(x = if (x_axis_type == "mean.diff") {
-      "Mean of expression difference between high and low IC50 cells"
+      "Mean of expression difference between high and low IC50 cell lines"
     } else {
-      "Median of expression difference between high and low IC50 cells"
+      "Median of expression difference between high and low IC50 cell lines"
     }, y = "-log10(FDR)") +
     theme_minimal(base_size = 15) +
     scale_color_manual(values = c("#377EB8", "#E41A1C")) +
@@ -57,7 +57,7 @@ vis_gene_drug_response_asso <- function(Gene = "TP53",
 }
 
 
-#' Visualize Gene and Drug Response Difference
+#' Visualize Gene and Drug Response Difference with CCLE Data
 #' 
 #' See [analyze_gene_drug_response_diff] for examples.
 #' 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/vis_analyze_gene_drug_response.R
 \name{vis_gene_drug_response_diff}
 \alias{vis_gene_drug_response_diff}
-\title{Visualize Gene and Drug Response Difference}
+\title{Visualize Gene and Drug Response Difference with CCLE Data}
 \usage{
 vis_gene_drug_response_diff(
   Gene = "TP53",

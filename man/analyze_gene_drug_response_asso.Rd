@@ -2,7 +2,7 @@
 % Please edit documentation in R/analyze_gene_drug_response.R
 \name{analyze_gene_drug_response_asso}
 \alias{analyze_gene_drug_response_asso}
-\title{Analyze Association between Gene (Signature) and Drug Response}
+\title{Analyze Association between Gene (Signature) and Drug Response with CCLE Data}
 \usage{
 analyze_gene_drug_response_asso(gene_list, combine = FALSE)
 }

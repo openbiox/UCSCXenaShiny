@@ -2,7 +2,7 @@
 % Please edit documentation in R/vis_analyze_gene_drug_response.R
 \name{vis_gene_drug_response_asso}
 \alias{vis_gene_drug_response_asso}
-\title{Visualize Gene and Drug-Target Association}
+\title{Visualize Gene and Drug-Target Association with CCLE Data}
 \usage{
 vis_gene_drug_response_asso(
   Gene = "TP53",

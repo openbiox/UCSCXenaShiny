@@ -1,4 +1,4 @@
-#' Analyze Association between Gene (Signature) and Drug Response
+#' Analyze Association between Gene (Signature) and Drug Response with CCLE Data
 #'
 #' Analyze partial correlation of gene-drug association after 
 #' controlling for tissue average expression.
@@ -128,7 +128,7 @@ analyze_gene_drug_response_asso <- function(gene_list, combine = FALSE) {
     dplyr::arrange(.data$p.value, .data$fdr)
 }
 
-#' Analyze Difference of Drug Response (IC50 Value (uM)) between Gene (Signature) High and Low Expression
+#' Analyze Difference of Drug Response (IC50 Value (uM)) between Gene (Signature) High and Low Expression with CCLE Data
 #'
 #' @inheritParams analyze_gene_drug_response_asso
 #' @param drug a drug name. Run example to check the list.
@@ -158,8 +158,7 @@ analyze_gene_drug_response_diff <- function(gene_list,
   on.exit(invisible(gc()))
   # 将基因表达按阈值分为高低两组，
   # 然后比较它们的 IC50 差异
-  # 这里只要得到高低 2 组的 IC50 值即可，
-  # 差异可以直接通过 ggboxplot 比较实现
+  # 这里只要得到表达高低 2 组的 IC50 值即可
 
   ccle_data <- load_data("ccle_expr_and_drug_response")
 
