@@ -70,33 +70,38 @@ vis_gene_drug_response_asso <- function(Gene = "TP53",
 #' @inheritParams vis_toil_TvsN
 #' @param tissue select cell line origin tissue.
 #' @return a `ggplot` object.
-vis_gene_drug_response_diff <- function(Gene = "TP53", tissue = "prostate",
-                                        Show.P.value = TRUE, Show.P.label = TRUE,
+vis_gene_drug_response_diff <- function(Gene = "TP53", tissue = "lung",
+                                        Show.P.label = TRUE,
                                         Method = "wilcox.test",
-                                        values = c("#DF2020", "#DDDF21"),
-                                        use_all = FALSE) {
-  if (use_all == FALSE) {
-    df <- analyze_gene_drug_response_diff(Gene, tissue = tissue)
-  } else {
-    df <- analyze_gene_drug_response_diff(Gene)
-  }
+                                        values = c("#DF2020", "#DDDF21")) {
   
-
-  p <- df %>% ggplot(aes_string(x = "drug", y = "IC50", color = "group")) +
-    geom_boxplot() +
-    labs(x = "Drug", y = "IC50 (uM)") 
-
-  if (Show.P.value == TRUE) {
+  # tissue_list <- c("prostate", "central_nervous_system", "urinary_tract", "haematopoietic_and_lymphoid_tissue", 
+  #                  "kidney", "thyroid", "soft_tissue", "skin", "salivary_gland", 
+  #                  "ovary", "lung", "bone", "endometrium", "pancreas", "breast", 
+  #                  "large_intestine", "upper_aerodigestive_tract", "autonomic_ganglia", 
+  #                  "stomach", "liver", "biliary_tract", "pleura", "oesophagus")
+  
+  df <- analyze_gene_drug_response_diff(Gene, tissue = tissue)
+  
+  if (Show.P.label) {
     message("Counting P value")
-    pv <- df %>%
-      ggpubr::compare_means(IC50 ~ group, data = ., method = Method, group.by = "drug")
-    pv <- pv %>% dplyr::select(c("drug", "p", "p.signif", "p.adj"))
+    pv <- ggpubr::compare_means(IC50 ~ group, data = df, method = Method, group.by = "drug_target")
+    pv <- pv %>% dplyr::select(c("drug_target", "p", "p.signif", "p.adj")) %>% 
+      dplyr::arrange(.data$p)
+    pv$drug_target <- factor(pv$drug_target, levels = unique(pv$drug_target))
+    df$drug_target <- factor(df$drug_target, levels = unique(pv$drug_target))
     message("Counting P value finished")
   }
 
-  if (Show.P.value == TRUE & Show.P.label == TRUE) {
+  p <- df %>%
+    ggplot(aes_string(x = "drug_target", y = "IC50", color = "group")) +
+    geom_boxplot(width = 0.3) +
+    facet_wrap(~drug_target, scales = "free") +
+    labs(x = "Drug -> Target", y = "IC50 (uM)")
+
+  if (Show.P.label) {
     p <- p + ggplot2::geom_text(aes(
-      x = .data$drug,
+      x = .data$drug_target,
       y = max(df$IC50) * 1.1,
       label = .data$p.signif
     ),
@@ -104,10 +109,11 @@ vis_gene_drug_response_diff <- function(Gene = "TP53", tissue = "prostate",
     inherit.aes = FALSE
     )
   }
-  
-  p = p + 
+
+  p <- p +
     ggplot2::scale_color_manual(values = values) +
-    ggpubr::theme_pubr() +
-    ggpubr::rotate_x_text(45)
+    cowplot::theme_cowplot() +
+    theme(axis.text.x = element_blank(),
+          axis.ticks.x = element_blank())
   return(p)
 }

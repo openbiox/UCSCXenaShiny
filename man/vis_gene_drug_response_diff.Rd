@@ -6,10 +6,11 @@
 \usage{
 vis_gene_drug_response_diff(
   Gene = "TP53",
-  tissue = "prostate",
+  tissue = "lung",
   Show.P.value = TRUE,
   Show.P.label = TRUE,
-  Method = "wilcox.test"
+  Method = "wilcox.test",
+  values = c("#DF2020", "#DDDF21")
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 \item{Show.P.label}{\code{TRUE} or \code{FALSE} present p value with number or label \code{*}, \verb{**}, \verb{***} and \verb{****}}
 
 \item{Method}{default method is wilcox.test}
+
+\item{values}{the color to fill tumor or normal}
 }
 \value{
 a \code{ggplot} object.

@@ -125,21 +125,36 @@ analyze_gene_drug_response_asso <- function(gene_list, combine = FALSE) {
 
 
   drugCor %>%
-    dplyr::arrange(.data$p.value, .data$fdr) %>% 
+    dplyr::arrange(.data$p.value, .data$fdr) %>%
     dplyr::mutate_if(is.numeric, ~ round(., 3))
 }
 
 #' Analyze Difference of Drug Response (IC50 Value (uM)) between Gene (Signature) High and Low Expression with CCLE Data
 #'
 #' @inheritParams analyze_gene_drug_response_asso
-#' @param drug a drug name. Run example to check the list.
-#' @param tissue a tissue name. Run example to check the list.
+#' @param drug a drug name. Check examples.
+#' @param tissue a tissue name. Check examples.
 #' @param cutpoint cut point (in percent) for High and Low group, default is `c(50, 50)`.
 #'
 #' @return a `data.frame`.
 #' @export
 #'
 #' @examples
+#' tissue_list <- c("prostate", "central_nervous_system", "urinary_tract", "haematopoietic_and_lymphoid_tissue", 
+#' "kidney", "thyroid", "soft_tissue", "skin", "salivary_gland", 
+#' "ovary", "lung", "bone", "endometrium", "pancreas", "breast", 
+#' "large_intestine", "upper_aerodigestive_tract", "autonomic_ganglia", 
+#' "stomach", "liver", "biliary_tract", "pleura", "oesophagus")
+#' 
+#' drug_list <- c("AEW541", "Nilotinib", "17-AAG", "PHA-665752", "Lapatinib", 
+#' "Nutlin-3", "AZD0530", "PF2341066", "L-685458", "ZD-6474", "Panobinostat", 
+#' "Sorafenib", "Irinotecan", "Topotecan", "LBW242", "PD-0325901", 
+#' "PD-0332991", "Paclitaxel", "AZD6244", "PLX4720", "RAF265", "TAE684", 
+#' "TKI258", "Erlotinib")
+#' 
+#' target_list <- c("IGF1R", "ABL", "HSP90", "c-MET", "EGFR", "MDM2", "GS", "HDAC", 
+#' "RTK", "TOP1", "XIAP", "MEK", "CDK4", "TUBB1", "RAF", "ALK", "FGFR")
+#' 
 #' \dontrun{
 #' analyze_gene_drug_response_diff("TP53")
 #' analyze_gene_drug_response_diff(c("TP53", "KRAS"), drug = "AEW541")
@@ -183,7 +198,7 @@ analyze_gene_drug_response_diff <- function(gene_list,
     tibble::rownames_to_column("genes") %>%
     tidyr::pivot_longer(-"genes", names_to = "ccle_name", values_to = "expr") %>%
     dplyr::inner_join(
-      unique(drug_info[, c("CCLE Cell Line Name", "Site Primary", "Compound")]),
+      unique(drug_info[, c("CCLE Cell Line Name", "Site Primary", "Compound", "Target")]),
       by = c("ccle_name" = "CCLE Cell Line Name")
     ) %>%
     dplyr::inner_join(
@@ -192,8 +207,10 @@ analyze_gene_drug_response_diff <- function(gene_list,
         tibble::rownames_to_column("ccle_name") %>%
         tidyr::pivot_longer(-"ccle_name", names_to = "drug", values_to = "IC50"),
       by = c("ccle_name" = "ccle_name", "Compound" = "drug")
-    )
-  colnames(df) <- c("genes", "ccle_name", "expression", "tissue", "drug", "IC50")
+    ) %>% 
+    dplyr::mutate(drug_target = paste(.data$Compound, "->", .data$Target)) %>% 
+    dplyr::select(-c("Target"))
+  colnames(df)[1:6] <- c("genes", "ccle_name", "expression", "tissue", "drug", "IC50")
 
   if (tissue != "ALL") {
     df <- dplyr::filter(df, .data$tissue %in% .env$tissue)
@@ -210,7 +227,10 @@ analyze_gene_drug_response_diff <- function(gene_list,
 
   # 分组要保证在不同的组织下进行（因为不同组织表达本身可能有差异）
   df <- df %>%
-    dplyr::group_by(.data$genes, .data$drug, .data$tissue) %>%
+    dplyr::group_by(.data$genes, .data$drug_target, .data$tissue) %>%
+    dplyr::mutate(number_of_cell_lines = dplyr::n()) %>%
+    dplyr::filter(number_of_cell_lines >= 3) %>%
+    # at least 3 cell lines in a tissue
     dplyr::mutate(group = dplyr::case_when(
       dplyr::percent_rank(.data$expression) > cutpoint[2] ~ "High",
       dplyr::percent_rank(.data$expression) <= cutpoint[1] ~ "Low",
@@ -218,6 +238,7 @@ analyze_gene_drug_response_diff <- function(gene_list,
     )) %>%
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(.data$group)) %>%
+    dplyr::mutate(drug_target = paste0(.data$drug_target, "\n(n = ", .data$number_of_cell_lines, ")")) %>% 
     as.data.frame()
 
   df %>%

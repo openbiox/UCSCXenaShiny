@@ -8,7 +8,7 @@ Home page gives you a quick overview of this tool, which includes
 - current version of this tool and its key dependent package "UCSCXenaTools".
 - where the datasets come from.
 
-If you use this tool locally, sometimes the version number can help you check if there is a update of this tool.
+If you use this tool locally, sometimes the version number can help you check if there is a update of this tool and track any bug when you report to the developers.
 
 ### Quick search
 
@@ -16,7 +16,7 @@ The web GUI is mainly designed and developed for cancer researchers without prog
 
 If you want to keep this data, your either right click to save this image or please go to module "TCGA: Molecular Profile Distribution Across Cancer Types (Tumor VS Normal)" under "Quick PanCan Analysis" page. The analysis module is more powerful and provides many features to custom this figure for academic use.
 
-NOTE: *Although we label the module with TCGA, the data come from [toil data hub](https://toil.xenahubs.net), it contains TCGA, TARGET and GTEx databases*.
+NOTE: *Although we label the module with TCGA, the data come from [toil data hub](https://toil.xenahubs.net), it contains samples from TCGA, TARGET and GTEx databases*.
 
 ### Video
 
@@ -29,7 +29,17 @@ NOTE: *Although we label the module with TCGA, the data come from [toil data hub
 
 ### Overview
 
+This page provides many features related to datasets of UCSC Xena and the entry to "General Analysis". This section we will only focus the former part, for "General Analysis", please refer to the next section.
+
+#### Dataset selection
+
+#### Dataset check
+
+#### Dataset download
+
 ### Video
+
+<center> <h2> General Analysis Page </h2> </center>
 
 <center> <h2> Quick PanCan Analysis Page </h2> </center>
 
@@ -48,8 +58,6 @@ This module provides survival analysis feature for TCGA cohort based on data fro
 NOTE: *Determine the optimal cutpoint for one or multiple continuous variables at once, using the maximally selected rank statistics from the 'maxstat' R package. This is an outcome-oriented methods providing a value of a cutpoint that correspond to the most significant relation with outcome (here for survival data)*.
 
 ### Videos
-
-<center> <h2> General Analysis Page </h2> </center>
 
 <center> <h2> Global Setting Page </h2> </center>
 
