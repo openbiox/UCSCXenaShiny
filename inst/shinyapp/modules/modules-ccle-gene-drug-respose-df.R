@@ -1,3 +1,6 @@
+df <- analyze_gene_drug_response_diff("TP53")
+tissue_all <- unique(df$tissue)
+
 ui.modules_ccle_drug_response_diff <- function(id) {
   ns <- NS(id)
   fluidPage(
@@ -39,6 +42,12 @@ ui.modules_ccle_drug_response_diff <- function(id) {
                              placement = "right", options = list(container = "body")
           ),
         ),
+        materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = TRUE),
+        materialSwitch(ns("pdist_show_p_label"), "Show P label", inline = TRUE),
+        colourpicker::colourInput(inputId = ns("high_col"), "High group color", "#DF2020"),
+        colourpicker::colourInput(inputId = ns("low_col"), "Low group color", "#DDDF21"),
+        selectInput(inputId = ns("use_all"), label = "Use All Tissue Types", choices = c("FALSE","TRUE"), selected = "FALSE"),
+        selectInput(inputId = ns("tissue"), label = "Filter Tissue", choices = tissue_all, selected = "prostate"),
         numericInput(inputId = ns("height"), label = "Height", value = 8),
         numericInput(inputId = ns("width"), label = "Width", value = 12),
         prettyRadioButtons(
@@ -97,12 +106,21 @@ server.modules_ccle_drug_response_diff <- function(input, output, session) {
     )
   })
   
+  colors <- reactive({
+    c(input$high_col, input$low_col)
+  })
+  
   # Show waiter for plot
   #w <- waiter::Waiter$new(id = ns("gene_ccle_drug_target"), html = waiter::spin_hexdots(), color = "white")
   
   plot_func <- eventReactive(input$search_bttn,{
     if (nchar(input$ccle_search[1]) >= 1) {
-      p <- vis_gene_drug_response_diff(Gene = input$ccle_search)
+      p <- vis_gene_drug_response_diff(Gene = input$ccle_search,
+                                       values = colors(),
+                                       tissue = input$tissue,
+                                       Show.P.value = input$pdist_show_p_value,
+                                       Show.P.label = input$pdist_show_p_label,
+                                       use_all = as.logical(input$use_all))
     }
     return(p)
   })
@@ -138,3 +156,5 @@ server.modules_ccle_drug_response_diff <- function(input, output, session) {
     options = list(lengthChange = FALSE)
   )
 }
+
+

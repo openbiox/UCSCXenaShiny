@@ -72,13 +72,19 @@ vis_gene_drug_response_asso <- function(Gene = "TP53",
 #' @return a `ggplot` object.
 vis_gene_drug_response_diff <- function(Gene = "TP53", tissue = "prostate",
                                         Show.P.value = TRUE, Show.P.label = TRUE,
-                                        Method = "wilcox.test") {
-  df <- analyze_gene_drug_response_diff(Gene, tissue = tissue)
+                                        Method = "wilcox.test",
+                                        values = c("#DF2020", "#DDDF21"),
+                                        use_all = FALSE) {
+  if (use_all == FALSE) {
+    df <- analyze_gene_drug_response_diff(Gene, tissue = tissue)
+  } else {
+    df <- analyze_gene_drug_response_diff(Gene)
+  }
+  
 
   p <- df %>% ggplot(aes_string(x = "drug", y = "IC50", color = "group")) +
     geom_boxplot() +
-    labs(x = "Drug", y = "IC50 (uM)") +
-    ggpubr::rotate_x_text(45)
+    labs(x = "Drug", y = "IC50 (uM)") 
 
   if (Show.P.value == TRUE) {
     message("Counting P value")
@@ -98,5 +104,10 @@ vis_gene_drug_response_diff <- function(Gene = "TP53", tissue = "prostate",
     inherit.aes = FALSE
     )
   }
+  
+  p = p + 
+    ggplot2::scale_color_manual(values = values) +
+    ggpubr::theme_pubr() +
+    ggpubr::rotate_x_text(45)
   return(p)
 }
