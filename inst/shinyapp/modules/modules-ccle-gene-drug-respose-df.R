@@ -39,10 +39,38 @@ ui.modules_ccle_drug_response_diff <- function(id) {
                              placement = "right", options = list(container = "body")
           ),
         ),
+        numericInput(inputId = ns("height"), label = "Height", value = 8),
+        numericInput(inputId = ns("width"), label = "Width", value = 12),
+        prettyRadioButtons(
+          inputId = ns("device"),
+          label = "Choose plot format",
+          choices = c("pdf", "png"),
+          selected = "pdf",
+          inline = TRUE,
+          icon = icon("check"),
+          animation = "jelly",
+          fill = TRUE
+        ),
+        downloadBttn(
+          outputId = ns("download"),
+          # label = "Download Plot",
+          style = "gradient",
+          color = "default",
+          block = TRUE,
+          size = "sm"
+        ),
         width = 3
       ),
       mainPanel = mainPanel(
-        plotOutput(ns("gene_ccle_drug_response_diff"), height = "600px")
+        plotOutput(ns("gene_ccle_drug_response_diff"), height = "600px"),
+        tags$br(),
+        DT::DTOutput(outputId = ns("tbl")),
+        shinyjs::hidden(
+          wellPanel(
+            id = ns("save_csv"),
+            downloadButton(ns("downloadTable"), "Save as csv")
+          )
+        )
       )
     )
   )
@@ -83,4 +111,30 @@ server.modules_ccle_drug_response_diff <- function(input, output, session) {
     plot_func()
   })
   
+  output$downloadTable <- downloadHandler(
+    filename = function() {
+      paste0(input$ccle_search,"_ccle_target_response_diff.csv")
+    },
+    content = function(file) {
+      write.csv(data <- return_data(), file, row.names = FALSE)
+    }
+  )
+  
+  ##return data
+  return_data <- eventReactive(input$search_bttn,{
+    if (nchar(input$ccle_search) >= 1) {
+      shinyjs::show(id = "save_csv")
+      p <- plot_func()
+      data <- p$data
+      return(data)
+    } else {
+      shinyjs::hide(id = "save_csv")
+    }
+  })
+  
+  
+  output$tbl <- renderDT(
+    data <- return_data(),
+    options = list(lengthChange = FALSE)
+  )
 }
