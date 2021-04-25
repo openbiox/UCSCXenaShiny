@@ -148,7 +148,7 @@ server.modules_pancan_radar <- function(input, output, session) {
         group.point.size = 3,
         group.colours = "#00AFBB",
         plot.title = paste0(input$Pancan_search," ",input$profile," ",input$Type," ")
-      ) + theme(title = element_text(hjust = .5))
+      ) + theme(plot.title = element_text(hjust = .5))
       
     }
     return(plot)
@@ -196,6 +196,8 @@ server.modules_pancan_radar <- function(input, output, session) {
         p <- vis_gene_msi_cor(Gene = input$Pancan_search, cor_method = input$cor_method,data_type = input$profile)
       }
       data <- p$data
+      data = data %>%
+        dplyr::mutate(cor = round(cor,digits = 3), p.value = round(p.value, digits = 3))
       return(data)
     } else {
       shinyjs::hide(id = "save_csv")
