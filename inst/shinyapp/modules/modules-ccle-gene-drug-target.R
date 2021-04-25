@@ -1,7 +1,7 @@
 ui.modules_ccle_drug_target_asso <- function(id) {
   ns <- NS(id)
   fluidPage(
-    #titlePanel("Module: Gene CCLE Expression Distribution"),
+    # titlePanel("Module: Gene CCLE Expression Distribution"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidRow(
@@ -33,19 +33,23 @@ ui.modules_ccle_drug_target_asso <- function(id) {
             ),
           ),
           shinyBS::bsPopover(ns("ccle_search"),
-                             title = "Tips",
-                             content = "Enter a gene symbol to show its distribution, e.g. TP53",
-                             placement = "right", options = list(container = "body")
+            title = "Tips",
+            content = "Enter a gene symbol to show its distribution, e.g. TP53",
+            placement = "right", options = list(container = "body")
           ),
         ),
-        selectInput(inputId = ns("output_form"), 
-                    label = "Plot output form", 
-                    choices = c("plotly","ggplot2"), 
-                    selected = "plotly"),
-        selectInput(inputId = ns("x_axis_type"), 
-                    label = "X axis type ", 
-                    choices = c("mean.diff","median.diff"), 
-                    selected = "mean.diff"),
+        selectInput(
+          inputId = ns("output_form"),
+          label = "Plot output form",
+          choices = c("plotly", "ggplot2"),
+          selected = "plotly"
+        ),
+        selectInput(
+          inputId = ns("x_axis_type"),
+          label = "X axis type ",
+          choices = c("mean.diff", "median.diff"),
+          selected = "mean.diff"
+        ),
         numericInput(inputId = ns("height"), label = "Height", value = 6),
         numericInput(inputId = ns("width"), label = "Width", value = 8),
         prettyRadioButtons(
@@ -89,7 +93,7 @@ ui.modules_ccle_drug_target_asso <- function(id) {
 
 server.modules_ccle_drug_target_asso <- function(input, output, session) {
   ns <- session$ns
-  
+
   observe({
     updateSelectizeInput(
       session,
@@ -99,17 +103,19 @@ server.modules_ccle_drug_target_asso <- function(input, output, session) {
       server = TRUE
     )
   })
-  
-  plot_func <- eventReactive(input$search_bttn,{
+
+  plot_func <- eventReactive(input$search_bttn, {
     if (nchar(input$ccle_search[1]) >= 1) {
-      p <- vis_gene_drug_response_asso(Gene = input$ccle_search, 
-                                       output_form = input$output_form,
-                                       x_axis_type = input$x_axis_type)
+      p <- vis_gene_drug_response_asso(
+        Gene = input$ccle_search,
+        output_form = input$output_form,
+        x_axis_type = input$x_axis_type
+      )
       print(class(p))
     }
     return(p)
   })
-  
+
   observeEvent(input$search_bttn, {
     if (input$output_form == "ggplot2") {
       shinyjs::hide("gene_ccle_drug_target.plotly")
@@ -119,17 +125,17 @@ server.modules_ccle_drug_target_asso <- function(input, output, session) {
       shinyjs::show("gene_ccle_drug_target.plotly")
     }
   })
-  
+
   output$gene_ccle_drug_target.plotly <- plotly::renderPlotly({
-      plot_func()
-    })
+    plot_func()
+  })
   output$gene_ccle_drug_target.ggplot2 <- renderPlot({
     plot_func()
   })
-  
+
   output$download <- downloadHandler(
     filename = function() {
-      paste0(input$ccle_search,"_ccle_drug_target.", input$device)
+      paste0(input$ccle_search, "_ccle_drug_target.", input$device)
     },
     content = function(file) {
       p <- plot_func()
@@ -147,15 +153,15 @@ server.modules_ccle_drug_target_asso <- function(input, output, session) {
 
   output$downloadTable <- downloadHandler(
     filename = function() {
-      paste0(input$ccle_search,"_ccle_drug_target.csv")
+      paste0(input$ccle_search, "_ccle_drug_target.csv")
     },
     content = function(file) {
       write.csv(data <- return_data(), file, row.names = FALSE)
     }
   )
-  
-  ##return data
-  return_data <- eventReactive(input$search_bttn,{
+
+  ## return data
+  return_data <- eventReactive(input$search_bttn, {
     if (nchar(input$ccle_search) >= 1) {
       shinyjs::show(id = "save_csv")
       data <- analyze_gene_drug_response_asso(input$ccle_search)
@@ -164,11 +170,10 @@ server.modules_ccle_drug_target_asso <- function(input, output, session) {
       shinyjs::hide(id = "save_csv")
     }
   })
-  
-  
+
+
   output$tbl <- renderDT(
     data <- return_data(),
     options = list(lengthChange = FALSE)
   )
-  
 }

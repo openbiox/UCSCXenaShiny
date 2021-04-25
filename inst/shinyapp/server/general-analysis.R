@@ -45,7 +45,8 @@ output$ga_dataset_table <- DT::renderDataTable(
       # 同时载入同队列的 phenotype (and probemap?)
       show_table <- show_table %>%
         dplyr::select(c("XenaCohorts", "XenaDatasets", "SampleCount", "DataSubtype", "Label", "Type", "download", "browse"))
-      colnames(show_table)[1:4] <- c("Cohort", "Dataset", "N", "Subtype")}
+      colnames(show_table)[1:4] <- c("Cohort", "Dataset", "N", "Subtype")
+    }
     # } else {
     #   sendSweetAlert(session,
     #     title = "Warning!", text = "Please select datasets from Repository page firstly",
@@ -61,14 +62,22 @@ output$ga_dataset_table <- DT::renderDataTable(
 
 # Individual analysis pages -------------------------------------------------------------
 
-callModule(server.modules_ga_scatter_correlation, "module_ga_scatter_correlation", 
-           selected_database_rm_phenotype, selected_database_add_url_and_phenotype)
-callModule(server.modules_ga_matrix_correlation, "module_ga_matrix_correlation", 
-           selected_database_rm_phenotype, selected_database_add_url_and_phenotype)
-callModule(server.modules_ga_group_comparison, "module_ga_group_comparison", 
-           selected_database_rm_phenotype, selected_database_add_url_and_phenotype)
-callModule(server.modules_ga_surv_analysis, "module_ga_surv_analysis", 
-           selected_database_rm_phenotype, selected_database_add_url_and_phenotype)
+callModule(
+  server.modules_ga_scatter_correlation, "module_ga_scatter_correlation",
+  selected_database_rm_phenotype, selected_database_add_url_and_phenotype
+)
+callModule(
+  server.modules_ga_matrix_correlation, "module_ga_matrix_correlation",
+  selected_database_rm_phenotype, selected_database_add_url_and_phenotype
+)
+callModule(
+  server.modules_ga_group_comparison, "module_ga_group_comparison",
+  selected_database_rm_phenotype, selected_database_add_url_and_phenotype
+)
+callModule(
+  server.modules_ga_surv_analysis, "module_ga_surv_analysis",
+  selected_database_rm_phenotype, selected_database_add_url_and_phenotype
+)
 
 # Show use alert ----------------------------------------------------------
 
@@ -87,11 +96,11 @@ observeEvent(input$use_ga_page, {
   )
 })
 
-observeEvent(input$ga_drop_button,{
-  if(is.null(selected_database_add_url_and_phenotype())){
+observeEvent(input$ga_drop_button, {
+  if (is.null(selected_database_add_url_and_phenotype())) {
     sendSweetAlert(session,
-                   title = "Warning!", text = "Please select datasets from Repository page firstly",
-                   type = "warning"
+      title = "Warning!", text = "Please select datasets from Repository page firstly",
+      type = "warning"
     )
   }
 })

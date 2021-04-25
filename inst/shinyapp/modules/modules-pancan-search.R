@@ -1,7 +1,7 @@
 ui.modules_pancan_dist <- function(id) {
   ns <- NS(id)
   fluidPage(
-    #titlePanel("Module: Gene Pancan Expression Distribution"),
+    # titlePanel("Module: Gene Pancan Expression Distribution"),
     sidebarLayout(
       sidebarPanel(
         fluidRow(
@@ -9,8 +9,8 @@ ui.modules_pancan_dist <- function(id) {
             9,
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "transcript", "methylation","protein","miRNA", "cnv_gistic2"),
-              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation","Protein Expression","miRNA Expression", "Copy Number Variation"),
+              choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2"),
+              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
               animation = "jelly"
             ),
             selectizeInput(
@@ -97,18 +97,19 @@ ui.modules_pancan_dist <- function(id) {
 
 server.modules_pancan_dist <- function(input, output, session) {
   ns <- session$ns
-  
+
   profile_choices <- reactive({
     switch(input$profile,
-           mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
-           methylation = list(all = pancan_identifiers$gene, default = "TP53"),
-           protein = list(all = pancan_identifiers$protein, default = "P53"),
-           transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
-           miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-           cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
-           list(all = "NONE", default = "NONE"))
+      mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
+      methylation = list(all = pancan_identifiers$gene, default = "TP53"),
+      protein = list(all = pancan_identifiers$protein, default = "P53"),
+      transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
+      miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+      cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
+      list(all = "NONE", default = "NONE")
+    )
   })
-  
+
   observe({
     updateSelectizeInput(
       session,
@@ -129,8 +130,8 @@ server.modules_pancan_dist <- function(input, output, session) {
 
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("gene_pancan_dist"), html = waiter::spin_hexdots(), color = "black")
-  
-  plot_func <- eventReactive(input$search_bttn,{
+
+  plot_func <- eventReactive(input$search_bttn, {
     if (nchar(input$Pancan_search) >= 1) {
       p <- vis_toil_TvsN(
         Gene = input$Pancan_search,
@@ -140,32 +141,35 @@ server.modules_pancan_dist <- function(input, output, session) {
         Show.P.label = input$pdist_show_p_label,
         TCGA.only = input$pdist_dataset,
         values = colors(),
-      ) + plot_theme() + ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5),
-                                        axis.text.y = element_text(size = 15)) 
+      ) + plot_theme() + ggplot2::theme(
+        axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5),
+        axis.text.y = element_text(size = 15)
+      )
     }
     return(p)
   })
-  
-  output$colorvalues = reactive({c(input$tumor_col,input$normal_col)
-    })
-  
+
+  output$colorvalues <- reactive({
+    c(input$tumor_col, input$normal_col)
+  })
+
   output$gene_pancan_dist <- renderPlot({
     w$show() # Waiter add-ins
     plot_func()
   })
-  
+
   output$downloadTable <- downloadHandler(
     filename = function() {
-      paste0(input$Pancan_search,"_",input$profile,"_pancan_dist.csv")
+      paste0(input$Pancan_search, "_", input$profile, "_pancan_dist.csv")
     },
     content = function(file) {
       write.csv(data <- return_data(), file, row.names = FALSE)
     }
   )
-  
+
   output$download <- downloadHandler(
     filename = function() {
-      paste0(input$Pancan_search,"_",input$profile,"_pancan_dist.", input$device)
+      paste0(input$Pancan_search, "_", input$profile, "_pancan_dist.", input$device)
     },
     content = function(file) {
       p <- plot_func()
@@ -182,9 +186,9 @@ server.modules_pancan_dist <- function(input, output, session) {
       # ggplot2::ggsave(filename = file, plot = print(p), device = input$device, width = input$width, height = input$height, dpi = 600)
     }
   )
-  
-  ##return data
-  return_data <- eventReactive(input$search_bttn,{
+
+  ## return data
+  return_data <- eventReactive(input$search_bttn, {
     if (nchar(input$Pancan_search) >= 1) {
       shinyjs::show(id = "save_csv")
       p <- plot_func()
@@ -194,12 +198,10 @@ server.modules_pancan_dist <- function(input, output, session) {
       shinyjs::hide(id = "save_csv")
     }
   })
-  
-  
+
+
   output$tbl <- renderDT(
     data <- return_data(),
     options = list(lengthChange = FALSE)
   )
-  
-  
 }

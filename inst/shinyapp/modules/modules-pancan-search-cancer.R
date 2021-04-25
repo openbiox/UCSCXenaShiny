@@ -5,7 +5,7 @@ choices <- c(
 ui.modules_cancer_dist <- function(id) {
   ns <- NS(id)
   fluidPage(
-    #titlePanel("Module: Gene Cancer Expression Distribution"),
+    # titlePanel("Module: Gene Cancer Expression Distribution"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidRow(
@@ -13,8 +13,8 @@ ui.modules_cancer_dist <- function(id) {
             9,
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "transcript", "methylation","protein","miRNA", "cnv_gistic2"),
-              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation","Protein Expression","miRNA Expression", "Copy Number Variation"),
+              choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2"),
+              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
               animation = "jelly"
             ),
             selectizeInput(
@@ -100,18 +100,19 @@ ui.modules_cancer_dist <- function(id) {
 
 server.modules_cancer_dist <- function(input, output, session) {
   ns <- session$ns
-   
+
   profile_choices <- reactive({
     switch(input$profile,
-           mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
-           methylation = list(all = pancan_identifiers$gene, default = "TP53"),
-           protein = list(all = pancan_identifiers$protein, default = "P53"),
-           transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
-           miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-           cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
-           list(all = "NONE", default = "NONE"))
+      mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
+      methylation = list(all = pancan_identifiers$gene, default = "TP53"),
+      protein = list(all = pancan_identifiers$protein, default = "P53"),
+      transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
+      miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+      cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
+      list(all = "NONE", default = "NONE")
+    )
   })
-  
+
   observe({
     updateSelectizeInput(
       session,
@@ -129,7 +130,7 @@ server.modules_cancer_dist <- function(input, output, session) {
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("gene_cancer_dist"), html = waiter::spin_hexdots(), color = "white")
 
-  plot_func <- eventReactive(input$search_bttn,{
+  plot_func <- eventReactive(input$search_bttn, {
     if (nchar(input$Pancan_search) >= 1) {
       p <- vis_toil_TvsN_cancer(
         Gene = input$Pancan_search,
@@ -154,7 +155,7 @@ server.modules_cancer_dist <- function(input, output, session) {
 
   output$downloadTable <- downloadHandler(
     filename = function() {
-      paste0(input$Pancan_search,"_",input$profile,"_",input$Cancer,"_pancan_dist.csv")
+      paste0(input$Pancan_search, "_", input$profile, "_", input$Cancer, "_pancan_dist.csv")
     },
     content = function(file) {
       write.csv(data <- return_data(), file, row.names = FALSE)
@@ -163,7 +164,7 @@ server.modules_cancer_dist <- function(input, output, session) {
 
   output$download <- downloadHandler(
     filename = function() {
-      paste0(input$Pancan_search,"_",input$profile,"_cancer_dist.", input$device)
+      paste0(input$Pancan_search, "_", input$profile, "_cancer_dist.", input$device)
     },
     content = function(file) {
       p <- plot_func()
@@ -178,9 +179,9 @@ server.modules_cancer_dist <- function(input, output, session) {
       }
     }
   )
-  
-  ##return data
-  return_data <- eventReactive(input$search_bttn,{
+
+  ## return data
+  return_data <- eventReactive(input$search_bttn, {
     if (nchar(input$Pancan_search) >= 1) {
       shinyjs::show(id = "save_csv")
       p <- plot_func()
@@ -190,11 +191,10 @@ server.modules_cancer_dist <- function(input, output, session) {
       shinyjs::hide(id = "save_csv")
     }
   })
-  
-  
+
+
   output$tbl <- renderDT(
     data <- return_data(),
     options = list(lengthChange = FALSE)
   )
-  
 }

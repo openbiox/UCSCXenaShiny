@@ -1,7 +1,7 @@
 ui.modules_pancan_unicox <- function(id) {
   ns <- NS(id)
   fluidPage(
-    #titlePanel("Module: Gene Pancan Uni-cox analysis"),
+    # titlePanel("Module: Gene Pancan Uni-cox analysis"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidRow(
@@ -9,8 +9,8 @@ ui.modules_pancan_unicox <- function(id) {
             9,
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "transcript", "methylation","protein","miRNA", "cnv_gistic2"),
-              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation","Protein Expression","miRNA Expression", "Copy Number Variation"),
+              choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2"),
+              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
               animation = "jelly"
             ),
             selectizeInput(
@@ -93,18 +93,19 @@ ui.modules_pancan_unicox <- function(id) {
 
 server.modules_pancan_unicox <- function(input, output, session) {
   ns <- session$ns
-  
+
   profile_choices <- reactive({
     switch(input$profile,
-           mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
-           methylation = list(all = pancan_identifiers$gene, default = "TP53"),
-           protein = list(all = pancan_identifiers$protein, default = "P53"),
-           transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
-           miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-           cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
-           list(all = "NONE", default = "NONE"))
+      mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
+      methylation = list(all = pancan_identifiers$gene, default = "TP53"),
+      protein = list(all = pancan_identifiers$protein, default = "P53"),
+      transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
+      miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+      cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
+      list(all = "NONE", default = "NONE")
+    )
   })
-  
+
   observe({
     updateSelectizeInput(
       session,
@@ -122,7 +123,7 @@ server.modules_pancan_unicox <- function(input, output, session) {
     c(input$first_col, input$second_col, input$third_col)
   })
 
-  return_data <- eventReactive(input$search_bttn,{
+  return_data <- eventReactive(input$search_bttn, {
     if (nchar(input$Pancan_search) >= 1) {
       shinyjs::show(id = "save_csv")
       p <- vis_unicox_tree(
@@ -143,7 +144,7 @@ server.modules_pancan_unicox <- function(input, output, session) {
   })
 
 
-  plot_func <- eventReactive(input$search_bttn,{
+  plot_func <- eventReactive(input$search_bttn, {
     if (nchar(input$Pancan_search) >= 1) {
       p <- vis_unicox_tree(
         Gene = input$Pancan_search,
@@ -168,7 +169,7 @@ server.modules_pancan_unicox <- function(input, output, session) {
 
   output$download <- downloadHandler(
     filename = function() {
-      paste0(input$Pancan_search,"_",input$profile, "_", input$measure, "_pancan_unicox.", input$device)
+      paste0(input$Pancan_search, "_", input$profile, "_", input$measure, "_pancan_unicox.", input$device)
     },
     content = function(file) {
       p <- plot_func()
@@ -192,12 +193,12 @@ server.modules_pancan_unicox <- function(input, output, session) {
     options = list(lengthChange = FALSE)
   )
 
-  
- 
+
+
 
   output$downloadTable <- downloadHandler(
     filename = function() {
-      paste0(input$Pancan_search,"_",input$profile, "_", input$measure, "_pancan_unicox.csv")
+      paste0(input$Pancan_search, "_", input$profile, "_", input$measure, "_pancan_unicox.csv")
     },
     content = function(file) {
       write.csv(data <- return_data(), file, row.names = FALSE)

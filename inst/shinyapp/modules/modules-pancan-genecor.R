@@ -5,15 +5,15 @@ choices <- c(
 ui.modules_pancan_gene_cor <- function(id) {
   ns <- NS(id)
   fluidPage(
-    #titlePanel("Module: TCGA Gene-Gene Correlation"),
+    # titlePanel("Module: TCGA Gene-Gene Correlation"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidRow(
           column(
-            9,shinyWidgets::prettyRadioButtons(
+            9, shinyWidgets::prettyRadioButtons(
               inputId = ns("profile1"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "transcript", "methylation","protein","miRNA", "cnv_gistic2"),
-              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation","Protein Expression","miRNA Expression", "Copy Number Variation"),
+              choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2"),
+              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
               animation = "jelly"
             ),
             selectizeInput(
@@ -30,8 +30,8 @@ ui.modules_pancan_gene_cor <- function(id) {
             ),
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile2"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "transcript", "methylation","protein","miRNA", "cnv_gistic2"),
-              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation","Protein Expression","miRNA Expression", "Copy Number Variation"),
+              choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2"),
+              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
               animation = "jelly"
             ),
             selectizeInput(
@@ -45,8 +45,9 @@ ui.modules_pancan_gene_cor <- function(id) {
                 placeholder = "Enter a gene symbol, e.g. JAK3",
                 plugins = list("restore_on_backspace")
               )
-            )),
-          column(3,shinyWidgets::actionBttn(
+            )
+          ),
+          column(3, shinyWidgets::actionBttn(
             inputId = ns("search_bttn"), label = NULL,
             style = "simple",
             icon = icon("search"),
@@ -57,7 +58,7 @@ ui.modules_pancan_gene_cor <- function(id) {
         ),
         tags$br(),
         materialSwitch(ns("purity_adj"), "Adjust Purity", inline = TRUE),
-        selectInput(inputId = ns("use_all"), label = "Use All Cancer Types", choices = c("TRUE","FALSE"), selected = "FALSE"),
+        selectInput(inputId = ns("use_all"), label = "Use All Cancer Types", choices = c("TRUE", "FALSE"), selected = "FALSE"),
         selectInput(inputId = ns("Cancer"), label = "Filter Cancer", choices = choices, selected = "ACC"),
         materialSwitch(ns("use_regline"), "Use regression line", inline = TRUE),
         selectInput(
@@ -68,11 +69,13 @@ ui.modules_pancan_gene_cor <- function(id) {
         ),
         sliderTextInput(
           inputId = ns("alpha"),
-          label = "Choose a transparent value", 
-          choices = seq(from = 0,
-                        to = 1,
-                        by = 0.1),
-          selected = "0.5",  
+          label = "Choose a transparent value",
+          choices = seq(
+            from = 0,
+            to = 1,
+            by = 0.1
+          ),
+          selected = "0.5",
           grid = TRUE
         ),
         colourpicker::colourInput(inputId = ns("color"), "Point color", "#000000"),
@@ -122,18 +125,19 @@ ui.modules_pancan_gene_cor <- function(id) {
 
 server.modules_pancan_gene_cor <- function(input, output, session) {
   ns <- session$ns
-  
+
   profile_choices1 <- reactive({
     switch(input$profile1,
-           mRNA = list(all = pancan_identifiers$gene, default = "CSF1R"),
-           methylation = list(all = pancan_identifiers$gene, default = "TP53"),
-           protein = list(all = pancan_identifiers$protein, default = "P53"),
-           transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
-           miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-           cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
-           list(all = "NONE", default = "NONE"))
+      mRNA = list(all = pancan_identifiers$gene, default = "CSF1R"),
+      methylation = list(all = pancan_identifiers$gene, default = "TP53"),
+      protein = list(all = pancan_identifiers$protein, default = "P53"),
+      transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
+      miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+      cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
+      list(all = "NONE", default = "NONE")
+    )
   })
-  
+
   observe({
     updateSelectizeInput(
       session,
@@ -143,18 +147,19 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
       server = TRUE
     )
   })
-  
+
   profile_choices2 <- reactive({
     switch(input$profile2,
-           mRNA = list(all = pancan_identifiers$gene, default = "JAK3"),
-           methylation = list(all = pancan_identifiers$gene, default = "TP53"),
-           protein = list(all = pancan_identifiers$protein, default = "P53"),
-           transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
-           miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-           cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
-           list(all = "NONE", default = "NONE"))
+      mRNA = list(all = pancan_identifiers$gene, default = "JAK3"),
+      methylation = list(all = pancan_identifiers$gene, default = "TP53"),
+      protein = list(all = pancan_identifiers$protein, default = "P53"),
+      transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
+      miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+      cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
+      list(all = "NONE", default = "NONE")
+    )
   })
-  
+
   observe({
     updateSelectizeInput(
       session,
@@ -164,13 +169,13 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
       server = TRUE
     )
   })
-  
-  
-  
+
+
+
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("gene_cor"), html = waiter::spin_hexdots(), color = "white")
 
-  plot_func <- eventReactive(input$search_bttn,{
+  plot_func <- eventReactive(input$search_bttn, {
     if (nchar(input$Pancan_search1) >= 1 & nchar(input$Pancan_search2) >= 1) {
       p <- vis_gene_cor_cancer(
         Gene1 = input$Pancan_search1,
@@ -192,10 +197,10 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
     return(p)
   })
 
-  ##downloadTable
+  ## downloadTable
   output$downloadTable <- downloadHandler(
     filename = function() {
-      paste0(input$Pancan_search1,"_",input$profile1,"_",input$Pancan_search2,"_",input$profile2,"_pancan_gene_cor.csv")
+      paste0(input$Pancan_search1, "_", input$profile1, "_", input$Pancan_search2, "_", input$profile2, "_pancan_gene_cor.csv")
     },
     content = function(file) {
       write.csv(data <- return_data(), file, row.names = FALSE)
@@ -206,11 +211,11 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
     w$show() # Waiter add-ins
     plot_func()
   })
-  
-  #download module
+
+  # download module
   output$download <- downloadHandler(
     filename = function() {
-      paste0(input$Pancan_search1,"_",input$profile1,"_",input$Pancan_search2,"_",input$profile2,"_pancan_gene_cor.", input$device)
+      paste0(input$Pancan_search1, "_", input$profile1, "_", input$Pancan_search2, "_", input$profile2, "_pancan_gene_cor.", input$device)
     },
     content = function(file) {
       p <- plot_func()
@@ -223,13 +228,13 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
         print(p)
         dev.off()
       }
-      
+
       # ggplot2::ggsave(filename = file, plot = print(p), device = input$device, width = input$width, height = input$height, dpi = 600)
     }
   )
-  
-  ##return data
-  return_data <- eventReactive(input$search_bttn,{
+
+  ## return data
+  return_data <- eventReactive(input$search_bttn, {
     if (nchar(input$Pancan_search1) >= 1 & nchar(input$Pancan_search2) >= 1) {
       shinyjs::show(id = "save_csv")
       p <- plot_func()
@@ -239,11 +244,10 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
       shinyjs::hide(id = "save_csv")
     }
   })
-  
-  
+
+
   output$tbl <- renderDT(
     data <- return_data(),
     options = list(lengthChange = FALSE)
   )
-  
 }

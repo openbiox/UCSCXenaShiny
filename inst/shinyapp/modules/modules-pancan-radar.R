@@ -1,7 +1,7 @@
 ui.modules_pancan_radar <- function(id) {
   ns <- NS(id)
   fluidPage(
-    #titlePanel("Module: Gene Pancan Radar"),
+    # titlePanel("Module: Gene Pancan Radar"),
     sidebarLayout(
       sidebarPanel(
         fluidRow(
@@ -9,8 +9,8 @@ ui.modules_pancan_radar <- function(id) {
             9,
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "transcript", "methylation","protein","miRNA", "cnv_gistic2"),
-              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation","Protein Expression","miRNA Expression", "Copy Number Variation"),
+              choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2"),
+              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
               animation = "jelly"
             ),
             selectizeInput(
@@ -40,11 +40,11 @@ ui.modules_pancan_radar <- function(id) {
           )
         ),
         shinyBS::bsPopover(ns("Pancan_search"),
-                           title = "Tips",
-                           content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
-                           placement = "right", options = list(container = "body")
+          title = "Tips",
+          content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
+          placement = "right", options = list(container = "body")
         ),
-        selectInput(inputId = ns("Type"), label = "Select a feature", choices = c("stemness","TMB","MSI"),selected = "stemness"),
+        selectInput(inputId = ns("Type"), label = "Select a feature", choices = c("stemness", "TMB", "MSI"), selected = "stemness"),
         selectInput(
           inputId = ns("cor_method"),
           label = "Select Correlation method",
@@ -99,18 +99,19 @@ ui.modules_pancan_radar <- function(id) {
 
 server.modules_pancan_radar <- function(input, output, session) {
   ns <- session$ns
-  
+
   profile_choices <- reactive({
     switch(input$profile,
-           mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
-           methylation = list(all = pancan_identifiers$gene, default = "TP53"),
-           protein = list(all = pancan_identifiers$protein, default = "P53"),
-           transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
-           miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-           cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
-           list(all = "NONE", default = "NONE"))
+      mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
+      methylation = list(all = pancan_identifiers$gene, default = "TP53"),
+      protein = list(all = pancan_identifiers$protein, default = "P53"),
+      transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
+      miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+      cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
+      list(all = "NONE", default = "NONE")
+    )
   })
-  
+
   observe({
     updateSelectizeInput(
       session,
@@ -120,23 +121,25 @@ server.modules_pancan_radar <- function(input, output, session) {
       server = TRUE
     )
   })
-  
+
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("gene_pancan_radar"), html = waiter::spin_hexdots(), color = "black")
-  
-  plot_func <- eventReactive(input$search_bttn,{
+
+  plot_func <- eventReactive(input$search_bttn, {
     if (nchar(input$Pancan_search) >= 1) {
-      if(input$Type == "stemness"){
-        p <- vis_gene_stemness_cor(Gene = input$Pancan_search, cor_method = input$cor_method,data_type = input$profile)
-      } else if(input$Type == "tmb"){
-        p <- vis_gene_tmb_cor(Gene = input$Pancan_search, cor_method = input$cor_method,data_type = input$profile)
-      } else if(input$Type == "msi"){
-        p <- vis_gene_msi_cor(Gene = input$Pancan_search, cor_method = input$cor_method,data_type = input$profile)
+      if (input$Type == "stemness") {
+        p <- vis_gene_stemness_cor(Gene = input$Pancan_search, cor_method = input$cor_method, data_type = input$profile)
+      } else if (input$Type == "tmb") {
+        p <- vis_gene_tmb_cor(Gene = input$Pancan_search, cor_method = input$cor_method, data_type = input$profile)
+      } else if (input$Type == "msi") {
+        p <- vis_gene_msi_cor(Gene = input$Pancan_search, cor_method = input$cor_method, data_type = input$profile)
       }
-      pdata = p$data
-      df = pdata %>% select(cor, cancer) %>% pivot_wider(names_from = cancer, values_from = cor)
+      pdata <- p$data
+      df <- pdata %>%
+        select(cor, cancer) %>%
+        pivot_wider(names_from = cancer, values_from = cor)
       plot <- ggradar::ggradar(
-        df[1, ], 
+        df[1, ],
         font.radar = "sans",
         values.radar = c("-1", "0", "1"),
         grid.min = -1, grid.mid = 0, grid.max = 1,
@@ -144,24 +147,23 @@ server.modules_pancan_radar <- function(input, output, session) {
         background.circle.colour = "white",
         gridline.mid.colour = "grey",
         # Polygons
-        group.line.width = 1, 
+        group.line.width = 1,
         group.point.size = 3,
         group.colours = "#00AFBB",
-        plot.title = paste0(input$Pancan_search," ",input$profile," ",input$Type," ")
+        plot.title = paste0(input$Pancan_search, " ", input$profile, " ", input$Type, " ")
       ) + theme(plot.title = element_text(hjust = .5))
-      
     }
     return(plot)
   })
-  
+
   output$gene_pancan_radar <- renderPlot({
     w$show() # Waiter add-ins
     plot_func()
   })
-  
+
   output$download <- downloadHandler(
     filename = function() {
-      paste0(input$Pancan_search,"_",input$profile,"_",input$Type,"_pancan_radar.", input$device)
+      paste0(input$Pancan_search, "_", input$profile, "_", input$Type, "_pancan_radar.", input$device)
     },
     content = function(file) {
       p <- plot_func()
@@ -174,46 +176,45 @@ server.modules_pancan_radar <- function(input, output, session) {
         print(p)
         dev.off()
       }
-      
+
       # ggplot2::ggsave(filename = file, plot = print(p), device = input$device, width = input$width, height = input$height, dpi = 600)
     }
   )
-  
+
   output$tbl <- renderDT(
     data <- return_data(),
     options = list(lengthChange = FALSE)
   )
-  
-  ##return data
-  return_data <- eventReactive(input$search_bttn,{
+
+  ## return data
+  return_data <- eventReactive(input$search_bttn, {
     if (nchar(input$Pancan_search) >= 1) {
       shinyjs::show(id = "save_csv")
-      if(input$Type == "stemness"){
-        p <- vis_gene_stemness_cor(Gene = input$Pancan_search, cor_method = input$cor_method,data_type = input$profile)
-      } else if(input$Type == "tmb"){
-        p <- vis_gene_tmb_cor(Gene = input$Pancan_search, cor_method = input$cor_method,data_type = input$profile)
-      } else if(input$Type == "msi"){
-        p <- vis_gene_msi_cor(Gene = input$Pancan_search, cor_method = input$cor_method,data_type = input$profile)
+      if (input$Type == "stemness") {
+        p <- vis_gene_stemness_cor(Gene = input$Pancan_search, cor_method = input$cor_method, data_type = input$profile)
+      } else if (input$Type == "tmb") {
+        p <- vis_gene_tmb_cor(Gene = input$Pancan_search, cor_method = input$cor_method, data_type = input$profile)
+      } else if (input$Type == "msi") {
+        p <- vis_gene_msi_cor(Gene = input$Pancan_search, cor_method = input$cor_method, data_type = input$profile)
       }
       data <- p$data
-      data = data %>%
-        dplyr::mutate(cor = round(cor,digits = 3), p.value = round(p.value, digits = 3))
+      data <- data %>%
+        dplyr::mutate(cor = round(cor, digits = 3), p.value = round(p.value, digits = 3))
       return(data)
     } else {
       shinyjs::hide(id = "save_csv")
     }
   })
-  
-  
-  
-  ##downloadTable
+
+
+
+  ## downloadTable
   output$downloadTable <- downloadHandler(
     filename = function() {
-      paste0(input$Pancan_search,"_",input$profile,"_",input$Type,"_pancan_radar.csv")
+      paste0(input$Pancan_search, "_", input$profile, "_", input$Type, "_pancan_radar.csv")
     },
     content = function(file) {
       write.csv(data <- return_data(), file, row.names = FALSE)
     }
   )
-  
 }

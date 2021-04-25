@@ -5,7 +5,7 @@ ccle_choices <- c(
 ui.modules_ccle_dist <- function(id) {
   ns <- NS(id)
   fluidPage(
-    #titlePanel("Module: Gene CCLE Expression Distribution"),
+    # titlePanel("Module: Gene CCLE Expression Distribution"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidRow(
@@ -13,8 +13,8 @@ ui.modules_ccle_dist <- function(id) {
             9,
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "protein","cnv"),
-              choiceNames = c("mRNA Expression",  "Protein Expression", "Copy Number Variation"),
+              choiceValues = c("mRNA", "protein", "cnv"),
+              choiceNames = c("mRNA Expression", "Protein Expression", "Copy Number Variation"),
               animation = "jelly"
             ),
             selectizeInput(
@@ -43,9 +43,9 @@ ui.modules_ccle_dist <- function(id) {
             # actionButton(ns("search_bttn"), "Go"),
           ),
           shinyBS::bsPopover(ns("ccle_search"),
-                             title = "Tips",
-                             content = "Enter a gene symbol to show its distribution, e.g. TP53",
-                             placement = "right", options = list(container = "body")
+            title = "Tips",
+            content = "Enter a gene symbol to show its distribution, e.g. TP53",
+            placement = "right", options = list(container = "body")
           ),
         ),
         numericInput(inputId = ns("height"), label = "Height", value = 5),
@@ -88,13 +88,14 @@ ui.modules_ccle_dist <- function(id) {
 
 server.modules_ccle_dist <- function(input, output, session) {
   ns <- session$ns
-  
+
   profile_choices <- reactive({
     switch(input$profile,
-           mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
-           protein = list(all = UCSCXenaShiny:::.all_ccle_proteins, default = "p53_Caution"),
-           cnv = list(all = pancan_identifiers$gene, default = "TP53"),
-           list(all = "NONE", default = "NONE"))
+      mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
+      protein = list(all = UCSCXenaShiny:::.all_ccle_proteins, default = "p53_Caution"),
+      cnv = list(all = pancan_identifiers$gene, default = "TP53"),
+      list(all = "NONE", default = "NONE")
+    )
   })
 
   observe({
@@ -106,11 +107,11 @@ server.modules_ccle_dist <- function(input, output, session) {
       server = TRUE
     )
   })
-  
+
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("gene_ccle_dist"), html = waiter::spin_hexdots(), color = "white")
 
-  plot_func <- eventReactive(input$search_bttn,{
+  plot_func <- eventReactive(input$search_bttn, {
     if (nchar(input$ccle_search) >= 1) {
       p <- vis_ccle_tpm(
         Gene = input$ccle_search,
@@ -146,9 +147,9 @@ server.modules_ccle_dist <- function(input, output, session) {
       # ggplot2::ggsave(filename = file, plot = print(p), device = input$device, width = input$width, height = input$height, dpi = 600)
     }
   )
-  
-  ##return data
-  return_data <- eventReactive(input$search_bttn,{
+
+  ## return data
+  return_data <- eventReactive(input$search_bttn, {
     if (nchar(input$ccle_search) >= 1) {
       shinyjs::show(id = "save_csv")
       p <- plot_func()
@@ -158,14 +159,14 @@ server.modules_ccle_dist <- function(input, output, session) {
       shinyjs::hide(id = "save_csv")
     }
   })
-  
-  
+
+
   output$tbl <- renderDT(
     data <- return_data(),
     options = list(lengthChange = FALSE)
   )
-  
-  ##downloadTable
+
+  ## downloadTable
   output$downloadTable <- downloadHandler(
     filename = function() {
       paste0(input$ccle_search, "_gene_ccle_dist.csv")
@@ -174,5 +175,4 @@ server.modules_ccle_dist <- function(input, output, session) {
       write.csv(data <- return_data(), file, row.names = FALSE)
     }
   )
-  
 }

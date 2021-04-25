@@ -5,48 +5,54 @@ ui.modules_ga_matrix_correlation <- function(id) {
       column(
         3,
         wellPanel(
-        h4("Analysis Controls"),
-        uiOutput(ns("ga_data1_id")),
-        selectizeInput(
-          inputId = ns("ga_data1_mid"), # molecule identifier
-          label = "Molecule identifiers:",
-          choices = NULL,
-          multiple = TRUE,
-          options = list(
-            create = TRUE,
-            maxOptions = 5,
-            placeholder = "e.g. TP53, PTEN, KRAS",
-            plugins = list("restore_on_backspace")
+          h4("Analysis Controls"),
+          uiOutput(ns("ga_data1_id")),
+          selectizeInput(
+            inputId = ns("ga_data1_mid"), # molecule identifier
+            label = "Molecule identifiers:",
+            choices = NULL,
+            multiple = TRUE,
+            options = list(
+              create = TRUE,
+              maxOptions = 5,
+              placeholder = "e.g. TP53, PTEN, KRAS",
+              plugins = list("restore_on_backspace")
+            )
+          ),
+          selectInput(ns("ga_matrix_type"), "Matrix Type",
+            choices = c("full", "upper", "lower"), selected = "full", multiple = FALSE
+          ),
+          selectInput(ns("ga_test_type"), "Test Type",
+            choices = c("parametric", "nonparametric", "robust", "bayes"),
+            selected = "parametric", multiple = FALSE
+          ),
+          selectInput(ns("ga_test_adjust"), "Adjust Method",
+            choices = c(
+              "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr",
+              "none"
+            ),
+            selected = "holm", multiple = FALSE
+          ),
+          sliderInput(ns("ga_sig_level"), "Signif Level", 0, 1, 0.05, step = 0.01),
+          materialSwitch(
+            inputId = ns("ga_use_partial"),
+            label = "Partial correlation?",
+            value = FALSE,
+            status = "primary"
+          ),
+          colourpicker::colourInput(inputId = ns("ga_lower_col"), "Color for negative", "#E69F00"),
+          colourpicker::colourInput(inputId = ns("ga_higher_col"), "Color for positive", "#009E73"),
+          actionBttn(
+            inputId = ns("ga_go"),
+            label = "Submit",
+            style = "gradient",
+            icon = icon("check"),
+            color = "default",
+            block = TRUE,
+            size = "sm"
           )
-        ),
-        selectInput(ns("ga_matrix_type"), "Matrix Type",
-                    choices = c("full", "upper", "lower"), selected = "full", multiple = FALSE),
-        selectInput(ns("ga_test_type"), "Test Type",
-                    choices = c("parametric", "nonparametric", "robust", "bayes"),
-                    selected = "parametric", multiple = FALSE),
-        selectInput(ns("ga_test_adjust"), "Adjust Method",
-                    choices = c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr",
-                                "none"),
-                    selected = "holm", multiple = FALSE),
-        sliderInput(ns("ga_sig_level"), "Signif Level", 0, 1, 0.05, step = 0.01),
-        materialSwitch(
-                    inputId = ns("ga_use_partial"),
-                    label = "Partial correlation?",
-                    value = FALSE,
-                    status = "primary"
-                  ),
-        colourpicker::colourInput(inputId = ns("ga_lower_col"), "Color for negative", "#E69F00"),
-        colourpicker::colourInput(inputId = ns("ga_higher_col"), "Color for positive", "#009E73"),
-        actionBttn(
-          inputId = ns("ga_go"),
-          label = "Submit",
-          style = "gradient",
-          icon = icon("check"),
-          color = "default",
-          block = TRUE,
-          size = "sm"
         )
-      )),
+      ),
       column(
         6,
         plotOutput(ns("ga_output")),
@@ -55,53 +61,51 @@ ui.modules_ga_matrix_correlation <- function(id) {
       column(
         3,
         wellPanel(
-        h4("Sample Filters"),
-        uiOutput(ns("ga_data_filter1_id")),
-        actionBttn(
-          inputId = ns("ga_filter_button"),
-          label = "Click to filter!",
-          color = "primary",
-          style = "bordered",
-          size = "sm"
-        ),
-        tags$br(),
-        tags$br(),
-        numericInput(inputId = ns("height"), label = "Height", value = 8),
-        numericInput(inputId = ns("width"), label = "Width", value = 10),
-        column(
-          width = 12, align = "center",
-          prettyRadioButtons(
-            inputId = ns("device"),
-            label = "Choose plot format",
-            choices = c("png", "pdf"),
-            selected = "png",
-            inline = TRUE,
-            icon = icon("check"),
-            animation = "jelly",
-            fill = TRUE
+          h4("Sample Filters"),
+          uiOutput(ns("ga_data_filter1_id")),
+          actionBttn(
+            inputId = ns("ga_filter_button"),
+            label = "Click to filter!",
+            color = "primary",
+            style = "bordered",
+            size = "sm"
+          ),
+          tags$br(),
+          tags$br(),
+          numericInput(inputId = ns("height"), label = "Height", value = 8),
+          numericInput(inputId = ns("width"), label = "Width", value = 10),
+          column(
+            width = 12, align = "center",
+            prettyRadioButtons(
+              inputId = ns("device"),
+              label = "Choose plot format",
+              choices = c("png", "pdf"),
+              selected = "png",
+              inline = TRUE,
+              icon = icon("check"),
+              animation = "jelly",
+              fill = TRUE
+            )
+          ),
+          downloadBttn(
+            outputId = ns("download"),
+            # label = "Download Plot",
+            style = "gradient",
+            color = "default",
+            block = TRUE,
+            size = "sm"
           )
-        ),
-        downloadBttn(
-          outputId = ns("download"),
-          # label = "Download Plot",
-          style = "gradient",
-          color = "default",
-          block = TRUE,
-          size = "sm"
         )
-      )
       )
     )
   )
 }
 
 
-server.modules_ga_matrix_correlation <- function(
-  input, output, session, 
-  selected_database_rm_phenotype, selected_database_add_url_and_phenotype) {
-  
+server.modules_ga_matrix_correlation <- function(input, output, session,
+                                                 selected_database_rm_phenotype, selected_database_add_url_and_phenotype) {
   ns <- session$ns
-  
+
   output$ga_data1_id <- renderUI({
     show_table <- selected_database_rm_phenotype()
     selectInput(
@@ -112,7 +116,7 @@ server.modules_ga_matrix_correlation <- function(
       multiple = FALSE
     )
   })
-  
+
   observe({
     updateSelectizeInput(
       session,
@@ -122,7 +126,7 @@ server.modules_ga_matrix_correlation <- function(
       server = TRUE
     )
   })
-  
+
   selected_samps <- reactiveValues(id = NULL)
   p_scatter <- eventReactive(input$ga_go, {
     if (is.null(selected_samps$id)) {
@@ -161,7 +165,7 @@ server.modules_ga_matrix_correlation <- function(
       )
     }
   )
-  
+
   observeEvent(input$ga_go, {
     # Analyze correlation with 2 input datasets and identifiers
     output$ga_output <- renderPlot(
@@ -176,7 +180,7 @@ server.modules_ga_matrix_correlation <- function(
         )
       }
     )
-    
+
     output$ga_output_data <- DT::renderDataTable(server = FALSE, {
       if (inherits(p_scatter(), "ggplot")) {
         DT::datatable(
@@ -205,7 +209,7 @@ server.modules_ga_matrix_correlation <- function(
       }
     })
   })
-  
+
   output$ga_data_filter1_id <- renderUI({
     show_table <- selected_database_add_url_and_phenotype()
     selectInput(
@@ -216,7 +220,7 @@ server.modules_ga_matrix_correlation <- function(
       multiple = FALSE
     )
   })
-  
+
   observeEvent(input$ga_data_filter1_id, {
     # If phenotype dataset has been reset, we use all samples for plotting
     if (length(input$ga_data_filter1_id)) {
@@ -233,11 +237,11 @@ server.modules_ga_matrix_correlation <- function(
   #     }
   #   }
   # })
-  
+
   observeEvent(input$ga_filter_button, {
     message("Sample filter button is clicked by user.")
     pdataset <- setdiff(input$ga_data_filter1_id, "NONE")
-    
+
     if (length(pdataset)) {
       showModal(
         modalDialog(
@@ -254,7 +258,8 @@ server.modules_ga_matrix_correlation <- function(
                 color = "primary",
                 style = "bordered",
                 size = "sm",
-                block = F)
+                block = F
+              )
             ),
             wellPanel(
               h4("2. Filter rows by SearchPanels"),
@@ -269,36 +274,36 @@ server.modules_ga_matrix_correlation <- function(
                 color = "primary",
                 style = "bordered", size = "sm",
                 block = F
-              ))
-            ,
+              )
+            ),
             wellPanel(
               h4("4. After hitting button, dismiss this page and click submit button")
             )
           )
         )
       )
-      
+
       phenotype_table <- XenaGenerate(subset = XenaDatasets == pdataset) %>%
         XenaQuery() %>%
         XenaDownload(destdir = XENA_DEST) %>%
         XenaPrepare()
-      
+
       output$ga_col_chooser <- renderUI({
         all_cols <- colnames(phenotype_table)
         sel_idx <- seq_len(min(length(all_cols), 5))
         chooserInput(ns("ga_col_chooser"), "Available columns", "Selected columns",
-                     if (length(all_cols) == length(sel_idx)) c() else all_cols[-sel_idx],
-                     all_cols[sel_idx],
-                     size = 5, multiple = TRUE
+          if (length(all_cols) == length(sel_idx)) c() else all_cols[-sel_idx],
+          all_cols[sel_idx],
+          size = 5, multiple = TRUE
         )
       })
-      
+
       observeEvent(input$show_or_update_ptable, {
         selected_cols <- isolate(input$ga_col_chooser$right)
         if (length(selected_cols)) {
           message("Following columns selected by users from sample filter window.")
           print(selected_cols)
-          
+
           output$ga_phenotype_data <- DT::renderDataTable(server = FALSE, {
             DT::datatable(
               phenotype_table %>%
@@ -335,7 +340,7 @@ server.modules_ga_matrix_correlation <- function(
           sendSweetAlert(session, title = "Warning", type = "warn", text = "Please select at least 1 column!")
         }
       })
-      
+
       output$ga_select_samp_col <- renderUI({
         selectInput(
           inputId = ns("ga_select_samp_col"),

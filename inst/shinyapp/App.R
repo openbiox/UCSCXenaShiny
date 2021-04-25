@@ -214,7 +214,7 @@ get_data_df <- function(dataset, id) {
   colnames(df)[2] <- id
   df
 }
- 
+
 # UI part ----------------------------------------------------------------------
 ui <- tagList(
   tags$head(
@@ -231,7 +231,7 @@ ui <- tagList(
   ),
   shinyjs::useShinyjs(),
   use_waiter(),
-  waiter_on_busy(html= spin_3k(),color= transparent(0.7)),
+  waiter_on_busy(html = spin_3k(), color = transparent(0.7)),
   navbarPage(
     id = "navbar",
     title = div(

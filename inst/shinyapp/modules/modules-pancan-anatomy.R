@@ -1,7 +1,7 @@
 ui.modules_pancan_anatomy <- function(id) {
   ns <- NS(id)
   fluidPage(
-    #titlePanel("Module: Gene Pancan Expression Anatomy Visualization"),
+    # titlePanel("Module: Gene Pancan Expression Anatomy Visualization"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidRow(
@@ -9,8 +9,8 @@ ui.modules_pancan_anatomy <- function(id) {
             9,
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "transcript", "methylation","protein","miRNA", "cnv_gistic2", "cnv"),
-              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation","Protein Expression","miRNA Expression", "Copy Number Variation", "Copy Number Variation (thresholded)"),
+              choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2", "cnv"),
+              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation", "Copy Number Variation (thresholded)"),
               animation = "jelly"
             ),
             selectizeInput(
@@ -43,9 +43,8 @@ ui.modules_pancan_anatomy <- function(id) {
           content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
           placement = "right", options = list(container = "body")
         ),
-
         selectInput(inputId = ns("Gender"), label = "Select Gender for plot", choices = c("Male", "Female"), selected = "Female"),
-        #selectInput(inputId = ns("Pal"), label = "Select Color Palettes for plot", choices = c("A", "B", "C", "D", "E"), selected = "D"),
+        # selectInput(inputId = ns("Pal"), label = "Select Color Palettes for plot", choices = c("A", "B", "C", "D", "E"), selected = "D"),
         numericInput(inputId = ns("height"), label = "Height", value = 5),
         numericInput(inputId = ns("width"), label = "Width", value = 10),
         prettyRadioButtons(
@@ -93,16 +92,17 @@ server.modules_pancan_anatomy <- function(input, output, session) {
 
   profile_choices <- reactive({
     switch(input$profile,
-           mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
-           methylation = list(all = pancan_identifiers$gene, default = "TP53"),
-           protein = list(all = pancan_identifiers$protein, default = "P53"),
-           transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
-           miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-           cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
-           cnv = list(all = pancan_identifiers$gene, default = "TP53"),
-           list(all = "NONE", default = "NONE"))
+      mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
+      methylation = list(all = pancan_identifiers$gene, default = "TP53"),
+      protein = list(all = pancan_identifiers$protein, default = "P53"),
+      transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
+      miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+      cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
+      cnv = list(all = pancan_identifiers$gene, default = "TP53"),
+      list(all = "NONE", default = "NONE")
+    )
   })
-  
+
   observe({
     updateSelectizeInput(
       session,
@@ -116,20 +116,20 @@ server.modules_pancan_anatomy <- function(input, output, session) {
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("pancan_anatomy"), html = waiter::spin_hexdots(), color = "white")
 
-  plot_func <- eventReactive(input$search_bttn,{
+  plot_func <- eventReactive(input$search_bttn, {
     if (nchar(input$Pancan_search) >= 1) {
       out <- vis_pancan_anatomy(
         Gene = input$Pancan_search,
         Gender = input$Gender,
         data_type = input$profile
-        #option = input$Pal
+        # option = input$Pal
       )
-      p = out$plot
+      p <- out$plot
       return(p)
     }
   })
-  
-  return_data <- eventReactive(input$search_bttn,{
+
+  return_data <- eventReactive(input$search_bttn, {
     if (nchar(input$Pancan_search) >= 1) {
       shinyjs::show(id = "save_csv")
       p <- plot_func()
@@ -139,23 +139,23 @@ server.modules_pancan_anatomy <- function(input, output, session) {
       shinyjs::hide(id = "save_csv")
     }
   })
-  
+
 
   output$tbl <- renderDT(
     data <- return_data(),
     options = list(lengthChange = FALSE)
   )
 
-  
+
   output$downloadTable <- downloadHandler(
     filename = function() {
-      paste0(input$Pancan_search,"_",input$profile,"_pancan_anatomy.csv")
+      paste0(input$Pancan_search, "_", input$profile, "_pancan_anatomy.csv")
     },
     content = function(file) {
       write.csv(data <- return_data(), file, row.names = FALSE)
     }
   )
-  
+
 
   output$pancan_anatomy <- renderPlot({
     w$show() # Waiter add-ins
@@ -165,7 +165,7 @@ server.modules_pancan_anatomy <- function(input, output, session) {
 
   output$download <- downloadHandler(
     filename = function() {
-      paste0(input$Pancan_search,"_",input$profile,"_pancan_anatomy.", input$device)
+      paste0(input$Pancan_search, "_", input$profile, "_pancan_anatomy.", input$device)
     },
     content = function(file) {
       p <- plot_func()
