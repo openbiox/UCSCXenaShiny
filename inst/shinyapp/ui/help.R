@@ -8,15 +8,9 @@ ui.page_help <- function() {
     title = "Help",
     icon = icon("question-circle"),
     tabPanel(
-      "Citation",
+      "Usage",
       fluidPage(
-        includeMarkdown(set_md_path("citation.md"))
-      )
-    ),
-    tabPanel(
-      "Contact",
-      fluidPage(
-        includeMarkdown(set_md_path("contact.md"))
+        includeMarkdown(set_md_path("usage.md"))
       )
     ),
     tabPanel(
@@ -26,33 +20,9 @@ ui.page_help <- function() {
       )
     ),
     tabPanel(
-      "Home page",
+      "Citation",
       fluidPage(
-        includeMarkdown(set_md_path("home-page.md"))
-      )
-    ),
-    tabPanel(
-      "Repository page",
-      fluidPage(
-        includeMarkdown(set_md_path("repository-page.md"))
-      )
-    ),
-    tabPanel(
-      "General analysis page",
-      fluidPage(
-        includeMarkdown(set_md_path("general-analysis-page.md"))
-      )
-    ),
-    tabPanel(
-      "Pan-Cancer analysis page",
-      fluidPage(
-        includeMarkdown(set_md_path("pancan-analysis-page.md"))
-      )
-    ),
-    tabPanel(
-      "Global setting page",
-      fluidPage(
-        includeMarkdown(set_md_path("global-setting-page.md"))
+        includeMarkdown(set_md_path("citation.md"))
       )
     )
   )

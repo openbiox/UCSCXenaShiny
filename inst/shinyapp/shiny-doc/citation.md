@@ -1,6 +1,7 @@
+<center> <h2> Citation </h2> </center>
 
-Currently, the `UCSCXenaShiny` package has not been formly published, if you
-want to cite this paper in your academic research, please cite the following preprint:
+Currently, the `UCSCXenaShiny` package has not been published, if you
+want to cite this tool in your academic research, please use the following preprint:
 
 Wang, S.; Xiong, Y.; Gu, K.; Zhao, L.; Li, Y.; Zhao, F.; Li, X.; Liu, X. UCSCXenaShiny: An R Package for Exploring and Analyzing UCSC Xena Public Datasets in Web Browser. Preprints 2020, 2020070179 (doi: 10.20944/preprints202007.0179.v1).
 
@@ -14,3 +15,13 @@ Bibtex format:
   publisher={Preprints}
 }
 ```
+
+<center> <h2> Contact </h2> </center>
+
+### Bug report or feature request
+
+If you find any bug or have any feature to request, please report it at GitHub <https://github.com/openbiox/UCSCXenaShiny/issues> or email to me <mailto:w_shixiang@163.com>.
+
+### Discuss
+
+To discuss ideas or suggestions, you can contact any of us via information shown in "Developers" page.
