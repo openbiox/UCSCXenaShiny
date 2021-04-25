@@ -74,7 +74,15 @@ ui.modules_ccle_drug_target_asso <- function(id) {
       #     tabPanel("Plotly", plotly::plotlyOutput("gene_ccle_drug_target")), 
       #     tabPanel("ggplot2", plotOutput("gene_ccle_drug_target"))
       # )
-        plotly::plotlyOutput(ns("gene_ccle_drug_target"), height = "600px")
+        plotly::plotlyOutput(ns("gene_ccle_drug_target"), height = "600px"),
+        tags$br(),
+        DT::DTOutput(outputId = ns("tbl")),
+        shinyjs::hidden(
+          wellPanel(
+            id = ns("save_csv"),
+            downloadButton(ns("downloadTable"), "Save as csv")
+          )
+        )
       )
     )
   )
@@ -106,7 +114,9 @@ server.modules_ccle_drug_target_asso <- function(input, output, session) {
   
   plot_func <- eventReactive(input$search_bttn,{
     if (nchar(input$ccle_search[1]) >= 1) {
-      p <- vis_gene_drug_response_asso(Gene = input$ccle_search, output_form = input$output_form, x_axis_type = input$x_axis_type)
+      p <- vis_gene_drug_response_asso(Gene = input$ccle_search, 
+                                       output_form = input$output_form,
+                                       x_axis_type = input$x_axis_type)
     }
     return(p)
   })
@@ -135,6 +145,35 @@ server.modules_ccle_drug_target_asso <- function(input, output, session) {
         dev.off()
       }
     }
+  )
+
+  output$downloadTable <- downloadHandler(
+    filename = function() {
+      paste0(input$ccle_search,"_ccle_target_response.csv")
+    },
+    content = function(file) {
+      write.csv(data <- return_data(), file, row.names = FALSE)
+    }
+  )
+  
+  ##return data
+  return_data <- eventReactive(input$search_bttn,{
+    if (nchar(input$ccle_search) >= 1) {
+      shinyjs::show(id = "save_csv")
+      p <- vis_gene_drug_response_asso(Gene = input$ccle_search,
+                                       x_axis_type = input$x_axis_type,
+                                       output_form = c("ggplot2"))
+      data <- p$data
+      return(data)
+    } else {
+      shinyjs::hide(id = "save_csv")
+    }
+  })
+  
+  
+  output$tbl <- renderDT(
+    data <- return_data(),
+    options = list(lengthChange = FALSE)
   )
   
 }
