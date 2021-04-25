@@ -202,7 +202,7 @@ server.modules_pancan_til <- function(input, output, session) {
         print(p)
         dev.off()
       } else {
-        png(file, width = input$width, height = input$height, res = 300, units = "in")
+        png(file, width = input$width, height = input$height, res = 600, units = "in")
         print(p)
         dev.off()
       }
