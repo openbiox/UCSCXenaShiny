@@ -131,7 +131,7 @@ server.modules_ccle_drug_target_asso <- function(input, output, session) {
   
   output$download <- downloadHandler(
     filename = function() {
-      paste0(input$ccle_search,"_ccle_target_response.", input$device)
+      paste0(input$ccle_search,"_ccle_drug_target.", input$device)
     },
     content = function(file) {
       p <- plot_func()
@@ -149,7 +149,7 @@ server.modules_ccle_drug_target_asso <- function(input, output, session) {
 
   output$downloadTable <- downloadHandler(
     filename = function() {
-      paste0(input$ccle_search,"_ccle_target_response.csv")
+      paste0(input$ccle_search,"_ccle_drug_target.csv")
     },
     content = function(file) {
       write.csv(data <- return_data(), file, row.names = FALSE)
