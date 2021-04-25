@@ -73,7 +73,8 @@ vis_gene_drug_response_asso <- function(Gene = "TP53",
 vis_gene_drug_response_diff <- function(Gene = "TP53", tissue = "lung",
                                         Show.P.label = TRUE,
                                         Method = "wilcox.test",
-                                        values = c("#DF2020", "#DDDF21")) {
+                                        values = c("#DF2020", "#DDDF21"),
+                                        alpha = 0.5) {
   
   # tissue_list <- c("prostate", "central_nervous_system", "urinary_tract", "haematopoietic_and_lymphoid_tissue", 
   #                  "kidney", "thyroid", "soft_tissue", "skin", "salivary_gland", 
@@ -83,10 +84,13 @@ vis_gene_drug_response_diff <- function(Gene = "TP53", tissue = "lung",
   
   df <- analyze_gene_drug_response_diff(Gene, tissue = tissue)
   
-  p = ggpubr::ggboxplot(df, x = "group", y = "IC50", color = "group",
-                add = "dotplot",facet.by = "drug_target",width = 0.5) +
-    labs(x = "Drug -> Target", y = "IC50 (uM)") 
+  # p = ggpubr::ggboxplot(df, x = "group", y = "IC50", color = "group",
+  #               add = "dotplot",facet.by = "drug_target",width = 0.5) 
   
+  p = ggpubr::ggdotplot(df, x = "group", y = "IC50",color = "group",fill = "group",
+            add = "mean_sd",facet.by = "drug_target", alpha = alpha) +
+    labs(x = "Drug -> Target", y = "IC50 (uM)") 
+  # p
   if (Show.P.label) {
     message("Counting P value")
     pv <- ggpubr::compare_means(IC50 ~ group, data = df, method = Method, group.by = "drug_target")
@@ -111,6 +115,7 @@ vis_gene_drug_response_diff <- function(Gene = "TP53", tissue = "lung",
   p <- p +
     ggplot2::scale_y_continuous(limits = c(0, 10)) +
     ggplot2::scale_color_manual(values = values) +
+    ggplot2::scale_fill_manual(values = values) +
     cowplot::theme_cowplot() +
     theme(axis.text.x = element_blank(),
           axis.ticks.x = element_blank())

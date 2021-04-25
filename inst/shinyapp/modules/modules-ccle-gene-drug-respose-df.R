@@ -47,6 +47,15 @@ ui.modules_ccle_drug_response_diff <- function(id) {
         colourpicker::colourInput(inputId = ns("low_col"), "Low group color", "#DDDF21"),
         #selectInput(inputId = ns("use_all"), label = "Use All Tissue Types", choices = c("FALSE","TRUE"), selected = "FALSE"),
         selectInput(inputId = ns("tissue"), label = "Filter Tissue", choices = tissue_all, selected = "lung"),
+        sliderTextInput(
+          inputId = ns("alpha"),
+          label = "Choose a transparent value", 
+          choices = seq(from = 0,
+                        to = 1,
+                        by = 0.1),
+          selected = "0.5",  
+          grid = TRUE
+        ),
         numericInput(inputId = ns("height"), label = "Height", value = 8),
         numericInput(inputId = ns("width"), label = "Width", value = 12),
         prettyRadioButtons(
@@ -118,7 +127,8 @@ server.modules_ccle_drug_response_diff <- function(input, output, session) {
                                        values = colors(),
                                        tissue = input$tissue,
                                        Method = "wilcox.test",
-                                       Show.P.label = input$pdist_show_p_value)
+                                       Show.P.label = input$pdist_show_p_value,
+                                       alpha = input$alpha)
     }
     return(p)
   })
