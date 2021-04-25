@@ -31,7 +31,6 @@ ui.modules_ccle_drug_target_asso <- function(id) {
               block = FALSE,
               size = "sm"
             ),
-            # actionButton(ns("search_bttn"), "Go"),
           ),
           shinyBS::bsPopover(ns("ccle_search"),
                              title = "Tips",
@@ -61,7 +60,6 @@ ui.modules_ccle_drug_target_asso <- function(id) {
         ),
         downloadBttn(
           outputId = ns("download"),
-          # label = "Download Plot",
           style = "gradient",
           color = "default",
           block = TRUE,
@@ -70,11 +68,12 @@ ui.modules_ccle_drug_target_asso <- function(id) {
         width = 3
       ),
       mainPanel = mainPanel(
-      #   tabsetPanel(
-      #     tabPanel("Plotly", plotly::plotlyOutput("gene_ccle_drug_target")), 
-      #     tabPanel("ggplot2", plotOutput("gene_ccle_drug_target"))
-      # )
-        plotly::plotlyOutput(ns("gene_ccle_drug_target"), height = "600px"),
+        shinyjs::hidden(
+          plotly::plotlyOutput(ns("gene_ccle_drug_target.plotly"), height = "600px")
+        ),
+        shinyjs::hidden(
+          plotOutput(ns("gene_ccle_drug_target.ggplot2"), height = "600px")
+        ),
         tags$br(),
         DT::DTOutput(outputId = ns("tbl")),
         shinyjs::hidden(
@@ -91,14 +90,6 @@ ui.modules_ccle_drug_target_asso <- function(id) {
 server.modules_ccle_drug_target_asso <- function(input, output, session) {
   ns <- session$ns
   
-  # profile_choices <- reactive({
-  #   switch("mRNA",
-  #          mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
-  #          protein = list(all = UCSCXenaShiny:::.all_ccle_proteins, default = "p53_Caution"),
-  #          cnv = list(all = pancan_identifiers$gene, default = "TP53"),
-  #          list(all = "NONE", default = "NONE"))
-  # })
-  
   observe({
     updateSelectizeInput(
       session,
@@ -109,25 +100,32 @@ server.modules_ccle_drug_target_asso <- function(input, output, session) {
     )
   })
   
-  # Show waiter for plot
-  #w <- waiter::Waiter$new(id = ns("gene_ccle_drug_target"), html = waiter::spin_hexdots(), color = "white")
-  
   plot_func <- eventReactive(input$search_bttn,{
     if (nchar(input$ccle_search[1]) >= 1) {
       p <- vis_gene_drug_response_asso(Gene = input$ccle_search, 
                                        output_form = input$output_form,
                                        x_axis_type = input$x_axis_type)
+      print(class(p))
     }
     return(p)
   })
   
-  output$gene_ccle_drug_target <- plotly::renderPlotly({
-    plot_func()
+  observeEvent(input$search_bttn, {
+    if (input$output_form == "ggplot2") {
+      shinyjs::hide("gene_ccle_drug_target.plotly")
+      shinyjs::show("gene_ccle_drug_target.ggplot2")
+    } else {
+      shinyjs::hide("gene_ccle_drug_target.ggplot2")
+      shinyjs::show("gene_ccle_drug_target.plotly")
+    }
   })
   
-  # output$gene_ccle_drug_target <- renderPlot({
-  #   plot_func2()
-  # })
+  output$gene_ccle_drug_target.plotly <- plotly::renderPlotly({
+      plot_func()
+    })
+  output$gene_ccle_drug_target.ggplot2 <- renderPlot({
+    plot_func()
+  })
   
   output$download <- downloadHandler(
     filename = function() {
@@ -160,10 +158,7 @@ server.modules_ccle_drug_target_asso <- function(input, output, session) {
   return_data <- eventReactive(input$search_bttn,{
     if (nchar(input$ccle_search) >= 1) {
       shinyjs::show(id = "save_csv")
-      p <- vis_gene_drug_response_asso(Gene = input$ccle_search,
-                                       x_axis_type = input$x_axis_type,
-                                       output_form = c("ggplot2"))
-      data <- p$data
+      data <- analyze_gene_drug_response_asso(input$ccle_search)
       return(data)
     } else {
       shinyjs::hide(id = "save_csv")

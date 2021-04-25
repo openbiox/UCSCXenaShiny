@@ -6,17 +6,19 @@
 #' @param output_form `plotly` or `ggplot2`.
 #' @inheritParams vis_toil_TvsN
 #' @return `plotly` or `ggplot2` object.
-vis_gene_drug_response_asso <- function(Gene = "TP53", 
+vis_gene_drug_response_asso <- function(Gene = "TP53",
                                         x_axis_type = c("mean.diff", "median.diff"),
-                                        output_form = c("plotly","ggplot2")) {
+                                        output_form = c("plotly", "ggplot2")) {
   x_axis_type <- match.arg(x_axis_type)
+  output_form <- match.arg(output_form)
+
   if (!requireNamespace("plotly")) install.packages("plotly")
   if (!requireNamespace("ggrepel")) install.packages("ggrepel")
-  
+
   df <- analyze_gene_drug_response_asso(Gene)
   df$cor_type <- ifelse(df$cor >= 0, "pos", "neg")
   df$cor_abs <- abs(round(df$cor, digits = 3))
-  
+
   df$fdr_log <- -log10(df$fdr)
   df$text <- paste(
     "Gene: ", df$genes,
@@ -26,7 +28,7 @@ vis_gene_drug_response_asso <- function(Gene = "TP53",
     "<br>FDR: ", round(df$fdr, digits = 3),
     "<br>Number of Cell Lines: ", df$num_of_cells
   )
-  
+
   p <- ggplot(data = df, aes_string(
     x = x_axis_type,
     y = "fdr_log",
@@ -38,14 +40,17 @@ vis_gene_drug_response_asso <- function(Gene = "TP53",
     ggtitle(paste0(
       if (length(Gene) > 1) {
         paste0("Signature (", paste(unique(df$genes), collapse = "&"), ")")
-      } else unique(df$genes),
-      " and Drug-Target Response Association")) +
+      } else {
+        unique(df$genes)
+      },
+      " and Drug-Target Response Association"
+    )) +
     labs(x = if (x_axis_type == "mean.diff") {
       "Mean of expression difference between high and low IC50 cell lines"
     } else {
       "Median of expression difference between high and low IC50 cell lines"
     }, y = "-log10(FDR)") +
-    theme_minimal(base_size = 15) +
+    cowplot::theme_cowplot() +
     scale_color_manual(values = c("#377EB8", "#E41A1C")) +
     scale_size(range = c(0.1, 4)) +
     theme(
@@ -58,15 +63,15 @@ vis_gene_drug_response_asso <- function(Gene = "TP53",
 
 
 #' Visualize Gene and Drug Response Difference with CCLE Data
-#' 
+#'
 #' See [analyze_gene_drug_response_diff] for examples.
-#' 
+#'
 #' @export
 #' @inheritParams vis_toil_TvsN
 #' @param tissue select cell line origin tissue.
 #' @return a `ggplot` object.
 vis_gene_drug_response_diff <- function(Gene = "TP53", tissue = "prostate",
-                                        Show.P.value = TRUE, Show.P.label = TRUE, 
+                                        Show.P.value = TRUE, Show.P.label = TRUE,
                                         Method = "wilcox.test") {
   df <- analyze_gene_drug_response_diff(Gene, tissue = tissue)
 
@@ -74,7 +79,7 @@ vis_gene_drug_response_diff <- function(Gene = "TP53", tissue = "prostate",
     geom_boxplot() +
     labs(x = "Drug", y = "IC50 (uM)") +
     ggpubr::rotate_x_text(45)
-    
+
   if (Show.P.value == TRUE) {
     message("Counting P value")
     pv <- df %>%

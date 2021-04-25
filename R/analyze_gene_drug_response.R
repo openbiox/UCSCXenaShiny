@@ -1,6 +1,6 @@
 #' Analyze Association between Gene (Signature) and Drug Response with CCLE Data
 #'
-#' Analyze partial correlation of gene-drug association after 
+#' Analyze partial correlation of gene-drug association after
 #' controlling for tissue average expression.
 #'
 #' @param gene_list a gene symbol list.
@@ -125,7 +125,8 @@ analyze_gene_drug_response_asso <- function(gene_list, combine = FALSE) {
 
 
   drugCor %>%
-    dplyr::arrange(.data$p.value, .data$fdr)
+    dplyr::arrange(.data$p.value, .data$fdr) %>% 
+    dplyr::mutate_if(is.numeric, ~ round(., 3))
 }
 
 #' Analyze Difference of Drug Response (IC50 Value (uM)) between Gene (Signature) High and Low Expression with CCLE Data
@@ -146,7 +147,7 @@ analyze_gene_drug_response_asso <- function(gene_list, combine = FALSE) {
 #'   tissue = "kidney",
 #'   combine = TRUE
 #' )
-#' 
+#'
 #' # Visualization
 #' vis_gene_drug_response_diff("TP53")
 #' }
@@ -219,7 +220,8 @@ analyze_gene_drug_response_diff <- function(gene_list,
     dplyr::filter(!is.na(.data$group)) %>%
     as.data.frame()
 
-  df
+  df %>%
+    dplyr::mutate_if(is.numeric, ~ round(., 3))
 }
 
 # Functions ---------------------------------------------------------------

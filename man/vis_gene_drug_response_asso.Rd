@@ -7,7 +7,7 @@
 vis_gene_drug_response_asso(
   Gene = "TP53",
   x_axis_type = c("mean.diff", "median.diff"),
-  output_form = "plotly"
+  output_form = c("plotly", "ggplot2")
 )
 }
 \arguments{
