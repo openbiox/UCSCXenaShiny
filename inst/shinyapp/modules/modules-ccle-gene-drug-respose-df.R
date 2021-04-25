@@ -43,11 +43,10 @@ ui.modules_ccle_drug_response_diff <- function(id) {
           ),
         ),
         materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = TRUE),
-        materialSwitch(ns("pdist_show_p_label"), "Show P label", inline = TRUE),
         colourpicker::colourInput(inputId = ns("high_col"), "High group color", "#DF2020"),
         colourpicker::colourInput(inputId = ns("low_col"), "Low group color", "#DDDF21"),
-        selectInput(inputId = ns("use_all"), label = "Use All Tissue Types", choices = c("FALSE","TRUE"), selected = "FALSE"),
-        selectInput(inputId = ns("tissue"), label = "Filter Tissue", choices = tissue_all, selected = "prostate"),
+        #selectInput(inputId = ns("use_all"), label = "Use All Tissue Types", choices = c("FALSE","TRUE"), selected = "FALSE"),
+        selectInput(inputId = ns("tissue"), label = "Filter Tissue", choices = tissue_all, selected = "lung"),
         numericInput(inputId = ns("height"), label = "Height", value = 8),
         numericInput(inputId = ns("width"), label = "Width", value = 12),
         prettyRadioButtons(
@@ -118,9 +117,8 @@ server.modules_ccle_drug_response_diff <- function(input, output, session) {
       p <- vis_gene_drug_response_diff(Gene = input$ccle_search,
                                        values = colors(),
                                        tissue = input$tissue,
-                                       Show.P.value = input$pdist_show_p_value,
-                                       Show.P.label = input$pdist_show_p_label,
-                                       use_all = as.logical(input$use_all))
+                                       Method = "wilcox.test",
+                                       Show.P.label = input$pdist_show_p_value)
     }
     return(p)
   })
@@ -128,6 +126,24 @@ server.modules_ccle_drug_response_diff <- function(input, output, session) {
   output$gene_ccle_drug_response_diff <- renderPlot({
     plot_func()
   })
+  
+  output$download <- downloadHandler(
+    filename = function() {
+      paste0(input$ccle_search,"_ccle_target_response_diff.", input$device)
+    },
+    content = function(file) {
+      p <- plot_func()
+      if (input$device == "pdf") {
+        pdf(file, width = input$width, height = input$height)
+        print(p)
+        dev.off()
+      } else {
+        png(file, width = input$width, height = input$height, res = 600, units = "in")
+        print(p)
+        dev.off()
+      }
+    }
+  )
   
   output$downloadTable <- downloadHandler(
     filename = function() {

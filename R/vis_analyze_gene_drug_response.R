@@ -83,34 +83,33 @@ vis_gene_drug_response_diff <- function(Gene = "TP53", tissue = "lung",
   
   df <- analyze_gene_drug_response_diff(Gene, tissue = tissue)
   
+  p = ggpubr::ggboxplot(df, x = "group", y = "IC50", color = "group",
+                add = "dotplot",facet.by = "drug_target",width = 0.5) +
+    labs(x = "Drug -> Target", y = "IC50 (uM)") 
+  
   if (Show.P.label) {
     message("Counting P value")
     pv <- ggpubr::compare_means(IC50 ~ group, data = df, method = Method, group.by = "drug_target")
-    pv <- pv %>% dplyr::select(c("drug_target", "p", "p.signif", "p.adj")) %>% 
+    pv <- pv %>% #dplyr::select(c("drug_target", "p", "p.signif", "p.adj")) %>%
       dplyr::arrange(.data$p)
     pv$drug_target <- factor(pv$drug_target, levels = unique(pv$drug_target))
     df$drug_target <- factor(df$drug_target, levels = unique(pv$drug_target))
     message("Counting P value finished")
-  }
-
-  p <- df %>%
-    ggplot(aes_string(x = "drug_target", y = "IC50", color = "group")) +
-    geom_boxplot(width = 0.3) +
-    facet_wrap(~drug_target, scales = "free") +
-    labs(x = "Drug -> Target", y = "IC50 (uM)")
-
-  if (Show.P.label) {
-    p <- p + ggplot2::geom_text(aes(
-      x = .data$drug_target,
-      y = max(df$IC50) * 1.1,
-      label = .data$p.signif
-    ),
-    data = pv,
-    inherit.aes = FALSE
-    )
+    pv$y.position = 8.5
+    # # Statistical tests
+    # if (!requireNamespace("rstatix")) devtools::install_github("kassambara/rstatix")
+    # library(rstatix)
+    # stat.test <- df %>%
+    #   dplyr::group_by(drug_target) %>%
+    #   rstatix::t_test(IC50 ~ group, ref.group = "Low") %>% 
+    #   rstatix::add_significance("p") %>%
+    #   mutate(y.position = 8.5)
+    
+    p = p  + stat_pvalue_manual(pv,label = "p.signif", tip.length = 0.01)
   }
 
   p <- p +
+    ggplot2::scale_y_continuous(limits = c(0, 10)) +
     ggplot2::scale_color_manual(values = values) +
     cowplot::theme_cowplot() +
     theme(axis.text.x = element_blank(),
