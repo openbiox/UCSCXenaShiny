@@ -5,6 +5,7 @@
 #' @export
 #' @param output_form `plotly` or `ggplot2`.
 #' @inheritParams vis_toil_TvsN
+#' @param x_axis_type set the value type for X axis.
 #' @return `plotly` or `ggplot2` object.
 vis_gene_drug_response_asso <- function(Gene = "TP53",
                                         x_axis_type = c("mean.diff", "median.diff"),
@@ -69,47 +70,32 @@ vis_gene_drug_response_asso <- function(Gene = "TP53",
 #' @export
 #' @inheritParams vis_toil_TvsN
 #' @param tissue select cell line origin tissue.
+#' @param alpha set alpha for dots.
 #' @return a `ggplot` object.
 vis_gene_drug_response_diff <- function(Gene = "TP53", tissue = "lung",
                                         Show.P.label = TRUE,
                                         Method = "wilcox.test",
                                         values = c("#DF2020", "#DDDF21"),
                                         alpha = 0.5) {
-  
-  # tissue_list <- c("prostate", "central_nervous_system", "urinary_tract", "haematopoietic_and_lymphoid_tissue", 
-  #                  "kidney", "thyroid", "soft_tissue", "skin", "salivary_gland", 
-  #                  "ovary", "lung", "bone", "endometrium", "pancreas", "breast", 
-  #                  "large_intestine", "upper_aerodigestive_tract", "autonomic_ganglia", 
-  #                  "stomach", "liver", "biliary_tract", "pleura", "oesophagus")
-  
   df <- analyze_gene_drug_response_diff(Gene, tissue = tissue)
-  
-  # p = ggpubr::ggboxplot(df, x = "group", y = "IC50", color = "group",
-  #               add = "dotplot",facet.by = "drug_target",width = 0.5) 
-  
-  p = ggpubr::ggdotplot(df, x = "group", y = "IC50",color = "group",fill = "group",
-            add = "mean_sd",facet.by = "drug_target", alpha = alpha) +
-    labs(x = "Drug -> Target", y = "IC50 (uM)") 
-  # p
+
+  p <- ggpubr::ggdotplot(df,
+    x = "group", y = "IC50", color = "group", fill = "group",
+    add = "mean_sd", facet.by = "drug_target", alpha = alpha
+  ) +
+    labs(x = "Drug -> Target", y = "IC50 (uM)")
+
   if (Show.P.label) {
     message("Counting P value")
     pv <- ggpubr::compare_means(IC50 ~ group, data = df, method = Method, group.by = "drug_target")
-    pv <- pv %>% #dplyr::select(c("drug_target", "p", "p.signif", "p.adj")) %>%
+    pv <- pv %>%
       dplyr::arrange(.data$p)
     pv$drug_target <- factor(pv$drug_target, levels = unique(pv$drug_target))
     df$drug_target <- factor(df$drug_target, levels = unique(pv$drug_target))
     message("Counting P value finished")
-    pv$y.position = 8.5
-    # # Statistical tests
-    # if (!requireNamespace("rstatix")) devtools::install_github("kassambara/rstatix")
-    # library(rstatix)
-    # stat.test <- df %>%
-    #   dplyr::group_by(drug_target) %>%
-    #   rstatix::t_test(IC50 ~ group, ref.group = "Low") %>% 
-    #   rstatix::add_significance("p") %>%
-    #   mutate(y.position = 8.5)
-    
-    p = p  + stat_pvalue_manual(pv,label = "p.signif", tip.length = 0.01)
+    pv$y.position <- 8.5
+
+    p <- p + ggpubr::stat_pvalue_manual(pv, label = "p.signif", tip.length = 0.01)
   }
 
   p <- p +
@@ -117,7 +103,10 @@ vis_gene_drug_response_diff <- function(Gene = "TP53", tissue = "lung",
     ggplot2::scale_color_manual(values = values) +
     ggplot2::scale_fill_manual(values = values) +
     cowplot::theme_cowplot() +
-    theme(axis.text.x = element_blank(),
-          axis.ticks.x = element_blank())
+    theme(
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      legend.position = c(0.85, 0.1)
+    )
   return(p)
 }

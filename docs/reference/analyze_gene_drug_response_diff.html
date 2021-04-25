@@ -190,11 +190,11 @@
     </tr>
     <tr>
       <th>drug</th>
-      <td><p>a drug name. Run example to check the list.</p></td>
+      <td><p>a drug name. Check examples.</p></td>
     </tr>
     <tr>
       <th>tissue</th>
-      <td><p>a tissue name. Run example to check the list.</p></td>
+      <td><p>a tissue name. Check examples.</p></td>
     </tr>
     <tr>
       <th>combine</th>
@@ -212,7 +212,27 @@ a gene signature.</p></td>
     <p>a <code>data.frame</code>.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+    <pre class="examples"><span class='va'>tissue_list</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>
+  <span class='st'>"prostate"</span>, <span class='st'>"central_nervous_system"</span>, <span class='st'>"urinary_tract"</span>, <span class='st'>"haematopoietic_and_lymphoid_tissue"</span>,
+  <span class='st'>"kidney"</span>, <span class='st'>"thyroid"</span>, <span class='st'>"soft_tissue"</span>, <span class='st'>"skin"</span>, <span class='st'>"salivary_gland"</span>,
+  <span class='st'>"ovary"</span>, <span class='st'>"lung"</span>, <span class='st'>"bone"</span>, <span class='st'>"endometrium"</span>, <span class='st'>"pancreas"</span>, <span class='st'>"breast"</span>,
+  <span class='st'>"large_intestine"</span>, <span class='st'>"upper_aerodigestive_tract"</span>, <span class='st'>"autonomic_ganglia"</span>,
+  <span class='st'>"stomach"</span>, <span class='st'>"liver"</span>, <span class='st'>"biliary_tract"</span>, <span class='st'>"pleura"</span>, <span class='st'>"oesophagus"</span>
+<span class='op'>)</span>
+
+<span class='va'>drug_list</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>
+  <span class='st'>"AEW541"</span>, <span class='st'>"Nilotinib"</span>, <span class='st'>"17-AAG"</span>, <span class='st'>"PHA-665752"</span>, <span class='st'>"Lapatinib"</span>,
+  <span class='st'>"Nutlin-3"</span>, <span class='st'>"AZD0530"</span>, <span class='st'>"PF2341066"</span>, <span class='st'>"L-685458"</span>, <span class='st'>"ZD-6474"</span>, <span class='st'>"Panobinostat"</span>,
+  <span class='st'>"Sorafenib"</span>, <span class='st'>"Irinotecan"</span>, <span class='st'>"Topotecan"</span>, <span class='st'>"LBW242"</span>, <span class='st'>"PD-0325901"</span>,
+  <span class='st'>"PD-0332991"</span>, <span class='st'>"Paclitaxel"</span>, <span class='st'>"AZD6244"</span>, <span class='st'>"PLX4720"</span>, <span class='st'>"RAF265"</span>, <span class='st'>"TAE684"</span>,
+  <span class='st'>"TKI258"</span>, <span class='st'>"Erlotinib"</span>
+<span class='op'>)</span>
+
+<span class='va'>target_list</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>
+  <span class='st'>"IGF1R"</span>, <span class='st'>"ABL"</span>, <span class='st'>"HSP90"</span>, <span class='st'>"c-MET"</span>, <span class='st'>"EGFR"</span>, <span class='st'>"MDM2"</span>, <span class='st'>"GS"</span>, <span class='st'>"HDAC"</span>,
+  <span class='st'>"RTK"</span>, <span class='st'>"TOP1"</span>, <span class='st'>"XIAP"</span>, <span class='st'>"MEK"</span>, <span class='st'>"CDK4"</span>, <span class='st'>"TUBB1"</span>, <span class='st'>"RAF"</span>, <span class='st'>"ALK"</span>, <span class='st'>"FGFR"</span>
+<span class='op'>)</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='fu'>analyze_gene_drug_response_diff</span><span class='op'>(</span><span class='st'>"TP53"</span><span class='op'>)</span>
 <span class='fu'>analyze_gene_drug_response_diff</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"TP53"</span>, <span class='st'>"KRAS"</span><span class='op'>)</span>, drug <span class='op'>=</span> <span class='st'>"AEW541"</span><span class='op'>)</span>
 <span class='fu'>analyze_gene_drug_response_diff</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"TP53"</span>, <span class='st'>"KRAS"</span><span class='op'>)</span>,
