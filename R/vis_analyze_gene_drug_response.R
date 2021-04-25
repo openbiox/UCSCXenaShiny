@@ -8,7 +8,7 @@
 #' @return `plotly` or `ggplot2` object.
 vis_gene_drug_response_asso <- function(Gene = "TP53", 
                                         x_axis_type = c("mean.diff", "median.diff"),
-                                        output_form = "plotly") {
+                                        output_form = c("plotly","ggplot2")) {
   x_axis_type <- match.arg(x_axis_type)
   if (!requireNamespace("plotly")) install.packages("plotly")
   if (!requireNamespace("ggrepel")) install.packages("ggrepel")
