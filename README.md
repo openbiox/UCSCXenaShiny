@@ -68,6 +68,9 @@ app_run()
 # app_run("server")
 ```
 
+If you want deploy UCSC Xena Shiny with Shiny Server, please copy `App.R` and `www/` directory under [`shinyapp`](https://github.com/openbiox/UCSCXenaShiny/tree/master/inst/shinyapp).
+`xena.runMode` on the top of `App.R` is recommended to set as `"server"` instead of `"client"` (default).
+
 For advanced users, examples for illustrating useful functions to obtain and analyze data are described in vignette.
 
 All exported data and functions are organized at [here](https://openbiox.github.io/UCSCXenaShiny/reference/index.html).
