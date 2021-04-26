@@ -1,7 +1,6 @@
 ui.modules_ccle_drug_response_diff <- function(id) {
   ns <- NS(id)
   fluidPage(
-    # titlePanel("Module: Gene CCLE Expression Distribution"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidRow(
@@ -31,7 +30,6 @@ ui.modules_ccle_drug_response_diff <- function(id) {
               block = FALSE,
               size = "sm"
             ),
-            # actionButton(ns("search_bttn"), "Go"),
           ),
           shinyBS::bsPopover(ns("ccle_search"),
             title = "Tips",
@@ -42,7 +40,6 @@ ui.modules_ccle_drug_response_diff <- function(id) {
         materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = TRUE),
         colourpicker::colourInput(inputId = ns("high_col"), "High group color", "#DF2020"),
         colourpicker::colourInput(inputId = ns("low_col"), "Low group color", "#DDDF21"),
-        # selectInput(inputId = ns("use_all"), label = "Use All Tissue Types", choices = c("FALSE","TRUE"), selected = "FALSE"),
         selectInput(inputId = ns("tissue"), label = "Filter Tissue", choices = ccle_drug_related_tissues, selected = "lung"),
         sliderTextInput(
           inputId = ns("alpha"),
@@ -69,7 +66,6 @@ ui.modules_ccle_drug_response_diff <- function(id) {
         ),
         downloadBttn(
           outputId = ns("download"),
-          # label = "Download Plot",
           style = "gradient",
           color = "default",
           block = TRUE,
@@ -117,9 +113,6 @@ server.modules_ccle_drug_response_diff <- function(input, output, session) {
   colors <- reactive({
     c(input$high_col, input$low_col)
   })
-
-  # Show waiter for plot
-  # w <- waiter::Waiter$new(id = ns("gene_ccle_drug_target"), html = waiter::spin_hexdots(), color = "white")
 
   plot_func <- eventReactive(input$search_bttn, {
     if (nchar(input$ccle_search[1]) >= 1) {

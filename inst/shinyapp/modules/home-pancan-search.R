@@ -30,14 +30,6 @@ ui.home_search_box <- function(id) {
       )
     )
   )
-  # shinyWidgets::searchInput(
-  #   inputId = ns("Pancan_search"),
-  #   label = NULL,
-  #   btnSearch = icon("search"),
-  #   btnReset = icon("remove"),
-  #   placeholder = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
-  #   width = "80%"
-  # )
 }
 
 server.home_search_box <- function(input, output, session) {

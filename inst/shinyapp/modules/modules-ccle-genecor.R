@@ -17,7 +17,6 @@ choices_primary_site <- c(
 ui.modules_ccle_genecor <- function(id) {
   ns <- NS(id)
   fluidPage(
-    # titlePanel("Module: Gene CCLE Expression Correlation"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidRow(
@@ -70,7 +69,6 @@ ui.modules_ccle_genecor <- function(id) {
               block = FALSE,
               size = "sm"
             ),
-            # actionButton(ns("search_bttn"), "Go"),
           ),
           shinyBS::bsPopover(ns("ccle_search"),
             title = "Tips",
@@ -102,7 +100,6 @@ ui.modules_ccle_genecor <- function(id) {
         ),
         colourpicker::colourInput(inputId = ns("color"), "Point color", "#000000"),
         tags$br(),
-        # selectInput(inputId = ns("phenotype"), label = "phenotype", choices = ccle_choices, selected = "Type"),
         numericInput(inputId = ns("height"), label = "Height", value = 8),
         numericInput(inputId = ns("width"), label = "Width", value = 8),
         prettyRadioButtons(
@@ -117,7 +114,6 @@ ui.modules_ccle_genecor <- function(id) {
         ),
         downloadBttn(
           outputId = ns("download"),
-          # label = "Download Plot",
           style = "gradient",
           color = "default",
           block = TRUE,
@@ -230,8 +226,6 @@ server.modules_ccle_genecor <- function(input, output, session) {
         print(p)
         dev.off()
       }
-
-      # ggplot2::ggsave(filename = file, plot = print(p), device = input$device, width = input$width, height = input$height, dpi = 600)
     }
   )
 

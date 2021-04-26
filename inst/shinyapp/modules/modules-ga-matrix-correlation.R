@@ -89,7 +89,6 @@ ui.modules_ga_matrix_correlation <- function(id) {
           ),
           downloadBttn(
             outputId = ns("download"),
-            # label = "Download Plot",
             style = "gradient",
             color = "default",
             block = TRUE,
@@ -229,14 +228,6 @@ server.modules_ga_matrix_correlation <- function(input, output, session,
       }
     }
   })
-  # observe({
-  #   # If phenotype dataset has been reset, we use all samples for plotting
-  #   if (length(input$ga_data_filter1_id)) {
-  #     if (input$ga_data_filter1_id == "NONE") {
-  #       selected_samps$id <- NULL
-  #     }
-  #   }
-  # })
 
   observeEvent(input$ga_filter_button, {
     message("Sample filter button is clicked by user.")

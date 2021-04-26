@@ -2,7 +2,6 @@ ui.modules_sur_plot <- function(id) {
   ns <- NS(id)
 
   fluidPage(
-    # titlePanel("Module: Surviva Analysis"),
     fluidRow(
       column(3, wellPanel(
         selectInput(
@@ -21,15 +20,12 @@ ui.modules_sur_plot <- function(id) {
           placement = "right", options = list(container = "body")
         ),
         shinyjs::hidden(
-          # shinyWidgets::searchInput(
           shinyWidgets::textInputAddon(
             inputId = ns("item_input"),
             label = "Item:",
             value = NULL,
             placeholder = "",
             addon = icon("dna"),
-            # btnSearch = icon("search"),
-            # btnReset = icon("remove"),
             width = "100%"
           )
         ),
@@ -79,7 +75,6 @@ ui.modules_sur_plot <- function(id) {
             inputId = ns("sex"), label = "Sex",
             choices = c("Female" = "FEMALE", "Male" = "MALE", "Unknown" = "Unknown"),
             selected = c("FEMALE", "MALE", "Unknown"),
-            # icon = icon("check-square-o"),
             status = "primary",
             animation = "jelly"
           ),
@@ -87,7 +82,6 @@ ui.modules_sur_plot <- function(id) {
             inputId = ns("stage"), label = "Clinical/Pathological stage",
             choices = c("I", "II", "III", "IV", "Unknown"),
             selected = c("I", "II", "III", "IV", "Unknown"),
-            # icon = icon("check"),
             status = "primary",
             animation = "jelly"
           ),
@@ -132,7 +126,6 @@ ui.modules_sur_plot <- function(id) {
               label = "Select CNV type.",
               choices = c("Normal", "Duplicated", "Deleted"),
               selected = c("Normal", "Duplicated", "Deleted"),
-              # status = "danger",
               width = "120%",
               inline = TRUE
             )
@@ -163,7 +156,6 @@ ui.modules_sur_plot <- function(id) {
           ),
           downloadBttn(
             outputId = ns("download"),
-            # label = "Download Plot",
             style = "gradient",
             color = "default",
             block = TRUE,
@@ -239,7 +231,6 @@ server.modules_sur_plot <- function(input, output, session) {
   observeEvent(input$submit_bt, {
     shinyjs::show("progress")
     if (!is.null(sur_dat_pre())) {
-      # updateProgressBar(session = session, id = ns("progressbar"), value = 70)
       shinyjs::show("parameter")
     }
     shinyjs::hide("progress")
@@ -261,7 +252,6 @@ server.modules_sur_plot <- function(input, output, session) {
   }, )
 
   filter_dat <- eventReactive(input$go, {
-    # req(input$age,input$sex,input$stage)
     if (is.null(sur_dat_pre())) {
       return(NULL)
     }

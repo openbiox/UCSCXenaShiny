@@ -1,7 +1,6 @@
 ui.modules_pancan_radar <- function(id) {
   ns <- NS(id)
   fluidPage(
-    # titlePanel("Module: Gene Pancan Radar"),
     sidebarLayout(
       sidebarPanel(
         fluidRow(
@@ -36,7 +35,6 @@ ui.modules_pancan_radar <- function(id) {
               block = FALSE,
               size = "sm"
             ),
-            # actionButton(ns("search_bttn"), "Go"),
           )
         ),
         shinyBS::bsPopover(ns("Pancan_search"),
@@ -65,7 +63,6 @@ ui.modules_pancan_radar <- function(id) {
         ),
         downloadBttn(
           outputId = ns("download"),
-          # label = "Download Plot",
           style = "gradient",
           color = "default",
           block = TRUE,
@@ -106,7 +103,7 @@ server.modules_pancan_radar <- function(input, output, session) {
       mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
       methylation = list(all = pancan_identifiers$gene, default = "TP53"),
       protein = list(all = pancan_identifiers$protein, default = "P53"),
-      transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
+      transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
       miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
       cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
       list(all = "NONE", default = "NONE")
@@ -177,8 +174,6 @@ server.modules_pancan_radar <- function(input, output, session) {
         print(p)
         dev.off()
       }
-
-      # ggplot2::ggsave(filename = file, plot = print(p), device = input$device, width = input$width, height = input$height, dpi = 600)
     }
   )
 

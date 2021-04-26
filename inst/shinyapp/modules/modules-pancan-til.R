@@ -1,7 +1,6 @@
 ui.modules_pancan_til <- function(id) {
   ns <- NS(id)
   fluidPage(
-    # titlePanel("Module: Gene Pancan Expression vs TIL"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidRow(
@@ -80,7 +79,6 @@ ui.modules_pancan_til <- function(id) {
         ),
         downloadBttn(
           outputId = ns("download"),
-          # label = "Download Plot",
           style = "gradient",
           color = "default",
           block = TRUE,
@@ -108,18 +106,6 @@ ui.modules_pancan_til <- function(id) {
 }
 
 server.modules_pancan_til <- function(input, output, session) {
-  # observeEvent(input$Pancan_search, {
-  #   if (nchar(input$Pancan_search) >= 1) {
-  #     output$hm_gene_immune_cor <- renderPlot({
-  #       vis_gene_immune_cor(
-  #         Gene = input$Pancan_search,
-  #         Immune_sig_type = input$immune_sig,
-  #         cor_method = input$cor_method
-  #       )
-  #     })
-  #   }
-  # })
-  #
   ns <- session$ns
 
   profile_choices <- reactive({
@@ -127,7 +113,7 @@ server.modules_pancan_til <- function(input, output, session) {
       mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
       methylation = list(all = pancan_identifiers$gene, default = "TP53"),
       protein = list(all = pancan_identifiers$protein, default = "P53"),
-      transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"), # 暂时
+      transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
       miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
       cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
       list(all = "NONE", default = "NONE")
@@ -211,8 +197,6 @@ server.modules_pancan_til <- function(input, output, session) {
         print(p)
         dev.off()
       }
-
-      # ggplot2::ggsave(filename = file, plot = print(p), device = input$device, width = input$width, height = input$height, dpi = 600)
     }
   )
 }

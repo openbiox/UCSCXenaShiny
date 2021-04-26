@@ -1,7 +1,6 @@
 ui.modules_ccle_drug_target_asso <- function(id) {
   ns <- NS(id)
   fluidPage(
-    # titlePanel("Module: Gene CCLE Expression Distribution"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidRow(

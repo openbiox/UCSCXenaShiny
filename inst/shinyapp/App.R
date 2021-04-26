@@ -6,7 +6,7 @@ message("Run mode: ", xena.runMode)
 message("Checking depedencies...")
 
 if (!requireNamespace("pacman")) {
-  install.packages("pacman")
+  install.packages("pacman", repos = "http://cran.r-project.org")
 }
 library(pacman)
 
@@ -26,6 +26,17 @@ if (!requireNamespace("ggradar")) {
     remotes::install_github("ricardo-bion/ggradar"),
     error = function(e) {
       remotes::install_git("https://gitee.com/XenaShiny/ggradar")
+    }
+  )
+}
+
+if (packageVersion("UCSCXenaTools") < "1.4.4") {
+  tryCatch(
+    install.packages("UCSCXenaTools", repos = "http://cran.r-project.org"),
+    error = function(e) {
+      warning("UCSCXenaTools <1.4.4, this shiny has a known issue (the download button cannot be used) to work with it. Please upate this package!",
+              immediate. = TRUE
+      )
     }
   )
 }
@@ -61,12 +72,6 @@ pacman::p_load(
   ggradar,
   zip
 )
-
-if (packageVersion("UCSCXenaTools") < "1.4.4") {
-  warning("UCSCXenaTools <1.4.4, this shiny has a known issue (the download button cannot be used) to work with it. Please upate this package!",
-    immediate. = TRUE
-  )
-}
 
 message("Starting...")
 
@@ -128,7 +133,7 @@ ccle_drug_related_tissues <- c(
   "stomach", "liver", "biliary_tract", "pleura", "oesophagus"
 )
 
-## data summary
+# Data summary
 Data_hubs_number <- length(unique(xena_table$Hub))
 Cohorts_number <- length(unique(xena_table$Cohort))
 Datasets_number <- length(unique(xena_table$`Dataset ID`))
@@ -141,7 +146,7 @@ Xena_summary <- dplyr::group_by(xena_table, Hub) %>%
     n_dataset = length(unique(.data$`Dataset ID`)), .groups = "drop"
   )
 
-# global color
+# Global color
 mycolor <- c(RColorBrewer::brewer.pal(12, "Paired"))
 
 # Cache file dest directory

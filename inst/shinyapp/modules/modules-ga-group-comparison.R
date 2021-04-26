@@ -114,7 +114,6 @@ ui.modules_ga_group_comparison <- function(id) {
           ),
           downloadBttn(
             outputId = ns("download"),
-            # label = "Download Plot",
             style = "gradient",
             color = "default",
             block = TRUE,

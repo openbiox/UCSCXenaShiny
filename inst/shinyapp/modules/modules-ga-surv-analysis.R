@@ -85,7 +85,6 @@ ui.modules_ga_surv_analysis <- function(id) {
           ),
           downloadBttn(
             outputId = ns("download"),
-            # label = "Download Plot",
             style = "gradient",
             color = "default",
             block = TRUE,
@@ -226,7 +225,6 @@ server.modules_ga_surv_analysis <- function(input, output, session,
                   status = "default",
                   inline = TRUE
                 ),
-                # p("When the 'Auto' mode is selected, the slider values below will be ignored"),
                 sliderInput(
                   inputId = ns("group_col_cutpoint"), label = "Select (min and max) percent cutoff (%) to generate (Low and High) groups:",
                   min = 10, max = 90, value = c(50, 50)

@@ -1,11 +1,6 @@
-ccle_choices <- c(
-  "Gender", "Site_Primary", "Histology", "Hist_Subtype1", "Source", "Expression_arrays", "SNP_arrays", "Hybrid_Capture_Sequencing", "Type"
-)
-
 ui.modules_ccle_dist <- function(id) {
   ns <- NS(id)
   fluidPage(
-    # titlePanel("Module: Gene CCLE Expression Distribution"),
     sidebarLayout(
       sidebarPanel = sidebarPanel(
         fluidRow(
@@ -40,7 +35,6 @@ ui.modules_ccle_dist <- function(id) {
               block = FALSE,
               size = "sm"
             ),
-            # actionButton(ns("search_bttn"), "Go"),
           ),
           shinyBS::bsPopover(ns("ccle_search"),
             title = "Tips",
@@ -62,7 +56,6 @@ ui.modules_ccle_dist <- function(id) {
         ),
         downloadBttn(
           outputId = ns("download"),
-          # label = "Download Plot",
           style = "gradient",
           color = "default",
           block = TRUE,
@@ -143,8 +136,6 @@ server.modules_ccle_dist <- function(input, output, session) {
         print(p)
         dev.off()
       }
-
-      # ggplot2::ggsave(filename = file, plot = print(p), device = input$device, width = input$width, height = input$height, dpi = 600)
     }
   )
 
