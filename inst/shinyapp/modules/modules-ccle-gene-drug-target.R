@@ -77,6 +77,9 @@ ui.modules_ccle_drug_target_asso <- function(id) {
         shinyjs::hidden(
           plotOutput(ns("gene_ccle_drug_target.ggplot2"), height = "600px")
         ),
+        hr(),
+        h5("Method:"),
+        p("Analyze partial correlation of gene-drug association after controlling for tissue average expression."),
         tags$br(),
         DT::DTOutput(outputId = ns("tbl")),
         shinyjs::hidden(

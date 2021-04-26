@@ -32,7 +32,7 @@ analyze_gene_drug_response_asso <- function(gene_list, combine = FALSE) {
   if (any(gene_list %in% rownames(ccle_data$expr))) {
     expr <- ccle_data$expr[gene_list, , drop = FALSE]
   } else {
-    stop("None of your input genes exists in CCLE data.")
+    stop("Data load failed (try again?) or none of your input genes exists in CCLE data.")
   }
 
   if (combine) {
@@ -71,7 +71,7 @@ analyze_gene_drug_response_asso <- function(gene_list, combine = FALSE) {
   drugCor <- as.data.frame(drugCor)
   drugCor[, 1] <- rownames(expr)[drugCor[, 1]]
   drugCor[, 2] <- colnames(drug_ic50)[drugCor[, 2]]
-  names(drugCor) <- c("genes", "drugs", "cor", "p.value", "num_of_cells")
+  names(drugCor) <- c("genes", "drugs", "cor", "p.value", "num_of_cell_lines")
 
   drugCor <- dplyr::left_join(drugCor,
     unique(drug_info[, c("Compound", "Target")]),

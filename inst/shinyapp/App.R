@@ -14,7 +14,9 @@ if (!dir.exists(XENA_DEST)) {
 }
 
 # Set default path for saving extra-data downloaded from https://zenodo.org
-options(xena.zenodoDir = if (xena.runMode == "server") XENA_DEST else NULL)
+options(xena.zenodoDir = if (is.null(getOption("xena.zenodoDir", default = NULL))) {
+  if (xena.runMode == "server") XENA_DEST else NULL
+} else getOption("xena.zenodoDir"))
 
 # Load necessary packages ----------------------------------
 message("Checking depedencies...")

@@ -45,7 +45,8 @@ load_data <- function(name) {
           message("Data has been saved to ", data_path)
         },
         error = function(e) {
-          message("Cannot find the data, please check your input and the internet.\n NULL will be returned.")
+          message("Data load failed, please check your input and the internet.\n NULL will be returned.")
+          if (file.exists(data_path)) unlink(data_path, recursive = TRUE, force = TRUE)
           name <<- TRUE
         }
       )

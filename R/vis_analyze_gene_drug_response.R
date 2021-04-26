@@ -27,7 +27,7 @@ vis_gene_drug_response_asso <- function(Gene = "TP53",
     "<br>Drug: ", df$drugs,
     "<br>Target: ", df$Target,
     "<br>FDR: ", round(df$fdr, digits = 3),
-    "<br>Number of Cell Lines: ", df$num_of_cells
+    "<br>Number of Cell Lines: ", df$num_of_cell_lines
   )
 
   p <- ggplot(data = df, aes_string(
