@@ -3,7 +3,6 @@ ui.page_developers <- function() {
     title = "Developers",
     icon = icon("user-friends"),
     fluidPage(
-      # titlePanel("Developers"),
       fluidRow(
         column(
           12,
@@ -121,7 +120,3 @@ ui.page_developers <- function() {
     )
   )
 }
-
-# server.page_developers <- function(input, output, session) {
-#
-# }

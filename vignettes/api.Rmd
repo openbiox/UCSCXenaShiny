@@ -29,7 +29,7 @@ library(UCSCXenaShiny)
 
 ## Fetch Data
 
-We provide function to retrieve multi-dimensional data including genomic, epigenomic, transcriptomic, and proteomic data from TCGA and CCLE Pan-Cancer dataset for single identifier (e.g., gene, protein).
+We provide function to retrieve multi-dimensional data including genomic, epigenomic, transcriptomic, and proteomic data from TCGA (note, this actually contains data from TCGA/TARGET/GTEx databases) and CCLE Pan-Cancer dataset for single identifier (e.g., gene, protein).
 
 Check parameters:
 

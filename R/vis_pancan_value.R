@@ -836,7 +836,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot",
   if (TCGA.only) {
     p <- p + ggplot2::ggtitle(paste0("TCGA: ", paste(Cancer, collapse = "/")))
   } else {
-    p <- p + ggplot2::ggtitle(paste0("TCGA/GTEX: ", paste(Cancer, collapse = "/")))
+    p <- p + ggplot2::ggtitle(paste0("TCGA/GTEx: ", paste(Cancer, collapse = "/")))
   }
   
   return(p)

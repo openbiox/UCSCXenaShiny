@@ -22,6 +22,8 @@ Bibtex format:
 
 If you find any bug or have any feature to request, please report it at GitHub <https://github.com/openbiox/UCSCXenaShiny/issues> or email to me <mailto:w_shixiang@163.com>.
 
+If you love our work, please give use a star at <https://github.com/openbiox/UCSCXenaShiny>.
+
 ### Discuss
 
 To discuss ideas or suggestions, you can contact any of us via information shown in "Developers" page.

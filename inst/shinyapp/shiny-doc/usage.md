@@ -22,6 +22,7 @@
 - [Feature: Genomic Signature](#feature-genomic-signature)
   - [Overview](#overview-4)
   - [Video](#video-3)
+- [Use UCSCXenaShiny R package](#use-ucscxenashiny-r-package)
 
 ## Home Page
 ### Overview
@@ -175,3 +176,8 @@ NOTE: the signature defined in two CCLE drug related analysis modules is differe
 <center>
 <iframe src="//player.bilibili.com/player.html?aid=458184407&bvid=BV1d5411G7U5&cid=268195199&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" width="800" height="600"> </iframe>
 </center>
+
+## Use UCSCXenaShiny R package
+
+For most data query and analysis, we implemented them as R functions available in our R package [`{UCSCXenaShiny}`](https://github.com/openbiox/UCSCXenaShiny).
+To use the data and functions provided by us, please check the [reference list](https://openbiox.github.io/UCSCXenaShiny/reference/index.html).
