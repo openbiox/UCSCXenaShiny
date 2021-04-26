@@ -36,10 +36,10 @@ including "mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
 
 \item{TCGA.only}{include samples only from TCGA dataset}
 
-\item{Cancer}{select a cancer}
+\item{Cancer}{select cancer cohort(s).}
 }
 \value{
-a \code{ggplot} object
+a \code{ggplot} object.
 }
 \description{
 Visualize Gene TPM in Single Cancer Type (Tumor (TCGA) vs Normal (TCGA & GTEx))

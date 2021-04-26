@@ -1,7 +1,3 @@
-choices <- c(
-  "ACC", "BLCA", "BRCA", "CESC", "CHOL", "COAD", "DLBC", "ESCA", "GBM", "HNSC", "KICH", "KIRC", "KIRP", "LAML", "LGG", "LIHC", "LUAD", "LUSC"
-)
-
 ui.modules_pancan_gene_cor <- function(id) {
   ns <- NS(id)
   fluidPage(
@@ -58,7 +54,9 @@ ui.modules_pancan_gene_cor <- function(id) {
         tags$br(),
         materialSwitch(ns("purity_adj"), "Adjust Purity", inline = TRUE),
         selectInput(inputId = ns("use_all"), label = "Use All Cancer Types", choices = c("TRUE", "FALSE"), selected = "FALSE"),
-        selectInput(inputId = ns("Cancer"), label = "Filter Cancer", choices = choices, selected = "ACC"),
+        selectInput(inputId = ns("Cancer"), label = "Filter Cancer", 
+                    choices = tcga_cancer_choices,
+                    selected = "ACC", multiple = TRUE),
         materialSwitch(ns("use_regline"), "Use regression line", inline = TRUE),
         selectInput(
           inputId = ns("cor_method"),

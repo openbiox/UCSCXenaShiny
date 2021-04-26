@@ -697,11 +697,15 @@ vis_gene_stemness_cor <- function(Gene = "TP53", cor_method = "spearman", data_t
 #' Visualize Gene TPM in Single Cancer Type (Tumor (TCGA) vs Normal (TCGA & GTEx))
 #' @import ggplot2 dplyr tibble
 #' @inheritParams vis_toil_TvsN
-#' @param Cancer select a cancer
-#' @return a `ggplot` object
+#' @param Cancer select cancer cohort(s).
+#' @return a `ggplot` object.
 #' @export
 #'
-vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type = "mRNA", Show.P.value = FALSE, Show.P.label = FALSE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, Cancer = "ACC") {
+vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", 
+                                 data_type = "mRNA", Show.P.value = FALSE, 
+                                 Show.P.label = FALSE, Method = "wilcox.test", 
+                                 values = c("#DF2020", "#DDDF21"),
+                                 TCGA.only = FALSE, Cancer = "ACC") {
   tcga_gtex <- load_data("tcga_gtex")
 
   t1 <- query_pancan_value(Gene, data_type = data_type)
@@ -721,8 +725,6 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type =
     dplyr::group_by(.data$tissue) %>%
     dplyr::distinct(.data$sample, .keep_all = TRUE)
 
-  # tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
-
   t2 <- t1 %>%
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
@@ -739,7 +741,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type =
   if (TCGA.only == TRUE) {
     tcga_gtex_withNormal <- tcga_gtex_withNormal %>% dplyr::filter(.data$dataset == "TCGA")
   }
-  tcga_gtex_withNormal <- tcga_gtex_withNormal %>% dplyr::filter(.data$tissue == Cancer)
+  tcga_gtex_withNormal <- tcga_gtex_withNormal %>% dplyr::filter(.data$tissue %in% Cancer)
   if (Show.P.value == FALSE) {
     Show.P.label <- FALSE
   }
@@ -755,9 +757,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type =
     p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "type2", y = "tpm", fill = "type2")) +
       ggplot2::geom_boxplot() +
       ggplot2::geom_dotplot(binaxis = "y", stackdir = "center", position = "identity") +
-      # ggplot2::geom_jitter(aes_string(color = "type2"),shape=16, position=position_jitter(0.2), size = 2) +
       ggplot2::xlab(NULL) +
-      # ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
       ggplot2::theme_set(theme_set(theme_classic(base_size = 20))) +
       ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5)) +
       ggplot2::guides(fill = guide_legend(title = NULL)) +
@@ -767,8 +767,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type =
       ) +
       ggplot2::scale_fill_manual(values = values) +
       ggplot2::scale_color_manual(values = values)
-    # p <- p + ggplot2::geom_boxplot(data = tcga_gtex_MESO) +
-    #   ggplot2::geom_boxplot(data = tcga_gtex_UVM)
+    
     p <- p + ggplot2::ylab(
       if (is.null(unit)) Gene else paste0(Gene, " (", unit, ")")
     )
@@ -798,9 +797,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type =
     p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "type2", y = "tpm", fill = "type2")) +
       ggplot2::geom_violin(trim = FALSE) +
       ggplot2::geom_boxplot(width = 0.1, fill = "white") +
-      # ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
       ggplot2::xlab("") +
-      # ggplot2::ggtitle(.data$tissue) +
       ggplot2::scale_fill_manual(values = values) +
       ggplot2::theme_set(ggplot2::theme_classic(base_size = 20)) +
       ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = .5, vjust = .5)) +
@@ -835,6 +832,13 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", data_type =
       )
     }
   }
+  
+  if (TCGA.only) {
+    p <- p + ggplot2::ggtitle(paste0("TCGA: ", paste(Cancer, collapse = "/")))
+  } else {
+    p <- p + ggplot2::ggtitle(paste0("TCGA/GTEX: ", paste(Cancer, collapse = "/")))
+  }
+  
   return(p)
 }
 
@@ -1024,22 +1028,24 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
     dplyr::filter(.data$type2 == "tumor") -> df
 
   if (!use_all) {
-    df %>% dplyr::filter(.data$cancer_type == cancer_choose) -> df
+    df <- df %>% dplyr::filter(.data$tissue %in% cancer_choose)
   }
-
-
+  
   # plot refer to https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
 
   if (purity_adj) {
     df %>% filter(!is.na(.data$CPE)) -> df
-    partial_cor_res <- ezcor_partial_cor(data = df, var1 = "gene1", var2 = "gene2", var3 = "CPE", sig_label = TRUE, cor_method = cor_method)
+    tryCatch({
+      partial_cor_res <- ezcor_partial_cor(data = df, var1 = "gene1", var2 = "gene2", var3 = "CPE", sig_label = TRUE, cor_method = cor_method)
+    }, error = function(e) {
+      stop("Error occurs when adjust purity, may be no purity data avaiable in this cohort.")
+    })
     cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
     # https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
     p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2")) +
       ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE, alpha = alpha, color = color) +
       ggplot2::theme_minimal() +
       ggplot2::labs(x = Gene1, y = Gene2) +
-      # ggplot2::ggtitle(paste0("TCGA ", cancer_choose, " dataset")) +
       ggplot2::annotate(
         "text",
         -Inf, Inf,
@@ -1058,7 +1064,6 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
       ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE, alpha = alpha, color = color) +
       ggplot2::theme_minimal() +
       ggplot2::labs(x = Gene1, y = Gene2) +
-      # ggplot2::ggtitle(paste0("TCGA ", cancer_choose, " dataset")) +
       ggplot2::annotate(
         "text",
         -Inf, Inf,
@@ -1067,6 +1072,12 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
         size = 8, colour = "black"
       ) +
       ggplot2::labs(color = "")
+  }
+  
+  if (use_all) {
+    p <- p + ggplot2::ggtitle("TCGA: All data")
+  } else {
+    p <- p + ggplot2::ggtitle(paste0("TCGA: ", paste(cancer_choose, collapse = "/")))
   }
 
   if (use_regline) {

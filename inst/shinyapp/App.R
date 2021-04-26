@@ -35,7 +35,7 @@ if (packageVersion("UCSCXenaTools") < "1.4.4") {
     install.packages("UCSCXenaTools", repos = "http://cran.r-project.org"),
     error = function(e) {
       warning("UCSCXenaTools <1.4.4, this shiny has a known issue (the download button cannot be used) to work with it. Please upate this package!",
-              immediate. = TRUE
+        immediate. = TRUE
       )
     }
   )
@@ -84,6 +84,7 @@ xena_table <- XenaData[, c(
 xena_table$SampleCount <- as.integer(xena_table$SampleCount)
 colnames(xena_table)[c(1:3)] <- c("Dataset ID", "Hub", "Cohort")
 
+# Used in TCGA survival module
 TCGA_datasets <- xena_table %>%
   dplyr::filter(Hub == "tcgaHub") %>%
   dplyr::select("Cohort") %>%
@@ -93,6 +94,14 @@ TCGA_datasets <- xena_table %>%
     des = stringr::str_match(Cohort, "(.*)\\s+\\(")[, 2]
   ) %>%
   dplyr::arrange(id)
+
+# Used in genecor and pancan-search-cancer module script
+tcga_cancer_choices <- c(
+  "SKCM", "THCA", "SARC", "PRAD", "PCPG", "PAAD", "HNSC", "ESCA",
+  "COAD", "CESC", "BRCA", "TGCT", "KIRP", "KIRC", "LAML", "READ",
+  "OV", "LUAD", "LIHC", "UCEC", "GBM", "LGG", "UCS", "THYM", "STAD",
+  "DLBC", "LUSC", "MESO", "KICH", "UVM", "BLCA", "CHOL", "ACC"
+)
 
 TCGA_cli_merged <- dplyr::full_join(
   load_data("tcga_clinical"),
