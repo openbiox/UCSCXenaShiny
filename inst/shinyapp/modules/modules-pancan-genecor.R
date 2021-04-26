@@ -18,7 +18,7 @@ ui.modules_pancan_gene_cor <- function(id) {
             ),
             selectizeInput(
               inputId = ns("Pancan_search1"),
-              label = "Input a gene or list (as signature)",
+              label = "Input a gene or formula (as signature)",
               choices = NULL,
               width = "100%",
               options = list(
@@ -36,7 +36,7 @@ ui.modules_pancan_gene_cor <- function(id) {
             ),
             selectizeInput(
               inputId = ns("Pancan_search2"),
-              label = "Input a gene or list (as signature)",
+              label = "Input a gene or formula (as signature)",
               choices = NULL,
               width = "100%",
               options = list(

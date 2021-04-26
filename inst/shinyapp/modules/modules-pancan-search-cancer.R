@@ -19,7 +19,7 @@ ui.modules_cancer_dist <- function(id) {
             ),
             selectizeInput(
               inputId = ns("Pancan_search"),
-              label = "Input a gene or list (as signature)",
+              label = "Input a gene or formula (as signature)",
               choices = NULL,
               width = "100%",
               options = list(
