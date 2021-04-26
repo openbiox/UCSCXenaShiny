@@ -1,5 +1,29 @@
-<center> <h2> Home Page </h2> </center>
+<center> <h1> Usage </h1> </center>
 
+- [Home Page](#home-page)
+  - [Overview](#overview)
+  - [Quick search](#quick-search)
+  - [Video](#video)
+- [Repository Page](#repository-page)
+  - [Overview](#overview-1)
+  - [Dataset filter](#dataset-filter)
+  - [Dataset selection](#dataset-selection)
+  - [Dataset check](#dataset-check)
+  - [Dataset download](#dataset-download)
+  - [Video](#video-1)
+- [General Analysis Page](#general-analysis-page)
+  - [Overview](#overview-2)
+  - [Video](#video-2)
+- [Quick PanCan Analysis Page](#quick-pancan-analysis-page)
+  - [Overview](#overview-3)
+  - [Notes](#notes)
+  - [Videos](#videos)
+- [Global Setting Page](#global-setting-page)
+- [Feature: Genomic Signature](#feature-genomic-signature)
+  - [Overview](#overview-4)
+  - [Video](#video-3)
+
+## Home Page
 ### Overview
 
 Home page gives you a quick overview of this tool, which includes
@@ -20,44 +44,134 @@ NOTE: *Although we label the module with TCGA, the data come from [toil data hub
 
 ### Video
 
+占位：
+
 <center>
 <iframe src="//player.bilibili.com/player.html?aid=458184407&bvid=BV1d5411G7U5&cid=268195199&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" width="800" height="600"> </iframe>
 </center>
 
 
-<center> <h2> Repository Page </h2> </center>
+## Repository Page
 
 ### Overview
 
-This page provides many features related to datasets of UCSC Xena and the entry to "General Analysis". This section we will only focus the former part, for "General Analysis", please refer to the next section.
+This page provides many features related to datasets of UCSC Xena and the entry to "General Analysis". This section we will only focus on the former part, for "General Analysis", please refer to the next section.
 
-#### Dataset selection
+Repository page shows multiple filters on the left panels, a dataset table on the main panel and 3 buttons on the bottom.
+These widgets are combined to create a full-feature page for dataset filtering, checking and downloading.
 
-#### Dataset check
+### Dataset filter
 
-#### Dataset download
+At default, when you open this page, you will find a table showing hundreds of datasets. To quickly locate what you are looking for, you can use filters from different aspects:
+
+1. Data hub (when you don't select any data hub, all datasets will be shown in the right data table).
+2. Cohort name. A cohort contains multiple datasets for same samples. So it is the common target for a analysis.
+3. Data type.
+4. Data subtype.
+
+Besides, you can use the "Filter with keyword" search bar on the top-right of the dataset table to filter the datasets with any keyword.
+
+### Dataset selection
+
+**The filtered dataset table are not selected, you have to use your mouse to click one or more data rows to select corresponding datasets.**
+After your selection, the tool will repond you selection to query the extra information (e.g., download link, the corresponding UCSC Xena page) of the datasets from UCSC Xena server.
+
+If you just want to download datasets, a simple way is to click the download link one by one.
+
+After dataset selection, you can use the 3 buttons below the table to
+
+1. Check the metadata of the datasets.
+2. Request (download) datasets by multiple ways.
+3. Analyze datasets (when you click this button, it will automatically jump to "General Analysis" page).
+
+### Dataset check
+
+After you click the "Show Metadata" button, a windown will pop up to show the detail metadata of your selected datasets.
+### Dataset download
+
+After you click the "Request Data" button, a windown will pop up to show the key information of the datasets and 3 ways to download the data:
+
+1. "Download data directly" will download datasets from UCSC Xena data hubs and zip the datasets to provides download by your browser.
+2. "Batch download" will provide a `.sh` script to you, so you can run the download process in a Unix (Linux/MacOS) environment (`wget` is required in the environment). This is recommended if you selected many big datasets.
+3. "Copy R download code" will show the R code to download the datasets, so you can integerate it with your following data analysis code and enhance data analysis reproducibility.
 
 ### Video
 
-<center> <h2> General Analysis Page </h2> </center>
+占位：
 
-<center> <h2> Quick PanCan Analysis Page </h2> </center>
+<center>
+<iframe src="//player.bilibili.com/player.html?aid=458184407&bvid=BV1d5411G7U5&cid=268195199&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" width="800" height="600"> </iframe>
+</center>
+
+## General Analysis Page
 
 ### Overview
 
-#### TCGA survival analysis
+The 3rd button below the dataset table in "Repository" page is "Analyze Data". When you click the button, the tool will be automatically switched to this "General Analysis" page.
 
-This module provides survival analysis feature for TCGA cohort based on data from multiple types of molecules including mRNA, transcript, mutation, etc. Please note:
+(To enhance the analysis, all phenotype datasets in the same cohort will be automatically queried and loaded.)
 
-1. In most cases, you can just put **gene symbol** (e.g., *TP53*). When you choose to explore the transcipt and miRNA expression, you need iuput the **Ensembl ID** (e.g., **ENST00000000233**) and **miRNA ID** (e.g., **hsa-miR-128-3p**).
+4 analysis modules are provided for solving common analysis tasks.
 
-2. The definition and data of four major clinical outcome endpoints are from reference [***doi: 10.1016/j.cell.2018.02.052***](https://pubmed.ncbi.nlm.nih.gov/29625055/).
+1. Scatter-Correlation: analyze and visualize correlation for two variables.
+2. Matrix-Correlation: analyze and visualize correlation for two or more variables.
+3. Group-Comparison: analyze and visualize numeric difference of a continuous variable between multiple groups of a variable.
+4. Survival-Analysis: analyze and visualize survival curves between multiple groups of a variable.
 
-3. When you choose **Auto** for **cut off mode**, the function of **surv_cutpoint {survminer package}** will be called.
+On the right panel of each analysis module, we provide a sample filter. If you want to use a sample subset of the dataset for analysis, you should click the "Click to filter!" button and follow the hint step by step.
 
-NOTE: *Determine the optimal cutpoint for one or multiple continuous variables at once, using the maximally selected rank statistics from the 'maxstat' R package. This is an outcome-oriented methods providing a value of a cutpoint that correspond to the most significant relation with outcome (here for survival data)*.
+### Video
+
+占位：
+
+<center>
+<iframe src="//player.bilibili.com/player.html?aid=458184407&bvid=BV1d5411G7U5&cid=268195199&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" width="800" height="600"> </iframe>
+</center>
+
+## Quick PanCan Analysis Page
+### Overview
+
+This page provides many indepedent analysis modules for TCGA and CCLE related data. They are very simple, useful and easy to get started.
+
+For most of modules provided here, multiple types of molecules including mRNA, transcript, mutation, etc. are supported. In most cases, you can just put **gene symbol** (e.g., *TP53*). When you choose to explore the transcipt and miRNA expression, you need iuput the **Ensembl ID** (e.g., **ENST00000000233**) and **miRNA ID** (e.g., **hsa-miR-128-3p**).
+
+### Notes
+
+1. The DNA methylation data is gene level, it is obtained from the average of all probes mapping to a gene.
+2. The copy number varation value is obtained from the GISTIC2 software, if the numeric value is used, `0` indicates the normal copy.
+3. The definition and data of four major clinical outcome endpoints are from reference [***doi: 10.1016/j.cell.2018.02.052***](https://pubmed.ncbi.nlm.nih.gov/29625055/).
+4. For TCGA survival analysis, when you choose **Auto** for **cutoff mode**, the function of **surv_cutpoint {survminer package}** will be called. The method is described as *Determine the optimal cutpoint for one or multiple continuous variables at once, using the maximally selected rank statistics from the 'maxstat' R package. This is an outcome-oriented methods providing a value of a cutpoint that correspond to the most significant relation with outcome (here for survival data)*.
 
 ### Videos
 
-<center> <h2> Global Setting Page </h2> </center>
+占位：
 
+<center>
+<iframe src="//player.bilibili.com/player.html?aid=458184407&bvid=BV1d5411G7U5&cid=268195199&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" width="800" height="600"> </iframe>
+</center>
+
+## Global Setting Page
+
+This page is used to display widgets to control global settings of the Shiny tool.
+
+Currently, only the mirror setting is supported.
+
+## Feature: Genomic Signature
+
+### Overview
+
+Inspired by UCSC Xena browser, feature "genomic signature" is also supported in this tool. For most of analysis modules, this feature is deployed and work well.
+
+To use this feature, you just type a formula instead of a molecule identifier.
+
+For example, if you want to see TCGA mRNA expression distribution of a signature generated by `TP53 + 1.5 * KRAS`. Firstly, delete the default symbol in the input bar "Input a gene or formula (as signature)", then input `TP53 + 1.5 * KRAS`, click the shown "Add TP53 + 1.5 * KRAS", run analysis as usual.
+
+NOTE: the signature defined in two CCLE drug related analysis modules is different from others shown above. In the CCLE drug related analysis modules, you just select multiple genes, a signature is constructed from geometrical mean of mRNA expression of your input gene list.
+
+### Video
+
+占位：
+
+<center>
+<iframe src="//player.bilibili.com/player.html?aid=458184407&bvid=BV1d5411G7U5&cid=268195199&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" width="800" height="600"> </iframe>
+</center>
