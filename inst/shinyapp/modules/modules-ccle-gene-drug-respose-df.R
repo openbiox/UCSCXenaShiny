@@ -1,6 +1,3 @@
-df <- analyze_gene_drug_response_diff("TP53")
-tissue_all <- unique(df$tissue)
-
 ui.modules_ccle_drug_response_diff <- function(id) {
   ns <- NS(id)
   fluidPage(
@@ -46,7 +43,7 @@ ui.modules_ccle_drug_response_diff <- function(id) {
         colourpicker::colourInput(inputId = ns("high_col"), "High group color", "#DF2020"),
         colourpicker::colourInput(inputId = ns("low_col"), "Low group color", "#DDDF21"),
         # selectInput(inputId = ns("use_all"), label = "Use All Tissue Types", choices = c("FALSE","TRUE"), selected = "FALSE"),
-        selectInput(inputId = ns("tissue"), label = "Filter Tissue", choices = tissue_all, selected = "lung"),
+        selectInput(inputId = ns("tissue"), label = "Filter Tissue", choices = ccle_drug_related_tissues, selected = "lung"),
         sliderTextInput(
           inputId = ns("alpha"),
           label = "Choose a transparent value",
