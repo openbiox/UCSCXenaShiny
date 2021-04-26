@@ -30,7 +30,9 @@ toil_info}
 a dataset, typically a \code{data.frame}.
 }
 \description{
-Load data from builtin or zenodo.
+Load data from builtin or Zenodo.
+Option \code{xena.zenodoDir} can be used to set default path for storing
+extra data from Zenodo, e.g., \code{options(xena.zenodoDir = "/home/xxx/dataset")}.
 }
 \examples{
 load_data("tcga_surv")

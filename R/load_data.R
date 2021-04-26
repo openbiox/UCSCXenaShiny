@@ -1,6 +1,8 @@
 #' Load Dataset Provided by This Package
 #'
-#' Load data from builtin or zenodo.
+#' Load data from builtin or Zenodo.
+#' Option `xena.zenodoDir` can be used to set default path for storing
+#' extra data from Zenodo, e.g., `options(xena.zenodoDir = "/home/xxx/dataset")`.
 #'
 #' @param name dataset name, can be one of
 #' `r paste(sub(".rda", "", unique(dir(system.file(c("data", "data-remote"), package = "UCSCXenaShiny")))), collapse="\n")`
@@ -12,7 +14,13 @@
 load_data <- function(name) {
   stopifnot(length(name) == 1)
   name2 <- paste0(name, ".rda")
-  data_path <- file.path(system.file("extdata", package = "UCSCXenaShiny"), name2)
+  data_path <- getOption("xena.zenodoDir")
+  data_path <- if (is.null(data_path)) {
+    file.path(system.file("extdata", package = "UCSCXenaShiny"), name2)
+  } else {
+    file.path(data_path, name2)
+  }
+    
   # builtin datasets
   available_datasets <- c(
     "ccle_absolute", "ccle_info",

@@ -2,6 +2,20 @@
 xena.runMode <- getOption("xena.runMode", default = "client")
 message("Run mode: ", xena.runMode)
 
+# Cache file dest directory
+XENA_DEST <- if (xena.runMode == "client") {
+  file.path(tempdir(), "UCSCXenaShiny")
+} else {
+  path.expand("~/.xenashiny/datasets")
+}
+
+if (!dir.exists(XENA_DEST)) {
+  dir.create(XENA_DEST, recursive = TRUE)
+}
+
+# Set default path for saving extra-data downloaded from https://zenodo.org
+options(xena.zenodoDir = if (xena.runMode == "server") XENA_DEST else NULL)
+
 # Load necessary packages ----------------------------------
 message("Checking depedencies...")
 
@@ -157,17 +171,6 @@ Xena_summary <- dplyr::group_by(xena_table, Hub) %>%
 
 # Global color
 mycolor <- c(RColorBrewer::brewer.pal(12, "Paired"))
-
-# Cache file dest directory
-XENA_DEST <- if (xena.runMode == "client") {
-  file.path(tempdir(), "UCSCXenaShiny")
-} else {
-  path.expand("~/.xenashiny/datasets")
-}
-
-if (!dir.exists(XENA_DEST)) {
-  dir.create(XENA_DEST, recursive = TRUE)
-}
 
 # Put modules here --------------------------------------------------------
 modules_path <- system.file("shinyapp", "modules", package = "UCSCXenaShiny", mustWork = TRUE)
