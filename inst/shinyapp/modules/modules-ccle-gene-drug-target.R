@@ -31,11 +31,6 @@ ui.modules_ccle_drug_target_asso <- function(id) {
               size = "sm"
             ),
           ),
-          shinyBS::bsPopover(ns("ccle_search"),
-            title = "Tips",
-            content = "Enter a gene symbol to show its distribution, e.g. TP53",
-            placement = "right", options = list(container = "body")
-          ),
         ),
         selectInput(
           inputId = ns("output_form"),
@@ -81,6 +76,9 @@ ui.modules_ccle_drug_target_asso <- function(id) {
         h5("Method:"),
         p("Analyze partial correlation of gene-drug association after controlling for tissue average expression."),
         p("When there are multiple genes, geometrical mean of expression of these genes are used as a signature."),
+        p("NOTEs: CCLE gene expression data was quantile normalized among all different cell lines for partial correlation,
+          and then Z-score normalization was applied in each tissue to calculate the expression difference between High-Low (use median as cutoff) IC50 groups.
+          The X axis indicates mean/median expression difference across tissues."),
         tags$br(),
         DT::DTOutput(outputId = ns("tbl")),
         shinyjs::hidden(
@@ -167,7 +165,7 @@ server.modules_ccle_drug_target_asso <- function(input, output, session) {
   return_data <- eventReactive(input$search_bttn, {
     if (nchar(input$ccle_search[1]) >= 1) {
       shinyjs::show(id = "save_csv")
-      data <- analyze_gene_drug_response_asso(input$ccle_search)
+      data <- analyze_gene_drug_response_asso(input$ccle_search, combine = TRUE)
       return(data)
     } else {
       shinyjs::hide(id = "save_csv")

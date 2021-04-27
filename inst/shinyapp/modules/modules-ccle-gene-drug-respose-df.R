@@ -31,11 +31,6 @@ ui.modules_ccle_drug_response_diff <- function(id) {
               size = "sm"
             ),
           ),
-          shinyBS::bsPopover(ns("ccle_search"),
-            title = "Tips",
-            content = "Enter a gene symbol to show its distribution, e.g. TP53",
-            placement = "right", options = list(container = "body")
-          ),
         ),
         materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = TRUE),
         colourpicker::colourInput(inputId = ns("high_col"), "High group color", "#DF2020"),

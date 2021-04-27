@@ -71,6 +71,7 @@ Suggests:
     plyr,
     RColorBrewer (>= 1.1.2),
     rmarkdown,
+    scales,
     survival,
     survminer,
     testthat (>= 2.0.1)
