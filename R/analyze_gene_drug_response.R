@@ -26,7 +26,7 @@
 analyze_gene_drug_response_asso <- function(gene_list, combine = FALSE) {
   stopifnot(length(gene_list) > 0)
   on.exit(invisible(gc()))
-  
+
   if (any(grepl(" ", gene_list))) {
     stop("Space is detected in your input, it's invalid.\nIf you want to use genomic signature feature, please input a gene list.")
   }
@@ -36,7 +36,7 @@ analyze_gene_drug_response_asso <- function(gene_list, combine = FALSE) {
   if (is.null(ccle_data)) {
     stop("Data load failed, try again?")
   }
-  
+
   if (any(gene_list %in% rownames(ccle_data$expr))) {
     expr <- ccle_data$expr[gene_list, , drop = FALSE]
   } else {
@@ -182,7 +182,7 @@ analyze_gene_drug_response_asso <- function(gene_list, combine = FALSE) {
 analyze_gene_drug_response_diff <- function(gene_list,
                                             drug = "ALL",
                                             tissue = "ALL",
-                                            combine = FALSE, 
+                                            combine = FALSE,
                                             cutpoint = c(50, 50)) {
   stopifnot(length(gene_list) > 0, length(cutpoint) > 0)
   on.exit(invisible(gc()))
@@ -195,7 +195,7 @@ analyze_gene_drug_response_diff <- function(gene_list,
   if (any(grepl(" ", gene_list))) {
     stop("Space is detected in your input, it's invalid.\nIf you want to use genomic signature feature, please input a gene list.")
   }
-  
+
   ccle_data <- load_data("ccle_expr_and_drug_response")
 
   if (any(gene_list %in% rownames(ccle_data$expr))) {
@@ -206,7 +206,7 @@ analyze_gene_drug_response_diff <- function(gene_list,
 
   if (combine && length(gene_list) > 1) {
     expr <- t(apply(expr, 2, gm_mean))
-    rownames(expr) <- paste0("signature (", paste(gene_list, collapse = "&")) 
+    rownames(expr) <- paste0("signature (", paste(gene_list, collapse = "&"))
   }
 
   drug_ic50 <- ccle_data$drug_ic50
@@ -254,7 +254,7 @@ analyze_gene_drug_response_diff <- function(gene_list,
     df <- df %>%
       dplyr::group_by(.data$genes, .data$drug_target, .data$tissue)
   }
-  df <- df %>% 
+  df <- df %>%
     dplyr::mutate(number_of_cell_lines = dplyr::n()) %>%
     dplyr::filter(.data$number_of_cell_lines >= 3) %>%
     # at least 3 cell lines in a tissue

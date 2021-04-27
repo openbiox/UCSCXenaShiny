@@ -20,7 +20,7 @@ load_data <- function(name) {
   } else {
     file.path(data_path, name2)
   }
-    
+
   # builtin datasets
   available_datasets <- c(
     "ccle_absolute", "ccle_info",
@@ -50,7 +50,9 @@ load_data <- function(name) {
           name <<- TRUE
         }
       )
-      if (is.logical(name)) return(invisible(NULL))
+      if (is.logical(name)) {
+        return(invisible(NULL))
+      }
     }
     tryCatch(
       load(data_path, envir = environment()),
@@ -60,7 +62,9 @@ load_data <- function(name) {
         name <<- TRUE
       }
     )
-    if (is.logical(name)) return(invisible(NULL))
+    if (is.logical(name)) {
+      return(invisible(NULL))
+    }
   }
 
   return(get(setdiff(ls(), c("name2", "name", "data_path", "data_url", "available_datasets"))))

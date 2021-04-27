@@ -54,9 +54,11 @@ ui.modules_pancan_gene_cor <- function(id) {
         tags$br(),
         materialSwitch(ns("purity_adj"), "Adjust Purity", inline = TRUE),
         selectInput(inputId = ns("use_all"), label = "Use All Cancer Types", choices = c("TRUE", "FALSE"), selected = "FALSE"),
-        selectInput(inputId = ns("Cancer"), label = "Filter Cancer", 
-                    choices = tcga_cancer_choices,
-                    selected = "ACC", multiple = TRUE),
+        selectInput(
+          inputId = ns("Cancer"), label = "Filter Cancer",
+          choices = tcga_cancer_choices,
+          selected = "ACC", multiple = TRUE
+        ),
         materialSwitch(ns("use_regline"), "Use regression line", inline = TRUE),
         selectInput(
           inputId = ns("cor_method"),

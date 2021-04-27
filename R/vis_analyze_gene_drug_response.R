@@ -54,7 +54,7 @@ vis_gene_drug_response_asso <- function(Gene = "TP53",
     theme(
       plot.title = element_text(hjust = 0.5)
     ) +
-      geom_hline(yintercept = -log10(0.05), linetype = 2, size = 0.5, alpha = 0.5)
+    geom_hline(yintercept = -log10(0.05), linetype = 2, size = 0.5, alpha = 0.5)
   if (output_form == "plotly") p <- plotly::ggplotly(p, tooltip = "text")
   return(p)
 }
@@ -86,7 +86,7 @@ vis_gene_drug_response_diff <- function(Gene = "TP53", tissue = "lung",
     message("Counting P value finished")
     pv$y.position <- 8.5
   }
-  
+
   p <- ggpubr::ggdotplot(
     df,
     x = "group", y = "IC50", color = "group", fill = "group",
@@ -98,7 +98,7 @@ vis_gene_drug_response_diff <- function(Gene = "TP53", tissue = "lung",
     p <- p + ggpubr::stat_pvalue_manual(pv, label = "p.signif", tip.length = 0.01) +
       ggplot2::scale_y_continuous(limits = c(0, 10))
   }
-  
+
   p <- p +
     ggplot2::scale_color_manual(values = values) +
     ggplot2::scale_fill_manual(values = values) +

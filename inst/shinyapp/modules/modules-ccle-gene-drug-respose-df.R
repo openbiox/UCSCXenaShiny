@@ -35,9 +35,11 @@ ui.modules_ccle_drug_response_diff <- function(id) {
         materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = TRUE),
         colourpicker::colourInput(inputId = ns("high_col"), "High group color", "#DF2020"),
         colourpicker::colourInput(inputId = ns("low_col"), "Low group color", "#DDDF21"),
-        selectInput(inputId = ns("tissue"), label = "Filter Tissue", 
-                    choices = ccle_drug_related_tissues, selected = "lung",
-                    multiple = TRUE),
+        selectInput(
+          inputId = ns("tissue"), label = "Filter Tissue",
+          choices = ccle_drug_related_tissues, selected = "lung",
+          multiple = TRUE
+        ),
         sliderTextInput(
           inputId = ns("alpha"),
           label = "Choose a transparent value",
@@ -75,7 +77,7 @@ ui.modules_ccle_drug_response_diff <- function(id) {
         h5("Method:"),
         p("Analyze difference of drug response (IC50 value (uM)) between gene (or signature) high and low expression."),
         p("When there are multiple genes, geometrical mean of expression of these genes are used as a signature."),
-        p("NOTEs: You can select multiple tissues, even ALL for all tissues. 
+        p("NOTEs: You can select multiple tissues, even ALL for all tissues.
           In this case 'number_of_cell_lines' indicates sample size for each gene-drug group instead of gene-drug-tissue group."),
         tags$br(),
         DT::DTOutput(outputId = ns("tbl")),

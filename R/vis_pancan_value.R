@@ -384,10 +384,8 @@ vis_pancan_anatomy <- function(Gene = "TP53",
       ggtitle(paste0(data_type, " - ", Gene)) +
       labs(caption = "data source: TCGA + GTEx") +
       theme(plot.title = element_text(hjust = 0.5))
-    
-    data_input <- Male_input
 
-    return(out)
+    data_input <- Male_input
   } else {
     p <- gganatogram(
       data = Female_input,
@@ -407,7 +405,7 @@ vis_pancan_anatomy <- function(Gene = "TP53",
 
     data_input <- Female_input
   }
-  
+
   return(list(plot = p, data = data_input))
 }
 
@@ -699,9 +697,9 @@ vis_gene_stemness_cor <- function(Gene = "TP53", cor_method = "spearman", data_t
 #' @return a `ggplot` object.
 #' @export
 #'
-vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot", 
-                                 data_type = "mRNA", Show.P.value = FALSE, 
-                                 Show.P.label = FALSE, Method = "wilcox.test", 
+vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot",
+                                 data_type = "mRNA", Show.P.value = FALSE,
+                                 Show.P.label = FALSE, Method = "wilcox.test",
                                  values = c("#DF2020", "#DDDF21"),
                                  TCGA.only = FALSE, Cancer = "ACC") {
   tcga_gtex <- load_data("tcga_gtex")
@@ -765,7 +763,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot",
       ) +
       ggplot2::scale_fill_manual(values = values) +
       ggplot2::scale_color_manual(values = values)
-    
+
     p <- p + ggplot2::ylab(
       if (is.null(unit)) Gene else paste0(Gene, " (", unit, ")")
     )
@@ -830,13 +828,13 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot",
       )
     }
   }
-  
+
   if (TCGA.only) {
     p <- p + ggplot2::ggtitle(paste0("TCGA: ", paste(Cancer, collapse = "/")))
   } else {
     p <- p + ggplot2::ggtitle(paste0("TCGA/GTEx: ", paste(Cancer, collapse = "/")))
   }
-  
+
   return(p)
 }
 
@@ -1028,16 +1026,19 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
   if (!use_all) {
     df <- df %>% dplyr::filter(.data$tissue %in% cancer_choose)
   }
-  
+
   # plot refer to https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
 
   if (purity_adj) {
     df %>% filter(!is.na(.data$CPE)) -> df
-    tryCatch({
-      partial_cor_res <- ezcor_partial_cor(data = df, var1 = "gene1", var2 = "gene2", var3 = "CPE", sig_label = TRUE, cor_method = cor_method)
-    }, error = function(e) {
-      stop("Error occurs when adjust purity, may be no purity data avaiable in this cohort.")
-    })
+    tryCatch(
+      {
+        partial_cor_res <- ezcor_partial_cor(data = df, var1 = "gene1", var2 = "gene2", var3 = "CPE", sig_label = TRUE, cor_method = cor_method)
+      },
+      error = function(e) {
+        stop("Error occurs when adjust purity, may be no purity data avaiable in this cohort.")
+      }
+    )
     cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
     # https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
     p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2")) +
@@ -1071,7 +1072,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
       ) +
       ggplot2::labs(color = "")
   }
-  
+
   if (use_all) {
     p <- p + ggplot2::ggtitle("TCGA: All data")
   } else {

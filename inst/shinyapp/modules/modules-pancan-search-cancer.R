@@ -48,10 +48,12 @@ ui.modules_cancer_dist <- function(id) {
         materialSwitch(ns("pdist_dataset"), "TCGA Dataset only", inline = FALSE),
         colourpicker::colourInput(inputId = ns("tumor_col"), "Tumor sample color", "#DF2020"),
         colourpicker::colourInput(inputId = ns("normal_col"), "Normal sample color", "#DDDF21"),
-        selectInput(inputId = ns("Cancer"), 
-                    label = "Filter Cancer",
-                    choices = tcga_cancer_choices, 
-                    selected = "ACC", multiple = TRUE),
+        selectInput(
+          inputId = ns("Cancer"),
+          label = "Filter Cancer",
+          choices = tcga_cancer_choices,
+          selected = "ACC", multiple = TRUE
+        ),
         numericInput(inputId = ns("height"), label = "Height", value = 5),
         numericInput(inputId = ns("width"), label = "Width", value = 5),
         prettyRadioButtons(
