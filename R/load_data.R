@@ -50,11 +50,17 @@ load_data <- function(name) {
           name <<- TRUE
         }
       )
-      if (name) {
-        return(invisible(NULL))
-      }
+      if (is.logical(name)) return(invisible(NULL))
     }
-    load(data_path, envir = environment())
+    tryCatch(
+      load(data_path, envir = environment()),
+      error = function(e) {
+        message("Data load failed, probably due to broken download file, please try again.\n This time NULL will be returned.")
+        if (file.exists(data_path)) unlink(data_path, recursive = TRUE, force = TRUE)
+        name <<- TRUE
+      }
+    )
+    if (is.logical(name)) return(invisible(NULL))
   }
 
   return(get(setdiff(ls(), c("name2", "name", "data_path", "data_url", "available_datasets"))))

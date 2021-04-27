@@ -26,13 +26,21 @@
 analyze_gene_drug_response_asso <- function(gene_list, combine = FALSE) {
   stopifnot(length(gene_list) > 0)
   on.exit(invisible(gc()))
+  
+  if (any(grepl(" ", gene_list))) {
+    stop("Space is detected in your input, it's invalid.\nIf you want to use genomic signature feature, please input a gene list.")
+  }
 
   ccle_data <- load_data("ccle_expr_and_drug_response")
 
+  if (is.null(ccle_data)) {
+    stop("Data load failed, try again?")
+  }
+  
   if (any(gene_list %in% rownames(ccle_data$expr))) {
     expr <- ccle_data$expr[gene_list, , drop = FALSE]
   } else {
-    stop("Data load failed (try again?) or none of your input genes exists in CCLE data.")
+    stop("None of your input genes exists in CCLE data.")
   }
 
   if (combine) {
