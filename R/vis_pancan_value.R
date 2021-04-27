@@ -384,9 +384,8 @@ vis_pancan_anatomy <- function(Gene = "TP53",
       ggtitle(paste0(data_type, " - ", Gene)) +
       labs(caption = "data source: TCGA + GTEx") +
       theme(plot.title = element_text(hjust = 0.5))
-    print(p)
+    
     data_input <- Male_input
-    out <- list(plot = p, data = data_input)
 
     return(out)
   } else {
@@ -405,12 +404,11 @@ vis_pancan_anatomy <- function(Gene = "TP53",
       ggtitle(paste0(data_type, " - ", Gene)) +
       labs(caption = "data source: TCGA + GTEx") +
       theme(plot.title = element_text(hjust = 0.5))
-    print(p)
 
     data_input <- Female_input
-    out <- list(plot = p, data = data_input)
-    return(out)
   }
+  
+  return(list(plot = p, data = data_input))
 }
 
 #' Heatmap for Correlation between Gene and Immune Signatures

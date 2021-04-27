@@ -120,28 +120,23 @@ server.modules_pancan_anatomy <- function(input, output, session) {
         Gender = input$Gender,
         data_type = input$profile
       )
-      p <- out$plot
-      return(p)
+      return(out)
     }
   })
 
   return_data <- eventReactive(input$search_bttn, {
     if (nchar(input$Pancan_search) >= 1) {
       shinyjs::show(id = "save_csv")
-      p <- plot_func()
-      data <- p$data
-      return(data)
+      return(plot_func()$data)
     } else {
       shinyjs::hide(id = "save_csv")
     }
   })
 
-
   output$tbl <- renderDT(
     data <- return_data(),
     options = list(lengthChange = FALSE)
   )
-
 
   output$downloadTable <- downloadHandler(
     filename = function() {
@@ -152,19 +147,17 @@ server.modules_pancan_anatomy <- function(input, output, session) {
     }
   )
 
-
   output$pancan_anatomy <- renderPlot({
     w$show() # Waiter add-ins
-    plot_func()
+    plot_func()$plot
   })
-
 
   output$download <- downloadHandler(
     filename = function() {
       paste0(input$Pancan_search, "_", input$profile, "_pancan_anatomy.", input$device)
     },
     content = function(file) {
-      p <- plot_func()
+      p <- plot_func()$plot
       if (input$device == "pdf") {
         pdf(file, width = input$width, height = input$height)
         print(p)
