@@ -50,7 +50,7 @@ load_data <- function(name) {
           name <<- TRUE
         }
       )
-      if (is.logical(name)) {
+      if (isTRUE(name)) {
         return(invisible(NULL))
       }
     }
@@ -62,7 +62,7 @@ load_data <- function(name) {
         name <<- TRUE
       }
     )
-    if (is.logical(name)) {
+    if (isTRUE(name)) {
       return(invisible(NULL))
     }
   }
