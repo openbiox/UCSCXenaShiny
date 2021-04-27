@@ -75,6 +75,9 @@ ui.modules_ccle_drug_response_diff <- function(id) {
       ),
       mainPanel = mainPanel(
         plotOutput(ns("gene_ccle_drug_response_diff"), height = "600px"),
+        h5("Method:"),
+        p("Analyze partial correlation of gene-drug association after controlling for tissue average expression."),
+        p("When there are multiple genes, geometrical mean of expression of these genes are used as a signature."),
         tags$br(),
         DT::DTOutput(outputId = ns("tbl")),
         shinyjs::hidden(

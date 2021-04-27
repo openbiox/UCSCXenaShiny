@@ -17,24 +17,22 @@ vis_gene_drug_response_asso <- function(Gene = "TP53",
   if (!requireNamespace("ggrepel")) install.packages("ggrepel")
 
   df <- analyze_gene_drug_response_asso(Gene)
-  df$cor_type <- ifelse(df$cor >= 0, "pos", "neg")
-  df$cor_abs <- abs(round(df$cor, digits = 3))
 
-  df$fdr_log <- -log10(df$fdr)
+  df$p_log <- -log10(df$p.value)
   df$text <- paste(
-    "Gene: ", df$genes,
-    "<br>Correlation: ", round(df$cor, digits = 3),
+    "Gene(s): ", paste(Gene, collapse = "/"),
     "<br>Drug: ", df$drugs,
     "<br>Target: ", df$Target,
+    "<br>Correlation: ", round(df$cor, digits = 3),
+    "<br><i>P</i> value: ", round(df$p.value, digits = 3),
     "<br>FDR: ", round(df$fdr, digits = 3),
     "<br>Number of Cell Lines: ", df$num_of_cell_lines
   )
 
   p <- ggplot(data = df, aes_string(
     x = x_axis_type,
-    y = "fdr_log",
-    size = "cor_abs",
-    color = "cor_type",
+    y = "p_log",
+    color = "cor",
     text = "text"
   )) +
     geom_point() +
@@ -50,14 +48,13 @@ vis_gene_drug_response_asso <- function(Gene = "TP53",
       "Mean of expression difference between high and low IC50 cell lines"
     } else {
       "Median of expression difference between high and low IC50 cell lines"
-    }, y = "-log10(FDR)") +
+    }, y = "-log10(P-value)") +
     cowplot::theme_cowplot() +
-    scale_color_manual(values = c("#377EB8", "#E41A1C")) +
-    scale_size(range = c(0.1, 4)) +
+    scale_color_gradient2(low = scales::muted("blue"), high = scales::muted("red"), midpoint = 0) +
     theme(
-      legend.position = "none",
       plot.title = element_text(hjust = 0.5)
-    )
+    ) +
+      geom_hline(yintercept = -log10(0.05), linetype = 2, size = 0.5, alpha = 0.5)
   if (output_form == "plotly") p <- plotly::ggplotly(p, tooltip = "text")
   return(p)
 }

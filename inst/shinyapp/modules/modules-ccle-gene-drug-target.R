@@ -79,7 +79,8 @@ ui.modules_ccle_drug_target_asso <- function(id) {
         ),
         hr(),
         h5("Method:"),
-        p("Analyze partial correlation of gene-drug association after controlling for tissue average expression."),
+        p("Analyze difference of drug response (IC50 value (uM)) between gene (or signature) high and low expression."),
+        p("When there are multiple genes, geometrical mean of expression of these genes are used as a signature."),
         tags$br(),
         DT::DTOutput(outputId = ns("tbl")),
         shinyjs::hidden(
@@ -164,7 +165,7 @@ server.modules_ccle_drug_target_asso <- function(input, output, session) {
 
   ## return data
   return_data <- eventReactive(input$search_bttn, {
-    if (nchar(input$ccle_search) >= 1) {
+    if (nchar(input$ccle_search[1]) >= 1) {
       shinyjs::show(id = "save_csv")
       data <- analyze_gene_drug_response_asso(input$ccle_search)
       return(data)
