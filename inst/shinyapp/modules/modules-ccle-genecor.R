@@ -83,7 +83,8 @@ ui.modules_ccle_genecor <- function(id) {
           selected = "spearman"
         ),
         selectInput(inputId = ns("use_all"), label = "Use All Primary Sites", choices = c("TRUE", "FALSE"), selected = "FALSE"),
-        selectInput(inputId = ns("SitePrimary"), label = "Filter Primary Site", choices = choices_primary_site, selected = "prostate"),
+        selectInput(inputId = ns("SitePrimary"), label = "Filter Primary Site", 
+                    choices = choices_primary_site, selected = "prostate", multiple = TRUE),
         materialSwitch(ns("use_log_x"), "x axis log", inline = FALSE),
         materialSwitch(ns("use_log_y"), "y axis log", inline = FALSE),
         materialSwitch(ns("use_regline"), "Use regression line", inline = TRUE),

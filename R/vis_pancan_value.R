@@ -1076,7 +1076,8 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
         label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar),
         size = 8, colour = "black"
       ) +
-      ggplot2::labs(color = "")
+      ggplot2::labs(x = paste(Gene1, data_type1),
+                    y = paste(Gene2, data_type2))
   }
 
   if (use_all) {

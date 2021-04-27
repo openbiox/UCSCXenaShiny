@@ -118,6 +118,9 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
     t1[[2]]
   )
   if (is.list(t3)) t3 <- t3[[1]]
+  
+  if (data_type1 == "cnv") data_type1 <- "CNV"
+  if (data_type2 == "cnv") data_type2 <- "CNV"
 
   if (all(is.na(t3))) {
     message("All NAs returned, return NULL instead.")
@@ -135,7 +138,7 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
 
   df <- data.frame(sample = t2$cell, gene1 = t2$tpm.x, gene2 = t2$tpm.y, Site_Primary = t2$Site_Primary, stringsAsFactors = F)
   if (!use_all) {
-    df %>% dplyr::filter(.data$Site_Primary == SitePrimary) -> df
+    df <- df %>% dplyr::filter(.data$Site_Primary %in% SitePrimary)
   }
   cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
 
@@ -152,7 +155,8 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
       size = 8,
       colour = "black"
     ) +
-    ggplot2::labs(color = "")
+    ggplot2::labs(x = paste(Gene1, data_type1),
+                  y = paste(Gene2, data_type2))
 
   if (use_regline) p <- p + ggplot2::geom_smooth(method = stats::lm)
 
