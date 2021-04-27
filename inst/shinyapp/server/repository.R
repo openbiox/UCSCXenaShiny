@@ -119,18 +119,14 @@ query_url <- reactive({
   s <- input$xena_table_rows_selected
   if (!is.null(s)) {
     xe_query <- xe_query_url(selected_database())
+    print(xe_query)
     return(xe_query)
   }
 })
 
 # Show download url for selected database
 w <- waiter::Waiter$new(id = "table", html = waiter::spin_wobblebar(), color = "white")
-# w <-
-#   waiter::Waiter$new(
-#     id = "table",
-#     html = waiter::spin_loaders(id = 1, color = "black", style = NULL),
-#     color = "white"
-#   )
+
 observe({
   s <- input$xena_table_rows_selected
 
@@ -138,13 +134,7 @@ observe({
     data <- selected_database_add_url()
 
     w$show() # Waiter add-ins
-    # urls <- unlist(lapply(query_url()$url, function(x) {
-    #   as.character(tags$a(href = x, "download link"))
-    # }))
-    # xena_pages <- unlist(lapply(query_url()$browse, function(x) {
-    #   as.character(tags$a(href = x, "browse Xena dataset page"))
-    # }))
-    Sys.sleep(0.5)
+    Sys.sleep(0.2)
 
     if (length(data$download) > 0) {
       output$table <- renderTable(
@@ -201,7 +191,7 @@ observeEvent(input$show_met, {
       purrr::map2(dataset()$XenaHosts[s], dataset()$XenaDatasets[s], function(x, y) {
         temp <- .p_dataset_metadata(x, y)
         json_data <- jsonlite::parse_json(temp$text)
-        message("Metadata for ", y, " is queried.")
+        message("Metadata for ", y, " queried.")
         json_data <-
           purrr::map(json_data, ~ ifelse(length(.) > 0, paste(., collapse = ","), .))
         json_data <- tibble::enframe(json_data)
@@ -296,7 +286,7 @@ if (xena.runMode == "client") {
         {
           for (i in seq_len(nrow(query_url()))) {
             UCSCXenaTools::XenaDownload(
-              query_url()[i, ],
+              query_url()[i, c("hosts", "datasets", "url")],
               destdir = parseDirPath(volumes, input$download),
               download_probeMap = TRUE,
               trans_slash = TRUE
@@ -326,7 +316,7 @@ if (xena.runMode == "client") {
             xe_download <- dplyr::bind_rows(
               xe_download,
               UCSCXenaTools::XenaDownload(
-                query_url()[i, ],
+                query_url()[i, c("hosts", "datasets", "url")],
                 destdir = XENA_DEST,
                 download_probeMap = TRUE,
                 trans_slash = TRUE
