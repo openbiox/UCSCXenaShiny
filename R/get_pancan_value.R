@@ -332,10 +332,26 @@ check_file <- function(id, dataset, host) {
 check_exist_data <- function(id, dataset, host) {
   f <- check_file(id, dataset, host)
   if (file.exists(f)) {
-    return(list(
-      ok = TRUE,
-      data = readRDS(f)
-    ))
+    data <- tryCatch(
+      readRDS(f),
+      error = function(e) {
+        message("Read cache data failed.")
+        return(NULL)
+      }
+    )
+    if (!is.null(data)) {
+      return(list(
+        ok = TRUE,
+        data = data
+      ))
+    } else {
+      return(
+        list(
+          ok = FALSE,
+          data = NULL
+        )
+      )
+    }
   } else {
     return(
       list(
@@ -352,7 +368,12 @@ save_data <- function(data, id, dataset, host) {
     dir.create(dirname(f), recursive = TRUE)
   }
 
-  saveRDS(data, file = f)
+  tryCatch(
+    saveRDS(data, file = f),
+    error = function(e) {
+      message("Save data to cache directory failed.")
+    }
+  )
 }
 
 get_data <- function(dataset, identifier, host = NULL) {
