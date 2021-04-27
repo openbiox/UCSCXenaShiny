@@ -290,41 +290,14 @@ report_dataset_info <- function(dataset) {
   message(msg)
 }
 
-get_run_mode <- function() {
-  getOption("xena.runMode", default = "client")
-}
-
-# For internal debugging use
-rm_pkg_cache <- function() {
-  if (get_run_mode() == "client") {
-    unlink(path.expand(file.path(
-      tempdir(), "UCSCXenaShiny"
-    )))
-  } else {
-    unlink(path.expand("~/.xenashiny"))
-  }
-}
-
 check_file <- function(id, dataset, host) {
-  runMode <- get_run_mode()
-  message("Running mode: ", runMode)
-  f <- switch(runMode,
-    client = path.expand(file.path(
-      tempdir(), "UCSCXenaShiny",
-      paste0(
-        host, "_",
-        gsub("[/]", "_", dataset),
-        "_", id, ".rds"
-      )
-    )),
-    server = path.expand(file.path(
-      "~/.xenashiny",
-      paste0(
-        host, "_",
-        gsub("[/]", "_", dataset),
-        "_", id, ".rds"
-      )
-    ))
+  f <- file.path(
+    get_cache_dir(),
+    paste0(
+      host, "_",
+      gsub("[/]", "_", dataset),
+      "_", id, ".rds"
+    )
   )
   return(f)
 }

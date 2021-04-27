@@ -14,12 +14,7 @@
 load_data <- function(name) {
   stopifnot(length(name) == 1)
   name2 <- paste0(name, ".rda")
-  data_path <- getOption("xena.zenodoDir")
-  data_path <- if (is.null(data_path)) {
-    file.path(system.file("extdata", package = "UCSCXenaShiny"), name2)
-  } else {
-    file.path(data_path, name2)
-  }
+  data_path <- file.path(get_zenodo_dir(), name2)
 
   # builtin datasets
   available_datasets <- c(

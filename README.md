@@ -75,6 +75,17 @@ For advanced users, examples for illustrating useful functions to obtain and ana
 
 All exported data and functions are organized at [here](https://openbiox.github.io/UCSCXenaShiny/reference/index.html).
 
+`xena.cacheDir` and `xena.zenodoDir` are two options to control where to store data.
+
+e.g.,
+
+```r
+options(xena.cacheDir = "/home/xxx/xena_data")
+```
+
+Option `xena.runMode` can be used to control the way how the Shiny works.
+It can be 'client' or 'server'. You can directly set it in `app_run()`.
+
 ## :writing_hand: Author
 
   - [Shixiang Wang](https://github.com/ShixiangWang)

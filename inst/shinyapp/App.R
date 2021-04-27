@@ -1,24 +1,25 @@
-# Detect run mode ---------------------------------------------------------
+# Global setting ---------------------------------------------------------
 xena.runMode <- getOption("xena.runMode", default = "client")
 message("Run mode: ", xena.runMode)
 
-# Cache file dest directory
-XENA_DEST <- if (xena.runMode == "client") {
-  file.path(tempdir(), "UCSCXenaShiny")
-} else {
-  path.expand("~/.xenashiny/datasets")
+if (is.null(getOption("xena.cacheDir"))) {
+  options(xena.cacheDir = switch(xena.runMode,
+                                 client = file.path(tempdir(), "UCSCXenaShiny"), 
+                                 server = "~/.xenashiny"
+  ))
 }
+
+# Path for storing dataset files
+XENA_DEST <- path.expand(file.path(getOption("xena.cacheDir"), "datasets"))
 
 if (!dir.exists(XENA_DEST)) {
   dir.create(XENA_DEST, recursive = TRUE)
 }
 
 # Set default path for saving extra-data downloaded from https://zenodo.org
-options(xena.zenodoDir = if (is.null(getOption("xena.zenodoDir", default = NULL))) {
-  if (xena.runMode == "server") XENA_DEST else NULL
-} else {
-  getOption("xena.zenodoDir")
-})
+if (xena.runMode == "server") {
+  if (is.null(getOption("xena.zenodoDir"))) options(xena.zenodoDir = XENA_DEST)
+}
 
 # Load necessary packages ----------------------------------
 message("Checking depedencies...")
