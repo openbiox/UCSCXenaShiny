@@ -37,11 +37,6 @@ ui.modules_pancan_radar <- function(id) {
             ),
           )
         ),
-        shinyBS::bsPopover(ns("Pancan_search"),
-          title = "Tips",
-          content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
-          placement = "right", options = list(container = "body")
-        ),
         selectInput(inputId = ns("Type"), label = "Select a feature", choices = c("stemness", "TMB", "MSI"), selected = "stemness"),
         selectInput(
           inputId = ns("cor_method"),

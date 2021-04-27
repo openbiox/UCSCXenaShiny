@@ -119,7 +119,6 @@ query_url <- reactive({
   s <- input$xena_table_rows_selected
   if (!is.null(s)) {
     xe_query <- xe_query_url(selected_database())
-    print(xe_query)
     return(xe_query)
   }
 })

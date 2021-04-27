@@ -37,11 +37,6 @@ ui.modules_pancan_til <- function(id) {
             )
           )
         ),
-        shinyBS::bsPopover(ns("Pancan_search"),
-          title = "Tips",
-          content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
-          placement = "right", options = list(container = "body")
-        ),
         shinyWidgets::pickerInput(
           inputId = ns("immune_sig"),
           label = "Cell types :",

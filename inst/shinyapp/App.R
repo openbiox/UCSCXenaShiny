@@ -134,6 +134,12 @@ pancan_identifiers <- readRDS(
   )
 )
 all_preload_identifiers <- c("NONE", as.character(unlist(pancan_identifiers)))
+tryCatch(
+  load_data("transcript_identifier"),
+  error = function(e) {
+    stop("Load data failed, please run load_data('transcript_identifier') by hand before restarting the Shiny.")
+  }
+)
 
 phenotype_datasets <- UCSCXenaTools::XenaData %>%
   dplyr::filter(Type == "clinicalMatrix") %>%

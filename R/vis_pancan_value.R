@@ -994,6 +994,11 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
   if (is.list(t1)) t1 <- t1[[1]]
   t3 <- query_pancan_value(Gene2, data_type = data_type2)
   if (is.list(t3)) t3 <- t3[[1]]
+  
+  if (data_type1 == "cnv") data_type1 <- "GISTIC2 thresholded CNV"
+  if (data_type1 == "cnv_gistic2") data_type1 <- "CNV"
+  if (data_type2 == "cnv") data_type2 <- "GISTIC2 thresholded CNV"
+  if (data_type2 == "cnv_gistic2") data_type2 <- "CNV"
 
   t2 <- t1 %>%
     as.data.frame() %>%
@@ -1056,7 +1061,8 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
         ),
         size = 8, colour = "black"
       ) +
-      ggplot2::labs(color = "")
+      ggplot2::labs(x = paste(Gene1, data_type1),
+                    y = paste(Gene2, data_type2))
   } else {
     cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
     p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2")) +

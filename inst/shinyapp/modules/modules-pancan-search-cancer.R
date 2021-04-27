@@ -39,7 +39,7 @@ ui.modules_cancer_dist <- function(id) {
         ),
         shinyBS::bsPopover(ns("Pancan_search"),
           title = "Tips",
-          content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
+          content = "Enter a gene symbol to show its distribution, e.g. TP53",
           placement = "right", options = list(container = "body")
         ),
         materialSwitch(ns("pdist_mode"), "Show Dot plot", inline = TRUE),

@@ -37,11 +37,6 @@ ui.modules_pancan_unicox <- function(id) {
             )
           )
         ),
-        shinyBS::bsPopover(ns("Pancan_search"),
-          title = "Tips",
-          content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
-          placement = "right", options = list(container = "body")
-        ),
         selectInput(inputId = ns("measure"), label = "Select Measure for plot", choices = c("OS", "PFI", "DSS", "DFI"), selected = "OS"),
         selectInput(inputId = ns("threshold"), label = "Select Threshold for plot", choices = c(0.25, 0.5), selected = 0.5),
         colourpicker::colourInput(inputId = ns("first_col"), "First color", "#6A6F68"),

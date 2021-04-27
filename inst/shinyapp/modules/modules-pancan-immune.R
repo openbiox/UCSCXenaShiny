@@ -37,11 +37,6 @@ ui.modules_pancan_immune <- function(id) {
             )
           )
         ),
-        shinyBS::bsPopover(ns("Pancan_search"),
-          title = "Tips",
-          content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
-          placement = "right", options = list(container = "body")
-        ),
         selectInput(
           inputId = ns("immune_sig"), "Select the immune signature source", selected = "Cibersort",
           choices = c("Yasin", "Wolf", "Attractors", "ICR", "c7atoms", "Bindea", "Cibersort")
