@@ -206,7 +206,7 @@ analyze_gene_drug_response_diff <- function(gene_list,
 
   if (combine && length(gene_list) > 1) {
     expr <- t(apply(expr, 2, gm_mean))
-    rownames(expr) <- paste0("signature (", paste(gene_list, collapse = "&"))
+    rownames(expr) <- paste0("signature (", paste(gene_list, collapse = "&"), ")")
   }
 
   drug_ic50 <- ccle_data$drug_ic50
