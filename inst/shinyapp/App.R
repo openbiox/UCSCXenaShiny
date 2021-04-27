@@ -150,8 +150,9 @@ themes_list <- list(
 TIL_signatures <- colnames(load_data("tcga_TIL"))[-1]
 
 # CCLE tissues for drug analysis
+# "ALL" means all tissues
 ccle_drug_related_tissues <- c(
-  "prostate", "central_nervous_system", "urinary_tract", "haematopoietic_and_lymphoid_tissue",
+  "ALL", "prostate", "central_nervous_system", "urinary_tract", "haematopoietic_and_lymphoid_tissue",
   "kidney", "thyroid", "soft_tissue", "skin", "salivary_gland",
   "ovary", "lung", "bone", "endometrium", "pancreas", "breast",
   "large_intestine", "upper_aerodigestive_tract", "autonomic_ganglia",

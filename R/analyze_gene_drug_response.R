@@ -43,7 +43,7 @@ analyze_gene_drug_response_asso <- function(gene_list, combine = FALSE) {
     stop("None of your input genes exists in CCLE data.")
   }
 
-  if (combine) {
+  if (combine && length(gene_list) > 1) {
     expr <- t(apply(expr, 2, gm_mean))
     rownames(expr) <- "signature"
   }
@@ -182,13 +182,20 @@ analyze_gene_drug_response_asso <- function(gene_list, combine = FALSE) {
 analyze_gene_drug_response_diff <- function(gene_list,
                                             drug = "ALL",
                                             tissue = "ALL",
-                                            combine = FALSE, cutpoint = c(50, 50)) {
+                                            combine = FALSE, 
+                                            cutpoint = c(50, 50)) {
   stopifnot(length(gene_list) > 0, length(cutpoint) > 0)
   on.exit(invisible(gc()))
   # 将基因表达按阈值分为高低两组，
   # 然后比较它们的 IC50 差异
   # 这里只要得到表达高低 2 组的 IC50 值即可
 
+  tissue <- unique(tissue)
+  drug <- unique(drug)
+  if (any(grepl(" ", gene_list))) {
+    stop("Space is detected in your input, it's invalid.\nIf you want to use genomic signature feature, please input a gene list.")
+  }
+  
   ccle_data <- load_data("ccle_expr_and_drug_response")
 
   if (any(gene_list %in% rownames(ccle_data$expr))) {
@@ -197,9 +204,9 @@ analyze_gene_drug_response_diff <- function(gene_list,
     stop("None of your input genes exists in CCLE data.")
   }
 
-  if (combine) {
+  if (combine && length(gene_list) > 1) {
     expr <- t(apply(expr, 2, gm_mean))
-    rownames(expr) <- "signature"
+    rownames(expr) <- paste0("signature (", paste(gene_list, collapse = "&")) 
   }
 
   drug_ic50 <- ccle_data$drug_ic50
@@ -225,11 +232,11 @@ analyze_gene_drug_response_diff <- function(gene_list,
     dplyr::select(-c("Target"))
   colnames(df)[1:6] <- c("genes", "ccle_name", "expression", "tissue", "drug", "IC50")
 
-  if (tissue != "ALL") {
+  if (!"ALL" %in% tissue) {
     df <- dplyr::filter(df, .data$tissue %in% .env$tissue)
   }
 
-  if (drug != "ALL") {
+  if (!"ALL" %in% drug) {
     df <- dplyr::filter(df, .data$drug %in% .env$drug)
   }
 
@@ -239,8 +246,15 @@ analyze_gene_drug_response_diff <- function(gene_list,
   cutpoint <- cutpoint / 100
 
   # 分组要保证在不同的组织下进行（因为不同组织表达本身可能有差异）
-  df <- df %>%
-    dplyr::group_by(.data$genes, .data$drug_target, .data$tissue) %>%
+  # 如果用户选定多组织或全部组织（就不对组织分组）
+  if ("ALL" %in% tissue || length(tissue) > 1) {
+    df <- df %>%
+      dplyr::group_by(.data$genes, .data$drug_target)
+  } else {
+    df <- df %>%
+      dplyr::group_by(.data$genes, .data$drug_target, .data$tissue)
+  }
+  df <- df %>% 
     dplyr::mutate(number_of_cell_lines = dplyr::n()) %>%
     dplyr::filter(.data$number_of_cell_lines >= 3) %>%
     # at least 3 cell lines in a tissue

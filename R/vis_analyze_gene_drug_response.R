@@ -16,7 +16,7 @@ vis_gene_drug_response_asso <- function(Gene = "TP53",
   if (!requireNamespace("plotly")) install.packages("plotly")
   if (!requireNamespace("ggrepel")) install.packages("ggrepel")
 
-  df <- analyze_gene_drug_response_asso(Gene)
+  df <- analyze_gene_drug_response_asso(Gene, combine = TRUE) # Combine as a signature if more than 1 gene
 
   df$p_log <- -log10(df$p.value)
   df$text <- paste(
@@ -38,9 +38,9 @@ vis_gene_drug_response_asso <- function(Gene = "TP53",
     geom_point() +
     ggtitle(paste0(
       if (length(Gene) > 1) {
-        paste0("Signature (", paste(unique(df$genes), collapse = "&"), ")")
+        paste0("Signature (", paste(Gene, collapse = "&"), ")")
       } else {
-        unique(df$genes)
+        Gene
       },
       " and Drug-Target Response Association"
     )) +
@@ -74,13 +74,7 @@ vis_gene_drug_response_diff <- function(Gene = "TP53", tissue = "lung",
                                         Method = "wilcox.test",
                                         values = c("#DF2020", "#DDDF21"),
                                         alpha = 0.5) {
-  df <- analyze_gene_drug_response_diff(Gene, tissue = tissue)
-
-  p <- ggpubr::ggdotplot(df,
-    x = "group", y = "IC50", color = "group", fill = "group",
-    add = "mean_sd", facet.by = "drug_target", alpha = alpha
-  ) +
-    labs(x = "Drug -> Target", y = "IC50 (uM)")
+  df <- analyze_gene_drug_response_diff(Gene, tissue = tissue, combine = TRUE) # Combine as a signature if more than 1 gene
 
   if (Show.P.label) {
     message("Counting P value")
@@ -91,12 +85,21 @@ vis_gene_drug_response_diff <- function(Gene = "TP53", tissue = "lung",
     df$drug_target <- factor(df$drug_target, levels = unique(pv$drug_target))
     message("Counting P value finished")
     pv$y.position <- 8.5
-
-    p <- p + ggpubr::stat_pvalue_manual(pv, label = "p.signif", tip.length = 0.01)
   }
+  
+  p <- ggpubr::ggdotplot(
+    df,
+    x = "group", y = "IC50", color = "group", fill = "group",
+    add = "mean_sd", facet.by = "drug_target", alpha = alpha, size = 0.6
+  ) +
+    labs(x = "Drug -> Target", y = "IC50 (uM)")
 
+  if (Show.P.label) {
+    p <- p + ggpubr::stat_pvalue_manual(pv, label = "p.signif", tip.length = 0.01) +
+      ggplot2::scale_y_continuous(limits = c(0, 10))
+  }
+  
   p <- p +
-    ggplot2::scale_y_continuous(limits = c(0, 10)) +
     ggplot2::scale_color_manual(values = values) +
     ggplot2::scale_fill_manual(values = values) +
     cowplot::theme_cowplot() +

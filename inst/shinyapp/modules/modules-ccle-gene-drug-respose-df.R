@@ -40,7 +40,9 @@ ui.modules_ccle_drug_response_diff <- function(id) {
         materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = TRUE),
         colourpicker::colourInput(inputId = ns("high_col"), "High group color", "#DF2020"),
         colourpicker::colourInput(inputId = ns("low_col"), "Low group color", "#DDDF21"),
-        selectInput(inputId = ns("tissue"), label = "Filter Tissue", choices = ccle_drug_related_tissues, selected = "lung"),
+        selectInput(inputId = ns("tissue"), label = "Filter Tissue", 
+                    choices = ccle_drug_related_tissues, selected = "lung",
+                    multiple = TRUE),
         sliderTextInput(
           inputId = ns("alpha"),
           label = "Choose a transparent value",
@@ -76,8 +78,10 @@ ui.modules_ccle_drug_response_diff <- function(id) {
       mainPanel = mainPanel(
         plotOutput(ns("gene_ccle_drug_response_diff"), height = "600px"),
         h5("Method:"),
-        p("Analyze partial correlation of gene-drug association after controlling for tissue average expression."),
+        p("Analyze difference of drug response (IC50 value (uM)) between gene (or signature) high and low expression."),
         p("When there are multiple genes, geometrical mean of expression of these genes are used as a signature."),
+        p("NOTEs: You can select multiple tissues, even ALL for all tissues. 
+          In this case 'number_of_cell_lines' indicates sample size for each gene-drug group instead of gene-drug-tissue group."),
         tags$br(),
         DT::DTOutput(outputId = ns("tbl")),
         shinyjs::hidden(
@@ -164,7 +168,7 @@ server.modules_ccle_drug_response_diff <- function(input, output, session) {
 
   ## return data
   return_data <- eventReactive(input$search_bttn, {
-    if (nchar(input$ccle_search) >= 1) {
+    if (nchar(input$ccle_search[1]) >= 1) {
       shinyjs::show(id = "save_csv")
       p <- plot_func()
       data <- p$data

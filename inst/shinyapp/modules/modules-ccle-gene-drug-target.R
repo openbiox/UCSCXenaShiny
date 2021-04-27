@@ -79,7 +79,7 @@ ui.modules_ccle_drug_target_asso <- function(id) {
         ),
         hr(),
         h5("Method:"),
-        p("Analyze difference of drug response (IC50 value (uM)) between gene (or signature) high and low expression."),
+        p("Analyze partial correlation of gene-drug association after controlling for tissue average expression."),
         p("When there are multiple genes, geometrical mean of expression of these genes are used as a signature."),
         tags$br(),
         DT::DTOutput(outputId = ns("tbl")),
