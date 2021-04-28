@@ -107,6 +107,7 @@ ui.modules_pancan_gene_cor <- function(id) {
         p("1. The data query may take some time based on your network. Wait until a plot shows"),
         p("2. You could choose correlation method or whether adjust tumor purity when calculating"),
         p("3. ", tags$a(href = "https://pancanatlas.xenahubs.net/", "Genomic profile data source")),
+        p("4. ", tags$a(href = "https://www.nature.com/articles/ncomms9971", "Tumor purity data source")),
         tags$br(),
         DT::DTOutput(outputId = ns("tbl")),
         shinyjs::hidden(
