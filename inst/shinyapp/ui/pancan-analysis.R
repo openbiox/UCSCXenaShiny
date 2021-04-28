@@ -7,11 +7,11 @@ ui.page_pancan <- function() {
     #   ui.combo.sg.pancan.analysis("combo.sg.pancan.analysis")
     # ),
     tabPanel(
-      "TCGA: Molecular Profile Distribution Across Cancer Types (Tumor VS Normal)",
+      "TCGA+GTEx: Molecular Profile Distribution Across Cancer Types (Tumor VS Normal)",
       ui.modules_pancan_dist("module_gene_pancan_dist")
     ),
     tabPanel(
-      "TCGA: Molecular Profile Distribution (Tumor VS Normal)",
+      "TCGA+GTEx: Molecular Profile Distribution (Tumor VS Normal)",
       ui.modules_cancer_dist("modules_cancer_dist")
     ),
     tabPanel(
