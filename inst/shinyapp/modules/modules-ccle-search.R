@@ -140,20 +140,16 @@ server.modules_ccle_dist <- function(input, output, session) {
   )
 
   ## return data
-  return_data <- eventReactive(input$search_bttn, {
+  observeEvent(input$search_bttn, {
     if (nchar(input$ccle_search) >= 1) {
       shinyjs::show(id = "save_csv")
-      p <- plot_func()
-      data <- p$data
-      return(data)
     } else {
       shinyjs::hide(id = "save_csv")
     }
   })
 
-
   output$tbl <- renderDT(
-    data <- return_data(),
+    plot_func()$data,
     options = list(lengthChange = FALSE)
   )
 
@@ -163,7 +159,7 @@ server.modules_ccle_dist <- function(input, output, session) {
       paste0(input$ccle_search, "_gene_ccle_dist.csv")
     },
     content = function(file) {
-      write.csv(data <- return_data(), file, row.names = FALSE)
+      write.csv(plot_func()$data, file, row.names = FALSE)
     }
   )
 }

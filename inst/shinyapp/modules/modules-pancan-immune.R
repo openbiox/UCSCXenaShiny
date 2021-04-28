@@ -155,12 +155,9 @@ server.modules_pancan_immune <- function(input, output, session) {
   )
 
   ## return data
-  return_data <- eventReactive(input$search_bttn, {
+  observeEvent(input$search_bttn, {
     if (nchar(input$Pancan_search) >= 1) {
       shinyjs::show(id = "save_csv")
-      p <- p <- plot_func()
-      data <- p$data
-      return(data)
     } else {
       shinyjs::hide(id = "save_csv")
     }
@@ -168,7 +165,7 @@ server.modules_pancan_immune <- function(input, output, session) {
 
 
   output$tbl <- renderDT(
-    data <- return_data(),
+    plot_func()$data,
     options = list(lengthChange = FALSE)
   )
 
@@ -179,7 +176,7 @@ server.modules_pancan_immune <- function(input, output, session) {
       paste0(input$Pancan_search, "_", input$profile, "_pancan_immune.csv")
     },
     content = function(file) {
-      write.csv(data <- return_data(), file, row.names = FALSE)
+      write.csv(plot_func()$data, file, row.names = FALSE)
     }
   )
 }

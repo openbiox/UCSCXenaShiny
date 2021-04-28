@@ -120,17 +120,19 @@ server.modules_pancan_radar <- function(input, output, session) {
 
   plot_func <- eventReactive(input$search_bttn, {
     if (nchar(input$Pancan_search) >= 1) {
-      if (input$Type == "stemness") {
-        p <- vis_gene_stemness_cor(Gene = input$Pancan_search, cor_method = input$cor_method, data_type = input$profile)
-      } else if (input$Type == "tmb") {
-        p <- vis_gene_tmb_cor(Gene = input$Pancan_search, cor_method = input$cor_method, data_type = input$profile)
-      } else if (input$Type == "msi") {
-        p <- vis_gene_msi_cor(Gene = input$Pancan_search, cor_method = input$cor_method, data_type = input$profile)
-      }
-      pdata <- p$data
+      vis_fun <- switch(input$Type,
+                        stemness = vis_gene_stemness_cor,
+                        TMB = vis_gene_tmb_cor,
+                        MSI = vis_gene_msi_cor)
+
+      p <- vis_fun(Gene = input$Pancan_search, cor_method = input$cor_method, data_type = input$profile)
+      
+      pdata <- p$data %>% 
+        dplyr::mutate(cor = round(cor, digits = 3), p.value = round(p.value, digits = 3))
       df <- pdata %>%
         select(cor, cancer) %>%
         pivot_wider(names_from = cancer, values_from = cor)
+      
       plot <- ggradar::ggradar(
         df[1, ],
         font.radar = "sans",
@@ -145,13 +147,15 @@ server.modules_pancan_radar <- function(input, output, session) {
         group.colours = "#00AFBB",
         plot.title = paste0(input$Pancan_search, " ", input$profile, " ", input$Type, " ")
       ) + theme(plot.title = element_text(hjust = .5))
+      return(list(plot = plot, data = pdata))
+    } else {
+      sendSweetAlert(session, title = "Warning", text = "You must input something before analysis!")
     }
-    return(plot)
   })
 
   output$gene_pancan_radar <- renderPlot({
     w$show() # Waiter add-ins
-    plot_func()
+    plot_func()$plot
   })
 
   output$download <- downloadHandler(
@@ -159,7 +163,7 @@ server.modules_pancan_radar <- function(input, output, session) {
       paste0(input$Pancan_search, "_", input$profile, "_", input$Type, "_pancan_radar.", input$device)
     },
     content = function(file) {
-      p <- plot_func()
+      p <- plot_func()$plot
       if (input$device == "pdf") {
         pdf(file, width = input$width, height = input$height)
         print(p)
@@ -173,31 +177,17 @@ server.modules_pancan_radar <- function(input, output, session) {
   )
 
   output$tbl <- renderDT(
-    data <- return_data(),
+    plot_func()$data,
     options = list(lengthChange = FALSE)
   )
 
-  ## return data
-  return_data <- eventReactive(input$search_bttn, {
+  observeEvent(input$search_bttn, {
     if (nchar(input$Pancan_search) >= 1) {
       shinyjs::show(id = "save_csv")
-      if (input$Type == "stemness") {
-        p <- vis_gene_stemness_cor(Gene = input$Pancan_search, cor_method = input$cor_method, data_type = input$profile)
-      } else if (input$Type == "tmb") {
-        p <- vis_gene_tmb_cor(Gene = input$Pancan_search, cor_method = input$cor_method, data_type = input$profile)
-      } else if (input$Type == "msi") {
-        p <- vis_gene_msi_cor(Gene = input$Pancan_search, cor_method = input$cor_method, data_type = input$profile)
-      }
-      data <- p$data
-      data <- data %>%
-        dplyr::mutate(cor = round(cor, digits = 3), p.value = round(p.value, digits = 3))
-      return(data)
     } else {
       shinyjs::hide(id = "save_csv")
     }
   })
-
-
 
   ## downloadTable
   output$downloadTable <- downloadHandler(
@@ -205,7 +195,7 @@ server.modules_pancan_radar <- function(input, output, session) {
       paste0(input$Pancan_search, "_", input$profile, "_", input$Type, "_pancan_radar.csv")
     },
     content = function(file) {
-      write.csv(data <- return_data(), file, row.names = FALSE)
+      write.csv(plot_func()$data, file, row.names = FALSE)
     }
   )
 }

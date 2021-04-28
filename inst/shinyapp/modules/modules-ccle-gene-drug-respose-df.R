@@ -159,17 +159,13 @@ server.modules_ccle_drug_response_diff <- function(input, output, session) {
       paste0(input$ccle_search, "_ccle_target_response_diff.csv")
     },
     content = function(file) {
-      write.csv(data <- return_data(), file, row.names = FALSE)
+      write.csv(plot_func()$data, file, row.names = FALSE)
     }
   )
 
-  ## return data
-  return_data <- eventReactive(input$search_bttn, {
+  observeEvent(input$search_bttn, {
     if (nchar(input$ccle_search[1]) >= 1) {
       shinyjs::show(id = "save_csv")
-      p <- plot_func()
-      data <- p$data
-      return(data)
     } else {
       shinyjs::hide(id = "save_csv")
     }
@@ -177,7 +173,7 @@ server.modules_ccle_drug_response_diff <- function(input, output, session) {
 
 
   output$tbl <- renderDT(
-    data <- return_data(),
+    plot_func()$data,
     options = list(lengthChange = FALSE)
   )
 }

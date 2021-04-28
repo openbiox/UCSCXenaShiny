@@ -157,7 +157,7 @@ server.modules_ccle_drug_target_asso <- function(input, output, session) {
       paste0(input$ccle_search, "_ccle_drug_target.csv")
     },
     content = function(file) {
-      write.csv(data <- return_data(), file, row.names = FALSE)
+      write.csv(return_data(), file, row.names = FALSE)
     }
   )
 
@@ -174,7 +174,7 @@ server.modules_ccle_drug_target_asso <- function(input, output, session) {
 
 
   output$tbl <- renderDT(
-    data <- return_data(),
+    return_data(),
     options = list(lengthChange = FALSE)
   )
 }

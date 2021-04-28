@@ -356,7 +356,7 @@ server.modules_sur_plot <- function(input, output, session) {
   )
 
   output$tbl <- renderDT(
-    data <- return_data(),
+    return_data(),
     options = list(lengthChange = FALSE)
   )
 
@@ -371,7 +371,7 @@ server.modules_sur_plot <- function(input, output, session) {
       paste0(item_show, "_", input$profile, "_sur.csv")
     },
     content = function(file) {
-      write.csv(data <- return_data(), file, row.names = FALSE)
+      write.csv(return_data(), file, row.names = FALSE)
     }
   )
 }

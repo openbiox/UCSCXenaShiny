@@ -116,26 +116,13 @@ server.modules_pancan_unicox <- function(input, output, session) {
     c(input$first_col, input$second_col, input$third_col)
   })
 
-  return_data <- eventReactive(input$search_bttn, {
+  observeEvent(input$search_bttn, {
     if (nchar(input$Pancan_search) >= 1) {
       shinyjs::show(id = "save_csv")
-      p <- vis_unicox_tree(
-        Gene = input$Pancan_search,
-        measure = input$measure,
-        threshold = input$threshold,
-        data_type = input$profile,
-        values = colors()
-      )
-      data <- p$data
-      data <- data %>%
-        as.data.frame() %>%
-        dplyr::select(cancer, measure, n_contrast, n_ref, beta, HR_log, lower_95_log, upper_95_log, Type, p.value)
-      return(data)
     } else {
       shinyjs::hide(id = "save_csv")
     }
   })
-
 
   plot_func <- eventReactive(input$search_bttn, {
     if (nchar(input$Pancan_search) >= 1) {
@@ -146,24 +133,24 @@ server.modules_pancan_unicox <- function(input, output, session) {
         data_type = input$profile,
         values = colors()
       )
+      pdata <- p$data %>% 
+        as.data.frame() %>%
+        dplyr::select(cancer, measure, n_contrast, n_ref, beta, HR_log, lower_95_log, upper_95_log, Type, p.value)
+      return(list(plot = p, data = pdata))
     }
-
-    return(p)
   })
-
 
   output$unicox_gene_tree <- renderPlot({
     w$show() # Waiter add-ins
-    plot_func()
+    plot_func()$plot
   })
-
 
   output$download <- downloadHandler(
     filename = function() {
       paste0(input$Pancan_search, "_", input$profile, "_", input$measure, "_pancan_unicox.", input$device)
     },
     content = function(file) {
-      p <- plot_func()
+      p <- plot_func()$plot
       if (input$device == "pdf") {
         pdf(file, width = input$width, height = input$height)
         print(p)
@@ -178,19 +165,16 @@ server.modules_pancan_unicox <- function(input, output, session) {
 
 
   output$tbl <- renderDT(
-    data <- return_data(),
+    plot_func()$data,
     options = list(lengthChange = FALSE)
   )
-
-
-
 
   output$downloadTable <- downloadHandler(
     filename = function() {
       paste0(input$Pancan_search, "_", input$profile, "_", input$measure, "_pancan_unicox.csv")
     },
     content = function(file) {
-      write.csv(data <- return_data(), file, row.names = FALSE)
+      write.csv(plot_func()$data, file, row.names = FALSE)
     }
   )
 }

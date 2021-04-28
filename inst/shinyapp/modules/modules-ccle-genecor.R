@@ -211,7 +211,6 @@ server.modules_ccle_genecor <- function(input, output, session) {
     plot_func()
   })
 
-
   output$download <- downloadHandler(
     filename = function() {
       paste0(input$ccle_search1, "_", input$profile1, "_", input$ccle_search2, "_", input$profile2, "_gene_ccle_genecor.", input$device)
@@ -230,13 +229,9 @@ server.modules_ccle_genecor <- function(input, output, session) {
     }
   )
 
-  ## return data
-  return_data <- eventReactive(input$search_bttn, {
+  observeEvent(input$search_bttn, {
     if (nchar(input$ccle_search1) >= 1 & nchar(input$ccle_search2) >= 1) {
       shinyjs::show(id = "save_csv")
-      p <- plot_func()
-      data <- p$data
-      return(data)
     } else {
       shinyjs::hide(id = "save_csv")
     }
@@ -244,7 +239,7 @@ server.modules_ccle_genecor <- function(input, output, session) {
 
 
   output$tbl <- renderDT(
-    data <- return_data(),
+    plot_func()$data,
     options = list(lengthChange = FALSE)
   )
 
@@ -254,7 +249,7 @@ server.modules_ccle_genecor <- function(input, output, session) {
       paste0(input$ccle_search1, "_", input$profile1, "_", input$ccle_search2, "_", input$profile2, "_gene_ccle_genecor.csv")
     },
     content = function(file) {
-      write.csv(data <- return_data(), file, row.names = FALSE)
+      write.csv(plot_func()$data, file, row.names = FALSE)
     }
   )
 }
