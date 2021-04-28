@@ -15,12 +15,12 @@ ui.page_pancan <- function() {
       ui.modules_cancer_dist("modules_cancer_dist")
     ),
     tabPanel(
-      "TCGA: Molecule-Molecule Correlation",
-      ui.modules_pancan_gene_cor("modules_pancan_gene_cor")
+      "TCGA+GTEx: Molecular Profile Anatomy",
+      ui.modules_pancan_anatomy("modules_pancan_anatomy")
     ),
     tabPanel(
-      "TCGA: Molecular Profile Anatomy",
-      ui.modules_pancan_anatomy("modules_pancan_anatomy")
+      "TCGA: Molecule-Molecule Correlation",
+      ui.modules_pancan_gene_cor("modules_pancan_gene_cor")
     ),
     tabPanel(
       "TCGA: Molecular Profile Cox Analysis",
