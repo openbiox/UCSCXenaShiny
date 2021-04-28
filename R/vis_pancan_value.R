@@ -697,7 +697,7 @@ vis_gene_stemness_cor <- function(Gene = "TP53", cor_method = "spearman", data_t
 #' @return a `ggplot` object.
 #' @export
 #'
-vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot",
+vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = c("Violinplot","Dotplot"),
                                  data_type = "mRNA", Show.P.value = FALSE,
                                  Show.P.label = FALSE, Method = "wilcox.test",
                                  values = c("#DF2020", "#DDDF21"),
@@ -742,6 +742,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot",
     Show.P.label <- FALSE
   }
   if (Show.P.value == TRUE) {
+    if (TCGA.only == TRUE) stop("Can't compare with only one group")
     message("Counting P value")
     pv <- tcga_gtex_withNormal %>%
       ggpubr::compare_means(tpm ~ type2, data = ., method = Method)
@@ -749,13 +750,13 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot",
     message("Counting P value finished")
   }
   data <- tcga_gtex_withNormal
-  if (Mode == "Boxplot") {
-    p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "type2", y = "tpm", fill = "type2")) +
-      ggplot2::geom_boxplot() +
-      ggplot2::geom_dotplot(binaxis = "y", stackdir = "center", position = "identity") +
+  if (Mode == "Dotplot") {
+    p <- ggpubr::ggdotplot(
+      tcga_gtex_withNormal,
+      x = "type2", y = "tpm",fill = "type2", color = "type2",size = 0.6,binwidth = 0.3) +
       ggplot2::xlab(NULL) +
-      ggplot2::theme_set(theme_set(theme_classic(base_size = 20))) +
-      ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5)) +
+      theme_set(theme_classic(base_size = 20)) +
+      ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5,size = 20)) +
       ggplot2::guides(fill = guide_legend(title = NULL)) +
       ggplot2::theme(
         legend.background = element_blank(),
@@ -763,12 +764,28 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot",
       ) +
       ggplot2::scale_fill_manual(values = values) +
       ggplot2::scale_color_manual(values = values)
+    
+    
+    # p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "type2", y = "tpm", fill = "type2")) +
+    #   # ggplot2::geom_boxplot() +
+    #   ggplot2::geom_dotplot(binaxis = "y", stackdir = "center", position = "identity",size = 0.6) +
+    #   ggplot2::xlab(NULL) +
+    #   ggplot2::theme_set(theme_set(theme_classic(base_size = 20))) +
+    #   ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5)) +
+    #   ggplot2::guides(fill = guide_legend(title = NULL)) +
+    #   ggplot2::theme(
+    #     legend.background = element_blank(),
+    #     legend.position = "none", legend.justification = c(0, 0)
+    #   ) +
+    #   ggplot2::scale_fill_manual(values = values) +
+    #   ggplot2::scale_color_manual(values = values)
 
     p <- p + ggplot2::ylab(
       if (is.null(unit)) Gene else paste0(Gene, " (", unit, ")")
     )
 
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
+      if (TCGA.only == TRUE) stop("Can't compare with only one group")
       p <- p + ggplot2::geom_text(aes(
         x = 1.5,
         y = max(data$tpm) * 1.1,
@@ -779,6 +796,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot",
       )
     }
     if (Show.P.value == TRUE & Show.P.label == FALSE) {
+      if (TCGA.only == TRUE) stop("Can't compare with only one group")
       p <- p + ggplot2::geom_text(aes(
         x = 1.5,
         y = max(data$tpm) * 1.1,
@@ -795,8 +813,8 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot",
       ggplot2::geom_boxplot(width = 0.1, fill = "white") +
       ggplot2::xlab("") +
       ggplot2::scale_fill_manual(values = values) +
-      ggplot2::theme_set(ggplot2::theme_classic(base_size = 20)) +
-      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = .5, vjust = .5)) +
+      ggplot2::theme_classic(base_size = 20) +
+      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = .5, vjust = .5,size = 20)) +
       ggplot2::guides(fill = ggplot2::guide_legend(title = NULL)) +
       ggplot2::theme(
         legend.background = ggplot2::element_blank(),
@@ -808,6 +826,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot",
     )
 
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
+      if (TCGA.only == TRUE) stop("Can't compare with only one group")
       p <- p + ggplot2::geom_text(ggplot2::aes(
         x = 1.5,
         y = max(data$tpm) * 1.1,
@@ -818,6 +837,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = "Violinplot",
       )
     }
     if (Show.P.value == TRUE & Show.P.label == FALSE) {
+      if (TCGA.only == TRUE) stop("Can't compare with only one group")
       p <- p + ggplot2::geom_text(ggplot2::aes(
         x = 1.5,
         y = max(data$tpm) * 1.1,
