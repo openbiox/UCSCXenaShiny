@@ -21,17 +21,25 @@
 #' }
 #' @export
 #'
-vis_toil_TvsN <- function(Gene = "TP53", Mode = c("Boxplot","Violinplot"), data_type = "mRNA", Show.P.value = TRUE, Show.P.label = TRUE, Method = c("wilcox.test","t.test"), values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, draw_quantiles = c(0.25, 0.5, 0.75), trim = TRUE) {
+vis_toil_TvsN <- function(Gene = "TP53", Mode = c("Boxplot", "Violinplot"),
+                          data_type = "mRNA", Show.P.value = TRUE,
+                          Show.P.label = TRUE, Method = c("wilcox.test", "t.test"),
+                          values = c("#DF2020", "#DDDF21"),
+                          TCGA.only = FALSE, draw_quantiles = c(0.25, 0.5, 0.75),
+                          trim = TRUE) {
   tcga_gtex <- load_data("tcga_gtex")
+
+  Mode <- match.arg(Mode)
+  Method <- match.arg(Method)
   
-  if (!Method %in% c("wilcox.test","t.test")) {
+  if (!Method %in% c("wilcox.test", "t.test")) {
     stop("only support wilcox.test or t.test")
   }
-  
+
   if (!Mode %in% c("Boxplot", "Violinplot")) {
     stop("only support Boxplot or Violinplot")
   }
-  
+
   if (!data_type %in% c("mRNA", "miRNA", "transcript", "methylation")) {
     stop("data_type ", data_type, " does not support in this function!")
   }
@@ -210,7 +218,7 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", t
   ## 写在 R 内的数据集需要更严格的引用方式
   tcga_surv <- load_data("tcga_surv")
   tcga_gtex <- load_data("tcga_gtex")
-  
+
   t1 <- query_pancan_value(Gene, data_type = data_type)
   if (is.list(t1)) t1 <- t1[[1]]
 
@@ -705,17 +713,18 @@ vis_gene_stemness_cor <- function(Gene = "TP53", cor_method = "spearman", data_t
 #' @return a `ggplot` object.
 #' @export
 #'
-vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = c("Violinplot","Dotplot"),
+vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = c("Violinplot", "Dotplot"),
                                  data_type = "mRNA", Show.P.value = FALSE,
                                  Show.P.label = FALSE, Method = "wilcox.test",
                                  values = c("#DF2020", "#DDDF21"),
                                  TCGA.only = FALSE, Cancer = "ACC") {
   tcga_gtex <- load_data("tcga_gtex")
 
-  if (!Method %in% c("wilcox.test","t.test")) {
+  Mode <- match.arg(Mode)
+  if (!Method %in% c("wilcox.test", "t.test")) {
     stop("only support wilcox.test or t.test")
   }
-  
+
   t1 <- query_pancan_value(Gene, data_type = data_type)
   unit <- switch(data_type,
     cnv = NULL,
@@ -765,10 +774,11 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = c("Violinplot","Dotplot")
   if (Mode == "Dotplot") {
     p <- ggpubr::ggdotplot(
       tcga_gtex_withNormal,
-      x = "type2", y = "tpm",fill = "type2", color = "type2",size = 0.6,binwidth = 0.3) +
+      x = "type2", y = "tpm", fill = "type2", color = "type2", size = 0.6, binwidth = 0.3
+    ) +
       ggplot2::xlab(NULL) +
       theme_set(theme_classic(base_size = 20)) +
-      ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5,size = 20)) +
+      ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5, size = 20)) +
       ggplot2::guides(fill = guide_legend(title = NULL)) +
       ggplot2::theme(
         legend.background = element_blank(),
@@ -776,8 +786,8 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = c("Violinplot","Dotplot")
       ) +
       ggplot2::scale_fill_manual(values = values) +
       ggplot2::scale_color_manual(values = values)
-    
-    
+
+
     # p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "type2", y = "tpm", fill = "type2")) +
     #   # ggplot2::geom_boxplot() +
     #   ggplot2::geom_dotplot(binaxis = "y", stackdir = "center", position = "identity",size = 0.6) +
@@ -826,7 +836,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = c("Violinplot","Dotplot")
       ggplot2::xlab("") +
       ggplot2::scale_fill_manual(values = values) +
       ggplot2::theme_classic(base_size = 20) +
-      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = .5, vjust = .5,size = 20)) +
+      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = .5, vjust = .5, size = 20)) +
       ggplot2::guides(fill = ggplot2::guide_legend(title = NULL)) +
       ggplot2::theme(
         legend.background = ggplot2::element_blank(),
@@ -1026,7 +1036,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
   if (is.list(t1)) t1 <- t1[[1]]
   t3 <- query_pancan_value(Gene2, data_type = data_type2)
   if (is.list(t3)) t3 <- t3[[1]]
-  
+
   if (data_type1 == "cnv") data_type1 <- "GISTIC2 thresholded CNV"
   if (data_type1 == "cnv_gistic2") data_type1 <- "CNV"
   if (data_type2 == "cnv") data_type2 <- "GISTIC2 thresholded CNV"
@@ -1093,8 +1103,10 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
         ),
         size = 8, colour = "black"
       ) +
-      ggplot2::labs(x = paste(Gene1, data_type1),
-                    y = paste(Gene2, data_type2))
+      ggplot2::labs(
+        x = paste(Gene1, data_type1),
+        y = paste(Gene2, data_type2)
+      )
   } else {
     cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
     p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2")) +
@@ -1108,8 +1120,10 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
         label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar),
         size = 8, colour = "black"
       ) +
-      ggplot2::labs(x = paste(Gene1, data_type1),
-                    y = paste(Gene2, data_type2))
+      ggplot2::labs(
+        x = paste(Gene1, data_type1),
+        y = paste(Gene2, data_type2)
+      )
   }
 
   if (use_all) {

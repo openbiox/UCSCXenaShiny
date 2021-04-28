@@ -6,7 +6,7 @@
 \usage{
 vis_toil_TvsN_cancer(
   Gene = "TP53",
-  Mode = "Violinplot",
+  Mode = c("Violinplot", "Dotplot"),
   data_type = "mRNA",
   Show.P.value = FALSE,
   Show.P.label = FALSE,

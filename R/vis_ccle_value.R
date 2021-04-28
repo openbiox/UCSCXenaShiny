@@ -118,7 +118,7 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
     t1[[2]]
   )
   if (is.list(t3)) t3 <- t3[[1]]
-  
+
   if (data_type1 == "cnv") data_type1 <- "CNV"
   if (data_type2 == "cnv") data_type2 <- "CNV"
 
@@ -155,8 +155,10 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
       size = 8,
       colour = "black"
     ) +
-    ggplot2::labs(x = paste(Gene1, data_type1),
-                  y = paste(Gene2, data_type2))
+    ggplot2::labs(
+      x = paste(Gene1, data_type1),
+      y = paste(Gene2, data_type2)
+    )
 
   if (use_regline) p <- p + ggplot2::geom_smooth(method = stats::lm)
 

@@ -6,11 +6,11 @@
 \usage{
 vis_toil_TvsN(
   Gene = "TP53",
-  Mode = "Boxplot",
+  Mode = c("Boxplot", "Violinplot"),
   data_type = "mRNA",
   Show.P.value = TRUE,
   Show.P.label = TRUE,
-  Method = "wilcox.test",
+  Method = c("wilcox.test", "t.test"),
   values = c("#DF2020", "#DDDF21"),
   TCGA.only = FALSE,
   draw_quantiles = c(0.25, 0.5, 0.75),
