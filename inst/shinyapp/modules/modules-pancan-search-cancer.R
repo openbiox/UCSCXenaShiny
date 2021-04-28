@@ -134,14 +134,13 @@ server.modules_cancer_dist <- function(input, output, session) {
       p <- vis_toil_TvsN_cancer(
         Gene = input$Pancan_search,
         Cancer = input$Cancer,
-        Mode = ifelse(input$pdist_mode, "Boxplot", "Violinplot"),
+        Mode = ifelse(input$pdist_mode, "Dotplot", "Violinplot"),
         Show.P.value = input$pdist_show_p_value,
         Show.P.label = input$pdist_show_p_label,
         TCGA.only = input$pdist_dataset,
         values = colors(),
         data_type = input$profile
       )
-      p <- p + theme_classic(base_size = 15)
     }
     return(p)
   })
