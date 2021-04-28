@@ -70,7 +70,9 @@ ui.modules_pancan_anatomy <- function(id) {
         plotOutput(ns("pancan_anatomy"), height = "500px"),
         hr(),
         h5("NOTEs:"),
-        p("GISTIC2 thresholded copy number -2,-1,0,1,2, representing homozygous deletion,single copy deletion,diploid normal copy,low-level copy number amplification,or high-level copy number amplification"),
+        p("1. GISTIC2 thresholded copy number -2,-1,0,1,2, representing homozygous deletion,single copy deletion,diploid normal copy,low-level copy number amplification,or high-level copy number amplification"),
+        tags$br(),
+        p("2. ",tags$a(href = "https://pancanatlas.xenahubs.net/", "Genomic profile data source")),
         DT::DTOutput(outputId = ns("tbl")),
         shinyjs::hidden(
           wellPanel(

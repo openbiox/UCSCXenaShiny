@@ -21,9 +21,17 @@
 #' }
 #' @export
 #'
-vis_toil_TvsN <- function(Gene = "TP53", Mode = "Boxplot", data_type = "mRNA", Show.P.value = TRUE, Show.P.label = TRUE, Method = "wilcox.test", values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, draw_quantiles = c(0.25, 0.5, 0.75), trim = TRUE) {
+vis_toil_TvsN <- function(Gene = "TP53", Mode = c("Boxplot","Violinplot"), data_type = "mRNA", Show.P.value = TRUE, Show.P.label = TRUE, Method = c("wilcox.test","t.test"), values = c("#DF2020", "#DDDF21"), TCGA.only = FALSE, draw_quantiles = c(0.25, 0.5, 0.75), trim = TRUE) {
   tcga_gtex <- load_data("tcga_gtex")
-
+  
+  if (!Method %in% c("wilcox.test","t.test")) {
+    stop("only support wilcox.test or t.test")
+  }
+  
+  if (!Mode %in% c("Boxplot", "Violinplot")) {
+    stop("only support Boxplot or Violinplot")
+  }
+  
   if (!data_type %in% c("mRNA", "miRNA", "transcript", "methylation")) {
     stop("data_type ", data_type, " does not support in this function!")
   }
@@ -202,7 +210,7 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", t
   ## 写在 R 内的数据集需要更严格的引用方式
   tcga_surv <- load_data("tcga_surv")
   tcga_gtex <- load_data("tcga_gtex")
-
+  
   t1 <- query_pancan_value(Gene, data_type = data_type)
   if (is.list(t1)) t1 <- t1[[1]]
 
@@ -704,6 +712,10 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = c("Violinplot","Dotplot")
                                  TCGA.only = FALSE, Cancer = "ACC") {
   tcga_gtex <- load_data("tcga_gtex")
 
+  if (!Method %in% c("wilcox.test","t.test")) {
+    stop("only support wilcox.test or t.test")
+  }
+  
   t1 <- query_pancan_value(Gene, data_type = data_type)
   unit <- switch(data_type,
     cnv = NULL,
