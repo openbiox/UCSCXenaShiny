@@ -64,7 +64,8 @@ query_molecule_value <- function(dataset, molecule, host = NULL) {
 #' @export
 query_pancan_value <- function(molecule,
                                data_type = c(
-                                 "mRNA", "transcript", "protein", "mutation", "cnv", "cnv_gistic2",
+                                 "mRNA", "transcript", "protein", "mutation",
+                                 "cnv", "cnv_gistic2",
                                  "methylation", "miRNA"
                                ),
                                database = c("toil", "ccle"),
@@ -126,7 +127,7 @@ query_value <- function(identifier,
                           "mutation", "cnv", "cnv_gistic2",
                           "methylation", "miRNA"
                         ),
-                        database = c("toil", "ccle")) {
+                        database = c("toil", "ccle", "pcawg", "icgc")) {
   database <- match.arg(database)
   data_type <- match.arg(data_type)
 

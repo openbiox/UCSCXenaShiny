@@ -24,7 +24,7 @@ available_hosts <- function() {
 #' @param host a character vector representing host name(s), e.g. "toilHub".
 #' @param samples a character vector representing samples want to be returned.
 #'
-#' @return a named vector or `list`
+#' @return a named vector or `list`.
 #'
 #' @examples
 #' \dontrun{
@@ -106,6 +106,9 @@ try_query_value <- function(host, dataset,
     }
   )
 }
+
+
+# Toil/TCGA ---------------------------------------------------------------
 
 #' @describeIn get_pancan_value Fetch gene expression value from pan-cancer dataset
 #' @export
@@ -280,6 +283,8 @@ get_pancan_miRNA_value <- function(identifier) {
   res <- list(expression = expression, unit = unit)
   res
 }
+
+# Utils -------------------------------------------------------------------
 
 report_dataset_info <- function(dataset) {
   msg <- paste0(
