@@ -21,7 +21,7 @@
 #' analyze_gene_drug_response_asso(c("TP53", "KRAS"), combine = TRUE)
 #'
 #' # Visualization
-#' analyze_gene_drug_response_asso("TP53")
+#' vis_gene_drug_response_asso("TP53")
 #' }
 analyze_gene_drug_response_asso <- function(gene_list, combine = FALSE) {
   stopifnot(length(gene_list) > 0)
