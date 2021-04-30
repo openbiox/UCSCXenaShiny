@@ -16,6 +16,8 @@
 \alias{get_pancan_miRNA_value}
 \alias{get_pcawg_gene_value}
 \alias{get_pcawg_fusion_value}
+\alias{get_pcawg_miRNA_value}
+\alias{get_pcawg_APOBEC_mutagenesis_value}
 \title{Fetch Identifier Value from Pan-cancer Dataset}
 \usage{
 get_ccle_cn_value(identifier)
@@ -51,6 +53,17 @@ get_pancan_miRNA_value(identifier)
 get_pcawg_gene_value(identifier)
 
 get_pcawg_fusion_value(identifier)
+
+get_pcawg_miRNA_value(identifier, norm_method = c("TMM", "UQ"))
+
+get_pcawg_APOBEC_mutagenesis_value(
+  identifier = c("tCa_MutLoad_MinEstimate", "APOBECtCa_enrich", "A3A_or_A3B",
+    "APOBEC_tCa_enrich_quartile", "APOBECrtCa_enrich", "APOBECytCa_enrich",
+    "APOBECytCa_enrich-APOBECrtCa_enrich", "BH_Fisher_p-value_tCa", "ntca+tgan",
+    "rtCa_to_G+rtCa_to_T", "rtca+tgay", "tCa_to_G+tCa_to_T",
+    "ytCa_rtCa_BH_Fisher_p-value", "ytCa_rtCa_Fisher_p-value", "ytCa_to_G+ytCa_to_T",
+    "ytca+tgar")
+)
 }
 \arguments{
 \item{identifier}{a length-1 character representing a gene symbol, ensembl gene id, or probe id.
@@ -105,6 +118,10 @@ Identifier includes gene/probe etc.
 \item \code{get_pcawg_gene_value}: Fetch specimen-level gene expression value from PCAWG cohort
 
 \item \code{get_pcawg_fusion_value}: Fetch specimen-level gene fusion value from PCAWG cohort
+
+\item \code{get_pcawg_miRNA_value}: Fetch specimen-level miRNA value from PCAWG cohort
+
+\item \code{get_pcawg_APOBEC_mutagenesis_value}: Fetch specimen-level gene fusion value from PCAWG cohort
 }}
 
 \examples{

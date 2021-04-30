@@ -7,9 +7,10 @@
 query_pancan_value(
   molecule,
   data_type = c("mRNA", "transcript", "protein", "mutation", "cnv", "cnv_gistic2",
-    "methylation", "miRNA"),
-  database = c("toil", "ccle"),
-  reset_id = NULL
+    "methylation", "miRNA", "fusion", "APOBEC"),
+  database = c("toil", "ccle", "pcawg", "icgc"),
+  reset_id = NULL,
+  ...
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 CCLE.}
 
 \item{reset_id}{if not \code{NULL}, set the specified variable at parent frame to "Signature".}
+
+\item{...}{other extra parameters passing to the underlying functions.}
 }
 \value{
 a list.
