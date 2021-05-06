@@ -48,6 +48,8 @@ pheno_pcawg_specimen <- sp_specimen_type %>%
 pheno_pcawg_specimen$OS = ifelse(pheno_pcawg_specimen$"_EVENT" == "deceased",1,0)#
 pheno_pcawg_specimen$OS.time = pheno_pcawg_specimen$"_TIME_TO_EVENT"
 pheno_pcawg_specimen$donor = pheno_pcawg_specimen$"_PATIENT"
+pheno_pcawg_specimen$type2 = ifelse(stringr::str_detect(pheno_pcawg_specimen$dcc_specimen_type,pattern = "Normal"),"normal","tumor")
+
 
 attr(pheno_pcawg_specimen, "data_source") <- "https://xenabrowser.net/datapages/?cohort=PCAWG%20(specimen%20centric)&removeHub=https%3A%2F%2Fxena.treehouse.gi.ucsc.edu%3A443"
 
