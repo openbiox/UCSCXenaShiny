@@ -22,7 +22,7 @@ load_data <- function(name) {
     "tcga_clinical", "tcga_genome_instability",
     "tcga_gtex", "tcga_purity",
     "tcga_subtypes", "tcga_surv", "TCGA.organ",
-    "toil_info"
+    "toil_info", "pcawg_info"
   )
   if (name %in% available_datasets) {
     # The data is builtin

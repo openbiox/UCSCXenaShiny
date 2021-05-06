@@ -10,6 +10,15 @@
 #' data("ccle_info")
 NULL
 
+#' Phenotype Info of PCAWG Database
+#' @docType data
+#' @name pcawg_info
+#' @format A `data.frame`
+#' @source UCSC Xena.
+#' @examples
+#' data("pcawg_info")
+NULL
+
 #' ABSOLUTE Result of CCLE Database
 #' @docType data
 #' @name ccle_absolute
