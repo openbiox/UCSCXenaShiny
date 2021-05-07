@@ -891,6 +891,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = c("Violinplot", "Dotplot"
 #' @param data_type2 choose gene profile type for the second gene, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"
 #' @param purity_adj whether performing partial correlation adjusted by purity
 #' @param use_regline if `TRUE`, add regression line.
+#' @param filter_tumor whether use tumor sample only, default `TRUE`
 #' @param alpha dot alpha.
 #' @param color dot color.
 #' @export
@@ -901,7 +902,8 @@ vis_gene_cor <- function(Gene1 = "CSF1R",
                          use_regline = TRUE,
                          purity_adj = TRUE,
                          alpha = 0.5,
-                         color = "#000000") {
+                         color = "#000000",
+                         filter_tumor = TRUE) {
   if (!requireNamespace("cowplot")) {
     install.packages("cowplot")
   }
@@ -947,12 +949,14 @@ vis_gene_cor <- function(Gene1 = "CSF1R",
     stringsAsFactors = F
   )
   df %>%
-    dplyr::left_join(tcga_purity, by = "sample") %>%
-    filter(.data$type2 == "tumor") -> df
+    dplyr::left_join(tcga_purity, by = "sample") -> df
+  if (filter_tumor == TRUE){
+    df %>% dplyr::filter(.data$type2 == "tumor") -> df
+  }
   # plot refer to https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
 
   if (purity_adj) {
-    df %>% filter(!is.na(.data$CPE)) -> df
+    df %>% dplyr::filter(!is.na(.data$CPE)) -> df
     partial_cor_res <- ezcor_partial_cor(data = df, var1 = "gene1", var2 = "gene2", var3 = "CPE", sig_label = TRUE)
     cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2")
     p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2")) +
@@ -1127,9 +1131,9 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
   }
 
   if (use_all) {
-    p <- p + ggplot2::ggtitle("TCGA: All data")
+    p <- p + ggplot2::ggtitle(paste0("TCGA: All data (n=",dim(df)[1],")"))
   } else {
-    p <- p + ggplot2::ggtitle(paste0("TCGA: ", paste(cancer_choose, collapse = "/")))
+    p <- p + ggplot2::ggtitle(paste0("TCGA: ", paste(cancer_choose, collapse = "/")," (n=",dim(df)[1],")"))
   }
 
   if (use_regline) {

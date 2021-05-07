@@ -33,7 +33,8 @@ vis_pcawg_dist <- function(Gene = "TP53",
     stop("only support Boxplot or Violinplot")
   }
   
-  data(list  = "pheno_pcawg_specimen",package = "UCSCXenaShiny", envir = environment())
+  pcawg_info <-  load_data("pcawg_info") 
+  
   t1 <- query_pancan_value(Gene, database = "pcawg")
   unit <- switch(data_type,
                  cnv = NULL,
@@ -50,9 +51,9 @@ vis_pcawg_dist <- function(Gene = "TP53",
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
     tibble::rownames_to_column(var = "icgc_specimen_id") %>%
-    dplyr::inner_join(pheno_pcawg_specimen, by = "icgc_specimen_id")
+    dplyr::inner_join(pcawg_info, by = "icgc_specimen_id")
   
-  #table(pheno_pcawg_specimen$dcc_specimen_type)
+  #table(pcawg_info$dcc_specimen_type)
   pcawg_data <- t2 %>% dplyr::select("tpm", "dcc_project_code", "type2", "icgc_specimen_id")
   
   
@@ -173,7 +174,7 @@ vis_pcawg_dist <- function(Gene = "TP53",
 
 vis_pcawg_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", threshold = 0.5, values = c("grey", "#E31A1C", "#377DB8")) {
   
-  data(list  = "pheno_pcawg_specimen",package = "UCSCXenaShiny", envir = environment())
+  pcawg_info <- load_data("pcawg_info") 
   
   t1 <- query_pancan_value(Gene, database = "pcawg")
   unit <- switch(data_type,
@@ -188,10 +189,10 @@ vis_pcawg_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mR
   }
   
   # we filter out normal tissue
-  pheno_pcawg_specimen <- pheno_pcawg_specimen %>% dplyr::filter(.data$type2 != "normal")
+  pcawg_info <- pcawg_info %>% dplyr::filter(.data$type2 != "normal")
   s <- data.frame(icgc_specimen_id = names(t1), values = t1)
   ss = s %>% 
-    dplyr::inner_join(pheno_pcawg_specimen, by = "icgc_specimen_id") %>%
+    dplyr::inner_join(pcawg_info, by = "icgc_specimen_id") %>%
     dplyr::select(values,icgc_specimen_id,dcc_project_code,OS,OS.time)
   
   sss <- split(ss, ss$dcc_project_code)
@@ -272,27 +273,32 @@ vis_pcawg_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mR
 #' @param cor_method correlation method
 #' @param use_log_x if `TRUE`, log X values.
 #' @param use_log_y if `TRUE`, log Y values.
-#' @param SitePrimary select cell line origin tissue.
+#' @param dcc_project_code_choose select project code.
 #' @param use_all use all sample, default `FALSE`.
+#' @param filter_tumor whether use tumor sample only, default `TRUE`
 #' @return a `ggplot` object
 #' @export
 
-vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
+vis_pcawg_gene_cor <- function(Gene1 = "CSF1R",
                               Gene2 = "JAK3",
                               data_type1 = "mRNA",
                               data_type2 = "mRNA",
                               cor_method = "spearman",
+                              purity_adj = TRUE,
                               use_log_x = FALSE,
                               use_log_y = FALSE,
                               use_regline = TRUE,
-                              dcc_project_code = "BLCA-US",
+                              dcc_project_code_choose = "BLCA-US",
                               use_all = FALSE,
+                              filter_tumor = TRUE,
                               alpha = 0.5, color = "#000000") {
   if (!requireNamespace("cowplot")) {
     install.packages("cowplot")
   }
   
-  data(list  = "pheno_pcawg_specimen",package = "UCSCXenaShiny", envir = environment())
+  pcawg_info <-  load_data("pcawg_info") 
+  
+  pcawg_purity <- load_data("pcawg_purity")
   
   if (!data_type1 %in% c("mRNA", "protein", "cnv")) {
     stop("data_type ", data_type1, " does not support in this function!")
@@ -319,7 +325,7 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
     tibble::rownames_to_column(var = "icgc_specimen_id") %>%
-    dplyr::inner_join(pheno_pcawg_specimen, by = c("icgc_specimen_id"))
+    dplyr::inner_join(pcawg_info, by = c("icgc_specimen_id"))
   
   t3 <- query_pancan_value(Gene2, data_type = data_type2, database = "pcawg")
   unit2 <- switch(data_type2,
@@ -342,35 +348,81 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
     as.data.frame() %>%
     dplyr::rename("tpm" = ".") %>%
     tibble::rownames_to_column(var = "icgc_specimen_id") %>%
-    dplyr::inner_join(pheno_pcawg_specimen, by = c("icgc_specimen_id"))
+    dplyr::inner_join(pcawg_info, by = c("icgc_specimen_id"))
   
   t2 <- t2 %>% inner_join(t4[, c("icgc_specimen_id", "tpm")], by = "icgc_specimen_id")
   
-  df <- data.frame(sample = t2$icgc_specimen_id, gene1 = t2$tpm.x, gene2 = t2$tpm.y, dcc_project_code = t2$dcc_project_code, stringsAsFactors = F)
-  if (!use_all) {
-    df <- df %>% dplyr::filter(.data$dcc_project_code %in% dcc_project_code)
-  }
-  cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
+  df <- data.frame(icgc_specimen_id = t2$icgc_specimen_id, 
+                   gene1 = t2$tpm.x, gene2 = t2$tpm.y, 
+                   dcc_project_code = t2$dcc_project_code, 
+                   type2 = t2$type2,
+                   stringsAsFactors = F)
   
-  p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2")) +
-    ggplot2::geom_point(shape = 16, size = 3, show.legend = FALSE, alpha = alpha, color = color) +
-    ggplot2::theme_minimal(base_size = 20) +
-    ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
-    ggplot2::labs(x = Gene1, y = Gene2) +
-    ggplot2::annotate(
-      "text",
-      -Inf, Inf,
-      hjust = -0.1, vjust = 1,
-      label = paste0("Cor: ", round(cor_res$cor, 2), " ", cor_res$pstar),
-      size = 8,
-      colour = "black"
-    ) +
-    ggplot2::labs(
-      x = paste(Gene1, data_type1),
-      y = paste(Gene2, data_type2)
-    )
+  if (use_all == FALSE) {
+    df <- df %>% dplyr::filter(.data$dcc_project_code %in% dcc_project_code_choose)
+  }
+  
+  df %>% dplyr::left_join(pcawg_purity, by = "icgc_specimen_id") %>%
+    dplyr::filter(!is.na(.data$purity)) -> df
+  
+  if (filter_tumor == TRUE){
+    df %>% dplyr::filter(.data$type2 == "tumor") -> df
+  }
+  
+  #print(dim(df))
+  
+  if (purity_adj) {
+    partial_cor_res <- ezcor_partial_cor(data = df, var1 = "gene1", var2 = "gene2", var3 = "purity", sig_label = TRUE)
+    cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
+    
+    p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2")) +
+      ggplot2::geom_point(shape = 16, size = 1.5, show.legend = FALSE, alpha = alpha, color = color) +
+      ggplot2::theme_minimal() +
+      ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
+      ggplot2::labs(x = Gene1, y = Gene2) +
+      # ggplot2::ggtitle(paste0("PCAWG dataset (n=",dim(df)[1],")")) +
+      ggplot2::annotate(
+        "text",
+        -Inf, Inf,
+        hjust = -0.1, vjust = 1,
+        label = paste0(
+          "Cor: ", round(cor_res$cor, 2),
+          " ", cor_res$pstar, "\n", "Cor_adj: ",
+          round(partial_cor_res$cor_partial, 2), " ",
+          partial_cor_res$pstar
+        ),
+        size = 5, colour = "black"
+      )
+    
+    } else{
+      
+      cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2", cor_method = cor_method)
+      
+      p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2")) +
+        ggplot2::geom_point(shape = 16, size = 1.5, show.legend = FALSE, alpha = alpha, color = color) +
+        ggplot2::theme_minimal() +
+        ggplot2::scale_color_gradient(low = "#0091ff", high = "#f0650e") +
+        ggplot2::labs(x = Gene1, y = Gene2) +
+        # ggplot2::ggtitle(paste0("PCAWG dataset (n=",dim(df)[1],")")) +
+        ggplot2::annotate(
+          "text",
+          -Inf, Inf,
+          hjust = -0.1, vjust = 1,
+          label = paste0(
+            "Cor: ", round(cor_res$cor, 2), " ",
+            cor_res$pstar
+          ),
+          size = 5, colour = "black"
+        )
+  }
   
   if (use_regline) p <- p + ggplot2::geom_smooth(method = stats::lm)
+  
+  if (use_all == TRUE) {
+    p <- p + ggplot2::ggtitle(paste0("PCAWG: All data (n=",dim(df)[1],")"))
+  } else {
+    p <- p + ggplot2::ggtitle(paste0("PCAWG: ", paste(dcc_project_code_choose, collapse = "/")," (n=",dim(df)[1],")"))
+  }
   
   return(p)
 }

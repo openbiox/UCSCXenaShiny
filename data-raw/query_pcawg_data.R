@@ -85,3 +85,27 @@ pcawg_info <- pheno_pcawg_specimen %>%
 attr(pcawg_info, "data_source") <- "https://xenabrowser.net/datapages/?cohort=PCAWG%20(specimen%20centric)&removeHub=https%3A%2F%2Fxena.treehouse.gi.ucsc.edu%3A443"
 
 usethis::use_data(pcawg_info, overwrite = TRUE)
+
+#-Query PCAWG purity and ploidy data----------
+# Access data: 2021-05-07
+# Load R package
+library('UCSCXenaTools')
+
+# Generate dataset(s) information
+dataset_query <- structure(list(hosts = "https://pcawg.xenahubs.net", datasets = "consensus.20170217.purity.ploidy_sp",     url = c(`https://pcawg.xenahubs.net` = "https://pcawg.xenahubs.net/download/consensus.20170217.purity.ploidy_sp"),     browse = "https://xenabrowser.net/datapages/?dataset=consensus.20170217.purity.ploidy_sp&host=https://pcawg.xenahubs.net"), row.names = c(NA, -1L), class = c("tbl_df", "tbl", "data.frame"))
+
+# Download dataset(s)
+dl <- XenaDownload(dataset_query,
+                   destdir = './', # At default, download to working directory
+                   download_probeMap = TRUE,
+                   trans_slash = TRUE)
+
+# Load dataset(s) into R
+datasets <- XenaPrepare(dl)
+# Check data
+datasets
+
+pcawg_purity <- datasets %>% rename(icgc_specimen_id = samplename)
+attr(pcawg_purity, "data_source") <- "https://xenabrowser.net/datapages/?cohort=PCAWG%20(specimen%20centric)&removeHub=https%3A%2F%2Fxena.treehouse.gi.ucsc.edu%3A443"
+
+usethis::use_data(pcawg_purity, overwrite = TRUE)
