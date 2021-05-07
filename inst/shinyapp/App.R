@@ -181,6 +181,17 @@ Xena_summary <- dplyr::group_by(xena_table, Hub) %>%
     n_dataset = length(unique(.data$`Dataset ID`)), .groups = "drop"
   )
 
+# PCAWG project info
+dcc_project_code_choices <- c(
+  "BLCA-US", "BRCA-US", "OV-AU", "PAEN-AU", "PRAD-CA", "PRAD-US", "RECA-EU", "SKCM-US", "STAD-US",
+  "THCA-US", "KIRP-US", "LIHC-US", "PRAD-UK", "LIRI-JP", "PBCA-DE", "CESC-US", "PACA-AU", "PACA-CA",
+  "LAML-KR", "COAD-US", "ESAD-UK", "LINC-JP", "LICA-FR", "CLLE-ES", "HNSC-US", "EOPC-DE", "BRCA-UK",
+  "BOCA-UK", "MALY-DE", "CMDI-UK", "BRCA-EU", "ORCA-IN", "BTCA-SG", "SARC-US", "KICH-US", "MELA-AU",
+  "DLBC-US", "GACA-CN", "PAEN-IT", "GBM-US", "KIRC-US", "LAML-US", "LGG-US", "LUAD-US", "LUSC-US",
+  "OV-US", "READ-US", "UCEC-US"
+)
+
+
 # Global color
 mycolor <- c(RColorBrewer::brewer.pal(12, "Paired"))
 

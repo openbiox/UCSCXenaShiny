@@ -57,6 +57,18 @@ ui.page_pancan <- function() {
     tabPanel(
       "CCLE: Drug Response Difference",
       ui.modules_ccle_drug_response_diff("modules_ccle_drug_response_diff")
+    ),
+    tabPanel(
+      "PCAWG: Molecular Profile Distribution Across Cancer Types (Tumor VS Normal)",
+      ui.modules_pcawg_dist("modules_pcawg_dist")
+    ),
+    tabPanel(
+      "PCAWG: Molecular Profile Cox Analysis",
+      ui.modules_pcawg_unicox("modules_pcawg_unicox")
+    ),
+    tabPanel(
+      "PCAWG: Molecule-Molecule Correlation",
+      ui.modules_pcawg_gene_cor("modules_pcawg_gene_cor")
     )
   )
 }

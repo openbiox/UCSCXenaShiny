@@ -198,7 +198,6 @@ vis_pcawg_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mR
   sss <- split(ss, ss$dcc_project_code)
   tissues <- names(sss)
   unicox_res_all_cancers <- purrr::map(tissues, purrr::safely(function(cancer) {
-    # cancer = "ACC"
     sss_can <- sss[[cancer]]
     if (threshold == 0.5) {
       sss_can <- sss_can %>%
@@ -358,14 +357,14 @@ vis_pcawg_gene_cor <- function(Gene1 = "CSF1R",
                    type2 = t2$type2,
                    stringsAsFactors = F)
   
-  if (use_all == FALSE) {
+  if (!use_all) {
     df <- df %>% dplyr::filter(.data$dcc_project_code %in% dcc_project_code_choose)
   }
   
   df %>% dplyr::left_join(pcawg_purity, by = "icgc_specimen_id") %>%
     dplyr::filter(!is.na(.data$purity)) -> df
   
-  if (filter_tumor == TRUE){
+  if (filter_tumor){
     df %>% dplyr::filter(.data$type2 == "tumor") -> df
   }
   
