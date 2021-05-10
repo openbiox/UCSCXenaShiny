@@ -180,7 +180,7 @@ sur_plot_cnv <- function(data, cnv_type = c("Duplicated", "Normal", "Deleted"), 
 
 ## ggsurvplot
 p_survplot <- function(data, palette = "aaas", ...) {
-  fit <- survival::survfit(Surv(time, status) ~ group, data = data)
+  fit <- survival::survfit(survival::Surv(time, status) ~ group, data = data)
   p <- survminer::ggsurvplot(fit,
     data = data, pval = TRUE, pval.method = TRUE,
     palette = palette,
@@ -199,7 +199,7 @@ p_survplot <- function(data, palette = "aaas", ...) {
     ncensor.plot.height = 0.15,
     ggtheme = ggplot2::theme_classic(), # Change ggplot2 theme
     ...
-  )
+  ) + ggplot2::guides(color = ggplot2::guide_legend(ncol = 3))
 
   attr(p, "data") <- data[!is.na(data$group), ]
   p
