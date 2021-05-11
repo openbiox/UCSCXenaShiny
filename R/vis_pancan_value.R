@@ -31,7 +31,7 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = c("Boxplot", "Violinplot"),
 
   Mode <- match.arg(Mode)
   Method <- match.arg(Method)
-  
+
   if (!Method %in% c("wilcox.test", "t.test")) {
     stop("only support wilcox.test or t.test")
   }
@@ -950,7 +950,7 @@ vis_gene_cor <- function(Gene1 = "CSF1R",
   )
   df %>%
     dplyr::left_join(tcga_purity, by = "sample") -> df
-  if (filter_tumor == TRUE){
+  if (filter_tumor == TRUE) {
     df %>% dplyr::filter(.data$type2 == "tumor") -> df
   }
   # plot refer to https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
@@ -1131,9 +1131,9 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
   }
 
   if (use_all) {
-    p <- p + ggplot2::ggtitle(paste0("TCGA: All data (n=",dim(df)[1],")"))
+    p <- p + ggplot2::ggtitle(paste0("TCGA: All data (n=", dim(df)[1], ")"))
   } else {
-    p <- p + ggplot2::ggtitle(paste0("TCGA: ", paste(cancer_choose, collapse = "/")," (n=",dim(df)[1],")"))
+    p <- p + ggplot2::ggtitle(paste0("TCGA: ", paste(cancer_choose, collapse = "/"), " (n=", dim(df)[1], ")"))
   }
 
   if (use_regline) {

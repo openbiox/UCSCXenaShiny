@@ -156,11 +156,11 @@ query_value <- function(identifier,
     )
   } else if (database == "pcawg") {
     f <- switch(data_type,
-                mRNA = get_pcawg_gene_value,
-                fusion = get_pcawg_fusion_value,
-                miRNA = get_pcawg_miRNA_value,
-                APOBEC = get_pcawg_APOBEC_mutagenesis_value,
-                stop("Not support for database 'ccle'!")
+      mRNA = get_pcawg_gene_value,
+      fusion = get_pcawg_fusion_value,
+      miRNA = get_pcawg_miRNA_value,
+      APOBEC = get_pcawg_APOBEC_mutagenesis_value,
+      stop("Not support for database 'ccle'!")
     )
   }
   if (data_type == "cnv_gistic2") {
