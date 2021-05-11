@@ -62,12 +62,23 @@ query_molecule_value <- function(dataset, molecule, host = NULL) {
 #' @param ... other extra parameters passing to the underlying functions.
 #' @return a list.
 #' @export
+#' @examples 
+#' \dontrun{
+#' query_pancan_value("KRAS")
+#' query_pancan_value("KRAS", database = "ccle")
+#' query_pancan_value("KRAS", database = "pcawg")
+#' query_pancan_value("hsa-let-7c-3p", database = "pcawg", data_type = "miRNA")
+#' query_pancan_value("hsa-let-7c-3p", database = "pcawg", data_type = "miRNA", norm_method = "UQ")
+#' query_pancan_value("ENSG00000000419", database = "pcawg", data_type = "fusion") # gene symbol also work
+#' query_pancan_value("tCa_MutLoad_MinEstimate", database = "pcawg", data_type = "APOBEC")
+#' query_pancan_value("prmtr.10000", database = "pcawg", data_type = "promoter")
+#' }
 query_pancan_value <- function(molecule,
                                data_type = c(
                                  "mRNA", "transcript", "protein", "mutation",
                                  "cnv", "cnv_gistic2",
                                  "methylation", "miRNA",
-                                 "fusion", "APOBEC"
+                                 "fusion", "promoter", "APOBEC"
                                ),
                                database = c("toil", "ccle", "pcawg", "icgc"),
                                reset_id = NULL, ...) {
@@ -127,7 +138,7 @@ query_value <- function(identifier,
                           "mRNA", "transcript", "protein",
                           "mutation", "cnv", "cnv_gistic2",
                           "methylation", "miRNA",
-                          "fusion", "APOBEC"
+                          "fusion", "promoter", "APOBEC"
                         ),
                         database = c("toil", "ccle", "pcawg", "icgc"),
                         ...) {
@@ -159,6 +170,7 @@ query_value <- function(identifier,
       mRNA = get_pcawg_gene_value,
       fusion = get_pcawg_fusion_value,
       miRNA = get_pcawg_miRNA_value,
+      promoter = get_pcawg_promoter_value,
       APOBEC = get_pcawg_APOBEC_mutagenesis_value,
       stop("Not support for database 'ccle'!")
     )

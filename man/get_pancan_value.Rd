@@ -16,6 +16,7 @@
 \alias{get_pancan_miRNA_value}
 \alias{get_pcawg_gene_value}
 \alias{get_pcawg_fusion_value}
+\alias{get_pcawg_promoter_value}
 \alias{get_pcawg_miRNA_value}
 \alias{get_pcawg_APOBEC_mutagenesis_value}
 \title{Fetch Identifier Value from Pan-cancer Dataset}
@@ -53,6 +54,8 @@ get_pancan_miRNA_value(identifier)
 get_pcawg_gene_value(identifier)
 
 get_pcawg_fusion_value(identifier)
+
+get_pcawg_promoter_value(identifier, type = c("raw", "relative", "outlier"))
 
 get_pcawg_miRNA_value(identifier, norm_method = c("TMM", "UQ"))
 
@@ -118,6 +121,8 @@ Identifier includes gene/probe etc.
 \item \code{get_pcawg_gene_value}: Fetch specimen-level gene expression value from PCAWG cohort
 
 \item \code{get_pcawg_fusion_value}: Fetch specimen-level gene fusion value from PCAWG cohort
+
+\item \code{get_pcawg_promoter_value}: Fetch specimen-level gene promoter activity value from PCAWG cohort
 
 \item \code{get_pcawg_miRNA_value}: Fetch specimen-level miRNA value from PCAWG cohort
 

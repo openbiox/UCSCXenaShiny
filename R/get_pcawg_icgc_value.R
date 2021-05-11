@@ -6,6 +6,7 @@
 # query_pancan_value("hsa-let-7c-3p", database = "pcawg", data_type = "miRNA", norm_method = "UQ")
 # query_pancan_value("ENSG00000000419", database = "pcawg", data_type = "fusion") # gene symbol also work
 # query_pancan_value("tCa_MutLoad_MinEstimate", database = "pcawg", data_type = "APOBEC")
+# query_pancan_value("prmtr.10000", database = "pcawg", data_type = "promoter")
 
 #' @describeIn get_pancan_value Fetch specimen-level gene expression value from PCAWG cohort
 #' @export
@@ -28,6 +29,32 @@ get_pcawg_fusion_value <- function(identifier) {
 
   expression <- get_data(dataset, identifier, host)
   unit <- "binary fusion call, 1 fusion, 0 otherwise"
+  report_dataset_info(dataset)
+  res <- list(data = expression, unit = unit)
+  res
+}
+
+#' @describeIn get_pancan_value Fetch specimen-level gene promoter activity value from PCAWG cohort
+#' @export
+get_pcawg_promoter_value <- function(identifier, type = c("raw", "relative", "outlier")) {
+  # promoter identifier prmtr.10000 or symbol are supported
+  # but the latter seems meaningless
+  host <- "pcawgHub"
+  type <- match.arg(type)
+  
+  if (type == "raw") {
+    dataset <- "rawPromoterActivity.sp"
+    unit <- "raw promoter activity"
+  } else if (type == "relative") {
+    dataset <- "relativePromoterActivity.sp"
+    unit <- "portion of transcription activity of the gene driven by the promoter"
+  } else {
+    dataset <- "promoterCentricTable_0.2_1.0.sp"
+    unit <- "-1 (low expression), 0 (normal), 1 (high expression)"
+  }
+  
+  expression <- get_data(dataset, identifier, host)
+  
   report_dataset_info(dataset)
   res <- list(data = expression, unit = unit)
   res
