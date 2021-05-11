@@ -80,7 +80,7 @@ query_pancan_value <- function(molecule,
                                  "methylation", "miRNA",
                                  "fusion", "promoter", "APOBEC"
                                ),
-                               database = c("toil", "ccle", "pcawg", "icgc"),
+                               database = c("toil", "ccle", "pcawg"),
                                reset_id = NULL, ...) {
   data_type <- match.arg(data_type)
   database <- match.arg(database)
@@ -140,7 +140,7 @@ query_value <- function(identifier,
                           "methylation", "miRNA",
                           "fusion", "promoter", "APOBEC"
                         ),
-                        database = c("toil", "ccle", "pcawg", "icgc"),
+                        database = c("toil", "ccle", "pcawg"),
                         ...) {
   database <- match.arg(database)
   data_type <- match.arg(data_type)
