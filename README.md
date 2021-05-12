@@ -88,20 +88,16 @@ It can be 'client' or 'server'. You can directly set it in `app_run()`.
 
 ## :hammer_and_wrench: Troubleshooting
 
-- `ERROR: dependencies ‘gmp’, ‘Rmpfr’ are not available for package ‘PMCMRplus’`
+- `ERROR: dependencies ‘gmp’, ‘Rmpfr’ are not available for package ‘PMCMRplus’` or `ERROR: dependency ‘pairwiseComparisons’ is not available for package ‘ggstatsplot’` on Linux when installing `ggstatsplot` package.
 
 It seems that your operating system lacks `gmp` and `Rmpfr` development libraries.
 
-You can install these dependencies on Ubuntu:
+If you use Ubuntu, you can install these dependencies:
 
 ```
 sudo apt-get install libgmp3-dev
 sudo apt-get install libmpfr-dev
 ```
-
-- `ERROR: dependency ‘pairwiseComparisons’ is not available for package ‘ggstatsplot’`
-
-`ggstatsplot` and the previous series of errors can be solved automatically by the above method
 
 ## :writing_hand: Author
 
