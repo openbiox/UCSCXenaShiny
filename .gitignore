@@ -44,3 +44,6 @@ data-raw/pcawg_specimen_histology_August2016_v9
 data-raw/project_code_sp
 data-raw/sp_specimen_type
 data-raw/survival_sp
+data-raw/expressedPromoterCoordinates.probeMap
+data-raw/pcawg_promoter_id.rda
+inst/extdata/pcawg_promoter_id.rda
