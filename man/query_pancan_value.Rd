@@ -8,7 +8,7 @@ query_pancan_value(
   molecule,
   data_type = c("mRNA", "transcript", "protein", "mutation", "cnv", "cnv_gistic2",
     "methylation", "miRNA", "fusion", "promoter", "APOBEC"),
-  database = c("toil", "ccle", "pcawg", "icgc"),
+  database = c("toil", "ccle", "pcawg"),
   reset_id = NULL,
   ...
 )

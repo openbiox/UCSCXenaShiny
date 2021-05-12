@@ -7,6 +7,7 @@
 # query_pancan_value("ENSG00000000419", database = "pcawg", data_type = "fusion") # gene symbol also work
 # query_pancan_value("tCa_MutLoad_MinEstimate", database = "pcawg", data_type = "APOBEC")
 # query_pancan_value("prmtr.10000", database = "pcawg", data_type = "promoter")
+# query_pancan_value("X:99891803:TSPAN6", database = "pcawg", data_type = "promoter")
 
 #' @describeIn get_pancan_value Fetch specimen-level gene expression value from PCAWG cohort
 #' @export
@@ -53,7 +54,23 @@ get_pcawg_promoter_value <- function(identifier, type = c("raw", "relative", "ou
     unit <- "-1 (low expression), 0 (normal), 1 (high expression)"
   }
   
-  expression <- get_data(dataset, identifier, host)
+  if (!startsWith(identifier, "prmtr")) {
+    # Try parsing from location:symbol map
+    map <- load_data("pcawg_promoter_id")
+    id_map <- map[names(map) == identifier]
+    if (length(id_map) > 1) {
+      # query_pancan_value("19:12203078:ZNF788", database = "pcawg", data_type = "promoter")
+      # 存在极少数有多 id 情况，直接求和
+      expression <- purrr::reduce(
+        purrr::map(as.character(id_map), 
+                                ~get_data(dataset, ., host)), `+`)
+    } else {
+      expression <- get_data(dataset, as.character(id_map), host)
+    }
+  } else {
+    expression <- get_data(dataset, identifier, host)
+  }
+  
   
   report_dataset_info(dataset)
   res <- list(data = expression, unit = unit)
