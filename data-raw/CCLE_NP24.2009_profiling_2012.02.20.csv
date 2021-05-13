@@ -1,0 +1,25 @@
+Compound (code or generic name),Compound (brand name),Target(s),Mechanism of action,Class,Highest Phase,Organization
+Erlotinib,Tarceva,EGFR,EGFR  Inhibitor,Kinase inhibitor,Launched-2004,Genentech
+Lapatinib,Tykerb,"EGFR, HER2",EGFR and HER2 Inhibitor,Kinase inhibitor,Launched-2007,GlaxoSmithKline
+PHA-665752,,c-MET,c-MET Inhibitor,Kinase inhibitor,Preclinical,Pfizer 
+PF-2341066,Crizotinib,"c-MET, ALK",c-MET and ALK Inhibitor,Kinase inhibitor,Launched-2011,Pfizer 
+TAE684,,ALK,ALK Inhibitor,Kinase inhibitor,Preclinical,Novartis
+Vandetanib,Zactima,"Abl, EGFR, Flt3, C-KIT, RET, VEGFR-1, KDR, FLT4",Multi-kinase inhibitor,Kinase inhibitor,Launched-2011,AstraZeneca
+Nilotinib,Tasigna,Abl/Bcr-Abl,Abl Inhibitor,Kinase inhibitor,Launched-2007,Novartis
+AZD0530,Saracatinib,"Src, Abl/Bcr-Abl, EGFR",Src and Abl inhibitor,Kinase inhibitor,Phase II,AstraZeneca
+Sorafenib,Nexavar,"Flt3, C-KIT, PDGFRbeta, RET, Raf kinase B, Raf kinase C, VEGFR-1, KDR, FLT4",Multi-kinase inhibitor,Kinase inhibitor,Launched-2005,Bayer
+TKI258,Dovitinib,"EGFR, FGFR1, PDGFRbeta, VEGFR-1, KDR",Multi-kinase inhibitor,Kinase inhibitor,Phase III,Novartis
+PD-0332991 ,,CDK4/6,CDK4/6 Inhibitor,Kinase inhibitor,Phase II,Pfizer 
+AEW541,,IGF-1R,IGF-1R Inhibitor,Kinase inhibitor,Preclinical,Novartis
+RAF265,,"Raf kinase B, KDR",Raf kinase B and KDR Inhibitor,Kinase inhibitor,Phase I,Novartis
+PLX4720,,RAF ,Raf kinase B Inhibitor,Kinase inhibitor,Preclinical,Plexxikon
+PD-0325901,,MEK,MEK1 and MEK2 Inhibitor,Kinase inhibitor,Discontinued,Pfizer 
+AZD6244,Selumetinib,MEK,MEK1 and MEK2 Inhibitor,Kinase inhibitor,Phase II,AstraZeneca
+Nutlin-3,,MDM2,MDM2 Inhibitor,Other targeted therapies,Preclinical,Roche
+LBW242,,IAP,Inhibitor of Apoptosis Proteins (IAP) Inhibitor,Other targeted therapies,Preclinical,Novartis
+17-AAG,Tanespimycin,HSP90,Heat Shock Protein 90 (hsp90) Inhibitor,Other targeted therapies,Phase III,Bristol-Myers Squibb
+L-685458,,Gamma Secretase,gamma-Secretase Inhibitor,Other targeted therapies,Preclinical,Merck Sharp & Dohme
+Panobinostat  ,Faridak ,HDAC,Histone Deacetylase (HDAC) Inhibitor,Other targeted therapies,Pre-Registered,Novartis
+Paclitaxel,Taxol,beta-tubulin ,Microtubule-Stabilizing Agents,Cytotoxic,Launched-1993,Bristol-Myers Squibb
+Irinotecan,Camptosar ,Topoisomerase I,DNA Topoisomerase I Inhibitor,Cytotoxic,Launched-1994,Pfizer 
+Topotecan,Hycamtin,Topoisomerase I,DNA Topoisomerase I Inhibitor,Cytotoxic,Launched-1996,GlaxoSmithKline

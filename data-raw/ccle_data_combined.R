@@ -63,11 +63,12 @@ ccle_expr_and_drug_response <- list(
 )
 
 str(ccle_expr_and_drug_response, max.level = 1)
-save(ccle_expr_and_drug_response, file = "data-raw/ccle/ccle_expr_and_drug_response_advanced.rda")
+ccle_data <- ccle_expr_and_drug_response
+save(ccle_data, file = "data-raw/ccle/ccle_expr_and_drug_response_advanced.rda", compress = T)
 
 #=====================================================================================#
 
-ccle_data <- ccle_expr_and_drug_response
+
 
 
 

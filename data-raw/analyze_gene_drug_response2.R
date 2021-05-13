@@ -39,8 +39,7 @@ analyze_gene_drug_response_asso2 <- function(gene_list,
   }
   
   # ccle_data <- load_data("ccle_expr_and_drug_response")
-  load("./data-raw/ccle/ccle_expr_and_drug_response_advanced.rda")
-  ccle_data <- ccle_expr_and_drug_response
+  load("./data-raw/ccle_expr_and_drug_response_advanced.rda")
   
   if (is.null(ccle_data)) {
     stop("Data load failed, try again?")
