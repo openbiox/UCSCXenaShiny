@@ -2,7 +2,7 @@
 % Please edit documentation in R/vis_pcawg_value.R
 \name{vis_pcawg_dist}
 \alias{vis_pcawg_dist}
-\title{Visualize PCAWG molecular expression}
+\title{Visualize molecular profile in PCAWG}
 \usage{
 vis_pcawg_dist(
   Gene = "TP53",
@@ -42,7 +42,7 @@ including "mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
 a \code{ggplot} object
 }
 \description{
-Visualize PCAWG molecular expression
+Visualize molecular profile in PCAWG
 }
 \examples{
 \dontrun{

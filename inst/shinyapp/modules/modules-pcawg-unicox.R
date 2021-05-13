@@ -8,8 +8,16 @@ ui.modules_pcawg_unicox <- function(id) {
             9,
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2"),
-              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
+              choiceValues = c("mRNA", "miRNA_TMM", "miRNA_UQ", 
+                               "promoter_raw", "promoter_relative", "promoter_outlier",
+                               "fusion", "APOBEC"),
+              choiceNames = c("mRNA Expression", "miRNA Expression (TMM)", 
+                              "miRNA Expression (UQ)",
+                              "Raw Promoter Activity",
+                              "Relative Promoter Activity",
+                              "Promoter Outlier",
+                              "Gene Fusion",
+                              "APOBEC mutagenesis"),
               animation = "jelly"
             ),
             selectizeInput(
@@ -69,7 +77,7 @@ ui.modules_pcawg_unicox <- function(id) {
         h5("NOTEs:"),
         p("1. We define gene in certain cancer type as risky (log(Hazard Ratio) > 0) or protective (log(Hazard Ratio) < 0) or NS (No statistical significance, P value > 0.05)"),
         p("2. We divide patients into different groups for comparison according to gene expression, you could choose the threshold for grouping (0.5 by default)"),
-        p("3. ", tags$a(href = "https://pancanatlas.xenahubs.net/", "Genomic profile data source")),
+        p("3. ", tags$a(href = "https://xenabrowser.net/datapages/?cohort=PCAWG%20(specimen%20centric)&removeHub=https%3A%2F%2Fxena.treehouse.gi.ucsc.edu%3A443&removeHub=https%3A%2F%2Fatacseq.xenahubs.net", "Genomic profile data source")),
         DT::DTOutput(outputId = ns("tbl")),
         shinyjs::hidden(
           wellPanel(
@@ -90,11 +98,21 @@ server.modules_pcawg_unicox <- function(input, output, session) {
   profile_choices <- reactive({
     switch(input$profile,
            mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
-           methylation = list(all = pancan_identifiers$gene, default = "TP53"),
-           protein = list(all = pancan_identifiers$protein, default = "P53"),
-           transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
-           miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-           cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
+           miRNA_TMM = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+           miRNA_UQ = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+           promoter_raw = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
+           promoter_relative = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
+           promoter_outlier = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
+           fusion = list(all = pancan_identifiers$gene, default = "DPM1"),
+           APOBEC = list(all = c(
+             "tCa_MutLoad_MinEstimate", "APOBECtCa_enrich",
+             "A3A_or_A3B", "APOBEC_tCa_enrich_quartile", "APOBECrtCa_enrich",
+             "APOBECytCa_enrich", "APOBECytCa_enrich-APOBECrtCa_enrich",
+             "BH_Fisher_p-value_tCa", "ntca+tgan", "rtCa_to_G+rtCa_to_T",
+             "rtca+tgay", "tCa_to_G+tCa_to_T",
+             "ytCa_rtCa_BH_Fisher_p-value", "ytCa_rtCa_Fisher_p-value", "ytCa_to_G+ytCa_to_T",
+             "ytca+tgar"
+           ), default = "APOBECtCa_enrich"),
            list(all = "NONE", default = "NONE")
     )
   })

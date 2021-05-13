@@ -2,7 +2,7 @@
 % Please edit documentation in R/vis_pcawg_value.R
 \name{vis_pcawg_unicox_tree}
 \alias{vis_pcawg_unicox_tree}
-\title{Visualize Single Gene Univariable Cox Result from PCAWG Data Hub}
+\title{Visualize Single Gene Univariable Cox Result in PCAWG}
 \usage{
 vis_pcawg_unicox_tree(
   Gene = "TP53",
@@ -28,7 +28,7 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 a \code{ggplot} object
 }
 \description{
-Visualize Single Gene Univariable Cox Result from PCAWG Data Hub
+Visualize Single Gene Univariable Cox Result in PCAWG
 }
 \examples{
 \dontrun{

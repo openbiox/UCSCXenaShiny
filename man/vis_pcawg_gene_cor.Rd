@@ -2,7 +2,7 @@
 % Please edit documentation in R/vis_pcawg_value.R
 \name{vis_pcawg_gene_cor}
 \alias{vis_pcawg_gene_cor}
-\title{Visualize PCAWG Gene Expression Correlation}
+\title{Visualize Gene-Gene Correlation in TCGA}
 \usage{
 vis_pcawg_gene_cor(
   Gene1 = "CSF1R",
@@ -56,5 +56,5 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 a \code{ggplot} object
 }
 \description{
-Visualize PCAWG Gene Expression Correlation
+Visualize Gene-Gene Correlation in TCGA
 }

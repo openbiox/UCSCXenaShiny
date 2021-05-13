@@ -1,4 +1,10 @@
 parse_pacwg_args <- function(data_type) {
+  if (! data_type %in% c("mRNA", "miRNA_TMM", "miRNA_UQ", 
+                         "promoter_raw", "promoter_relative", "promoter_outlier",
+                         "fusion", "APOBEC")) {
+    stop('Valid data_type contains "mRNA" "miRNA_TMM" "miRNA_UQ" "promoter_raw" "promoter_relative" "promoter_outlier" "fusion" "APOBEC"')
+  }
+  
   # 用 _ 标志额外的参数
   if (grepl("_", data_type)) {
     y <- unlist(strsplit(data_type, "_"))
@@ -28,7 +34,7 @@ query_pcawg_pancan_value <- function(id, data_type) {
   do.call("query_pancan_value", args = args)
 }
 
-#' Visualize PCAWG molecular expression
+#' Visualize molecular profile in PCAWG
 #' @inheritParams vis_toil_TvsN
 #' @return a `ggplot` object
 #' @examples
@@ -142,7 +148,6 @@ vis_pcawg_dist <- function(Gene = "TP53",
         na.rm = TRUE,
         position = "identity"
       ) +
-      ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
       ggplot2::xlab("") +
       ggplot2::scale_fill_manual(values = values) +
       ggplot2::theme_set(ggplot2::theme_classic(base_size = 20)) +
@@ -183,7 +188,7 @@ vis_pcawg_dist <- function(Gene = "TP53",
   return(p)
 }
 
-#' Visualize Single Gene Univariable Cox Result from PCAWG Data Hub
+#' Visualize Single Gene Univariable Cox Result in PCAWG
 #'
 #' @inheritParams vis_toil_TvsN
 #' @param measure a survival measure, e.g. "OS".
@@ -274,7 +279,7 @@ vis_pcawg_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mR
     ggplot2::geom_pointrange() +
     ggplot2::coord_flip() +
     ggplot2::labs(x = "", y = "log (Hazard Ratio)") +
-    ggtitle(paste0(Gene, " Expression")) +
+    ggtitle(paste0(Gene, if (startsWith(data_type, "mRNA") | startsWith(data_type, "miRNA")) " Expression" else "")) +
     ggplot2::theme(
       axis.text.x = element_text(color = "black"),
       axis.text.y = element_text(color = "black"),
@@ -288,7 +293,7 @@ vis_pcawg_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mR
   return(p)
 }
 
-#' Visualize PCAWG Gene Expression Correlation
+#' Visualize Gene-Gene Correlation in TCGA
 #' @import ggplot2 dplyr tibble forcats
 #' @import ggplot2 dplyr ppcor
 #' @inheritParams vis_gene_cor

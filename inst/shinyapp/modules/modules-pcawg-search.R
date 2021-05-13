@@ -84,6 +84,7 @@ ui.modules_pcawg_dist <- function(id) {
         p("1. The data query may take some time based on your network. Wait until a plot shows"),
         p("2. You have to turn on both 'Show P value' and 'Show P label' to show significant labels"),
         p("3. If a void plot shows, please check your input"),
+        p("4. ", tags$a(href = "https://xenabrowser.net/datapages/?cohort=PCAWG%20(specimen%20centric)&removeHub=https%3A%2F%2Fxena.treehouse.gi.ucsc.edu%3A443&removeHub=https%3A%2F%2Fatacseq.xenahubs.net", "Genomic profile data source")),
         tags$br(),
         DT::DTOutput(outputId = ns("tbl")),
         shinyjs::hidden(
@@ -106,9 +107,9 @@ server.modules_pcawg_dist <- function(input, output, session) {
            mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
            miRNA_TMM = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
            miRNA_UQ = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-           promoter_raw = list(all = names(load_data("pcawg_promoter_id")), default = "X:99891803:TSPAN6"),
-           promoter_relative = list(all = names(load_data("pcawg_promoter_id")), default = "X:99891803:TSPAN6"),
-           promoter_outlier = list(all = names(load_data("pcawg_promoter_id")), default = "X:99891803:TSPAN6"),
+           promoter_raw = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
+           promoter_relative = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
+           promoter_outlier = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
            fusion = list(all = pancan_identifiers$gene, default = "DPM1"),
            APOBEC = list(all = c(
              "tCa_MutLoad_MinEstimate", "APOBECtCa_enrich",

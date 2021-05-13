@@ -92,7 +92,6 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = c("Boxplot", "Violinplot"),
     p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "tissue", y = "tpm", fill = "type2")) +
       ggplot2::geom_boxplot() +
       ggplot2::xlab(NULL) +
-      # ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
       ggplot2::theme_set(theme_set(theme_classic(base_size = 20))) +
       ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5)) +
       ggplot2::guides(fill = guide_legend(title = NULL)) +
@@ -140,7 +139,6 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = c("Boxplot", "Violinplot"),
         na.rm = TRUE,
         position = "identity"
       ) +
-      ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
       ggplot2::xlab("") +
       ggplot2::scale_fill_manual(values = values) +
       ggplot2::theme_set(ggplot2::theme_classic(base_size = 20)) +
@@ -225,7 +223,7 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", t
   # we filter out normal tissue
   tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
 
-  message(paste0("Get gene expression for ", Gene))
+  message(paste0("Get data value for ", Gene))
   s <- data.frame(sample = names(t1), values = t1)
   ## we use median cutoff here
   ss <- s %>%
@@ -284,7 +282,7 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", t
     ggplot2::geom_pointrange() +
     ggplot2::coord_flip() +
     ggplot2::labs(x = "", y = "log (Hazard Ratio)") +
-    ggtitle(paste0(Gene, " Expression")) +
+    ggtitle(paste0(Gene, if (startsWith(data_type, "mRNA") | startsWith(data_type, "miRNA")) " Expression" else "")) +
     ggplot2::theme(
       axis.text.x = element_text(color = "black"),
       axis.text.y = element_text(color = "black"),
