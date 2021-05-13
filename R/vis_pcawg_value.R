@@ -324,17 +324,9 @@ vis_pcawg_gene_cor <- function(Gene1 = "CSF1R",
   }
 
   pcawg_info <- load_data("pcawg_info")
-
   pcawg_purity <- load_data("pcawg_purity")
 
-  if (!data_type1 %in% c("mRNA", "protein", "cnv")) {
-    stop("data_type ", data_type1, " does not support in this function!")
-  }
-  if (!data_type2 %in% c("mRNA", "protein", "cnv")) {
-    stop("data_type ", data_type2, " does not support in this function!")
-  }
-
-  t1 <- query_pcawg_pancan_value(Gene, data_type1)
+  t1 <- query_pcawg_pancan_value(Gene1, data_type1)
   unit1 <- switch(data_type1,
     cnv = NULL,
     mutation = NULL,
@@ -354,7 +346,7 @@ vis_pcawg_gene_cor <- function(Gene1 = "CSF1R",
     tibble::rownames_to_column(var = "icgc_specimen_id") %>%
     dplyr::inner_join(pcawg_info, by = c("icgc_specimen_id"))
 
-  t3 <- query_pcawg_pancan_value(Gene, data_type2)
+  t3 <- query_pcawg_pancan_value(Gene2, data_type2)
   unit2 <- switch(data_type2,
     cnv = NULL,
     mutation = NULL,
@@ -362,8 +354,8 @@ vis_pcawg_gene_cor <- function(Gene1 = "CSF1R",
   )
   if (is.list(t3)) t3 <- t3[[1]]
 
-  if (data_type1 == "cnv") data_type1 <- "CNV"
-  if (data_type2 == "cnv") data_type2 <- "CNV"
+  # if (data_type1 == "cnv") data_type1 <- "CNV"
+  # if (data_type2 == "cnv") data_type2 <- "CNV"
 
   if (all(is.na(t3))) {
     message("All NAs returned, return NULL instead.")
