@@ -8,8 +8,16 @@ ui.modules_pcawg_dist <- function(id) {
             9,
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "transcript", "methylation", "miRNA"),
-              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "miRNA Expression"),
+              choiceValues = c("mRNA", "miRNA_TMM", "miRNA_UQ", 
+                               "promoter_raw", "promoter_relative", "promoter_outlier",
+                               "fusion", "APOBEC"),
+              choiceNames = c("mRNA Expression", "miRNA Expression (TMM)", 
+                              "miRNA Expression (UQ)",
+                              "Raw Promoter Activity",
+                              "Relative Promoter Activity",
+                              "Promoter Outlier",
+                              "Gene Fusion",
+                              "APOBEC mutagenesis"),
               animation = "jelly"
             ),
             selectizeInput(
@@ -92,13 +100,25 @@ ui.modules_pcawg_dist <- function(id) {
 
 server.modules_pcawg_dist <- function(input, output, session) {
   ns <- session$ns
-  
+
   profile_choices <- reactive({
     switch(input$profile,
            mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
-           methylation = list(all = pancan_identifiers$gene, default = "TP53"),
-           transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
-           miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+           miRNA_TMM = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+           miRNA_UQ = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+           promoter_raw = list(all = names(load_data("pcawg_promoter_id")), default = "X:99891803:TSPAN6"),
+           promoter_relative = list(all = names(load_data("pcawg_promoter_id")), default = "X:99891803:TSPAN6"),
+           promoter_outlier = list(all = names(load_data("pcawg_promoter_id")), default = "X:99891803:TSPAN6"),
+           fusion = list(all = pancan_identifiers$gene, default = "DPM1"),
+           APOBEC = list(all = c(
+             "tCa_MutLoad_MinEstimate", "APOBECtCa_enrich",
+             "A3A_or_A3B", "APOBEC_tCa_enrich_quartile", "APOBECrtCa_enrich",
+             "APOBECytCa_enrich", "APOBECytCa_enrich-APOBECrtCa_enrich",
+             "BH_Fisher_p-value_tCa", "ntca+tgan", "rtCa_to_G+rtCa_to_T",
+             "rtca+tgay", "tCa_to_G+tCa_to_T",
+             "ytCa_rtCa_BH_Fisher_p-value", "ytCa_rtCa_Fisher_p-value", "ytCa_to_G+ytCa_to_T",
+             "ytca+tgar"
+           ), default = "APOBECtCa_enrich"),
            list(all = "NONE", default = "NONE")
     )
   })

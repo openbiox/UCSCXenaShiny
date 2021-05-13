@@ -1,3 +1,33 @@
+parse_pacwg_args <- function(data_type) {
+  # 用 _ 标志额外的参数
+  if (grepl("_", data_type)) {
+    y <- unlist(strsplit(data_type, "_"))
+    out <- list(
+      data_type = y[1],
+      args = y[2]
+    )
+    
+    z <- switch(y[1],
+                miRNA = "norm_method",
+                promoter = "type",
+                stop("Don't support such data type!"))
+    names(out)[2] <- z
+    out
+  } else {
+    list(data_type = data_type)
+  }
+}
+
+# e.g., 
+# test <- query_pcawg_pancan_value("hsa-miR-769-3p", data_type = "miRNA_UQ")
+# str(test)
+query_pcawg_pancan_value <- function(id, data_type) {
+  args <- c(
+    list(molecule = id, database = "pcawg"),
+    parse_pacwg_args(data_type))
+  do.call("query_pancan_value", args = args)
+}
+
 #' Visualize PCAWG molecular expression
 #' @inheritParams vis_toil_TvsN
 #' @return a `ggplot` object
@@ -27,7 +57,7 @@ vis_pcawg_dist <- function(Gene = "TP53",
 
   pcawg_info <- load_data("pcawg_info")
 
-  t1 <- query_pancan_value(Gene, database = "pcawg")
+  t1 <- query_pcawg_pancan_value(Gene, data_type)
   unit <- switch(data_type,
     cnv = NULL,
     mutation = NULL,
@@ -74,7 +104,9 @@ vis_pcawg_dist <- function(Gene = "TP53",
       ggplot2::scale_fill_manual(values = values)
 
     p <- p + ggplot2::ylab(
-      if (is.null(unit)) Gene else paste0(Gene, " (", unit, ")")
+      if (is.null(unit)) Gene else paste0(Gene, if (nchar(unit) < 30) {
+        paste0(" (", unit, ")")
+      } else paste0("\n(", unit, ")"))
     )
 
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
@@ -122,7 +154,9 @@ vis_pcawg_dist <- function(Gene = "TP53",
       )
 
     p <- p + ggplot2::ylab(
-      if (is.null(unit)) Gene else paste0(Gene, " (", unit, ")")
+      if (is.null(unit)) Gene else paste0(Gene, if (nchar(unit) < 30) {
+        paste0(" (", unit, ")")
+      } else paste0("\n(", unit, ")"))
     )
 
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
@@ -166,7 +200,7 @@ vis_pcawg_dist <- function(Gene = "TP53",
 vis_pcawg_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", threshold = 0.5, values = c("grey", "#E31A1C", "#377DB8")) {
   pcawg_info <- load_data("pcawg_info")
 
-  t1 <- query_pancan_value(Gene, database = "pcawg")
+  t1 <- query_pcawg_pancan_value(Gene, data_type)
   unit <- switch(data_type,
     cnv = NULL,
     mutation = NULL,
@@ -295,7 +329,7 @@ vis_pcawg_gene_cor <- function(Gene1 = "CSF1R",
     stop("data_type ", data_type2, " does not support in this function!")
   }
 
-  t1 <- query_pancan_value(Gene1, data_type = data_type1, database = "pcawg")
+  t1 <- query_pcawg_pancan_value(Gene, data_type1)
   unit1 <- switch(data_type1,
     cnv = NULL,
     mutation = NULL,
@@ -315,7 +349,7 @@ vis_pcawg_gene_cor <- function(Gene1 = "CSF1R",
     tibble::rownames_to_column(var = "icgc_specimen_id") %>%
     dplyr::inner_join(pcawg_info, by = c("icgc_specimen_id"))
 
-  t3 <- query_pancan_value(Gene2, data_type = data_type2, database = "pcawg")
+  t3 <- query_pcawg_pancan_value(Gene, data_type2)
   unit2 <- switch(data_type2,
     cnv = NULL,
     mutation = NULL,
