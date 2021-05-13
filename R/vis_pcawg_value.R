@@ -1,10 +1,12 @@
 parse_pacwg_args <- function(data_type) {
-  if (! data_type %in% c("mRNA", "miRNA_TMM", "miRNA_UQ", 
-                         "promoter_raw", "promoter_relative", "promoter_outlier",
-                         "fusion", "APOBEC")) {
+  if (!data_type %in% c(
+    "mRNA", "miRNA_TMM", "miRNA_UQ",
+    "promoter_raw", "promoter_relative", "promoter_outlier",
+    "fusion", "APOBEC"
+  )) {
     stop('Valid data_type contains "mRNA" "miRNA_TMM" "miRNA_UQ" "promoter_raw" "promoter_relative" "promoter_outlier" "fusion" "APOBEC"')
   }
-  
+
   # 用 _ 标志额外的参数
   if (grepl("_", data_type)) {
     y <- unlist(strsplit(data_type, "_"))
@@ -12,11 +14,12 @@ parse_pacwg_args <- function(data_type) {
       data_type = y[1],
       args = y[2]
     )
-    
+
     z <- switch(y[1],
-                miRNA = "norm_method",
-                promoter = "type",
-                stop("Don't support such data type!"))
+      miRNA = "norm_method",
+      promoter = "type",
+      stop("Don't support such data type!")
+    )
     names(out)[2] <- z
     out
   } else {
@@ -24,13 +27,14 @@ parse_pacwg_args <- function(data_type) {
   }
 }
 
-# e.g., 
+# e.g.,
 # test <- query_pcawg_pancan_value("hsa-miR-769-3p", data_type = "miRNA_UQ")
 # str(test)
 query_pcawg_pancan_value <- function(id, data_type) {
   args <- c(
     list(molecule = id, database = "pcawg"),
-    parse_pacwg_args(data_type))
+    parse_pacwg_args(data_type)
+  )
   do.call("query_pancan_value", args = args)
 }
 
@@ -110,9 +114,15 @@ vis_pcawg_dist <- function(Gene = "TP53",
       ggplot2::scale_fill_manual(values = values)
 
     p <- p + ggplot2::ylab(
-      if (is.null(unit)) Gene else paste0(Gene, if (nchar(unit) < 30) {
-        paste0(" (", unit, ")")
-      } else paste0("\n(", unit, ")"))
+      if (is.null(unit)) {
+        Gene
+      } else {
+        paste0(Gene, if (nchar(unit) < 30) {
+          paste0(" (", unit, ")")
+        } else {
+          paste0("\n(", unit, ")")
+        })
+      }
     )
 
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
@@ -159,9 +169,15 @@ vis_pcawg_dist <- function(Gene = "TP53",
       )
 
     p <- p + ggplot2::ylab(
-      if (is.null(unit)) Gene else paste0(Gene, if (nchar(unit) < 30) {
-        paste0(" (", unit, ")")
-      } else paste0("\n(", unit, ")"))
+      if (is.null(unit)) {
+        Gene
+      } else {
+        paste0(Gene, if (nchar(unit) < 30) {
+          paste0(" (", unit, ")")
+        } else {
+          paste0("\n(", unit, ")")
+        })
+      }
     )
 
     if (Show.P.value == TRUE & Show.P.label == TRUE) {

@@ -42,7 +42,7 @@ get_pcawg_promoter_value <- function(identifier, type = c("raw", "relative", "ou
   # but the latter seems meaningless
   host <- "pcawgHub"
   type <- match.arg(type)
-  
+
   if (type == "raw") {
     dataset <- "rawPromoterActivity.sp"
     unit <- "raw promoter activity"
@@ -53,7 +53,7 @@ get_pcawg_promoter_value <- function(identifier, type = c("raw", "relative", "ou
     dataset <- "promoterCentricTable_0.2_1.0.sp"
     unit <- "-1 (low expression), 0 (normal), 1 (high expression)"
   }
-  
+
   if (!startsWith(identifier, "prmtr")) {
     # Try parsing from location:symbol map
     map <- load_data("pcawg_promoter_id")
@@ -62,16 +62,19 @@ get_pcawg_promoter_value <- function(identifier, type = c("raw", "relative", "ou
       # query_pancan_value("19:12203078:ZNF788", database = "pcawg", data_type = "promoter")
       # 存在极少数有多 id 情况，直接求和
       expression <- purrr::reduce(
-        purrr::map(as.character(id_map), 
-                                ~get_data(dataset, ., host)), `+`)
+        purrr::map(
+          as.character(id_map),
+          ~ get_data(dataset, ., host)
+        ), `+`
+      )
     } else {
       expression <- get_data(dataset, as.character(id_map), host)
     }
   } else {
     expression <- get_data(dataset, identifier, host)
   }
-  
-  
+
+
   report_dataset_info(dataset)
   res <- list(data = expression, unit = unit)
   res

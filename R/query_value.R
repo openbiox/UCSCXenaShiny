@@ -62,7 +62,7 @@ query_molecule_value <- function(dataset, molecule, host = NULL) {
 #' @param ... other extra parameters passing to the underlying functions.
 #' @return a list.
 #' @export
-#' @examples 
+#' @examples
 #' \dontrun{
 #' query_pancan_value("KRAS")
 #' query_pancan_value("KRAS", database = "ccle")
