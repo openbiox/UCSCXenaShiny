@@ -69,6 +69,10 @@ ui.page_pancan <- function() {
     tabPanel(
       "PCAWG: Molecule-Molecule Correlation",
       ui.modules_pcawg_gene_cor("modules_pcawg_gene_cor")
+    ),
+    tabPanel(
+      "PCAWG: Survival Analysis",
+      ui.modules_pcawg_sur_plot("modules_pcawg_sur_plot")
     )
   )
 }
