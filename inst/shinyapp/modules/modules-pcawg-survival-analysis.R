@@ -7,13 +7,18 @@ ui.modules_pcawg_sur_plot <- function(id) {
         shinyWidgets::prettyRadioButtons( 
           inputId = ns("profile"), label = "Select a genomic profile:", 
           choiceValues = c("mRNA", "miRNA_TMM", "miRNA_UQ",  
+                           "promoter_raw",
                            "promoter_outlier", 
-                           "fusion"), 
+                           "fusion",
+                           "APOBEC"
+                           ), 
           choiceNames = c("mRNA Expression", 
                           "miRNA Expression (TMM)",  
                           "miRNA Expression (UQ)", 
+                          "Raw Promoter Activity",
                           "Promoter Outlier", 
-                          "Gene Fusion"
+                          "Gene Fusion",
+                          "APOBEC mutagenesis"
                           ), 
           animation = "jelly" 
         ),
@@ -54,7 +59,7 @@ ui.modules_pcawg_sur_plot <- function(id) {
             inline = TRUE
           ),
           conditionalPanel(
-            condition = "input.profile == 'mRNA' | input.profile == 'miRNA_TMM' | input.profile == 'miRNA_UQ'",
+            condition = "input.profile == 'mRNA' | input.profile == 'miRNA_TMM' | input.profile == 'miRNA_UQ'| input.profile =='APOBEC'| input.profile =='promoter_raw'",
             ns = ns,
             shinyWidgets::prettyRadioButtons(
               inputId = ns("cutoff_mode"),
@@ -133,8 +138,18 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
            mRNA = list(all = pancan_identifiers$gene, default = "TP53"), 
            miRNA_TMM = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"), 
            miRNA_UQ = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"), 
+           promoter_raw = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
            promoter_outlier = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"), 
            fusion = list(all = pancan_identifiers$gene, default = "DPM1"), 
+           APOBEC = list(all = c( 
+             "tCa_MutLoad_MinEstimate", "APOBECtCa_enrich", 
+             "A3A_or_A3B", "APOBEC_tCa_enrich_quartile", "APOBECrtCa_enrich", 
+             "APOBECytCa_enrich", "APOBECytCa_enrich-APOBECrtCa_enrich", 
+             "BH_Fisher_p-value_tCa", "ntca+tgan", "rtCa_to_G+rtCa_to_T", 
+             "rtca+tgay", "tCa_to_G+tCa_to_T", 
+             "ytCa_rtCa_BH_Fisher_p-value", "ytCa_rtCa_Fisher_p-value", "ytCa_to_G+ytCa_to_T", 
+             "ytca+tgar" 
+           ), default = "APOBECtCa_enrich"), 
            list(all = "NONE", default = "NONE") 
     ) 
   }) 
@@ -187,18 +202,18 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
            miRNA_TMM = get_pcawg_miRNA_value(input$item_input, norm_method = "TMM") ,
            miRNA_UQ = get_pcawg_miRNA_value(input$item_input, norm_method = "UQ") ,
            fusion = get_pcawg_fusion_value(input$item_input) ,
-           promoter_outlier = get_pcawg_promoter_value(input$item_input, type = "outlier")
+           promoter_raw = get_pcawg_promoter_value(input$item_input, type = "raw"),
+           promoter_outlier = get_pcawg_promoter_value(input$item_input, type = "outlier"),
+           APOBEC = get_pcawg_APOBEC_mutagenesis_value(input$item_input)
            )
-    print(val)
     val <- val$data
-    print(val)
     val <- na.omit(val)
-    print(length(val))
+    
     if(length(val)<10){
       sendSweetAlert(
         session = session,
         title = "Error...",
-        text = "Too little data available.",
+        text = "There is too little available data for this entry.",
         type = "error"
       )
       return(NULL)
@@ -216,9 +231,17 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
                      age = donor_age_at_diagnosis)
     
     if(input$profile == "fusion"){
-      dat$group <- replace(dat$value,c(1,0),c("fusion","non-fusion"))}
+      dat <- dplyr::mutate(dat,group = case_when(
+        .data$value == 1 ~ "fusion (1)",
+        .data$value == 0 ~ "non-fusion (0)"
+      ))
+      }
     if(input$profile == "promoter_outlier"){
-      dat$group <- replace(dat$value,c(-1,0,1),c("low expression","normal","high expression"))
+      dat <- dplyr::mutate(dat,group = case_when(
+        .data$value == -1 ~ "low expression (-1)",
+        .data$value ==0 ~ "normal (0)",
+        .data$value == 1 ~ "high expression (1)"
+      ))
     }
     dat
     })
@@ -243,7 +266,7 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
   plot_func <- eventReactive(input$go, {
     if (!is.null(filter_dat())) {
       if (nrow(filter_dat()) >= 10) {
-        if(input$profile %in% c("mRNA", "miRNA_TMM", "miRNA_UQ") ){
+        if(input$profile %in% c("mRNA", "miRNA_TMM", "miRNA_UQ","promoter_raw" ,"APOBEC") ){
           p <- sur_plot(filter_dat(),input$cutoff_mode,input$cutpoint)
         }else{
           p <- p_survplot(filter_dat())

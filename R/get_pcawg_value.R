@@ -117,9 +117,11 @@ get_pcawg_APOBEC_mutagenesis_value <- function(identifier = c(
   host <- "pcawgHub"
   dataset <- "MAF_Aug31_2016_sorted_A3A_A3B_comparePlus.sp"
 
-  data <- get_data(dataset, identifier, host)
+  expression <- get_data(dataset, identifier, host)
+  unit <- ""
   report_dataset_info(dataset)
-  data
+  res <- list(data = expression, unit = unit)
+  res
 }
 
 ## 突变数据直接用表格展示??
