@@ -1,7 +1,7 @@
 ## how to document datasets: you need to specify @docType and @name; do not
 ## forget NULL in the end
 
-#' Purity Data of PCAWG 
+#' Purity Data of PCAWG
 #' @docType data
 #' @name pcawg_purity
 #' @format A `data.frame`
