@@ -80,6 +80,7 @@ get_pcawg_promoter_value <- function(identifier, type = c("raw", "relative", "ou
   res
 }
 
+#' @param norm_method the normalization method.
 #' @describeIn get_pancan_value Fetch specimen-level miRNA value from PCAWG cohort
 #' @export
 get_pcawg_miRNA_value <- function(identifier, norm_method = c("TMM", "UQ")) {

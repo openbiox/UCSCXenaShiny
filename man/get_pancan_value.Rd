@@ -84,7 +84,11 @@ Gene symbol is highly recommended.}
 
 \item{use_thresholded_data}{if \code{TRUE} (default), use GISTIC2-thresholded value.}
 
-\item{type}{methylation type, one of "450K" and "27K".}
+\item{type}{methylation type, one of "450K" and "27K".
+for function \code{get_pcawg_promoter_value}, it can be one of
+"raw", "relative", "outlier".}
+
+\item{norm_method}{the normalization method.}
 }
 \value{
 a named vector or \code{list}.

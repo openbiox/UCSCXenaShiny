@@ -1,6 +1,15 @@
 ## how to document datasets: you need to specify @docType and @name; do not
 ## forget NULL in the end
 
+#' Purity Data of PCAWG 
+#' @docType data
+#' @name pcawg_purity
+#' @format A `data.frame`
+#' @source UCSC Xena.
+#' @examples
+#' data("pcawg_purity")
+NULL
+
 #' Phenotype Info of CCLE Database
 #' @docType data
 #' @name ccle_info
