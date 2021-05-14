@@ -7,9 +7,10 @@
 query_pancan_value(
   molecule,
   data_type = c("mRNA", "transcript", "protein", "mutation", "cnv", "cnv_gistic2",
-    "methylation", "miRNA"),
-  database = c("toil", "ccle"),
-  reset_id = NULL
+    "methylation", "miRNA", "fusion", "promoter", "APOBEC"),
+  database = c("toil", "ccle", "pcawg"),
+  reset_id = NULL,
+  ...
 )
 }
 \arguments{
@@ -23,10 +24,24 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 CCLE.}
 
 \item{reset_id}{if not \code{NULL}, set the specified variable at parent frame to "Signature".}
+
+\item{...}{other extra parameters passing to the underlying functions.}
 }
 \value{
 a list.
 }
 \description{
 Query Single Identifier or Signature Value from Pan-cancer Database
+}
+\examples{
+\dontrun{
+query_pancan_value("KRAS")
+query_pancan_value("KRAS", database = "ccle")
+query_pancan_value("KRAS", database = "pcawg")
+query_pancan_value("hsa-let-7c-3p", database = "pcawg", data_type = "miRNA")
+query_pancan_value("hsa-let-7c-3p", database = "pcawg", data_type = "miRNA", norm_method = "UQ")
+query_pancan_value("ENSG00000000419", database = "pcawg", data_type = "fusion") # gene symbol also work
+query_pancan_value("tCa_MutLoad_MinEstimate", database = "pcawg", data_type = "APOBEC")
+query_pancan_value("prmtr.10000", database = "pcawg", data_type = "promoter")
+}
 }
