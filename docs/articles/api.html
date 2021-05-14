@@ -112,7 +112,7 @@
       <h1 data-toc-skip>Examples of Accessible Functions</h1>
                         <h4 class="author">Shixiang Wang, Yi Xiong, Longfei Zhao, Kai Gu, Yin Li, Fei Zhao</h4>
             
-            <h4 class="date">2021-04-27</h4>
+            <h4 class="date">2021-05-14</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/openbiox/UCSCXenaShiny/blob/master/vignettes/api.Rmd"><code>vignettes/api.Rmd</code></a></small>
       <div class="hidden name"><code>api.Rmd</code></div>
@@ -142,7 +142,6 @@
 <a href="#fetch-gene-expression" class="anchor"></a>Fetch Gene Expression</h3>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">gene_expr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/query_pancan_value.html">query_pancan_value</a></span><span class="op">(</span><span class="st">"TP53"</span><span class="op">)</span>
-<span class="co">#&gt; Running mode: client</span>
 <span class="co">#&gt; =========================================================================================</span>
 <span class="co">#&gt; UCSCXenaTools version 1.4.4</span>
 <span class="co">#&gt; Project URL: https://github.com/ropensci/UCSCXenaTools</span>
@@ -155,9 +154,9 @@
 <span class="co">#&gt; =========================================================================================</span>
 <span class="co">#&gt;                               --Enjoy it--</span>
 <span class="co">#&gt; Try querying data #1</span>
+<span class="co">#&gt; Try querying data #2</span>
 <span class="co">#&gt; -&gt; Checking if the dataset has probeMap...</span>
 <span class="co">#&gt; -&gt; Done. ProbeMap is found.</span>
-<span class="co">#&gt; Running mode: client</span>
 <span class="co">#&gt; More info about dataset please run following commands:</span>
 <span class="co">#&gt;   library(UCSCXenaTools)</span>
 <span class="co">#&gt;   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span></code></pre></div>
@@ -202,7 +201,6 @@
 <a href="#visualize-single-gene-expression-in-pancan-dataset" class="anchor"></a>Visualize Single Gene Expression in PANCAN Dataset</h3>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/vis_toil_TvsN.html">vis_toil_TvsN</a></span><span class="op">(</span>Gene <span class="op">=</span> <span class="st">"TP53"</span>, Mode <span class="op">=</span> <span class="st">"Violinplot"</span>, Show.P.value <span class="op">=</span> <span class="cn">FALSE</span>, Show.P.label <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-<span class="co">#&gt; Running mode: client</span>
 <span class="co">#&gt; More info about dataset please run following commands:</span>
 <span class="co">#&gt;   library(UCSCXenaTools)</span>
 <span class="co">#&gt;   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span></code></pre></div>
@@ -222,7 +220,6 @@
   TCGA.only <span class="op">=</span> <span class="cn">FALSE</span>,
   Cancer <span class="op">=</span> <span class="st">"ACC"</span>
 <span class="op">)</span>
-<span class="co">#&gt; Running mode: client</span>
 <span class="co">#&gt; More info about dataset please run following commands:</span>
 <span class="co">#&gt;   library(UCSCXenaTools)</span>
 <span class="co">#&gt;   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span>
@@ -249,7 +246,6 @@
   threshold <span class="op">=</span> <span class="fl">0.5</span>,
   values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"grey"</span>, <span class="st">"#E31A1C"</span>, <span class="st">"#377DB8"</span><span class="op">)</span>
 <span class="op">)</span>
-<span class="co">#&gt; Running mode: client</span>
 <span class="co">#&gt; More info about dataset please run following commands:</span>
 <span class="co">#&gt;   library(UCSCXenaTools)</span>
 <span class="co">#&gt;   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span>

@@ -15,7 +15,7 @@ ui.page_home <- function() {
               ui.home_search_box("homepage_pancan_search"),
               tags$h2("Data Portal Summary"),
               tags$b(paste0(
-                "UCSCXenaShiny v", packageVersion("UCSCXenaShiny"), "-beta",
+                "UCSCXenaShiny v", packageVersion("UCSCXenaShiny"),
                 " based on ",
                 "UCSCXenaTools v", packageVersion("UCSCXenaTools")
               )),
