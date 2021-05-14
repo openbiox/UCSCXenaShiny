@@ -22,7 +22,8 @@ load_data <- function(name) {
     "tcga_clinical", "tcga_genome_instability",
     "tcga_gtex", "tcga_purity",
     "tcga_subtypes", "tcga_surv", "TCGA.organ",
-    "toil_info"
+    "toil_info",
+    "pcawg_info", "pcawg_purity"
   )
   if (name %in% available_datasets) {
     # The data is builtin
@@ -31,7 +32,7 @@ load_data <- function(name) {
     if (!file.exists(data_path)) {
       # Download it to inst/extdata from zenodo
       # Then load it
-      data_url <- file.path("https://zenodo.org/record/4698512/files", name2)
+      data_url <- file.path("https://zenodo.org/record/4751161/files", name2)
       message("Loading data from remote: ", data_url, ", please wait...")
       name <- FALSE
       tryCatch(

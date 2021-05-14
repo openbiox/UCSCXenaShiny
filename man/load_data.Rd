@@ -11,6 +11,8 @@ load_data(name)
 ccle_absolute
 ccle_info
 pancan_MSI
+pcawg_info
+pcawg_purity
 tcga_chr_alteration
 tcga_clinical
 tcga_genome_instability

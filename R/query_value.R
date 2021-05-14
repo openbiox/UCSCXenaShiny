@@ -59,16 +59,29 @@ query_molecule_value <- function(dataset, molecule, host = NULL) {
 #' @param database database, either 'toil' for TCGA TARGET GTEx, or 'ccle' for
 #' CCLE.
 #' @param reset_id if not `NULL`, set the specified variable at parent frame to "Signature".
-#'
+#' @param ... other extra parameters passing to the underlying functions.
 #' @return a list.
 #' @export
+#' @examples
+#' \dontrun{
+#' query_pancan_value("KRAS")
+#' query_pancan_value("KRAS", database = "ccle")
+#' query_pancan_value("KRAS", database = "pcawg")
+#' query_pancan_value("hsa-let-7c-3p", database = "pcawg", data_type = "miRNA")
+#' query_pancan_value("hsa-let-7c-3p", database = "pcawg", data_type = "miRNA", norm_method = "UQ")
+#' query_pancan_value("ENSG00000000419", database = "pcawg", data_type = "fusion") # gene symbol also work
+#' query_pancan_value("tCa_MutLoad_MinEstimate", database = "pcawg", data_type = "APOBEC")
+#' query_pancan_value("prmtr.10000", database = "pcawg", data_type = "promoter")
+#' }
 query_pancan_value <- function(molecule,
                                data_type = c(
-                                 "mRNA", "transcript", "protein", "mutation", "cnv", "cnv_gistic2",
-                                 "methylation", "miRNA"
+                                 "mRNA", "transcript", "protein", "mutation",
+                                 "cnv", "cnv_gistic2",
+                                 "methylation", "miRNA",
+                                 "fusion", "promoter", "APOBEC"
                                ),
-                               database = c("toil", "ccle"),
-                               reset_id = NULL) {
+                               database = c("toil", "ccle", "pcawg"),
+                               reset_id = NULL, ...) {
   data_type <- match.arg(data_type)
   database <- match.arg(database)
 
@@ -81,7 +94,7 @@ query_pancan_value <- function(molecule,
     message("IDs include ", paste(ids, collapse = ", "))
     tryCatch(
       {
-        values <- purrr::map(ids, ~ query_value(., data_type, database))
+        values <- purrr::map(ids, ~ query_value(., data_type, database, ...))
         unit <- if (is.list(values[[1]]) && length(values[[1]]) > 1) values[[1]][[2]] else NULL
         if (is.null(unit)) {
           df <- as.data.frame(values %>% purrr::set_names(ids))
@@ -115,7 +128,7 @@ query_pancan_value <- function(molecule,
       )
     }
   } else {
-    query_value(molecule, data_type, database)
+    query_value(molecule, data_type, database, ...)
   }
 }
 
@@ -124,9 +137,11 @@ query_value <- function(identifier,
                         data_type = c(
                           "mRNA", "transcript", "protein",
                           "mutation", "cnv", "cnv_gistic2",
-                          "methylation", "miRNA"
+                          "methylation", "miRNA",
+                          "fusion", "promoter", "APOBEC"
                         ),
-                        database = c("toil", "ccle")) {
+                        database = c("toil", "ccle", "pcawg"),
+                        ...) {
   database <- match.arg(database)
   data_type <- match.arg(data_type)
 
@@ -139,22 +154,30 @@ query_value <- function(identifier,
       cnv = get_pancan_cn_value,
       cnv_gistic2 = get_pancan_cn_value,
       methylation = get_pancan_methylation_value,
-      miRNA = get_pancan_miRNA_value
+      miRNA = get_pancan_miRNA_value,
+      stop("Not support for database 'toil (TCGA)'!")
     )
-  } else {
+  } else if (database == "ccle") {
     f <- switch(data_type,
       mRNA = get_ccle_gene_value,
-      transcript = stop("Not support for database 'ccle'!"),
       protein = get_ccle_protein_value,
       mutation = get_ccle_mutation_status,
       cnv = get_ccle_cn_value,
-      methylation = stop("Not support for database 'ccle'!"),
-      miRNA = stop("Not support for database 'ccle'!")
+      stop("Not support for database 'ccle'!")
+    )
+  } else if (database == "pcawg") {
+    f <- switch(data_type,
+      mRNA = get_pcawg_gene_value,
+      fusion = get_pcawg_fusion_value,
+      miRNA = get_pcawg_miRNA_value,
+      promoter = get_pcawg_promoter_value,
+      APOBEC = get_pcawg_APOBEC_mutagenesis_value,
+      stop("Not support for database 'ccle'!")
     )
   }
   if (data_type == "cnv_gistic2") {
     f(identifier, use_thresholded_data = FALSE)
   } else {
-    f(identifier)
+    f(identifier, ...)
   }
 }

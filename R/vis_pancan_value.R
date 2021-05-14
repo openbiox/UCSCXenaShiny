@@ -31,7 +31,7 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = c("Boxplot", "Violinplot"),
 
   Mode <- match.arg(Mode)
   Method <- match.arg(Method)
-  
+
   if (!Method %in% c("wilcox.test", "t.test")) {
     stop("only support wilcox.test or t.test")
   }
@@ -92,7 +92,6 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = c("Boxplot", "Violinplot"),
     p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "tissue", y = "tpm", fill = "type2")) +
       ggplot2::geom_boxplot() +
       ggplot2::xlab(NULL) +
-      # ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
       ggplot2::theme_set(theme_set(theme_classic(base_size = 20))) +
       ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5)) +
       ggplot2::guides(fill = guide_legend(title = NULL)) +
@@ -140,7 +139,6 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = c("Boxplot", "Violinplot"),
         na.rm = TRUE,
         position = "identity"
       ) +
-      ggplot2::ylab(paste0(Gene, " expression (TPM)")) +
       ggplot2::xlab("") +
       ggplot2::scale_fill_manual(values = values) +
       ggplot2::theme_set(ggplot2::theme_classic(base_size = 20)) +
@@ -225,7 +223,7 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", t
   # we filter out normal tissue
   tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
 
-  message(paste0("Get gene expression for ", Gene))
+  message(paste0("Get data value for ", Gene))
   s <- data.frame(sample = names(t1), values = t1)
   ## we use median cutoff here
   ss <- s %>%
@@ -284,7 +282,7 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", t
     ggplot2::geom_pointrange() +
     ggplot2::coord_flip() +
     ggplot2::labs(x = "", y = "log (Hazard Ratio)") +
-    ggtitle(paste0(Gene, " Expression")) +
+    ggtitle(paste0(Gene, if (startsWith(data_type, "mRNA") | startsWith(data_type, "miRNA")) " Expression" else "")) +
     ggplot2::theme(
       axis.text.x = element_text(color = "black"),
       axis.text.y = element_text(color = "black"),
@@ -891,6 +889,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = c("Violinplot", "Dotplot"
 #' @param data_type2 choose gene profile type for the second gene, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"
 #' @param purity_adj whether performing partial correlation adjusted by purity
 #' @param use_regline if `TRUE`, add regression line.
+#' @param filter_tumor whether use tumor sample only, default `TRUE`
 #' @param alpha dot alpha.
 #' @param color dot color.
 #' @export
@@ -901,7 +900,8 @@ vis_gene_cor <- function(Gene1 = "CSF1R",
                          use_regline = TRUE,
                          purity_adj = TRUE,
                          alpha = 0.5,
-                         color = "#000000") {
+                         color = "#000000",
+                         filter_tumor = TRUE) {
   if (!requireNamespace("cowplot")) {
     install.packages("cowplot")
   }
@@ -947,12 +947,14 @@ vis_gene_cor <- function(Gene1 = "CSF1R",
     stringsAsFactors = F
   )
   df %>%
-    dplyr::left_join(tcga_purity, by = "sample") %>%
-    filter(.data$type2 == "tumor") -> df
+    dplyr::left_join(tcga_purity, by = "sample") -> df
+  if (filter_tumor == TRUE) {
+    df %>% dplyr::filter(.data$type2 == "tumor") -> df
+  }
   # plot refer to https://drsimonj.svbtle.com/pretty-scatter-plots-with-ggplot2
 
   if (purity_adj) {
-    df %>% filter(!is.na(.data$CPE)) -> df
+    df %>% dplyr::filter(!is.na(.data$CPE)) -> df
     partial_cor_res <- ezcor_partial_cor(data = df, var1 = "gene1", var2 = "gene2", var3 = "CPE", sig_label = TRUE)
     cor_res <- ezcor(data = df, var1 = "gene1", var2 = "gene2")
     p <- ggplot2::ggplot(df, aes_string(x = "gene1", y = "gene2")) +
@@ -1127,9 +1129,9 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
   }
 
   if (use_all) {
-    p <- p + ggplot2::ggtitle("TCGA: All data")
+    p <- p + ggplot2::ggtitle(paste0("TCGA: All data (n=", dim(df)[1], ")"))
   } else {
-    p <- p + ggplot2::ggtitle(paste0("TCGA: ", paste(cancer_choose, collapse = "/")))
+    p <- p + ggplot2::ggtitle(paste0("TCGA: ", paste(cancer_choose, collapse = "/"), " (n=", dim(df)[1], ")"))
   }
 
   if (use_regline) {

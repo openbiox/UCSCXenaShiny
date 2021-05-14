@@ -39,3 +39,11 @@ ccle/CCLE_DepMap_18Q2_RNAseq_RPKM_20180502.gct
 ccle/ccle_expr_and_drug_response.rds
 data-raw/ccle/
 data-raw/transcript_identifier.rda
+data-raw/pcawg_donor_clinical_August2016_v9_sp
+data-raw/pcawg_specimen_histology_August2016_v9
+data-raw/project_code_sp
+data-raw/sp_specimen_type
+data-raw/survival_sp
+data-raw/expressedPromoterCoordinates.probeMap
+data-raw/pcawg_promoter_id.rda
+inst/extdata/pcawg_promoter_id.rda

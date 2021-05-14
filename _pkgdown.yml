@@ -29,6 +29,8 @@ reference:
     - ccle_absolute
     - ccle_info
     - toil_info
+    - pcawg_info
+    - pcawg_purity
     
   - title: Data Query
     desc: Functions to query data from UCSC Xena data hubs in single molecular level. The functionality of functions below may overlap, we rank them by importance.
@@ -40,7 +42,7 @@ reference:
     - available_hosts
     
   - title: Analysis and Visualiation for Pan-Cancer Study
-    desc: Functions to analyze and visualize data mainly from TCGA and CCLE
+    desc: Functions to analyze and visualize data mainly from TCGA, PCAWG and CCLE
     contents:
     - tcga_surv_get
     - tcga_surv_plot
@@ -61,6 +63,9 @@ reference:
     - vis_toil_TvsN
     - vis_toil_TvsN_cancer
     - vis_unicox_tree
+    - vis_pcawg_dist
+    - vis_pcawg_gene_cor
+    - vis_pcawg_unicox_tree
     
   - title: General Analysis and Visualiation
     desc: Functions to analyze and visualize general data, i.e., any valid data from UCSC Xena or users
