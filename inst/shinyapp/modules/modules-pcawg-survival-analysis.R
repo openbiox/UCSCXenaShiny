@@ -4,43 +4,27 @@ ui.modules_pcawg_sur_plot <- function(id) {
   fluidPage(
     fluidRow(
       column(3, wellPanel(
-        selectInput(
-          inputId = ns("dataset"), label = "Choose a dataset:",
-          choices = setdiff(TCGA_datasets$id, "FPPP")
+        shinyWidgets::prettyRadioButtons( 
+          inputId = ns("profile"), label = "Select a genomic profile:", 
+          choiceValues = c("mRNA", "miRNA_TMM", "miRNA_UQ",  
+                           "promoter_outlier", 
+                           "fusion"), 
+          choiceNames = c("mRNA Expression", 
+                          "miRNA Expression (TMM)",  
+                          "miRNA Expression (UQ)", 
+                          "Promoter Outlier", 
+                          "Gene Fusion"
+                          ), 
+          animation = "jelly" 
         ),
-        shinyWidgets::prettyRadioButtons(
-          inputId = ns("profile"), label = "Select a genomic profile:",
-          choiceValues = c("mRNA", "transcript", "miRNA", "mutation", "cnv", "methylation", "protein"),
-          choiceNames = c("mRNA Expression", "Transcript Expression", "miRNA Expression", "Mutations", "Copy Number Variation", "DNA Methylation", "Protein Expression"),
-          animation = "jelly"
+        
+        selectizeInput(
+          inputId = ns("item_input"),
+          label = "Item:",
+          choices = NULL,
+          width = "100%"
         ),
-        shinyBS::bsPopover(ns("item_input"),
-          title = "Tips",
-          content = "e.g., Gene symbol: TP53; transcript: ENST00000000233; miRNA ID: hsa-miR-128-3p;",
-          placement = "right", options = list(container = "body")
-        ),
-        shinyjs::hidden(
-          shinyWidgets::textInputAddon(
-            inputId = ns("item_input"),
-            label = "Item:",
-            value = NULL,
-            placeholder = "",
-            addon = icon("dna"),
-            width = "100%"
-          )
-        ),
-        shinyjs::hidden(
-          shinyWidgets::pickerInput(
-            inputId = ns("protein_input"),
-            label = "Protein",
-            choices = UCSCXenaShiny:::.all_pancan_proteins,
-            selected = NULL,
-            options = list(
-              `live-search` = TRUE,
-              style = "btn-light"
-            )
-          )
-        ),
+        
         shinyWidgets::actionBttn(
           inputId = ns("submit_bt"), label = "Submit",
           style = "gradient",
@@ -50,20 +34,10 @@ ui.modules_pcawg_sur_plot <- function(id) {
           size = "sm"
         ),
         br(),
-        shinyjs::hidden(
-          tags$div(
-            id = ns("progress"),
-            shinyWidgets::progressBar(
-              id = ns("progressbar"), value = 70
-            )
-          )
-        ),
         htmlOutput(ns("pre_re")),
         hr(),
         h4("NOTEs:"),
-        h5("1. Not all dataset have clinical/pathological stages, so, in this case, the stage option is disabled."),
-        h5("2. The default option <Auto> will return the best p value, if you do not want to do so please choose <Custom>."),
-        tags$a(href = "https://pancanatlas.xenahubs.net", "Data source from Pan-Cancer Atlas Hub")
+        h5("The default option <Auto> will return the best p value, if you do not want to do so please choose <Custom>."),
       )),
       shinyjs::hidden(
         column(3, id = ns("parameter"), wellPanel(
@@ -73,28 +47,14 @@ ui.modules_pcawg_sur_plot <- function(id) {
           ),
           shinyWidgets::prettyCheckboxGroup(
             inputId = ns("sex"), label = "Sex",
-            choices = c("Female" = "FEMALE", "Male" = "MALE", "Unknown" = "Unknown"),
-            selected = c("FEMALE", "MALE", "Unknown"),
+            choices = c("Female" = "female", "Male" = "male" ),
+            selected = c("female", "male"),
             status = "primary",
-            animation = "jelly"
-          ),
-          shinyWidgets::prettyCheckboxGroup(
-            inputId = ns("stage"), label = "Clinical/Pathological stage",
-            choices = c("I", "II", "III", "IV", "Unknown"),
-            selected = c("I", "II", "III", "IV", "Unknown"),
-            status = "primary",
-            animation = "jelly"
-          ),
-          shinyWidgets::prettyRadioButtons(
-            inputId = ns("endpoint"),
-            label = "Primary endpoint",
-            choices = c("OS", "DSS", "DFI", "PFI"),
-            inline = TRUE,
-            icon = icon("check"),
-            animation = "jelly"
+            animation = "jelly",
+            inline = TRUE
           ),
           conditionalPanel(
-            condition = "input.profile == 'mRNA' | input.profile == 'protein' | input.profile == 'miRNA' | input.profile == 'methylation' | input.profile == 'transcript'",
+            condition = "input.profile == 'mRNA' | input.profile == 'miRNA_TMM' | input.profile == 'miRNA_UQ'",
             ns = ns,
             shinyWidgets::prettyRadioButtons(
               inputId = ns("cutoff_mode"),
@@ -113,21 +73,6 @@ ui.modules_pcawg_sur_plot <- function(id) {
               textOutput(ns("cutoff1")),
               textOutput(ns("cutoff2")),
               hr()
-            )
-          ),
-          conditionalPanel(
-            condition = "input.profile == 'mutation'", ns = ns,
-            tags$p("Note: In TCGA somatic mutation (SNP and INDEL) dataset, mutation type is represented by 1 and wild type is 0.")
-          ),
-          conditionalPanel(
-            condition = "input.profile == 'cnv'", ns = ns,
-            awesomeCheckboxGroup(
-              inputId = ns("cs_cnv"),
-              label = "Select CNV type.",
-              choices = c("Normal", "Duplicated", "Deleted"),
-              selected = c("Normal", "Duplicated", "Deleted"),
-              width = "120%",
-              inline = TRUE
             )
           ),
           shinyWidgets::actionBttn(
@@ -183,18 +128,28 @@ ui.modules_pcawg_sur_plot <- function(id) {
 server.modules_pcawg_sur_plot <- function(input, output, session) {
   ns <- session$ns
   # Global monitoring
+  profile_choices <- reactive({ 
+    switch(input$profile, 
+           mRNA = list(all = pancan_identifiers$gene, default = "TP53"), 
+           miRNA_TMM = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"), 
+           miRNA_UQ = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"), 
+           promoter_outlier = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"), 
+           fusion = list(all = pancan_identifiers$gene, default = "DPM1"), 
+           list(all = "NONE", default = "NONE") 
+    ) 
+  }) 
+  
   observe({
-    if (input$profile == "protein") {
-      shinyjs::hide(id = "item_input")
-      shinyjs::show(id = "protein_input")
-    } else {
-      shinyjs::show(id = "item_input")
-      shinyjs::hide(id = "protein_input")
-    }
+    updateSelectizeInput(
+      session,
+      "item_input",
+      choices = profile_choices()$all,
+      selected = profile_choices()$default,
+      server = TRUE
+    )
   })
-
   observe({
-    if (is.null(input$sex) | is.null(input$stage)) {
+    if (is.null(input$sex)) {
       sendSweetAlert(
         session = session,
         title = "Warning !!!",
@@ -203,6 +158,7 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
       )
     }
   })
+  
   observe({
     if (!is.null(filter_dat())) {
       if (nrow(filter_dat()) < 10) {
@@ -217,60 +173,68 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
   })
 
   # Action monitoring
-  observeEvent(input$submit_bt, {
-    if (input$profile == "gene" & input$item_input == "") {
-      sendSweetAlert(
-        session = session,
-        title = "Error...",
-        text = "Please add a gene.",
-        type = "error"
-      )
-    }
-  })
 
   observeEvent(input$submit_bt, {
-    shinyjs::show("progress")
     if (!is.null(sur_dat_pre())) {
       shinyjs::show("parameter")
     }
-    shinyjs::hide("progress")
   })
 
   # block
   sur_dat_pre <- eventReactive(input$submit_bt, {
-    if (input$profile == "protein") {
-      tcga_surv_get(
-        TCGA_cohort = input$dataset, item = input$protein_input,
-        profile = input$profile, TCGA_cli_data = TCGA_cli_merged
+    val <- switch(input$profile,
+           mRNA = get_pcawg_gene_value(input$item_input),
+           miRNA_TMM = get_pcawg_miRNA_value(input$item_input, norm_method = "TMM") ,
+           miRNA_UQ = get_pcawg_miRNA_value(input$item_input, norm_method = "UQ") ,
+           fusion = get_pcawg_fusion_value(input$item_input) ,
+           promoter_outlier = get_pcawg_promoter_value(input$item_input, type = "outlier")
+           )
+    print(val)
+    val <- val$data
+    print(val)
+    val <- na.omit(val)
+    print(length(val))
+    if(length(val)<10){
+      sendSweetAlert(
+        session = session,
+        title = "Error...",
+        text = "Too little data available.",
+        type = "error"
       )
-    } else {
-      tcga_surv_get(
-        TCGA_cohort = input$dataset, item = input$item_input,
-        profile = input$profile, TCGA_cli_data = TCGA_cli_merged
-      )
-    }
-  }, )
-
-  filter_dat <- eventReactive(input$go, {
-    if (is.null(sur_dat_pre())) {
       return(NULL)
     }
-    dat_filter(
-      data = sur_dat_pre(), age = input$age,
-      gender = input$sex, stage = input$stage,
-      endpoint = input$endpoint
-    )
-  })
-  plot_text <- eventReactive(input$go, {
-    if (input$profile == "protein") {
-      item_show <- input$protein_input
-    } else {
-      item_show <- input$item_input
+    
+    val_dat <- data.frame("icgc_specimen_id" = names(val),"val" = as.numeric(val))
+    
+    dat <- dplyr::inner_join(pcawg_info,val_dat,by="icgc_specimen_id") %>% 
+      dplyr::filter(!is.na(.data$OS.time)) %>% 
+      dplyr::select( sampleID = icgc_specimen_id,
+                     status = OS ,
+                     time = OS.time,
+                     value = val,
+                     gender = donor_sex,
+                     age = donor_age_at_diagnosis)
+    
+    if(input$profile == "fusion"){
+      dat$group <- replace(dat$value,c(1,0),c("fusion","non-fusion"))}
+    if(input$profile == "promoter_outlier"){
+      dat$group <- replace(dat$value,c(-1,0,1),c("low expression","normal","high expression"))
     }
+    dat
+    })
+
+  filter_dat <- eventReactive(input$go, {
+    dplyr::filter(sur_dat_pre(),
+                          .data$age > input$age[1],
+                          .data$age < input$age[2],
+                          .data$gender %in% input$sex
+                          )
+  })
+  
+  plot_text <- eventReactive(input$go, {
     paste(
-      paste("Dataset :", input$dataset),
       paste("Profile :", input$profile),
-      paste("Item :", item_show),
+      paste("Item :", input$item_input),
       paste("Number of cases :", nrow(filter_dat())),
       sep = "\n"
     )
@@ -279,19 +243,10 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
   plot_func <- eventReactive(input$go, {
     if (!is.null(filter_dat())) {
       if (nrow(filter_dat()) >= 10) {
-        p <- tcga_surv_plot(filter_dat(),
-          cutoff_mode = input$cutoff_mode,
-          cutpoint = input$cutpoint,
-          cnv_type = input$cs_cnv,
-          profile = input$profile
-        )
-        if (is.null(p)) {
-          sendSweetAlert(
-            session = session,
-            title = "Error...",
-            text = "Something wrong, maybe only one genotype for this gene or bad input item.",
-            type = "error"
-          )
+        if(input$profile %in% c("mRNA", "miRNA_TMM", "miRNA_UQ") ){
+          p <- sur_plot(filter_dat(),input$cutoff_mode,input$cutpoint)
+        }else{
+          p <- p_survplot(filter_dat())
         }
         return(p)
       } else {
@@ -319,14 +274,6 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
     color = "white"
   )
 
-  output$pre_re <- renderText({
-    if (is.null(sur_dat_pre())) {
-      return(paste(p("Failure. The possible reason is that the gene cannot be found.", style = "color:red")))
-    } else {
-      return(paste(p("Next step.", style = "color:green")))
-    }
-  })
-
   output$cutoff1 <- renderText({
     paste("Cutoff-Low(%) :", "0 -", input$cutpoint[1])
   })
@@ -344,7 +291,7 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
 
   output$download <- downloadHandler(
     filename = function() {
-      paste0(Sys.Date(), "_tcga_surplot.", input$device)
+      paste0(Sys.Date(), "_pcawg_surplot.", input$device)
     },
     content = function(file) {
       p <- plot_func()
@@ -363,12 +310,7 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
   ## downloadTable
   output$downloadTable <- downloadHandler(
     filename = function() {
-      if (input$profile == "protein") {
-        item_show <- input$protein_input
-      } else {
-        item_show <- input$item_input
-      }
-      paste0(item_show, "_", input$profile, "_sur.csv")
+      paste0(input$item_input, "_", input$profile, "_sur.csv")
     },
     content = function(file) {
       write.csv(return_data(), file, row.names = FALSE)
@@ -377,20 +319,5 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
 }
 
 
-# Functions ---------------------------------------------------------------
 
-## Data filter
-dat_filter <- function(data, age, gender, stage, endpoint) {
-  endpoint.time <- paste0(endpoint, ".time")
-  dat <- data %>%
-    dplyr::rename(time = !!endpoint.time, status = !!endpoint) %>%
-    dplyr::filter(
-      age > !!age[1],
-      age < !!age[2],
-      gender %in% !!gender,
-      stage %in% !!stage,
-      !is.na(time),
-      !is.na(status)
-    )
-  return(dat)
-}
+
