@@ -67,11 +67,24 @@ query_molecule_value <- function(dataset, molecule, host = NULL) {
 #' query_pancan_value("KRAS")
 #' query_pancan_value("KRAS", database = "ccle")
 #' query_pancan_value("KRAS", database = "pcawg")
-#' query_pancan_value("hsa-let-7c-3p", database = "pcawg", data_type = "miRNA")
-#' query_pancan_value("hsa-let-7c-3p", database = "pcawg", data_type = "miRNA", norm_method = "UQ")
-#' query_pancan_value("ENSG00000000419", database = "pcawg", data_type = "fusion") # gene symbol also work
-#' query_pancan_value("tCa_MutLoad_MinEstimate", database = "pcawg", data_type = "APOBEC")
-#' query_pancan_value("prmtr.10000", database = "pcawg", data_type = "promoter")
+#' query_pancan_value("hsa-let-7c-3p",
+#'   database = "pcawg",
+#'   data_type = "miRNA"
+#' )
+#' query_pancan_value("hsa-let-7c-3p",
+#'   database = "pcawg",
+#'   data_type = "miRNA", norm_method = "UQ"
+#' )
+#' query_pancan_value("ENSG00000000419",
+#'   database = "pcawg",
+#'   data_type = "fusion"
+#' ) # gene symbol also work
+#' query_pancan_value("tCa_MutLoad_MinEstimate",
+#'   database = "pcawg", data_type = "APOBEC"
+#' )
+#' query_pancan_value("prmtr.10000",
+#'   database = "pcawg", data_type = "promoter"
+#' )
 #' }
 query_pancan_value <- function(molecule,
                                data_type = c(
