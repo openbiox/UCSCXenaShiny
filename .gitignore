@@ -39,3 +39,5 @@ ccle/CCLE_DepMap_18Q2_RNAseq_RPKM_20180502.gct
 ccle/ccle_expr_and_drug_response.rds
 data-raw/ccle/
 data-raw/transcript_identifier.rda
+data-raw/CCLE_GNF_data_090613.xls
+data-raw/ccle_drug_response_extend.rda

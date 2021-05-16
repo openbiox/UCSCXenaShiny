@@ -28,18 +28,16 @@ analyze_gene_drug_response_asso2 <- function(gene_list,
                                             dep_var = c("IC50","EC50","Amax","ActArea"),
                                             manova = FALSE,
                                             combine = FALSE) {
+  stopifnot(length(gene_list) > 0)
   dep_var <- match.arg(dep_var)
-  stopifnot(length(gene_list) == 1)
-  stopifnot(length(dep_var) == 1)
   on.exit(invisible(gc()))
-  
   
   if (any(grepl(" ", gene_list))) {
     stop("Space is detected in your input, it's invalid.\nIf you want to use genomic signature feature, please input a gene list.")
   }
   
-  # ccle_data <- load_data("ccle_expr_and_drug_response")
-  load("./data-raw/ccle_expr_and_drug_response_advanced.rda")
+  ccle_data <- load_data("ccle_expr_and_drug_response")
+  ccle_drug_e <- load_data("ccle_drug_response_extend.rda")
   
   if (is.null(ccle_data)) {
     stop("Data load failed, try again?")
@@ -113,7 +111,7 @@ analyze_gene_drug_response_asso2 <- function(gene_list,
     g <- drugCor[i, 1]
     d <- drugCor[i, 2]
     
-    if (manova == TRUE) {
+    if (manova) {
       # define dependent variable
       d.dep <- filter(drug_info, Compound == d)[,c("CCLE Cell Line Name", dep_var, "Slope", "Site Primary")] %>%
         rename(cellName = `CCLE Cell Line Name`, Tissue = `Site Primary`)
@@ -129,7 +127,7 @@ analyze_gene_drug_response_asso2 <- function(gene_list,
         drugCor[i, 8] <- NA
       }else{
         # manova(cbind(IC50, Slope) ~ TP53 + Tissue, data = d_dat)
-        manova_fit <- manova(as.formula(paste0("cbind(", dep_var, ", Slope", ")", " ~ ", paste(c(gene_list, "Tissue"), collapse="+"))), data = d_dat)
+        manova_fit <- stats::manova(as.formula(paste0("cbind(", dep_var, ", Slope", ")", " ~ ", paste(c(gene_list, "Tissue"), collapse="+"))), data = d_dat)
         tryCatch({
           manova_res <- summary(manova_fit)
           drugCor[i, 8] <- manova_res$stats[gene_list,6]
@@ -148,7 +146,7 @@ analyze_gene_drug_response_asso2 <- function(gene_list,
         left_join(geneExpr, by = "cellName") %>% na.omit() %>%
         mutate(group = ifelse(!!sym(gene_list) > stats::median(!!sym(gene_list)), "high", "low"))
       
-      aov_fit <- aov(as.formula(paste(paste(dep_var, collapse = "+"), "~", paste(c(gene_list, "Tissue"), collapse="+"))), data = d_dat)
+      aov_fit <- stats::aov(as.formula(paste(paste(dep_var, collapse = "+"), "~", paste(c(gene_list, "Tissue"), collapse="+"))), data = d_dat)
       aov_res <- summary(aov_fit)
       drugCor[i, 8] <- aov_res[[1]][gene_list,5]
     }
