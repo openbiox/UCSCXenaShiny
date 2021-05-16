@@ -18,7 +18,7 @@
       "<link id=\"css\" rel=\"stylesheet\" href=\"https://bootswatch.com/3/flatly/bootstrap.css\" onload=\"document.documentElement.style.display = ''\">"
     );
   }
-</script><title>A Shiny App for UCSC Xena Database • UCSCXenaShiny</title>
+</script><title>Interactive Analysis of UCSC Xena Data • UCSCXenaShiny</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- Flatly Theme - Light  --><link id="css-light" rel="stylesheet" href="https://bootswatch.com/3/flatly/bootstrap.css" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)">
 <!-- Darkly Theme - Dark --><link id="css-dark" rel="stylesheet" href="https://bootswatch.com/3/darkly/bootstrap.css" media="(prefers-color-scheme: dark)">
 <!-- preferably CSS --><link rel="stylesheet" href="preferably.css">
@@ -28,11 +28,11 @@
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="A Shiny App for UCSC Xena Database">
-<meta property="og:description" content="Provides functions and a web app for downloading, analyzing
-    and visualizing datasets from UCSC Xena (&lt;http://xena.ucsc.edu/&gt;),
-    which is a collection of UCSC-hosted public databases such as TCGA,
-    ICGC, TARGET, GTEx, CCLE, and others.">
+<script src="pkgdown.js"></script><meta property="og:title" content="Interactive Analysis of UCSC Xena Data">
+<meta property="og:description" content="Provides functions and a Shiny application for downloading,
+    analyzing and visualizing datasets from UCSC Xena
+    (&lt;http://xena.ucsc.edu/&gt;), which is a collection of UCSC-hosted public
+    databases such as TCGA, ICGC, TARGET, GTEx, CCLE, and others.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -113,7 +113,7 @@
   <div class="contents col-md-9">
 <div id="ucscxenashiny-" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#ucscxenashiny-" class="anchor"></a>UCSCXenaShiny <img src="https://github.com/openbiox/openbiox-wiki/blob/master/static/img/logo-long.png" align="right" width="200">
+<a href="#ucscxenashiny-" class="anchor"></a>UCSCXenaShiny <img src="https://raw.githubusercontent.com/openbiox/wiki/master/static/img/logo-long.png" align="right" width="200">
 </h1></div>
 
 <p><strong>UCSCXenaShiny</strong> is an R package for interactively exploring UCSC Xena. It is mainly designed to provide a web app (built on the top of <a href="https://shiny.rstudio.com/"><code>{shiny}</code></a> framework and <a href="https://github.com/ropensci/UCSCXenaTools/"><code>{UCSCXenaTools}</code></a> package) for downloading, analyzing and visualizing datasets from <a href="https://xenabrowser.net/datapages/">UCSC Xena</a>.</p>
@@ -241,10 +241,10 @@ sudo apt-get install libmpfr-dev</code></pre>
   <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://cran.r-project.org/package=UCSCXenaShiny"><img src="https://www.r-pkg.org/badges/version/UCSCXenaShiny" alt="CRAN status"></a></li>
-<li><a href="https://cran.r-project.org/package=UCSCXenaShiny"><img src="http://cranlogs.r-pkg.org/badges/grand-total/UCSCXenaShiny?color=orange"></a></li>
-<li><a href="https://www.tidyverse.org/lifecycle/#maturing"><img src="https://img.shields.io/badge/lifecycle-maturing-blue.svg" alt="lifecycle"></a></li>
-<li><a href="https://github.com/openbiox/UCSCXenaShiny"><img src="https://tokei.rs/b1/github/openbiox/UCSCXenaShiny?category=code" alt="Lines Of Code"></a></li>
+<li><a href="https://cran.r-project.org/package=UCSCXenaShiny"><img src="https://www.r-pkg.org/badges/version/UCSCXenaShiny/" alt="CRAN status"></a></li>
+<li><a href="https://cran.r-project.org/package=UCSCXenaShiny"><img src="https://cranlogs.r-pkg.org/badges/grand-total/UCSCXenaShiny?color=orange"></a></li>
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html"><img src="https://img.shields.io/badge/lifecycle-stable-blue.svg" alt="lifecycle"></a></li>
+<li><a href="https://github.com/openbiox/UCSCXenaShiny/"><img src="https://tokei.rs/b1/github/openbiox/UCSCXenaShiny?category=code" alt="Lines Of Code"></a></li>
 </ul>
 </div>
 </div>
