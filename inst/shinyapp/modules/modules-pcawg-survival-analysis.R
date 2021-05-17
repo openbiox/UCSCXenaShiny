@@ -1,6 +1,6 @@
 ui.modules_pcawg_sur_plot <- function(id) {
   ns <- NS(id)
-
+  
   fluidPage(
     fluidRow(
       column(3, wellPanel(
@@ -11,7 +11,7 @@ ui.modules_pcawg_sur_plot <- function(id) {
                            "promoter_outlier", 
                            "fusion",
                            "APOBEC"
-                           ), 
+          ), 
           choiceNames = c("mRNA Expression", 
                           "miRNA Expression (TMM)",  
                           "miRNA Expression (UQ)", 
@@ -19,7 +19,7 @@ ui.modules_pcawg_sur_plot <- function(id) {
                           "Promoter Outlier", 
                           "Gene Fusion",
                           "APOBEC mutagenesis"
-                          ), 
+          ), 
           animation = "jelly" 
         ),
         
@@ -186,26 +186,26 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
       }
     }
   })
-
+  
   # Action monitoring
-
+  
   observeEvent(input$submit_bt, {
     if (!is.null(sur_dat_pre())) {
       shinyjs::show("parameter")
     }
   })
-
+  
   # block
   sur_dat_pre <- eventReactive(input$submit_bt, {
     val <- switch(input$profile,
-           mRNA = get_pcawg_gene_value(input$item_input),
-           miRNA_TMM = get_pcawg_miRNA_value(input$item_input, norm_method = "TMM") ,
-           miRNA_UQ = get_pcawg_miRNA_value(input$item_input, norm_method = "UQ") ,
-           fusion = get_pcawg_fusion_value(input$item_input) ,
-           promoter_raw = get_pcawg_promoter_value(input$item_input, type = "raw"),
-           promoter_outlier = get_pcawg_promoter_value(input$item_input, type = "outlier"),
-           APOBEC = get_pcawg_APOBEC_mutagenesis_value(input$item_input)
-           )
+                  mRNA = get_pcawg_gene_value(input$item_input),
+                  miRNA_TMM = get_pcawg_miRNA_value(input$item_input, norm_method = "TMM") ,
+                  miRNA_UQ = get_pcawg_miRNA_value(input$item_input, norm_method = "UQ") ,
+                  fusion = get_pcawg_fusion_value(input$item_input) ,
+                  promoter_raw = get_pcawg_promoter_value(input$item_input, type = "raw"),
+                  promoter_outlier = get_pcawg_promoter_value(input$item_input, type = "outlier"),
+                  APOBEC = get_pcawg_APOBEC_mutagenesis_value(input$item_input)
+    )
     val <- val$data
     val <- na.omit(val)
     
@@ -235,7 +235,7 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
         .data$value == 1 ~ "fusion (1)",
         .data$value == 0 ~ "non-fusion (0)"
       ))
-      }
+    }
     if(input$profile == "promoter_outlier"){
       dat <- dplyr::mutate(dat,group = case_when(
         .data$value == -1 ~ "low expression (-1)",
@@ -244,14 +244,14 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
       ))
     }
     dat
-    })
-
+  })
+  
   filter_dat <- eventReactive(input$go, {
     dplyr::filter(sur_dat_pre(),
-                          .data$age > input$age[1],
-                          .data$age < input$age[2],
-                          .data$gender %in% input$sex
-                          )
+                  .data$age > input$age[1],
+                  .data$age < input$age[2],
+                  .data$gender %in% input$sex
+    )
   })
   
   plot_text <- eventReactive(input$go, {
@@ -262,14 +262,14 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
       sep = "\n"
     )
   })
-
+  
   plot_func <- eventReactive(input$go, {
     if (!is.null(filter_dat())) {
       if (nrow(filter_dat()) >= 10) {
         if(input$profile %in% c("mRNA", "miRNA_TMM", "miRNA_UQ","promoter_raw" ,"APOBEC") ){
-          p <- sur_plot(filter_dat(),input$cutoff_mode,input$cutpoint)
-        }else{
-          p <- p_survplot(filter_dat())
+          p <- UCSCXenaShiny:::sur_plot(filter_dat(), input$cutoff_mode, input$cutpoint)
+        } else {
+          p <- UCSCXenaShiny:::p_survplot(filter_dat())
         }
         return(p)
       } else {
@@ -279,7 +279,7 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
       return(NULL)
     }
   })
-
+  
   return_data <- eventReactive(input$go, {
     if (!is.null(filter_dat()) & nrow(filter_dat()) >= 10) {
       shinyjs::show(id = "save_csv")
@@ -289,29 +289,29 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
       return(NULL)
     }
   })
-
+  
   # output
   w <- waiter::Waiter$new(
     id = ns("surplot"), # Show waiter for surplot
     html = waiter::spin_hexdots(),
     color = "white"
   )
-
+  
   output$cutoff1 <- renderText({
     paste("Cutoff-Low(%) :", "0 -", input$cutpoint[1])
   })
-
+  
   output$cutoff2 <- renderText({
     paste("Cutoff-High(%): ", input$cutpoint[2], "- 100")
   })
-
+  
   output$plot_text <- renderText(plot_text())
-
+  
   output$surplot <- renderPlot({
     w$show() # Waiter add-ins
     plot_func()
   })
-
+  
   output$download <- downloadHandler(
     filename = function() {
       paste0(Sys.Date(), "_pcawg_surplot.", input$device)
@@ -324,12 +324,12 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
       )
     }
   )
-
+  
   output$tbl <- renderDT(
     return_data(),
     options = list(lengthChange = FALSE)
   )
-
+  
   ## downloadTable
   output$downloadTable <- downloadHandler(
     filename = function() {
