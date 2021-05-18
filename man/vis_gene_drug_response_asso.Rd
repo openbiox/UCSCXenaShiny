@@ -11,8 +11,8 @@ vis_gene_drug_response_asso(
 )
 }
 \arguments{
-\item{Gene}{a molecular identifier (e.g., "TP53") or a formula specifying
-genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
+\item{Gene}{a gene symbol (list), when it is a list, all
+genes are combined as a signature.}
 
 \item{x_axis_type}{set the value type for X axis.}
 

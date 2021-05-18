@@ -41,3 +41,4 @@ data-raw/ccle/
 data-raw/transcript_identifier.rda
 data-raw/CCLE_GNF_data_090613.xls
 data-raw/ccle_drug_response_extend.rda
+inst/extdata/ccle_drug_response_extend.rda

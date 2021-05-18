@@ -3,8 +3,9 @@
 #' See [analyze_gene_drug_response_asso] for examples.
 #'
 #' @export
+#' @param Gene a gene symbol (list), when it is a list, all
+#' genes are combined as a signature.
 #' @param output_form `plotly` or `ggplot2`.
-#' @inheritParams vis_toil_TvsN
 #' @param x_axis_type set the value type for X axis.
 #' @return `plotly` or `ggplot2` object.
 vis_gene_drug_response_asso <- function(Gene = "TP53",
