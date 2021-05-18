@@ -31,7 +31,7 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = c("Boxplot", "Violinplot"),
 
   Mode <- match.arg(Mode)
   Method <- match.arg(Method)
-  
+
   if (!Method %in% c("wilcox.test", "t.test")) {
     stop("only support wilcox.test or t.test")
   }
