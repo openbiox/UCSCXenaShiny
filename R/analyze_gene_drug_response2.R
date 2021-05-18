@@ -129,7 +129,8 @@ analyze_gene_drug_response_asso2 <- function(gene_list,
     dplyr::group_by(.data$gene) %>% # 对每个基因的结果作校正
     dplyr::mutate(fdr = stats::p.adjust(.data$pval, method = "fdr")) %>% 
     dplyr::ungroup() %>% 
-    dplyr::mutate_if(is.numeric, ~ round(., 3))
+    dplyr::mutate_if(is.numeric, ~ round(., 3)) %>% 
+    dplyr::arrange(.data$pval, .data$fdr)
   
   out
 }
