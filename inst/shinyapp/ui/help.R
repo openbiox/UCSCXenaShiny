@@ -19,6 +19,9 @@ ui.page_help <- function() {
         includeMarkdown(set_md_path("terms.md"))
       )
     ),
+    tabPanel(a("Package doc", 
+               href="https://openbiox.github.io/UCSCXenaShiny/index.html",
+               target="_blank")),
     tabPanel(
       "Citation",
       fluidPage(

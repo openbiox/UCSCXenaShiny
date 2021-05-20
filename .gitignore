@@ -49,3 +49,4 @@ data-raw/pcawg_promoter_id.rda
 inst/extdata/pcawg_promoter_id.rda
 data-raw/ccle_drug_response_extend.rda
 data-raw/CCLE_GNF_data_090613.xls
+inst/extdata/ccle_drug_response_extend.rda
