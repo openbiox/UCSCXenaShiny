@@ -1,5 +1,6 @@
-FROM rocker/shiny-verse:4.1.0
+FROM rocker/shiny:4.1.0
 # https://github.com/rocker-org/rocker-versioned2
+# https://hub.docker.com/r/rocker/shiny
 
 LABEL \
     maintainer="Shixiang Wang" \
@@ -8,10 +9,8 @@ LABEL \
     org.label-schema.license="MIT (c) Xena Shiny Team" \
     org.label-schema.vcs-url="https://github.com/openbiox/UCSCXenaShiny"
 
-COPY deploy.R /opt/
-RUN chmod u+x /opt/deploy.R &&\
-    mv /opt/deploy.R /srv/shiny-server/app.R &&\
-    mkdir -p /opt/xena &&\
+# Install UCSCXenaShiny
+RUN mkdir -p /opt/xena &&\
     install2.r remotes UCSCXenaShiny &&\
     R -e 'remotes::install_github("openbiox/UCSCXenaShiny@container", dependencies = TRUE)'
   
@@ -20,9 +19,12 @@ RUN R -e 'writeLines(readLines(system.file("shinyapp", "App.R", package = "UCSCX
     Rscript /opt/ext-deps.R &&\
     rm /opt/ext-deps.R
     
+# Deploy Shiny shinyapp
+COPY deploy.R /opt/
+RUN chmod u+x /opt/deploy.R &&\
+    rm -rf /srv/shiny-server/* &&\
+    mkdir /srv/shiny-server/ucscxenashiny &&\
+    mv /opt/deploy.R /srv/shiny-server/ucscxenashiny/app.R
+
 WORKDIR /opt/xena
 EXPOSE 3838
-#CMD ["/opt/deploy.R"]
-
-# run app
-CMD ["/usr/bin/shiny-server.sh"]
