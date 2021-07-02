@@ -7,8 +7,8 @@ LABEL \
     org.label-schema.license="MIT (c) Xena Shiny Team" \
     org.label-schema.vcs-url="https://github.com/openbiox/UCSCXenaShiny"
 
-COPY deploy.R /opt
-RUN chmod u+x deploy.R && \
+COPY deploy.R /opt/
+RUN chmod u+x /opt/deploy.R && \
     mkdir -p /opt/xena && \
     install2.r xfun remotes && \
     installGithub.r -d openbiox/UCSCXenaShiny@container && \
