@@ -39,9 +39,7 @@ When any of \code{dataset} and \code{id} is \code{NULL}, it should be a \code{da
 
 \item{fun_type}{select the function to compare groups.}
 
-\item{type}{A character specifying the type of statistical approach.
-Four possible options:
-
+\item{type}{A character specifying the type of statistical approach:
 \itemize{
 \item \code{"parametric"}
 \item \code{"nonparametric"}
@@ -49,8 +47,7 @@ Four possible options:
 \item \code{"bayes"}
 }
 
-Corresponding abbreviations are also accepted: \code{"p"} (for parametric),
-\code{"np"} (for nonparametric), \code{"r"} (for robust), or \code{"bf"} (for Bayesian).}
+You can specify just the initial letter.}
 
 \item{pairwise.comparisons}{Logical that decides whether pairwise comparisons
 are to be displayed (default: \code{TRUE}). Please note that only
@@ -64,10 +61,11 @@ about pairwise comparisons, see the documentation for that function.}
 comparisons. Possible methods are: \code{"holm"} (default), \code{"hochberg"},
 \code{"hommel"}, \code{"bonferroni"}, \code{"BH"}, \code{"BY"}, \code{"fdr"}, \code{"none"}.}
 
-\item{ggtheme}{A function, \code{ggplot2} theme name. Default value is
-\code{ggplot2::theme_bw()}. Any of the \code{ggplot2} themes, or themes from
-extension packages are allowed (e.g., \code{ggthemes::theme_fivethirtyeight()},
-\code{hrbrthemes::theme_ipsum_ps()}, etc.).}
+\item{ggtheme}{A \code{ggplot2} theme. Default value is
+\code{ggstatsplot::theme_ggstatsplot()}. Any of the \code{ggplot2} themes (e.g.,
+\code{ggplot2::theme_bw()}), or themes from extension packages are allowed
+(e.g., \code{ggthemes::theme_fivethirtyeight()}, \code{hrbrthemes::theme_ipsum_ps()},
+etc.).}
 
 \item{...}{other parameters passing to \link[ggstatsplot:ggbetweenstats]{ggstatsplot::ggbetweenstats} or \link[ggstatsplot:ggwithinstats]{ggstatsplot::ggwithinstats}.}
 }
