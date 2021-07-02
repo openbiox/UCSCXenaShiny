@@ -10,6 +10,7 @@ on:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 env:
   IMAGE_NAME: UCSCXenaShiny #这是您的镜像名
+jobs:      
   push-ghcr:
     runs-on: ubuntu-20.04
     env:
