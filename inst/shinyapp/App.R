@@ -78,6 +78,7 @@ pacman::p_load(
   shinyWidgets,
   shinyalert,
   shinyFiles,
+  shinythemes,
   survival,
   survminer,
   ezcox,
