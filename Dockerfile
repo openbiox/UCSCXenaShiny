@@ -28,7 +28,6 @@ RUN chmod u+x /opt/deploy.R &&\
     mv /opt/deploy.html /srv/shiny-server/index.html
 
 # allow permission
-RUN chown -R shiny:shiny /srv/shiny-server &&\
-    chown -R shiny:shiny /opt/xena
+RUN chmod a+wr /opt/xena
 WORKDIR /opt/xena
 EXPOSE 3838
