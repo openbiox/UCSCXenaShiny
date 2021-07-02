@@ -8,11 +8,11 @@ LABEL \
     org.label-schema.vcs-url="https://github.com/openbiox/UCSCXenaShiny"
 
 COPY deploy.R /opt/
-RUN chmod u+x /opt/deploy.R && \
-    mkdir -p /opt/xena && \
-    install2.r remotes && \
-    installGithub.r -d openbiox/UCSCXenaShiny@container && \
-    R -e 'writeLines(readLines(system.file("shinyapp", "App.R", package = "UCSCXenaShiny"))[25:94], "/opt/ext-deps.R")' && \
+RUN chmod u+x /opt/deploy.R &&\
+    mkdir -p /opt/xena &&\
+    install2.r -d remotes UCSCXenaShiny &&\
+    installGithub.r -d openbiox/UCSCXenaShiny@container &&\
+    R -e 'writeLines(readLines(system.file("shinyapp", "App.R", package = "UCSCXenaShiny"))[25:94], "/opt/ext-deps.R")' &&\
     Rscript /opt/ext-deps.R
 
 WORKDIR /opt/xena
