@@ -4,6 +4,11 @@
 # The cache directory and port all should be consistent with
 # configs in Dockerfile.
 
-options(xena.cacheDir = "/opt/xena") 
+options(xena.cacheDir = "/opt/xena")
+options(xena.runMode = "server")
+
 library(UCSCXenaShiny)
-app_run(runMode = "server", port = 3838)
+
+shiny::shinyAppFile(
+  system.file("shinyapp", "App.R", package = "UCSCXenaShiny")
+)
