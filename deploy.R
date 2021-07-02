@@ -1,4 +1,4 @@
-#!/usr/bin/env r
+#!/usr/bin/env Rscript
 # Copyright (C) 2021 Xena Shiny Team
 
 # The cache directory and port all should be consistent with
