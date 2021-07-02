@@ -24,7 +24,23 @@ COPY deploy.R /opt/
 RUN chmod u+x /opt/deploy.R &&\
     rm -rf /srv/shiny-server/* &&\
     mkdir /srv/shiny-server/ucscxenashiny &&\
-    mv /opt/deploy.R /srv/shiny-server/ucscxenashiny/app.R
+    mv /opt/deploy.R /srv/shiny-server/ucscxenashiny/app.R &&\
+    cat <<EOF >>/srv/shiny-server/index.html
+<!DOCTYPE HTML>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="0; url=./ucscxenashiny">
+    <script type="text/javascript">
+        window.location.href = "./ucscxenashiny"
+    </script>
+    <title>Page Redirection</title>
+  </head>
+  <body>
+    If you are not redirected automatically, follow <a href='./ucscxenashiny'>this link</a>.
+  </body>
+</html>
+EOF
 
 WORKDIR /opt/xena
 EXPOSE 3838
