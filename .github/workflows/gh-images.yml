@@ -2,6 +2,10 @@ name: GitHub XenaShiny Image
 on:
   workflow_dispatch: #github页面手动触发
   push:
+    branches:
+        - main
+        - master
+        - container
     tags:
       - "v*.*"
 env:
