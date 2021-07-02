@@ -40,3 +40,4 @@ inst/extdata/transcript_identifier.rda
 ^Meta$
 
 Dockerfile
+deploy.R
