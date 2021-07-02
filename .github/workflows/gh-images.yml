@@ -1,13 +1,13 @@
 name: GitHub XenaShiny Image
 on:
-  workflow_dispatch: #github页面手动触发
+  workflow_dispatch:
   push:
     branches:
         - main
         - master
         - container
     tags:
-      - "v*.*"
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 env:
   IMAGE_NAME: UCSCXenaShiny #这是您的镜像名
 jobs:
