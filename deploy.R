@@ -18,6 +18,7 @@ tryCatch({
   # Preload datasets
   load_data("transcript_identifier")
   load_data("tcga_TIL")
+  invisible(NULL)
 }, error = function(e) {
   warning("Preload data failed due to the network, it will try again when starting Shiny!")
 })
