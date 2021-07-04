@@ -10,7 +10,7 @@ LABEL \
     org.label-schema.vcs-url="https://github.com/openbiox/UCSCXenaShiny"
 
 # Install UCSCXenaShiny
-RUN mkdir -p /opt/xena &&\
+RUN mkdir -p /xena &&\
     install2.r remotes UCSCXenaShiny &&\
     R -e 'remotes::install_github("openbiox/UCSCXenaShiny@container", dependencies = TRUE)'
   
@@ -28,6 +28,6 @@ RUN chmod u+x /opt/deploy.R &&\
     mv /opt/deploy.html /srv/shiny-server/index.html
 
 # allow permission
-RUN chmod a+wr /opt/xena
-WORKDIR /opt/xena
+RUN chown -R shiny:shiny /xena
+WORKDIR /xena
 EXPOSE 3838
