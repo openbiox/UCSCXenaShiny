@@ -31,7 +31,7 @@ RUN chmod u+x /opt/deploy.R &&\
 RUN chown -R shiny:shiny /xena
 # preload datasets
 RUN cat -n /srv/shiny-server/ucscxenashiny/app.R &&\
-    R -e 'writeLines(readLines("/srv/shiny-server/ucscxenashiny/app.R"))[10:24], "/opt/preload.R")' &&\
+    R -e 'writeLines(readLines("/srv/shiny-server/ucscxenashiny/app.R")[10:24], "/opt/preload.R")' &&\
     Rscript /opt/preload.R &&\
     rm /opt/preload.R
 WORKDIR /xena
