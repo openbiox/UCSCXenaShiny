@@ -4,10 +4,15 @@
 \alias{app_run}
 \title{Run UCSC Xena Shiny App}
 \usage{
-app_run(runMode = "client")
+app_run(runMode = "client", port = getOption("shiny.port"))
 }
 \arguments{
 \item{runMode}{default is 'client' for personal user, set it to 'server' for running on server.}
+
+\item{port}{The TCP port that the application should listen on. If the
+\code{port} is not specified, and the \code{shiny.port} option is set (with
+\code{options(shiny.port = XX)}), then that port will be used. Otherwise,
+use a random port.}
 }
 \description{
 Run UCSC Xena Shiny App

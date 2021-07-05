@@ -29,9 +29,7 @@ vis_identifier_multi_cor(
 \item{matrix.type}{Character, \code{"upper"} (default), \code{"lower"}, or \code{"full"},
 display full matrix, lower triangular or upper triangular matrix.}
 
-\item{type}{A character specifying the type of statistical approach.
-Four possible options:
-
+\item{type}{A character specifying the type of statistical approach:
 \itemize{
 \item \code{"parametric"}
 \item \code{"nonparametric"}
@@ -39,8 +37,7 @@ Four possible options:
 \item \code{"bayes"}
 }
 
-Corresponding abbreviations are also accepted: \code{"p"} (for parametric),
-\code{"np"} (for nonparametric), \code{"r"} (for robust), or \code{"bf"} (for Bayesian).}
+You can specify just the initial letter.}
 
 \item{partial}{Can be \code{TRUE} for partial correlations. For Bayesian partial
 correlations, "full" instead of pseudo-Bayesian partial correlations (i.e.,

@@ -38,3 +38,7 @@ inst/extdata/transcript_identifier.rda
 
 ^doc$
 ^Meta$
+
+Dockerfile
+deploy.*
+.dockerignore
