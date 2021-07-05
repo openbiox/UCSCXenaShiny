@@ -295,6 +295,9 @@ Zscore <- function(x) {
   return(y)
 }
 
+
+# Source link: https://github.com/Katan5555/Macau_project_1/blob/master/FUNCTIONS/partial_correlation_functions.R
+# LICENCE: GPLv3
 pcor_test <- function(x, y, z, use = "mat", method = "p", na.rm = TRUE) {
   # The partial correlation coefficient between x and y given z
   #

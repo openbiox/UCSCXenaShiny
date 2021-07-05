@@ -6,7 +6,7 @@ LABEL \
     maintainer="Shixiang Wang" \
     email="w_shixiang@163.com" \
     description="Docker Image for UCSCXenaShiny" \
-    org.label-schema.license="MIT (c) Xena Shiny Team" \
+    org.label-schema.license="GPLv3 (c) Xena Shiny Team" \
     org.label-schema.vcs-url="https://github.com/openbiox/UCSCXenaShiny"
 
 # Install UCSCXenaShiny

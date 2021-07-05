@@ -1,6 +1,6 @@
 Package: UCSCXenaShiny
 Title: Interactive Analysis of UCSC Xena Data
-Version: 1.0.1
+Version: 1.0.1.999
 Authors@R: 
     c(person(given = "Shixiang",
              family = "Wang",
@@ -35,7 +35,7 @@ Description: Provides functions and a Shiny application for downloading,
     analyzing and visualizing datasets from UCSC Xena
     (<http://xena.ucsc.edu/>), which is a collection of UCSC-hosted public
     databases such as TCGA, ICGC, TARGET, GTEx, CCLE, and others.
-License: MIT + file LICENSE
+License: GPL (>= 3)
 URL: https://github.com/openbiox/UCSCXenaShiny
 BugReports: https://github.com/openbiox/UCSCXenaShiny/issues
 Depends: 

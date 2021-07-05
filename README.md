@@ -110,4 +110,4 @@ sudo apt-get install libmpfr-dev
 
 ## :page_with_curl: LICENSE
 
-MIT © [Openbiox](https://github.com/openbiox)
+GPLv3 © [Openbiox](https://github.com/openbiox)
