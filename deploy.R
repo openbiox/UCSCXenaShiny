@@ -9,7 +9,7 @@ print(Sys.info())
 
 # Set options and run app
 
-options(xena.cacheDir = "/xena")
+options(xena.cacheDir = "/xena", xena.zenodoDir = "/xena/datasets")
 options(xena.runMode = "server")
 
 library(UCSCXenaShiny)
