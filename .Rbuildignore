@@ -41,3 +41,4 @@ inst/extdata/transcript_identifier.rda
 
 Dockerfile
 deploy.*
+.dockerignore
