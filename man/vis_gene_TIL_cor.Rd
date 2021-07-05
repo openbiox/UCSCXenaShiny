@@ -9,7 +9,8 @@ vis_gene_TIL_cor(
   cor_method = "spearman",
   data_type = "mRNA",
   sig = c("B cell_TIMER", "T cell CD4+_TIMER", "T cell CD8+_TIMER", "Neutrophil_TIMER",
-    "Macrophage_TIMER", "Myeloid dendritic cell_TIMER")
+    "Macrophage_TIMER", "Myeloid dendritic cell_TIMER"),
+  Plot = "TRUE"
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ including "mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
 "cnv_gistic2", "methylation", "miRNA".}
 
 \item{sig}{Immune Signature, default: result from TIMER}
+
+\item{Plot}{output the plot directly, default 'TRUE'}
 }
 \description{
 Heatmap for Correlation between Gene and Tumor Immune Infiltration (TIL)

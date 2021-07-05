@@ -8,7 +8,8 @@ vis_gene_immune_cor(
   Gene = "TP53",
   cor_method = "spearman",
   data_type = "mRNA",
-  Immune_sig_type = "Cibersort"
+  Immune_sig_type = "Cibersort",
+  Plot = "TRUE"
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ including "mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
 "cnv_gistic2", "methylation", "miRNA".}
 
 \item{Immune_sig_type}{quantification method, default is "Cibersort"}
+
+\item{Plot}{output the plot directly, default 'TRUE'}
 }
 \description{
 Heatmap for Correlation between Gene and Immune Signatures

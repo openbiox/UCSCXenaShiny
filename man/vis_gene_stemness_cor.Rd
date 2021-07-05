@@ -7,7 +7,8 @@
 vis_gene_stemness_cor(
   Gene = "TP53",
   cor_method = "spearman",
-  data_type = "mRNA"
+  data_type = "mRNA",
+  Plot = "TRUE"
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 \item{data_type}{choose gene profile type,
 including "mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
 "cnv_gistic2", "methylation", "miRNA".}
+
+\item{Plot}{output the plot directly, default 'TRUE'}
 }
 \description{
 Visualize Correlation between Gene and Tumor Stemness

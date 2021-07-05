@@ -428,12 +428,13 @@ vis_pancan_anatomy <- function(Gene = "TP53",
 #' @inheritParams vis_toil_TvsN
 #' @param cor_method correlation method
 #' @param Immune_sig_type quantification method, default is "Cibersort"
+#' @param Plot output the plot directly, default 'TRUE'
 #' @examples
 #' \dontrun{
 #' p <- vis_gene_immune_cor(Gene = "TP53")
 #' }
 #' @export
-vis_gene_immune_cor <- function(Gene = "TP53", cor_method = "spearman", data_type = "mRNA", Immune_sig_type = "Cibersort") {
+vis_gene_immune_cor <- function(Gene = "TP53", cor_method = "spearman", data_type = "mRNA", Immune_sig_type = "Cibersort", Plot = "TRUE") {
   tcga_pan_immune_signature <- load_data("tcga_pan_immune_signature")
   tcga_gtex <- load_data("tcga_gtex")
 
@@ -509,7 +510,17 @@ vis_gene_immune_cor <- function(Gene = "TP53", cor_method = "spearman", data_typ
     ) +
     ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "*** p < 0.001", "\n\n", "Correlation")) +
     ggtitle(paste0("The correlation between ", Gene, " ", data_type, " with immune signatures"))
-  return(p)
+  
+  if (Plot == TRUE) {
+    return(p)
+  } else {
+    pdata = ss
+    plist = list()
+    plist[[1]] = p 
+    plist[[2]] = pdata
+    names(plist) = c("plot","pdata")
+    return(plist)
+  }
 }
 
 
@@ -521,7 +532,7 @@ vis_gene_immune_cor <- function(Gene = "TP53", cor_method = "spearman", data_typ
 #' p <- vis_gene_tmb_cor(Gene = "TP53")
 #' }
 #' @export
-vis_gene_tmb_cor <- function(Gene = "TP53", cor_method = "spearman", data_type = "mRNA") {
+vis_gene_tmb_cor <- function(Gene = "TP53", cor_method = "spearman", data_type = "mRNA", Plot = "TRUE") {
   tcga_tmb <- load_data("tcga_tmb")
   tcga_gtex <- load_data("tcga_gtex")
 
@@ -573,7 +584,17 @@ vis_gene_tmb_cor <- function(Gene = "TP53", cor_method = "spearman", data_type =
     ) + # 调整y轴文字
     # 调整legen
     ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "Correlation"))
-  return(p)
+  if (Plot == TRUE) {
+    return(p)
+  } else {
+    pdata = ss
+    plist = list()
+    plist[[1]] = p 
+    plist[[2]] = pdata
+    names(plist) = c("plot","pdata")
+    return(plist)
+  }
+  
 }
 
 #' Visualize Correlation between Gene and MSI (Microsatellite instability)
@@ -584,7 +605,7 @@ vis_gene_tmb_cor <- function(Gene = "TP53", cor_method = "spearman", data_type =
 #' p <- vis_gene_msi_cor(Gene = "TP53")
 #' }
 #' @export
-vis_gene_msi_cor <- function(Gene = "TP53", cor_method = "spearman", data_type = "mRNA") {
+vis_gene_msi_cor <- function(Gene = "TP53", cor_method = "spearman", data_type = "mRNA", Plot = "TRUE") {
   tcga_msi <- load_data("tcga_MSI")
   tcga_gtex <- load_data("tcga_gtex")
 
@@ -638,7 +659,16 @@ vis_gene_msi_cor <- function(Gene = "TP53", cor_method = "spearman", data_type =
     # 调整legen
     ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "Correlation"))
   # p
-  return(p)
+  if (Plot == TRUE) {
+    return(p)
+  } else {
+    pdata = ss
+    plist = list()
+    plist[[1]] = p 
+    plist[[2]] = pdata
+    names(plist) = c("plot","pdata")
+    return(plist)
+  }
 }
 
 #' Visualize Correlation between Gene and Tumor Stemness
@@ -649,7 +679,7 @@ vis_gene_msi_cor <- function(Gene = "TP53", cor_method = "spearman", data_type =
 #' p <- vis_gene_stemness_cor(Gene = "TP53")
 #' }
 #' @export
-vis_gene_stemness_cor <- function(Gene = "TP53", cor_method = "spearman", data_type = "mRNA") {
+vis_gene_stemness_cor <- function(Gene = "TP53", cor_method = "spearman", data_type = "mRNA", Plot = "TRUE") {
   tcga_stemness <- load_data("tcga_stemness")
   tcga_gtex <- load_data("tcga_gtex")
 
@@ -701,7 +731,17 @@ vis_gene_stemness_cor <- function(Gene = "TP53", cor_method = "spearman", data_t
     ) + # 调整y轴文字
     # 调整legen
     ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "Correlation"))
-  return(p)
+  
+  if (Plot == TRUE) {
+    return(p)
+  } else {
+    pdata = ss
+    plist = list()
+    plist[[1]] = p 
+    plist[[2]] = pdata
+    names(plist) = c("plot","pdata")
+    return(plist)
+  }
 }
 
 #' Visualize Gene TPM in Single Cancer Type (Tumor (TCGA) vs Normal (TCGA & GTEx))
@@ -1146,6 +1186,7 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
 #' @inheritParams vis_toil_TvsN
 #' @param cor_method correlation method
 #' @param sig Immune Signature, default: result from TIMER
+#' @param Plot output the plot directly, default 'TRUE'
 #' @examples
 #' \dontrun{
 #' p <- vis_gene_TIL_cor(Gene = "TP53")
@@ -1161,7 +1202,8 @@ vis_gene_TIL_cor <- function(Gene = "TP53",
                                "Neutrophil_TIMER",
                                "Macrophage_TIMER",
                                "Myeloid dendritic cell_TIMER"
-                             )) {
+                             ),
+                             Plot = "TRUE") {
   tcga_TIL <- load_data("tcga_TIL")
   cell_type <- colnames(tcga_TIL)[-1]
   source <- sapply(stringr::str_split(cell_type, "_"), function(x) x[2])
@@ -1239,5 +1281,14 @@ vis_gene_TIL_cor <- function(Gene = "TP53",
     ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "*** p < 0.001", "\n\n", "Correlation")) +
     ggtitle(paste0("The correlation between ", Gene, " ", data_type, " with immune signatures"))
 
-  return(p)
+  if (Plot == TRUE) {
+    return(p)
+  } else {
+    pdata = ss
+    plist = list()
+    plist[[1]] = p 
+    plist[[2]] = pdata
+    names(plist) = c("plot","pdata")
+    return(plist)
+  }
 }

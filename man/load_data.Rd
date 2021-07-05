@@ -13,6 +13,7 @@ ccle_info
 pancan_MSI
 pcawg_info
 pcawg_purity
+TCGA.organ
 tcga_chr_alteration
 tcga_clinical
 tcga_genome_instability
@@ -25,7 +26,6 @@ tcga_subtypes
 tcga_surv
 tcga_TIL
 tcga_tmb
-TCGA.organ
 toil_info}
 }
 \value{
