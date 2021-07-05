@@ -11,7 +11,7 @@ LABEL \
 
 # Install UCSCXenaShiny
 RUN install2.r remotes UCSCXenaShiny &&\
-    R -e 'remotes::install_github("openbiox/UCSCXenaShiny@container", dependencies = TRUE)'
+    R -e 'remotes::install_github("openbiox/UCSCXenaShiny", dependencies = TRUE)'
   
 # Install extra dependencies
 RUN R -e 'writeLines(readLines(system.file("shinyapp", "App.R", package = "UCSCXenaShiny"))[25:95], "/opt/ext-deps.R")' &&\
