@@ -86,6 +86,15 @@ options(xena.cacheDir = "/home/xxx/xena_data")
 Option `xena.runMode` can be used to control the way how the Shiny works.
 It can be 'client' or 'server'. You can directly set it in `app_run()`.
 
+## :movie_camera: Videos
+
+- Home page: <https://www.bilibili.com/video/bv1R84y1F7WT>.
+- Repository page: <https://www.bilibili.com/video/bv1Mq4y1J73o>.
+- General Analysis page: <https://www.bilibili.com/video/bv1p64y1U7iU>.
+- Quick PanCan Analysis page: <https://www.bilibili.com/video/bv1o64y1y7jW>.
+- Features:
+  - Genomic Signature: <https://www.bilibili.com/video/bv1zB4y1c7eB>.
+
 ## :hammer_and_wrench: Troubleshooting
 
 - `ERROR: dependencies ‘gmp’, ‘Rmpfr’ are not available for package ‘PMCMRplus’` or `ERROR: dependency ‘pairwiseComparisons’ is not available for package ‘ggstatsplot’` on Linux when installing `ggstatsplot` package.

@@ -1,7 +1,7 @@
-pandoc: 2.11.2
+pandoc: 2.11.4
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   api: api.html
-last_built: 2021-05-16T05:44Z
+last_built: 2021-07-06T14:27Z
 

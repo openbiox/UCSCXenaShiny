@@ -102,7 +102,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">UCSCXenaShiny</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1.999</span>
       </span>
     </div>
 
@@ -173,7 +173,7 @@
     <p>Run UCSC Xena Shiny App</p>
     </div>
 
-    <pre class="usage"><span class='fu'>app_run</span><span class='op'>(</span>runMode <span class='op'>=</span> <span class='st'>"client"</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>app_run</span><span class='op'>(</span>runMode <span class='op'>=</span> <span class='st'>"client"</span>, port <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"shiny.port"</span><span class='op'>)</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -181,6 +181,13 @@
     <tr>
       <th>runMode</th>
       <td><p>default is 'client' for personal user, set it to 'server' for running on server.</p></td>
+    </tr>
+    <tr>
+      <th>port</th>
+      <td><p>The TCP port that the application should listen on. If the
+<code>port</code> is not specified, and the <code>shiny.port</code> option is set (with
+<code><a href='https://rdrr.io/r/base/options.html'>options(shiny.port = XX)</a></code>), then that port will be used. Otherwise,
+use a random port.</p></td>
     </tr>
     </table>
 
