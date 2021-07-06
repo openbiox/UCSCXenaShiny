@@ -67,7 +67,7 @@ You can install the development version of **UCSCXenaShiny** from Github
 with:
 
 ```r
-remotes::install_github("openbiox/XenaShiny")
+remotes::install_github("openbiox/UCSCXenaShiny")
 ```
 
 Or Gitee (for Chinese users):
