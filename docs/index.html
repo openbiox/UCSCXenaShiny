@@ -126,27 +126,43 @@
 <a href="#cloud-use-on-cloud" class="anchor"></a><span class="emoji" data-emoji="cloud">☁️</span> Use on cloud</h2>
 <p>If you don’t want to install R and packages locally, or you have no programming experience, try using this tool on Hiplot platform: <a href="https://shiny.hiplot.com.cn/ucsc-xena-shiny/" class="uri">https://shiny.hiplot.com.cn/ucsc-xena-shiny/</a>.</p>
 </div>
+<div id="package-use-with-docker" class="section level2">
+<h2 class="hasAnchor">
+<a href="#package-use-with-docker" class="anchor"></a><span class="emoji" data-emoji="package">📦</span> Use with Docker</h2>
+<p><img alt="Docker Image Version (latest by date)" src="https://img.shields.io/docker/v/shixiangwang/ucscxenashiny?color=blue"><img alt="Docker Image Size (latest by date)" src="https://img.shields.io/docker/image-size/shixiangwang/ucscxenashiny"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/shixiangwang/ucscxenashiny"></p>
+<p>UCSCXenaShiny has corresponding docker image at <a href="https://hub.docker.com/r/shixiangwang/ucscxenashiny/" class="uri">https://hub.docker.com/r/shixiangwang/ucscxenashiny/</a>, you can install it with:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> pull shixiangwang/ucscxenashiny</span></code></pre></div>
+<p>All builds can be found at <a href="https://hub.docker.com/r/shixiangwang/ucscxenashiny/builds/" class="uri">https://hub.docker.com/r/shixiangwang/ucscxenashiny/builds/</a>.</p>
+<p>Then run the docker image with:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="at">--name</span> xenashiny <span class="at">-p</span> 3838:3838 shixiangwang/ucscxenashiny</span></code></pre></div>
+<p>Now you should find the Shiny when you open URL <code>http://127.0.0.1:3838</code> with your web browser. If you deploy the docker in a public (cloud) Linux server, change <code>127.0.0.1</code> to the host IP.</p>
+<p>You can manage the deployed container with the following commands:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stop the container</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> stop xenashiny</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Start the container</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> start xenashiny</span></code></pre></div>
+</div>
 <div id="arrow_double_down-installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#arrow_double_down-installation" class="anchor"></a><span class="emoji" data-emoji="arrow_double_down">⏬</span> Installation</h2>
 <p>You can install stable release of <strong>UCSCXenaShiny</strong> from CRAN with:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"UCSCXenaShiny"</span><span class="op">)</span></code></pre></div>
 <p>You can install the development version of <strong>UCSCXenaShiny</strong> from Github with:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"openbiox/XenaShiny"</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"openbiox/UCSCXenaShiny"</span><span class="op">)</span></code></pre></div>
 <p>Or Gitee (for Chinese users):</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_git.html">install_git</a></span><span class="op">(</span><span class="st">"https://gitee.com/XenaShiny/UCSCXenaShiny"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="beginner-usage" class="section level2">
 <h2 class="hasAnchor">
 <a href="#beginner-usage" class="anchor"></a><span class="emoji" data-emoji="beginner">🔰</span> Usage</h2>
 <p>First load package:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/openbiox/UCSCXenaShiny">UCSCXenaShiny</a></span><span class="op">)</span></code></pre></div>
 <p>Start Shiny in your R console (ignore this if you just want to use functions in this package):</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="reference/app_run.html">app_run</a></span><span class="op">(</span><span class="op">)</span>
 <span class="co"># At default, the Shiny is running under client mode</span>
 <span class="co"># It means the data queried from remote UCSC Xena server will</span>
@@ -161,7 +177,7 @@
 <p>All exported data and functions are organized at <a href="https://openbiox.github.io/UCSCXenaShiny/reference/index.html">here</a>.</p>
 <p><code>xena.cacheDir</code> and <code>xena.zenodoDir</code> are two options to control where to store data.</p>
 <p>e.g.,</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>xena.cacheDir <span class="op">=</span> <span class="st">"/home/xxx/xena_data"</span><span class="op">)</span></code></pre></div>
 <p>Option <code>xena.runMode</code> can be used to control the way how the Shiny works. It can be ‘client’ or ‘server’. You can directly set it in <code><a href="reference/app_run.html">app_run()</a></code>.</p>
 </div>
