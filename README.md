@@ -25,6 +25,36 @@ Wang, S.; Xiong, Y.; Gu, K.; Zhao, L.; Li, Y.; Zhao, F.; Li, X.; Liu, X. UCSCXen
 
 If you don't want to install R and packages locally, or you have no programming experience, try using this tool on Hiplot platform: <https://shiny.hiplot.com.cn/ucsc-xena-shiny/>.
 
+## :package: Use with Docker
+
+<img alt="Docker Image Version (latest by date)" src="https://img.shields.io/docker/v/shixiangwang/ucscxenashiny?color=blue"> <img alt="Docker Image Size (latest by date)" src="https://img.shields.io/docker/image-size/shixiangwang/ucscxenashiny"> <img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/shixiangwang/ucscxenashiny">
+
+UCSCXenaShiny has corresponding docker image at <https://hub.docker.com/r/shixiangwang/ucscxenashiny/>, you can install it with:
+
+```bash
+docker pull shixiangwang/ucscxenashiny
+```
+
+All builds can be found at <https://hub.docker.com/r/shixiangwang/ucscxenashiny/builds/>.
+
+Then run the docker image with:
+
+```bash
+docker run -d --name xenashiny -p 3838:3838 shixiangwang/ucscxenashiny
+```
+
+Now you should find the Shiny when you open URL `http://127.0.0.1:3838` with your web browser.
+If you deploy the docker in a public (cloud) Linux server, change `127.0.0.1` to the host IP.
+
+You can manage the deployed container with the following commands:
+
+```bash
+# Stop the container
+docker stop xenashiny
+# Start the container
+docker start xenashiny
+```
+
 ## :arrow_double_down: Installation
 
 You can install stable release of **UCSCXenaShiny** from CRAN with:
