@@ -29,13 +29,18 @@ If you don't want to install R and packages locally, or you have no programming 
 
 <img alt="Docker Image Version (latest by date)" src="https://img.shields.io/docker/v/shixiangwang/ucscxenashiny?color=blue"> <img alt="Docker Image Size (latest by date)" src="https://img.shields.io/docker/image-size/shixiangwang/ucscxenashiny"> <img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/shixiangwang/ucscxenashiny">
 
-UCSCXenaShiny has corresponding docker image at <https://hub.docker.com/r/shixiangwang/ucscxenashiny/>, you can install it with:
+UCSCXenaShiny has corresponding docker image at <https://hub.docker.com/r/shixiangwang/ucscxenashiny/>, you can install the latest version with:
 
 ```bash
 docker pull shixiangwang/ucscxenashiny
 ```
 
-All builds can be found at <https://hub.docker.com/r/shixiangwang/ucscxenashiny/builds/>.
+All versions can be found at <https://hub.docker.com/r/shixiangwang/ucscxenashiny/tags/>.
+For using a specified version, run the following command to install:
+
+```bash
+docker pull shixiangwang/ucscxenashiny:v1.0.2
+```
 
 Then run the docker image with:
 
