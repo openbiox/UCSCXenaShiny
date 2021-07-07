@@ -36,7 +36,7 @@ docker pull shixiangwang/ucscxenashiny
 ```
 
 All versions can be found at <https://hub.docker.com/r/shixiangwang/ucscxenashiny/tags/>.
-For using a specified version, run the following command to install:
+To use a specified version (e.g., `v1.0.2`), run the following command to install:
 
 ```bash
 docker pull shixiangwang/ucscxenashiny:v1.0.2
