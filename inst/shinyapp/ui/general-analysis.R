@@ -1,4 +1,5 @@
 ui.page_general_analysis <- function() {
+  # ns <- NS(id)
   # navbarMenu(
   #   title = "General Analysis",
   #   icon = icon("angle-double-down"),
@@ -24,11 +25,25 @@ ui.page_general_analysis <- function() {
           title = "Tips",
           content = "Click to show pre-selected datasets including user selected datasets from Repository page and corresponding phenotype datasets.",
           placement = "right", options = list(container = "body")
-        ),
-        fileInput("ga_input_file", label = "Upload file (.csv)", accept = c(".csv"))
+        )
+      ),
+      column(
+        3,
+        dropdownButton(
+          tags$h3("Upload custom feature data"),
+          fileInput("ga_input_file", label = "Upload file", accept = "text/plain"),
+          br(),
+          textInput(inputId = "ga_input_cohort", label = "Cohort"),
+          textInput(inputId = "ga_input_dataset", label = "Dataset"),
+          textInput(inputId = "ga_input_subtype", label = "Subtype"),
+          textInput(inputId = "ga_input_label", label = "Label"),
+          textInput(inputId = "ga_input_type", label = "Type"),
+          icon = icon("upload"),
+          circle = FALSE
+        )
       ),
       column(3,
-        offset = 4,
+        #offset = 4,
         shinyWidgets::actionBttn(
           inputId = "use_ga_page",
           label = "How to use",

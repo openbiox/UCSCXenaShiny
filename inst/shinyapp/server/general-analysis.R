@@ -38,6 +38,34 @@ selected_database_rm_phenotype <- reactive({
   data
 })
 
+upfile <- eventReactive(input$ga_input_file,{
+  req(input$ga_input_file)
+  # 
+  # ext <- tools::file_ext(input$ga_input_file$name)
+  # validate(need(ext == "csv", "Please upload a csv file"))
+  inFile <- input$ga_input_file
+  if (is.null(inFile))
+    return(NULL)
+  df <- data.table::fread(inFile$datapath, header = TRUE)
+  return(df)
+  
+})
+
+## upload feature data
+show_upfile_table <- reactive({
+  upfile <- upfile()
+  df <- data.frame("Cohort" = input$ga_input_cohort,
+                   "Dataset" = input$ga_input_dataset,
+                   "N" = ncol(upfile),
+                   "Subtype" = input$ga_input_subtype,
+                   "Label" = input$ga_input_label,
+                   "Type" = input$ga_input_type,
+                   "download" = "-",
+                   "browse" = "-"
+                    )
+  return(df)
+})
+
 output$ga_dataset_table <- DT::renderDataTable(
   {
     show_table <- selected_database_add_url_and_phenotype()
@@ -53,7 +81,10 @@ output$ga_dataset_table <- DT::renderDataTable(
     #     type = "warning"
     #   )
     # }
-
+    show_upfile_table <- show_upfile_table()
+    if (!is.null(show_upfile_table)) {
+      show_table = rbind(show_table, show_upfile_table)
+    }
     show_table
   },
   escape = FALSE

@@ -56,7 +56,8 @@ Imports:
     tibble (>= 2.1.3),
     tidyr,
     UCSCXenaTools,
-    utils
+    utils,
+    data.table
 Suggests: 
     covr (>= 3.2.1),
     cowplot,
