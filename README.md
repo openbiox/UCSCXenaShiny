@@ -170,6 +170,7 @@ It can be 'client' or 'server'. You can directly set it in `app_run()`.
    ```
    
 2. `installation of package ‘gridtext’ had non-zero exit status` with error info `grid-renderer.h:61:94: error: no matching function for call to ‘Rcpp::Vector<10, Rcpp::PreserveStorage>::Vector(int, bool&, const GraphicsContext&)’`.
+   
     **You have an older C++ version which cannot support C++11 features (). This error seems only happen on CentOS. Install a newer C++ and set it as default compiler for R would fix this problem.** 
     
     ```bash
