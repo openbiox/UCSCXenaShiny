@@ -24,7 +24,8 @@ ui.page_general_analysis <- function() {
           title = "Tips",
           content = "Click to show pre-selected datasets including user selected datasets from Repository page and corresponding phenotype datasets.",
           placement = "right", options = list(container = "body")
-        )
+        ),
+        fileInput("ga_input_file", label = "Upload file (.csv)", accept = c(".csv"))
       ),
       column(3,
         offset = 4,
