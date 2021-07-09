@@ -175,7 +175,11 @@ server.modules_ga_scatter_correlation <- function(input, output, session,
         sendSweetAlert(
           session,
           title = "Error",
-          text = "Error to query data and plot. Please make sure the two selected datasets are 'genomicMatrix' type.",
+          text = tags$span(
+            tags$p("Error to query data and plot. Please make sure the two selected datasets are 'genomicMatrix' type."),
+            tags$img(src = "https://gitee.com/ShixiangWang/ImageCollection/raw/master/png/20210708184045.png",
+                     alt = "errorImg", width = "98%", height = "98%")
+          ),
           type = "error"
         )
       }
