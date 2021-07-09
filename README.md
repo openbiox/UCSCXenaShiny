@@ -217,7 +217,37 @@ It can be 'client' or 'server'. You can directly set it in `app_run()`.
    install.packages("shinythemes")
    ```
 
-   
+6. Install package `gganatogram` failed or similar.
+
+   **Install it by hand in R cosole.**
+
+   ```R
+   if (!requireNamespace("gganatogram")) {
+      library(remotes)
+      tryCatch(
+         remotes::install_github("jespermaag/gganatogram"),
+         error = function(e) {
+            remotes::install_git("https://gitee.com/XenaShiny/gganatogram")
+         }
+      )
+   }
+   ```
+
+7. Install package `ggradar` failed or similar.
+
+   **Install it by hand in R cosole.**
+
+   ```R
+   if (!requireNamespace("ggradar")) {
+      library(remotes)
+      tryCatch(
+         remotes::install_github("ricardo-bion/ggradar"),
+         error = function(e) {
+            remotes::install_git("https://gitee.com/XenaShiny/ggradar")
+         }
+      )
+   }
+   ```
 
 
 ## :writing_hand: Author
