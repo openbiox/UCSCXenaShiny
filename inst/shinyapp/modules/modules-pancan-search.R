@@ -5,7 +5,7 @@ ui.modules_pancan_dist <- function(id) {
       sidebarPanel(
         fluidRow(
           column(
-            9,
+            12,
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile"), label = "Select a genomic profile:",
               choiceValues = c("mRNA", "transcript", "methylation", "miRNA"),
@@ -24,17 +24,6 @@ ui.modules_pancan_dist <- function(id) {
                 plugins = list("restore_on_backspace")
               )
             )
-          ),
-          column(
-            3,
-            shinyWidgets::actionBttn(
-              inputId = ns("search_bttn"), label = NULL,
-              style = "simple",
-              icon = icon("search"),
-              color = "primary",
-              block = FALSE,
-              size = "sm"
-            ),
           )
         ),
         shinyBS::bsPopover(ns("Pancan_search"),
@@ -51,6 +40,17 @@ ui.modules_pancan_dist <- function(id) {
         selectInput(inputId = ns("theme"), label = "Select theme for plot", choices = names(themes_list), selected = "cowplot"),
         numericInput(inputId = ns("height"), label = "Height", value = 5),
         numericInput(inputId = ns("width"), label = "Width", value = 12),
+        tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
+        shinyWidgets::actionBttn(
+          inputId = "search_bttn",
+          label = "Go!",
+          style = "gradient",
+          icon = icon("search"),
+          color = "primary",
+          block = TRUE,
+          size = "sm"
+        ),
+        br(), br(),
         prettyRadioButtons(
           inputId = ns("device"),
           label = "Choose plot format",
