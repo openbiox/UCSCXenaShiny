@@ -43,7 +43,7 @@ ui.page_repository <- function() {
         ),
         shinyWidgets::prettyCheckboxGroup("type_text", "Data Type:",
           choiceNames = c(
-            "Phenotype", "Feature by sample matrix",
+            "Phenotype", "Genomic matrix\n(e.g., expression)",
             "Genomic segments", "Mutations"
           ),
           choiceValues = c("clinicalMatrix", "genomicMatrix", "genomicSegment", "mutationVector"),
@@ -53,7 +53,7 @@ ui.page_repository <- function() {
         ),
         shinyBS::bsPopover("type_text",
           title = "Tips",
-          content = "Data type divide datasets into 4 basic categories: Phenotype for clinical or other phenotype data; Feature by sample matrix for gene/probe expression matrix; Genomic segments for copy number records; Mutations for mutation annotations",
+          content = "Data type divide datasets into 4 basic categories: Phenotype for clinical or other phenotype data; Genomic matrix is a feature by sample matrix representing gene/probe expression matrix; Genomic segments for copy number records; Mutations for mutation annotations",
           placement = "right", options = list(container = "body")
         ),
         uiOutput("subtype_text"),
