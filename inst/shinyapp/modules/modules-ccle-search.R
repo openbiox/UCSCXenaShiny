@@ -1,71 +1,70 @@
 ui.modules_ccle_dist <- function(id) {
   ns <- NS(id)
   fluidPage(
-    sidebarLayout(
-      sidebarPanel = sidebarPanel(
-        fluidRow(
-          column(
-            9,
-            shinyWidgets::prettyRadioButtons(
-              inputId = ns("profile"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "protein", "cnv"),
-              choiceNames = c("mRNA Expression", "Protein Expression", "Copy Number Variation"),
-              animation = "jelly"
-            ),
-            selectizeInput(
-              inputId = ns("ccle_search"),
-              label = NULL,
-              choices = NULL,
-              width = "100%",
-              options = list(
-                create = TRUE,
-                maxOptions = 5,
-                placeholder = "Enter a gene symbol, e.g. TP53",
-                plugins = list("restore_on_backspace")
-              )
-            ),
+    fluidRow(
+      column(
+        3,
+        wellPanel(
+          shinyWidgets::prettyRadioButtons(
+            inputId = ns("profile"), label = "Select a genomic profile:",
+            choiceValues = c("mRNA", "protein", "cnv"),
+            choiceNames = c("mRNA Expression", "Protein Expression", "Copy Number Variation"),
+            animation = "jelly"
           ),
-          column(
-            3,
-            shinyWidgets::actionBttn(
-              inputId = ns("search_bttn"), label = NULL,
-              style = "simple",
-              icon = icon("search"),
-              color = "primary",
-              block = FALSE,
-              size = "sm"
-            ),
+          selectizeInput(
+            inputId = ns("ccle_search"),
+            label = NULL,
+            choices = NULL,
+            width = "100%",
+            options = list(
+              create = TRUE,
+              maxOptions = 5,
+              placeholder = "Enter a gene symbol, e.g. TP53",
+              plugins = list("restore_on_backspace")
+            )
           ),
           shinyBS::bsPopover(ns("ccle_search"),
             title = "Tips",
             content = "Enter a gene symbol to show its distribution, e.g. TP53",
             placement = "right", options = list(container = "body")
           ),
+          tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
+          shinyWidgets::actionBttn(
+            inputId = ns("search_bttn"),
+            label = "Go!",
+            style = "gradient",
+            icon = icon("search"),
+            color = "primary",
+            block = TRUE,
+            size = "sm"
+          )
         ),
-        numericInput(inputId = ns("height"), label = "Height", value = 5),
-        numericInput(inputId = ns("width"), label = "Width", value = 12),
-        prettyRadioButtons(
-          inputId = ns("device"),
-          label = "Choose plot format",
-          choices = c("pdf", "png"),
-          selected = "pdf",
-          inline = TRUE,
-          icon = icon("check"),
-          animation = "jelly",
-          fill = TRUE
-        ),
-        downloadBttn(
-          outputId = ns("download"),
-          style = "gradient",
-          color = "default",
-          block = TRUE,
-          size = "sm"
-        ),
-        hr(),
-        tags$a(href = "https://xenabrowser.net/datapages/?cohort=Cancer%20Cell%20Line%20Encyclopedia%20(CCLE)&removeHub=https%3A%2F%2Ficgc.xenahubs.net", "Genomic profile data source"),
-        width = 3
+        wellPanel(
+          numericInput(inputId = ns("height"), label = "Height", value = 5),
+          numericInput(inputId = ns("width"), label = "Width", value = 12),
+          prettyRadioButtons(
+            inputId = ns("device"),
+            label = "Choose plot format",
+            choices = c("pdf", "png"),
+            selected = "pdf",
+            inline = TRUE,
+            icon = icon("check"),
+            animation = "jelly",
+            fill = TRUE
+          ),
+          downloadBttn(
+            outputId = ns("download"),
+            style = "gradient",
+            color = "default",
+            block = TRUE,
+            size = "sm"
+          ),
+          hr(),
+          tags$a(href = "https://xenabrowser.net/datapages/?cohort=Cancer%20Cell%20Line%20Encyclopedia%20(CCLE)&removeHub=https%3A%2F%2Ficgc.xenahubs.net", "Genomic profile data source"),
+        )
       ),
-      mainPanel = mainPanel(
+      column(
+        9,
         plotOutput(ns("gene_ccle_dist"), height = "600px"),
         DT::DTOutput(outputId = ns("tbl")),
         shinyjs::hidden(

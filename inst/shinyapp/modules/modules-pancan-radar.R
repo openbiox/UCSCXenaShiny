@@ -1,71 +1,71 @@
 ui.modules_pancan_radar <- function(id) {
   ns <- NS(id)
   fluidPage(
-    sidebarLayout(
-      sidebarPanel(
-        fluidRow(
-          column(
-            9,
-            shinyWidgets::prettyRadioButtons(
-              inputId = ns("profile"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2"),
-              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
-              animation = "jelly"
-            ),
-            selectizeInput(
-              inputId = ns("Pancan_search"),
-              label = "Input a gene or formula (as signature)",
-              choices = NULL,
-              width = "100%",
-              options = list(
-                create = TRUE,
-                maxOptions = 5,
-                placeholder = "Enter a gene symbol, e.g. TP53",
-                plugins = list("restore_on_backspace")
-              )
+    fluidRow(
+      column(
+        3,
+        wellPanel(
+          shinyWidgets::prettyRadioButtons(
+            inputId = ns("profile"), label = "Select a genomic profile:",
+            choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2"),
+            choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
+            animation = "jelly"
+          ),
+          selectizeInput(
+            inputId = ns("Pancan_search"),
+            label = "Input a gene or formula (as signature)",
+            choices = NULL,
+            width = "100%",
+            options = list(
+              create = TRUE,
+              maxOptions = 5,
+              placeholder = "Enter a gene symbol, e.g. TP53",
+              plugins = list("restore_on_backspace")
             )
           ),
-          column(
-            3,
-            shinyWidgets::actionBttn(
-              inputId = ns("search_bttn"), label = NULL,
-              style = "simple",
-              icon = icon("search"),
-              color = "primary",
-              block = FALSE,
-              size = "sm"
-            ),
+          selectInput(inputId = ns("Type"), label = "Select a feature", choices = c("stemness", "TMB", "MSI"), selected = "stemness"),
+          selectInput(
+            inputId = ns("cor_method"),
+            label = "Select Correlation method",
+            choices = c("spearman", "pearson"),
+            selected = "spearman"
+          ),
+          tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
+          shinyWidgets::actionBttn(
+            inputId = ns("search_bttn"),
+            label = "Go!",
+            style = "gradient",
+            icon = icon("search"),
+            color = "primary",
+            block = TRUE,
+            size = "sm"
           )
         ),
-        selectInput(inputId = ns("Type"), label = "Select a feature", choices = c("stemness", "TMB", "MSI"), selected = "stemness"),
-        selectInput(
-          inputId = ns("cor_method"),
-          label = "Select Correlation method",
-          choices = c("spearman", "pearson"),
-          selected = "spearman"
+        wellPanel(
+          numericInput(inputId = ns("height"), label = "Height", value = 5),
+          numericInput(inputId = ns("width"), label = "Width", value = 12),
+          tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
+          prettyRadioButtons(
+            inputId = ns("device"),
+            label = "Choose plot format",
+            choices = c("pdf", "png"),
+            selected = "pdf",
+            inline = TRUE,
+            icon = icon("check"),
+            animation = "jelly",
+            fill = TRUE
+          ),
+          downloadBttn(
+            outputId = ns("download"),
+            style = "gradient",
+            color = "default",
+            block = TRUE,
+            size = "sm"
+          )
         ),
-        numericInput(inputId = ns("height"), label = "Height", value = 5),
-        numericInput(inputId = ns("width"), label = "Width", value = 12),
-        prettyRadioButtons(
-          inputId = ns("device"),
-          label = "Choose plot format",
-          choices = c("pdf", "png"),
-          selected = "pdf",
-          inline = TRUE,
-          icon = icon("check"),
-          animation = "jelly",
-          fill = TRUE
-        ),
-        downloadBttn(
-          outputId = ns("download"),
-          style = "gradient",
-          color = "default",
-          block = TRUE,
-          size = "sm"
-        ),
-        width = 3
       ),
-      mainPanel = mainPanel(
+      column(
+        9,
         plotOutput(ns("gene_pancan_radar"), height = "500px"),
         hr(),
         h5("NOTEs:"),
@@ -80,8 +80,7 @@ ui.modules_pancan_radar <- function(id) {
             id = ns("save_csv"),
             downloadButton(ns("downloadTable"), "Save as csv")
           )
-        ),
-        width = 9
+        )
       )
     )
   )
@@ -121,18 +120,19 @@ server.modules_pancan_radar <- function(input, output, session) {
   plot_func <- eventReactive(input$search_bttn, {
     if (nchar(input$Pancan_search) >= 1) {
       vis_fun <- switch(input$Type,
-                        stemness = vis_gene_stemness_cor,
-                        TMB = vis_gene_tmb_cor,
-                        MSI = vis_gene_msi_cor)
+        stemness = vis_gene_stemness_cor,
+        TMB = vis_gene_tmb_cor,
+        MSI = vis_gene_msi_cor
+      )
 
       p <- vis_fun(Gene = input$Pancan_search, cor_method = input$cor_method, data_type = input$profile)
-      
-      pdata <- p$data %>% 
+
+      pdata <- p$data %>%
         dplyr::mutate(cor = round(cor, digits = 3), p.value = round(p.value, digits = 3))
       df <- pdata %>%
         select(cor, cancer) %>%
         pivot_wider(names_from = cancer, values_from = cor)
-      
+
       plot <- ggradar::ggradar(
         df[1, ],
         font.radar = "sans",

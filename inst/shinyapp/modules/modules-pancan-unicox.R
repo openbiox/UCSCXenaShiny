@@ -1,11 +1,10 @@
 ui.modules_pancan_unicox <- function(id) {
   ns <- NS(id)
   fluidPage(
-    sidebarLayout(
-      sidebarPanel = sidebarPanel(
         fluidRow(
           column(
-            9,
+            3,
+            wellPanel(
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile"), label = "Select a genomic profile:",
               choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2"),
@@ -23,25 +22,23 @@ ui.modules_pancan_unicox <- function(id) {
                 placeholder = "Enter a gene symbol, e.g. TP53",
                 plugins = list("restore_on_backspace")
               )
-            )
-          ),
-          column(
-            3,
-            shinyWidgets::actionBttn(
-              inputId = ns("search_bttn"), label = NULL,
-              style = "simple",
-              icon = icon("search"),
-              color = "primary",
-              block = FALSE,
-              size = "sm"
-            )
-          )
-        ),
+            ),
         selectInput(inputId = ns("measure"), label = "Select Measure for plot", choices = c("OS", "PFI", "DSS", "DFI"), selected = "OS"),
         selectInput(inputId = ns("threshold"), label = "Select Threshold for plot", choices = c(0.25, 0.5), selected = 0.5),
         colourpicker::colourInput(inputId = ns("first_col"), "First color", "#6A6F68"),
         colourpicker::colourInput(inputId = ns("second_col"), "Second color", "#E31A1C"),
         colourpicker::colourInput(inputId = ns("third_col"), "Third color", "#377DB8"),
+        tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
+        shinyWidgets::actionBttn(
+          inputId = ns("search_bttn"),
+          label = "Go!",
+          style = "gradient",
+          icon = icon("search"),
+          color = "primary",
+          block = TRUE,
+          size = "sm"
+        )),
+        wellPanel(
         numericInput(inputId = ns("height"), label = "Height", value = 8),
         numericInput(inputId = ns("width"), label = "Width", value = 6),
         prettyRadioButtons(
@@ -60,11 +57,10 @@ ui.modules_pancan_unicox <- function(id) {
           color = "default",
           block = TRUE,
           size = "sm"
-        ),
-        width = 3
+        ))
       ),
-      mainPanel = mainPanel(
-        plotOutput(ns("unicox_gene_tree"), height = "500px"),
+      column(9,
+        plotOutput(ns("unicox_gene_tree"), height = "500px",width= "350px"),
         hr(),
         h5("NOTEs:"),
         p("1. We define gene in certain cancer type as risky (log(Hazard Ratio) > 0) or protective (log(Hazard Ratio) < 0) or NS (No statistical significance, P value > 0.05)"),
@@ -76,8 +72,7 @@ ui.modules_pancan_unicox <- function(id) {
             id = ns("save_csv"),
             downloadButton(ns("downloadTable"), "Save as csv")
           )
-        ),
-        width = 4
+        )
       )
     )
   )

@@ -1,83 +1,86 @@
 ui.modules_pcawg_dist <- function(id) {
   ns <- NS(id)
   fluidPage(
-    sidebarLayout(
-      sidebarPanel(
-        fluidRow(
-          column(
-            9,
-            shinyWidgets::prettyRadioButtons(
-              inputId = ns("profile"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "miRNA_TMM", "miRNA_UQ", 
-                               "promoter_raw", "promoter_relative", "promoter_outlier",
-                               "fusion", "APOBEC"),
-              choiceNames = c("mRNA Expression", "miRNA Expression (TMM)", 
-                              "miRNA Expression (UQ)",
-                              "Raw Promoter Activity",
-                              "Relative Promoter Activity",
-                              "Promoter Outlier",
-                              "Gene Fusion",
-                              "APOBEC mutagenesis"),
-              animation = "jelly"
+    fluidRow(
+      column(
+        3,
+        wellPanel(
+          shinyWidgets::prettyRadioButtons(
+            inputId = ns("profile"), label = "Select a genomic profile:",
+            choiceValues = c(
+              "mRNA", "miRNA_TMM", "miRNA_UQ",
+              "promoter_raw", "promoter_relative", "promoter_outlier",
+              "fusion", "APOBEC"
             ),
-            selectizeInput(
-              inputId = ns("Pancan_search"),
-              label = "Input a gene or formula (as signature)",
-              choices = NULL,
-              width = "100%",
-              options = list(
-                create = TRUE,
-                maxOptions = 5,
-                placeholder = "Enter a gene symbol, e.g. TP53",
-                plugins = list("restore_on_backspace")
-              )
+            choiceNames = c(
+              "mRNA Expression", "miRNA Expression (TMM)",
+              "miRNA Expression (UQ)",
+              "Raw Promoter Activity",
+              "Relative Promoter Activity",
+              "Promoter Outlier",
+              "Gene Fusion",
+              "APOBEC mutagenesis"
+            ),
+            animation = "jelly"
+          ),
+          selectizeInput(
+            inputId = ns("Pancan_search"),
+            label = "Input a gene or formula (as signature)",
+            choices = NULL,
+            width = "100%",
+            options = list(
+              create = TRUE,
+              maxOptions = 5,
+              placeholder = "Enter a gene symbol, e.g. TP53",
+              plugins = list("restore_on_backspace")
             )
           ),
-          column(
-            3,
-            shinyWidgets::actionBttn(
-              inputId = ns("search_bttn"), label = NULL,
-              style = "simple",
-              icon = icon("search"),
-              color = "primary",
-              block = FALSE,
-              size = "sm"
-            ),
+          shinyBS::bsPopover(ns("Pancan_search"),
+            title = "Tips",
+            content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
+            placement = "right", options = list(container = "body")
+          ),
+          materialSwitch(ns("pdist_mode"), "Show violin plot", inline = FALSE),
+          materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = TRUE),
+          materialSwitch(ns("pdist_show_p_label"), "Show P label", inline = TRUE),
+          colourpicker::colourInput(inputId = ns("tumor_col"), "Tumor sample color", "#DF2020"),
+          colourpicker::colourInput(inputId = ns("normal_col"), "Normal sample color", "#DDDF21"),
+          selectInput(inputId = ns("theme"), label = "Select theme for plot", choices = names(themes_list), selected = "cowplot"),
+          tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
+          shinyWidgets::actionBttn(
+            inputId = ns("search_bttn"),
+            label = "Go!",
+            style = "gradient",
+            icon = icon("search"),
+            color = "primary",
+            block = TRUE,
+            size = "sm"
           )
         ),
-        shinyBS::bsPopover(ns("Pancan_search"),
-                           title = "Tips",
-                           content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
-                           placement = "right", options = list(container = "body")
-        ),
-        materialSwitch(ns("pdist_mode"), "Show violin plot", inline = FALSE),
-        materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = TRUE),
-        materialSwitch(ns("pdist_show_p_label"), "Show P label", inline = TRUE),
-        colourpicker::colourInput(inputId = ns("tumor_col"), "Tumor sample color", "#DF2020"),
-        colourpicker::colourInput(inputId = ns("normal_col"), "Normal sample color", "#DDDF21"),
-        selectInput(inputId = ns("theme"), label = "Select theme for plot", choices = names(themes_list), selected = "cowplot"),
-        numericInput(inputId = ns("height"), label = "Height", value = 5),
-        numericInput(inputId = ns("width"), label = "Width", value = 12),
-        prettyRadioButtons(
-          inputId = ns("device"),
-          label = "Choose plot format",
-          choices = c("pdf", "png"),
-          selected = "pdf",
-          inline = TRUE,
-          icon = icon("check"),
-          animation = "jelly",
-          fill = TRUE
-        ),
-        downloadBttn(
-          outputId = ns("download"),
-          style = "gradient",
-          color = "default",
-          block = TRUE,
-          size = "sm"
-        ),
-        width = 3
+        wellPanel(
+          numericInput(inputId = ns("height"), label = "Height", value = 5),
+          numericInput(inputId = ns("width"), label = "Width", value = 12),
+          prettyRadioButtons(
+            inputId = ns("device"),
+            label = "Choose plot format",
+            choices = c("pdf", "png"),
+            selected = "pdf",
+            inline = TRUE,
+            icon = icon("check"),
+            animation = "jelly",
+            fill = TRUE
+          ),
+          downloadBttn(
+            outputId = ns("download"),
+            style = "gradient",
+            color = "default",
+            block = TRUE,
+            size = "sm"
+          )
+        )
       ),
-      mainPanel = mainPanel(
+      column(
+        9,
         plotOutput(ns("gene_pancan_dist"), height = "500px"),
         hr(),
         h5("NOTEs:"),
@@ -92,8 +95,7 @@ ui.modules_pcawg_dist <- function(id) {
             id = ns("save_csv"),
             downloadButton(ns("downloadTable"), "Save as csv")
           )
-        ),
-        width = 9
+        )
       )
     )
   )
@@ -104,26 +106,26 @@ server.modules_pcawg_dist <- function(input, output, session) {
 
   profile_choices <- reactive({
     switch(input$profile,
-           mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
-           miRNA_TMM = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-           miRNA_UQ = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-           promoter_raw = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
-           promoter_relative = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
-           promoter_outlier = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
-           fusion = list(all = pancan_identifiers$gene, default = "DPM1"),
-           APOBEC = list(all = c(
-             "tCa_MutLoad_MinEstimate", "APOBECtCa_enrich",
-             "A3A_or_A3B", "APOBEC_tCa_enrich_quartile", "APOBECrtCa_enrich",
-             "APOBECytCa_enrich", "APOBECytCa_enrich-APOBECrtCa_enrich",
-             "BH_Fisher_p-value_tCa", "ntca+tgan", "rtCa_to_G+rtCa_to_T",
-             "rtca+tgay", "tCa_to_G+tCa_to_T",
-             "ytCa_rtCa_BH_Fisher_p-value", "ytCa_rtCa_Fisher_p-value", "ytCa_to_G+ytCa_to_T",
-             "ytca+tgar"
-           ), default = "APOBECtCa_enrich"),
-           list(all = "NONE", default = "NONE")
+      mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
+      miRNA_TMM = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+      miRNA_UQ = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+      promoter_raw = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
+      promoter_relative = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
+      promoter_outlier = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
+      fusion = list(all = pancan_identifiers$gene, default = "DPM1"),
+      APOBEC = list(all = c(
+        "tCa_MutLoad_MinEstimate", "APOBECtCa_enrich",
+        "A3A_or_A3B", "APOBEC_tCa_enrich_quartile", "APOBECrtCa_enrich",
+        "APOBECytCa_enrich", "APOBECytCa_enrich-APOBECrtCa_enrich",
+        "BH_Fisher_p-value_tCa", "ntca+tgan", "rtCa_to_G+rtCa_to_T",
+        "rtca+tgay", "tCa_to_G+tCa_to_T",
+        "ytCa_rtCa_BH_Fisher_p-value", "ytCa_rtCa_Fisher_p-value", "ytCa_to_G+ytCa_to_T",
+        "ytca+tgar"
+      ), default = "APOBECtCa_enrich"),
+      list(all = "NONE", default = "NONE")
     )
   })
-  
+
   observe({
     updateSelectizeInput(
       session,
@@ -133,18 +135,18 @@ server.modules_pcawg_dist <- function(input, output, session) {
       server = TRUE
     )
   })
-  
+
   colors <- reactive({
     c(input$tumor_col, input$normal_col)
   })
-  
+
   plot_theme <- reactive({
     themes_list[[input$theme]]
   })
-  
+
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("gene_pancan_dist"), html = waiter::spin_hexdots(), color = "black")
-  
+
   plot_func <- eventReactive(input$search_bttn, {
     if (nchar(input$Pancan_search) >= 1) {
       p <- vis_pcawg_dist(
@@ -161,16 +163,16 @@ server.modules_pcawg_dist <- function(input, output, session) {
     }
     return(p)
   })
-  
+
   output$colorvalues <- reactive({
     c(input$tumor_col, input$normal_col)
   })
-  
+
   output$gene_pancan_dist <- renderPlot({
     w$show() # Waiter add-ins
     plot_func()
   })
-  
+
   output$downloadTable <- downloadHandler(
     filename = function() {
       paste0(input$Pancan_search, "_", input$profile, "_pcawg_dist.csv")
@@ -179,7 +181,7 @@ server.modules_pcawg_dist <- function(input, output, session) {
       write.csv(plot_func()$data, file, row.names = FALSE)
     }
   )
-  
+
   output$download <- downloadHandler(
     filename = function() {
       paste0(input$Pancan_search, "_", input$profile, "_pcawg_dist.", input$device)
@@ -197,7 +199,7 @@ server.modules_pcawg_dist <- function(input, output, session) {
       }
     }
   )
-  
+
   observeEvent(input$search_bttn, {
     if (nchar(input$Pancan_search) >= 1) {
       shinyjs::show(id = "save_csv")
@@ -205,8 +207,8 @@ server.modules_pcawg_dist <- function(input, output, session) {
       shinyjs::hide(id = "save_csv")
     }
   })
-  
-  
+
+
   output$tbl <- renderDT(
     plot_func()$data,
     options = list(lengthChange = FALSE)

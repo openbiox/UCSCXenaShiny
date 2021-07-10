@@ -1,40 +1,24 @@
 ui.modules_cancer_dist <- function(id) {
   ns <- NS(id)
   fluidPage(
-    sidebarLayout(
-      sidebarPanel = sidebarPanel(
-        fluidRow(
-          column(
-            9,
-            shinyWidgets::prettyRadioButtons(
-              inputId = ns("profile"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2"),
-              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
-              animation = "jelly"
-            ),
-            selectizeInput(
-              inputId = ns("Pancan_search"),
-              label = "Input a gene or formula (as signature)",
-              choices = NULL,
-              width = "100%",
-              options = list(
-                create = TRUE,
-                maxOptions = 5,
-                placeholder = "Enter a gene symbol, e.g. TP53",
-                plugins = list("restore_on_backspace")
-              )
-            )
-          ),
-          column(
-            3,
-            shinyWidgets::actionBttn(
-              inputId = ns("search_bttn"), label = NULL,
-              style = "simple",
-              icon = icon("search"),
-              color = "primary",
-              block = FALSE,
-              size = "sm"
-            )
+    fluidRow(column(3,
+                    wellPanel(
+        shinyWidgets::prettyRadioButtons(
+          inputId = ns("profile"), label = "Select a genomic profile:",
+          choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2"),
+          choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
+          animation = "jelly"
+        ),
+        selectizeInput(
+          inputId = ns("Pancan_search"),
+          label = "Input a gene or formula (as signature)",
+          choices = NULL,
+          width = "100%",
+          options = list(
+            create = TRUE,
+            maxOptions = 5,
+            placeholder = "Enter a gene symbol, e.g. TP53",
+            plugins = list("restore_on_backspace")
           )
         ),
         shinyBS::bsPopover(ns("Pancan_search"),
@@ -54,6 +38,18 @@ ui.modules_cancer_dist <- function(id) {
           choices = tcga_cancer_choices,
           selected = "ACC", multiple = TRUE
         ),
+        tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
+        shinyWidgets::actionBttn(
+          inputId = ns("search_bttn"),
+          label = "Go!",
+          style = "gradient",
+          icon = icon("search"),
+          color = "primary",
+          block = TRUE,
+          size = "sm"
+        )
+      ),
+      wellPanel(
         numericInput(inputId = ns("height"), label = "Height", value = 5),
         numericInput(inputId = ns("width"), label = "Width", value = 5),
         prettyRadioButtons(
@@ -72,28 +68,28 @@ ui.modules_cancer_dist <- function(id) {
           color = "default",
           block = TRUE,
           size = "sm"
-        ),
-        width = 3
+        )
       ),
-      mainPanel = mainPanel(
-        plotOutput(ns("gene_cancer_dist"), height = "600px"),
-        hr(),
-        h5("NOTEs:"),
-        p("1. The data query may take some time based on your network. Wait until a plot shows"),
-        p("2. You have to turn on both 'Show P value' and 'Show P label' to show significant labels"),
-        p("3. If a void plot shows, please check your input"),
-        p("4. ", tags$a(href = "https://pancanatlas.xenahubs.net/", "Genomic profile data source")),
-        tags$br(),
-        DT::DTOutput(outputId = ns("tbl")),
-        shinyjs::hidden(
-          wellPanel(
-            id = ns("save_csv"),
-            downloadButton(ns("downloadTable"), "Save as csv")
-          )
-        ),
-        width = 6
+    ),
+    column(
+      9,
+      plotOutput(ns("gene_cancer_dist"), height = "600px"),
+      hr(),
+      h5("NOTEs:"),
+      p("1. The data query may take some time based on your network. Wait until a plot shows"),
+      p("2. You have to turn on both 'Show P value' and 'Show P label' to show significant labels"),
+      p("3. If a void plot shows, please check your input"),
+      p("4. ", tags$a(href = "https://pancanatlas.xenahubs.net/", "Genomic profile data source")),
+      tags$br(),
+      DT::DTOutput(outputId = ns("tbl")),
+      shinyjs::hidden(
+        wellPanel(
+          id = ns("save_csv"),
+          downloadButton(ns("downloadTable"), "Save as csv")
+        )
       )
     )
+  )
   )
 }
 

@@ -1,11 +1,8 @@
 ui.modules_pancan_dist <- function(id) {
   ns <- NS(id)
   fluidPage(
-    sidebarLayout(
-      sidebarPanel(
-        fluidRow(
-          column(
-            12,
+fluidRow(column(3,
+                wellPanel(
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile"), label = "Select a genomic profile:",
               choiceValues = c("mRNA", "transcript", "methylation", "miRNA"),
@@ -23,8 +20,6 @@ ui.modules_pancan_dist <- function(id) {
                 placeholder = "Enter a gene symbol, e.g. TP53",
                 plugins = list("restore_on_backspace")
               )
-            )
-          )
         ),
         shinyBS::bsPopover(ns("Pancan_search"),
           title = "Tips",
@@ -38,19 +33,19 @@ ui.modules_pancan_dist <- function(id) {
         colourpicker::colourInput(inputId = ns("tumor_col"), "Tumor sample color", "#DF2020"),
         colourpicker::colourInput(inputId = ns("normal_col"), "Normal sample color", "#DDDF21"),
         selectInput(inputId = ns("theme"), label = "Select theme for plot", choices = names(themes_list), selected = "cowplot"),
-        numericInput(inputId = ns("height"), label = "Height", value = 5),
-        numericInput(inputId = ns("width"), label = "Width", value = 12),
         tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
         shinyWidgets::actionBttn(
-          inputId = "search_bttn",
+          inputId = ns("search_bttn"),
           label = "Go!",
           style = "gradient",
           icon = icon("search"),
           color = "primary",
           block = TRUE,
           size = "sm"
-        ),
-        br(), br(),
+        )),
+        wellPanel(
+        numericInput(inputId = ns("height"), label = "Height", value = 5),
+        numericInput(inputId = ns("width"), label = "Width", value = 12),
         prettyRadioButtons(
           inputId = ns("device"),
           label = "Choose plot format",
@@ -67,10 +62,9 @@ ui.modules_pancan_dist <- function(id) {
           color = "default",
           block = TRUE,
           size = "sm"
-        ),
-        width = 3
+        ))
       ),
-      mainPanel = mainPanel(
+      column(9,
         plotOutput(ns("gene_pancan_dist"), height = "500px"),
         hr(),
         h5("NOTEs:"),
@@ -85,8 +79,7 @@ ui.modules_pancan_dist <- function(id) {
             id = ns("save_csv"),
             downloadButton(ns("downloadTable"), "Save as csv")
           )
-        ),
-        width = 9
+        )
       )
     )
   )
