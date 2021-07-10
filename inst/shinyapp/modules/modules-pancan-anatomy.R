@@ -1,11 +1,9 @@
 ui.modules_pancan_anatomy <- function(id) {
   ns <- NS(id)
   fluidPage(
-    sidebarLayout(
-      sidebarPanel = sidebarPanel(
-        fluidRow(
-          column(
-            9,
+    fluidRow(
+      column(
+        wellPanel(
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile"), label = "Select a genomic profile:",
               choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2", "cnv"),
@@ -23,26 +21,25 @@ ui.modules_pancan_anatomy <- function(id) {
                 placeholder = "Enter a gene symbol, e.g. TP53",
                 plugins = list("restore_on_backspace")
               )
-            )
-          ),
-          column(
-            3,
-            shinyWidgets::actionBttn(
-              inputId = ns("search_bttn"), label = NULL,
-              style = "simple",
-              icon = icon("search"),
-              color = "primary",
-              block = FALSE,
-              size = "sm"
-            )
-          )
-        ),
+            ),
         shinyBS::bsPopover(ns("Pancan_search"),
           title = "Tips",
           content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
           placement = "right", options = list(container = "body")
         ),
         selectInput(inputId = ns("Gender"), label = "Select Gender for plot", choices = c("Male", "Female"), selected = "Female"),
+        tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
+        shinyWidgets::actionBttn(
+          inputId = ns("search_bttn"),
+          label = "Go!",
+          style = "gradient",
+          icon = icon("search"),
+          color = "primary",
+          block = TRUE,
+          size = "sm"
+        )
+        ),
+        wellPanel(
         numericInput(inputId = ns("height"), label = "Height", value = 5),
         numericInput(inputId = ns("width"), label = "Width", value = 10),
         prettyRadioButtons(
@@ -62,12 +59,12 @@ ui.modules_pancan_anatomy <- function(id) {
           block = TRUE,
           size = "sm"
         ),
-        hr(),
+        ),
         tags$a(href = "https://toil.xenahubs.net/", "Genomic profile data source"),
         width = 3
       ),
-      mainPanel = mainPanel(
-        plotOutput(ns("pancan_anatomy"), height = "500px"),
+      column(
+        plotOutput(ns("pancan_anatomy"), height = "500px",width = "650px"),
         hr(),
         h5("NOTEs:"),
         p("1. GISTIC2 thresholded copy number -2,-1,0,1,2, representing homozygous deletion,single copy deletion,diploid normal copy,low-level copy number amplification,or high-level copy number amplification"),
@@ -80,7 +77,7 @@ ui.modules_pancan_anatomy <- function(id) {
             downloadButton(ns("downloadTable"), "Save as csv")
           )
         ),
-        width = 6
+        width = 9
       )
     )
   )

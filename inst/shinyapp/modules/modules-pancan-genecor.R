@@ -1,106 +1,109 @@
 ui.modules_pancan_gene_cor <- function(id) {
   ns <- NS(id)
   fluidPage(
-    sidebarLayout(
-      sidebarPanel = sidebarPanel(
-        fluidRow(
-          column(
-            9, shinyWidgets::prettyRadioButtons(
-              inputId = ns("profile1"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2"),
-              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
-              animation = "jelly"
-            ),
-            selectizeInput(
-              inputId = ns("Pancan_search1"),
-              label = "Input a gene or formula (as signature)",
-              choices = NULL,
-              width = "100%",
-              options = list(
-                create = TRUE,
-                maxOptions = 5,
-                placeholder = "Enter a gene symbol, e.g. CSF1R",
-                plugins = list("restore_on_backspace")
-              )
-            ),
-            shinyWidgets::prettyRadioButtons(
-              inputId = ns("profile2"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2"),
-              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
-              animation = "jelly"
-            ),
-            selectizeInput(
-              inputId = ns("Pancan_search2"),
-              label = "Input a gene or formula (as signature)",
-              choices = NULL,
-              width = "100%",
-              options = list(
-                create = TRUE,
-                maxOptions = 5,
-                placeholder = "Enter a gene symbol, e.g. JAK3",
-                plugins = list("restore_on_backspace")
-              )
+    fluidRow(
+      column(
+        3,
+        wellPanel(
+          shinyWidgets::prettyRadioButtons(
+            inputId = ns("profile1"), label = "Select a genomic profile:",
+            choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2"),
+            choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
+            animation = "jelly"
+          ),
+          selectizeInput(
+            inputId = ns("Pancan_search1"),
+            label = "Input a gene or formula (as signature)",
+            choices = NULL,
+            width = "100%",
+            options = list(
+              create = TRUE,
+              maxOptions = 5,
+              placeholder = "Enter a gene symbol, e.g. CSF1R",
+              plugins = list("restore_on_backspace")
             )
           ),
-          column(3, shinyWidgets::actionBttn(
-            inputId = ns("search_bttn"), label = NULL,
-            style = "simple",
+          shinyWidgets::prettyRadioButtons(
+            inputId = ns("profile2"), label = "Select a genomic profile:",
+            choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2"),
+            choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
+            animation = "jelly"
+          ),
+          selectizeInput(
+            inputId = ns("Pancan_search2"),
+            label = "Input a gene or formula (as signature)",
+            choices = NULL,
+            width = "100%",
+            options = list(
+              create = TRUE,
+              maxOptions = 5,
+              placeholder = "Enter a gene symbol, e.g. JAK3",
+              plugins = list("restore_on_backspace")
+            )
+          ))),
+      column(
+        3,wellPanel(
+          materialSwitch(ns("purity_adj"), "Adjust Purity", inline = TRUE),
+          selectInput(inputId = ns("use_all"), label = "Use All Cancer Types", choices = c("TRUE", "FALSE"), selected = "FALSE"),
+          selectInput(
+            inputId = ns("Cancer"), label = "Filter Cancer",
+            choices = tcga_cancer_choices,
+            selected = "ACC", multiple = TRUE
+          ),
+          materialSwitch(ns("use_regline"), "Use regression line", inline = TRUE),
+          selectInput(
+            inputId = ns("cor_method"),
+            label = "Select Correlation method",
+            choices = c("spearman", "pearson"),
+            selected = "spearman"
+          ),
+          sliderTextInput(
+            inputId = ns("alpha"),
+            label = "Choose a transparent value",
+            choices = seq(
+              from = 0,
+              to = 1,
+              by = 0.1
+            ),
+            selected = "0.5",
+            grid = TRUE
+          ),
+          colourpicker::colourInput(inputId = ns("color"), "Point color", "#000000"),
+          tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
+          shinyWidgets::actionBttn(
+            inputId = ns("search_bttn"),
+            label = "Go!",
+            style = "gradient",
             icon = icon("search"),
             color = "primary",
-            block = T,
+            block = TRUE,
             size = "sm"
-          ))
+          )
         ),
-        tags$br(),
-        materialSwitch(ns("purity_adj"), "Adjust Purity", inline = TRUE),
-        selectInput(inputId = ns("use_all"), label = "Use All Cancer Types", choices = c("TRUE", "FALSE"), selected = "FALSE"),
-        selectInput(
-          inputId = ns("Cancer"), label = "Filter Cancer",
-          choices = tcga_cancer_choices,
-          selected = "ACC", multiple = TRUE
-        ),
-        materialSwitch(ns("use_regline"), "Use regression line", inline = TRUE),
-        selectInput(
-          inputId = ns("cor_method"),
-          label = "Select Correlation method",
-          choices = c("spearman", "pearson"),
-          selected = "spearman"
-        ),
-        sliderTextInput(
-          inputId = ns("alpha"),
-          label = "Choose a transparent value",
-          choices = seq(
-            from = 0,
-            to = 1,
-            by = 0.1
+        wellPanel(
+          numericInput(inputId = ns("height"), label = "Height", value = 8),
+          numericInput(inputId = ns("width"), label = "Width", value = 8),
+          prettyRadioButtons(
+            inputId = ns("device"),
+            label = "Choose plot format",
+            choices = c("pdf", "png"),
+            selected = "pdf",
+            inline = TRUE,
+            icon = icon("check"),
+            animation = "jelly",
+            fill = TRUE
           ),
-          selected = "0.5",
-          grid = TRUE
-        ),
-        colourpicker::colourInput(inputId = ns("color"), "Point color", "#000000"),
-        tags$br(),
-        numericInput(inputId = ns("height"), label = "Height", value = 8),
-        numericInput(inputId = ns("width"), label = "Width", value = 8),
-        prettyRadioButtons(
-          inputId = ns("device"),
-          label = "Choose plot format",
-          choices = c("pdf", "png"),
-          selected = "pdf",
-          inline = TRUE,
-          icon = icon("check"),
-          animation = "jelly",
-          fill = TRUE
-        ),
-        downloadBttn(
-          outputId = ns("download"),
-          style = "gradient",
-          color = "default",
-          block = TRUE,
-          size = "sm"
-        ),
-        width = 3
+          downloadBttn(
+            outputId = ns("download"),
+            style = "gradient",
+            color = "default",
+            block = TRUE,
+            size = "sm"
+          )
+        )
       ),
-      mainPanel = mainPanel(
+      column(
+        6,
         plotOutput(ns("gene_cor"), height = "600px"),
         hr(),
         h5("NOTEs:"),
@@ -115,8 +118,7 @@ ui.modules_pancan_gene_cor <- function(id) {
             id = ns("save_csv"),
             downloadButton(ns("downloadTable"), "Save as csv")
           )
-        ),
-        width = 6
+        )
       )
     )
   )

@@ -17,114 +17,117 @@ choices_primary_site <- c(
 ui.modules_ccle_genecor <- function(id) {
   ns <- NS(id)
   fluidPage(
-    sidebarLayout(
-      sidebarPanel = sidebarPanel(
-        fluidRow(
-          column(
-            9,
-            shinyWidgets::prettyRadioButtons(
-              inputId = ns("profile1"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "protein", "cnv"),
-              choiceNames = c("mRNA Expression", "Protein Expression", "Copy Number Variation"),
-              animation = "jelly"
-            ),
-            selectizeInput(
-              inputId = ns("ccle_search1"),
-              label = NULL,
-              choices = NULL,
-              width = "100%",
-              options = list(
-                create = TRUE,
-                maxOptions = 5,
-                placeholder = "Enter a gene symbol, e.g. TP53",
-                plugins = list("restore_on_backspace")
-              )
-            ),
-            shinyWidgets::prettyRadioButtons(
-              inputId = ns("profile2"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "protein", "cnv"),
-              choiceNames = c("mRNA Expression", "Protein Expression", "Copy Number Variation"),
-              animation = "jelly"
-            ),
-            selectizeInput(
-              inputId = ns("ccle_search2"),
-              label = NULL,
-              choices = NULL,
-              width = "100%",
-              options = list(
-                create = TRUE,
-                maxOptions = 5,
-                placeholder = "Enter a gene symbol, e.g. TP53",
-                plugins = list("restore_on_backspace")
-              )
-            ),
+    fluidRow(
+      column(
+        3,
+        wellPanel(
+          shinyWidgets::prettyRadioButtons(
+            inputId = ns("profile1"), label = "Select a genomic profile:",
+            choiceValues = c("mRNA", "protein", "cnv"),
+            choiceNames = c("mRNA Expression", "Protein Expression", "Copy Number Variation"),
+            animation = "jelly"
           ),
-          column(
-            3,
-            shinyWidgets::actionBttn(
-              inputId = ns("search_bttn"), label = NULL,
-              style = "simple",
-              icon = icon("search"),
-              color = "primary",
-              block = FALSE,
-              size = "sm"
-            ),
+          selectizeInput(
+            inputId = ns("ccle_search1"),
+            label = NULL,
+            choices = NULL,
+            width = "100%",
+            options = list(
+              create = TRUE,
+              maxOptions = 5,
+              placeholder = "Enter a gene symbol, e.g. TP53",
+              plugins = list("restore_on_backspace")
+            )
+          ),
+          shinyWidgets::prettyRadioButtons(
+            inputId = ns("profile2"), label = "Select a genomic profile:",
+            choiceValues = c("mRNA", "protein", "cnv"),
+            choiceNames = c("mRNA Expression", "Protein Expression", "Copy Number Variation"),
+            animation = "jelly"
+          ),
+          selectizeInput(
+            inputId = ns("ccle_search2"),
+            label = NULL,
+            choices = NULL,
+            width = "100%",
+            options = list(
+              create = TRUE,
+              maxOptions = 5,
+              placeholder = "Enter a gene symbol, e.g. TP53",
+              plugins = list("restore_on_backspace")
+            )
           ),
           shinyBS::bsPopover(ns("ccle_search"),
             title = "Tips",
             content = "Enter a gene symbol to show its distribution, e.g. TP53",
             placement = "right", options = list(container = "body")
           ),
-        ),
-        selectInput(
-          inputId = ns("cor_method"),
-          label = "Select Correlation method",
-          choices = c("spearman", "pearson"),
-          selected = "spearman"
-        ),
-        selectInput(inputId = ns("use_all"), label = "Use All Primary Sites", choices = c("TRUE", "FALSE"), selected = "FALSE"),
-        selectInput(inputId = ns("SitePrimary"), label = "Filter Primary Site", 
-                    choices = choices_primary_site, selected = "prostate", multiple = TRUE),
-        materialSwitch(ns("use_log_x"), "x axis log", inline = FALSE),
-        materialSwitch(ns("use_log_y"), "y axis log", inline = FALSE),
-        materialSwitch(ns("use_regline"), "Use regression line", inline = TRUE),
-        sliderTextInput(
-          inputId = ns("alpha"),
-          label = "Choose a transparent value",
-          choices = seq(
-            from = 0,
-            to = 1,
-            by = 0.1
+          selectInput(
+            inputId = ns("cor_method"),
+            label = "Select Correlation method",
+            choices = c("spearman", "pearson"),
+            selected = "spearman"
           ),
-          selected = "0.5",
-          grid = TRUE
+          selectInput(inputId = ns("use_all"), label = "Use All Primary Sites", choices = c("TRUE", "FALSE"), selected = "FALSE"),
+        )),
+      column(
+        3,
+        wellPanel(
+          selectInput(
+            inputId = ns("SitePrimary"), label = "Filter Primary Site",
+            choices = choices_primary_site, selected = "prostate", multiple = TRUE
+          ),
+          materialSwitch(ns("use_log_x"), "x axis log", inline = FALSE),
+          materialSwitch(ns("use_log_y"), "y axis log", inline = FALSE),
+          materialSwitch(ns("use_regline"), "Use regression line", inline = TRUE),
+          sliderTextInput(
+            inputId = ns("alpha"),
+            label = "Choose a transparent value",
+            choices = seq(
+              from = 0,
+              to = 1,
+              by = 0.1
+            ),
+            selected = "0.5",
+            grid = TRUE
+          ),
+          colourpicker::colourInput(inputId = ns("color"), "Point color", "#000000"),
+          tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
+          shinyWidgets::actionBttn(
+            inputId = ns("search_bttn"),
+            label = "Go!",
+            style = "gradient",
+            icon = icon("search"),
+            color = "primary",
+            block = TRUE,
+            size = "sm"
+          )
         ),
-        colourpicker::colourInput(inputId = ns("color"), "Point color", "#000000"),
-        tags$br(),
-        numericInput(inputId = ns("height"), label = "Height", value = 8),
-        numericInput(inputId = ns("width"), label = "Width", value = 8),
-        prettyRadioButtons(
-          inputId = ns("device"),
-          label = "Choose plot format",
-          choices = c("pdf", "png"),
-          selected = "pdf",
-          inline = TRUE,
-          icon = icon("check"),
-          animation = "jelly",
-          fill = TRUE
-        ),
-        downloadBttn(
-          outputId = ns("download"),
-          style = "gradient",
-          color = "default",
-          block = TRUE,
-          size = "sm"
-        ),
-        hr(),
-        tags$a(href = "https://xenabrowser.net/datapages/?cohort=Cancer%20Cell%20Line%20Encyclopedia%20(CCLE)&removeHub=https%3A%2F%2Ficgc.xenahubs.net", "Genomic profile data source"),
-        width = 3
+        wellPanel(
+          numericInput(inputId = ns("height"), label = "Height", value = 8),
+          numericInput(inputId = ns("width"), label = "Width", value = 8),
+          prettyRadioButtons(
+            inputId = ns("device"),
+            label = "Choose plot format",
+            choices = c("pdf", "png"),
+            selected = "pdf",
+            inline = TRUE,
+            icon = icon("check"),
+            animation = "jelly",
+            fill = TRUE
+          ),
+          downloadBttn(
+            outputId = ns("download"),
+            style = "gradient",
+            color = "default",
+            block = TRUE,
+            size = "sm"
+          ),
+          hr(),
+          tags$a(href = "https://xenabrowser.net/datapages/?cohort=Cancer%20Cell%20Line%20Encyclopedia%20(CCLE)&removeHub=https%3A%2F%2Ficgc.xenahubs.net", "Genomic profile data source")
+        )
       ),
-      mainPanel = mainPanel(
+      column(
         plotOutput(ns("gene_ccle_gene_cor"), height = "600px"),
         DT::DTOutput(outputId = ns("tbl")),
         shinyjs::hidden(

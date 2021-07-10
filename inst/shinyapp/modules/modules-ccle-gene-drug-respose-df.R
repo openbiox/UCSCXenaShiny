@@ -1,78 +1,75 @@
 ui.modules_ccle_drug_response_diff <- function(id) {
   ns <- NS(id)
   fluidPage(
-    sidebarLayout(
-      sidebarPanel = sidebarPanel(
-        fluidRow(
-          column(
-            9,
-            selectizeInput(
-              inputId = ns("ccle_search"),
-              label = "Input a gene or list (as signature)",
-              choices = NULL,
-              multiple = TRUE,
-              width = "100%",
-              options = list(
-                create = TRUE,
-                maxOptions = 5,
-                placeholder = "Enter a gene symbol, e.g. TP53",
-                plugins = list("restore_on_backspace")
-              )
+    fluidRow(
+      column(3,
+        wellPanel(
+          selectizeInput(
+            inputId = ns("ccle_search"),
+            label = "Input a gene or list (as signature)",
+            choices = NULL,
+            multiple = TRUE,
+            width = "100%",
+            options = list(
+              create = TRUE,
+              maxOptions = 5,
+              placeholder = "Enter a gene symbol, e.g. TP53",
+              plugins = list("restore_on_backspace")
+            )
+          ),
+          materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = TRUE),
+          colourpicker::colourInput(inputId = ns("high_col"), "High group color", "#DF2020"),
+          colourpicker::colourInput(inputId = ns("low_col"), "Low group color", "#DDDF21"),
+          selectInput(
+            inputId = ns("tissue"), label = "Filter Tissue",
+            choices = ccle_drug_related_tissues, selected = "lung",
+            multiple = TRUE
+          ),
+          sliderTextInput(
+            inputId = ns("alpha"),
+            label = "Choose a transparent value",
+            choices = seq(
+              from = 0,
+              to = 1,
+              by = 0.1
             ),
+            selected = "0.5",
+            grid = TRUE
           ),
-          column(
-            3,
-            shinyWidgets::actionBttn(
-              inputId = ns("search_bttn"), label = NULL,
-              style = "simple",
-              icon = icon("search"),
-              color = "primary",
-              block = FALSE,
-              size = "sm"
-            ),
+          tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
+          shinyWidgets::actionBttn(
+            inputId = ns("search_bttn"),
+            label = "Go!",
+            style = "gradient",
+            icon = icon("search"),
+            color = "primary",
+            block = TRUE,
+            size = "sm"
+          )
+        ),
+        wellPanel(
+          numericInput(inputId = ns("height"), label = "Height", value = 8),
+          numericInput(inputId = ns("width"), label = "Width", value = 12),
+          prettyRadioButtons(
+            inputId = ns("device"),
+            label = "Choose plot format",
+            choices = c("pdf", "png"),
+            selected = "pdf",
+            inline = TRUE,
+            icon = icon("check"),
+            animation = "jelly",
+            fill = TRUE
           ),
-        ),
-        materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = TRUE),
-        colourpicker::colourInput(inputId = ns("high_col"), "High group color", "#DF2020"),
-        colourpicker::colourInput(inputId = ns("low_col"), "Low group color", "#DDDF21"),
-        selectInput(
-          inputId = ns("tissue"), label = "Filter Tissue",
-          choices = ccle_drug_related_tissues, selected = "lung",
-          multiple = TRUE
-        ),
-        sliderTextInput(
-          inputId = ns("alpha"),
-          label = "Choose a transparent value",
-          choices = seq(
-            from = 0,
-            to = 1,
-            by = 0.1
-          ),
-          selected = "0.5",
-          grid = TRUE
-        ),
-        numericInput(inputId = ns("height"), label = "Height", value = 8),
-        numericInput(inputId = ns("width"), label = "Width", value = 12),
-        prettyRadioButtons(
-          inputId = ns("device"),
-          label = "Choose plot format",
-          choices = c("pdf", "png"),
-          selected = "pdf",
-          inline = TRUE,
-          icon = icon("check"),
-          animation = "jelly",
-          fill = TRUE
-        ),
-        downloadBttn(
-          outputId = ns("download"),
-          style = "gradient",
-          color = "default",
-          block = TRUE,
-          size = "sm"
-        ),
-        width = 3
+          downloadBttn(
+            outputId = ns("download"),
+            style = "gradient",
+            color = "default",
+            block = TRUE,
+            size = "sm"
+          )
+        )
       ),
-      mainPanel = mainPanel(
+      column(9,
         plotOutput(ns("gene_ccle_drug_response_diff"), height = "600px"),
         h5("Method:"),
         p("Analyze difference of drug response (IC50 value (uM)) between gene (or signature) high and low expression."),
