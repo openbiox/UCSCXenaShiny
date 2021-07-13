@@ -40,11 +40,11 @@ selected_database_rm_phenotype <- reactive({
 
 ## upload custom data
 custom_feature_data  <- eventReactive(input$ga_input_feature_file,{
-  req(input$ga_input_file)
+  req(input$ga_input_feature_file)
   # 
-  # ext <- tools::file_ext(input$ga_input_file$name)
-  # validate(need(ext == "csv", "Please upload a csv file"))
-  inFile <- input$ga_input_file
+  ext <- tools::file_ext(input$ga_input_feature_file$name)
+  validate(need(ext %in% c("csv","tsv"), "Please upload a csv/tsv file"))
+  inFile <- input$ga_input_feature_file
   if (is.null(inFile))
     return(NULL)
   df <- data.table::fread(inFile$datapath, header = TRUE)
@@ -53,11 +53,11 @@ custom_feature_data  <- eventReactive(input$ga_input_feature_file,{
 })
 
 custom_phenotype_data  <- eventReactive(input$ga_input_phenotype_file,{
-  req(input$ga_input_file)
+  req(input$ga_input_phenotype_file)
   # 
-  # ext <- tools::file_ext(input$ga_input_file$name)
-  # validate(need(ext == "csv", "Please upload a csv file"))
-  inFile <- input$ga_input_file
+  ext <- tools::file_ext(input$ga_input_phenotype_file$name)
+  validate(need(ext %in% c("csv","tsv"), "Please upload a csv/tsv file"))
+  inFile <- input$ga_input_phenotype_file
   if (is.null(inFile))
     return(NULL)
   df <- data.table::fread(inFile$datapath, header = TRUE)
