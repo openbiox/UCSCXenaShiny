@@ -12,7 +12,7 @@ ui.page_general_analysis <- function() {
     icon = icon("angle-double-down"),
     fluidRow(
       column(
-        5,
+        2,
         dropdownButton(
           inputId = "ga_drop_button",
           label = "Pre-selected Datasets for Analysis",
@@ -28,22 +28,53 @@ ui.page_general_analysis <- function() {
         )
       ),
       column(
-        3,
+        1,
         dropdownButton(
+          inputId = "ga_drop_button_input_feature",
           tags$h3("Upload custom feature data"),
-          fileInput("ga_input_file", label = "Upload file", accept = "text/plain"),
+          tags$h5("Note: Not both files are required. Prepare your upload files based on your analysis plan"),
+          fileInput("ga_input_feature_file", label = "Feature-by-sample file (*.csv/.tsv)", accept = "text/plain"),
+          tags$a(href="https://tcga-xena-hub.s3.us-east-1.amazonaws.com/download/TCGA.LAML.sampleMap%2FHiSeqV2.gz", "Example feature data"),
           br(),
-          textInput(inputId = "ga_input_cohort", label = "Cohort"),
-          textInput(inputId = "ga_input_dataset", label = "Dataset"),
-          textInput(inputId = "ga_input_subtype", label = "Subtype"),
-          textInput(inputId = "ga_input_label", label = "Label"),
-          textInput(inputId = "ga_input_type", label = "Type"),
+          # textInput(inputId = "ga_input_feature_cohort", label = "Cohort"),
+          # textInput(inputId = "ga_input_feature_dataset", label = "Dataset"),
+          # textInput(inputId = "ga_input_feature_subtype", label = "Subtype"),
+          # textInput(inputId = "ga_input_feature_label", label = "Label"),
+          # textInput(inputId = "ga_input_feature_type", label = "Type"),
           icon = icon("upload"),
           circle = FALSE
+        ),
+        shinyBS::bsPopover("ga_drop_button_input_feature",
+                           title = "Tips",
+                           content = "Click to upload custom feature data",
+                           placement = "right", options = list(container = "body")
         )
       ),
-      column(3,
-        #offset = 4,
+      column(
+        1,
+        dropdownButton(
+          inputId = "ga_drop_button_input_phenotype",
+          tags$h3("Upload custom phenotype data"),
+          tags$h5("Note: Not both files are required. Prepare your upload files based on your analysis plan"),
+          fileInput("ga_input_phenotype_file", label = "Phenotype file (*.csv/.tsv)", accept = "text/plain"),
+          tags$a(href="https://tcga-xena-hub.s3.us-east-1.amazonaws.com/download/TCGA.LAML.sampleMap%2FLAML_clinicalMatrix", "Example phenotype data"),
+          br(),
+          # textInput(inputId = "ga_input_phenotype_cohort", label = "Cohort"),
+          # textInput(inputId = "ga_input_phenotype_dataset", label = "Dataset"),
+          # textInput(inputId = "ga_input_phenotype_subtype", label = "Subtype"),
+          # textInput(inputId = "ga_input_phenotype_label", label = "Label"),
+          # textInput(inputId = "ga_input_phenotype_type", label = "Type"),
+          icon = icon("address-card"),
+          circle = FALSE
+        ),
+        shinyBS::bsPopover("ga_drop_button_input_phenotype",
+                           title = "Tips",
+                           content = "Click to upload custom phenotype data",
+                           placement = "right", options = list(container = "body")
+        )
+      ),
+      column(8,
+        #offset = 7,
         shinyWidgets::actionBttn(
           inputId = "use_ga_page",
           label = "How to use",
