@@ -1,71 +1,70 @@
 ui.modules_ccle_drug_target_asso <- function(id) {
   ns <- NS(id)
   fluidPage(
-    sidebarLayout(
-      sidebarPanel = sidebarPanel(
-        fluidRow(
-          column(
-            9,
-            selectizeInput(
-              inputId = ns("ccle_search"),
-              label = "Input a gene or list (as signature)",
-              choices = NULL,
-              multiple = TRUE,
-              width = "100%",
-              options = list(
-                create = TRUE,
-                maxOptions = 5,
-                placeholder = "Enter a gene symbol, e.g. TP53",
-                plugins = list("restore_on_backspace")
-              )
-            ),
+    fluidRow(
+      column(
+        width = 3,
+        wellPanel(
+          selectizeInput(
+            inputId = ns("ccle_search"),
+            label = "Input a gene or list (as signature)",
+            choices = NULL,
+            multiple = TRUE,
+            width = "100%",
+            options = list(
+              create = TRUE,
+              maxOptions = 5,
+              placeholder = "Enter a gene symbol, e.g. TP53",
+              plugins = list("restore_on_backspace")
+            )
           ),
-          column(
-            3,
-            shinyWidgets::actionBttn(
-              inputId = ns("search_bttn"), label = NULL,
-              style = "simple",
-              icon = icon("search"),
-              color = "primary",
-              block = FALSE,
-              size = "sm"
-            ),
+          selectInput(
+            inputId = ns("output_form"),
+            label = "Plot output form",
+            choices = c("plotly", "ggplot2"),
+            selected = "plotly"
           ),
+          selectInput(
+            inputId = ns("x_axis_type"),
+            label = "X axis type ",
+            choices = c("mean.diff", "median.diff"),
+            selected = "mean.diff"
+          ),
+          tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
+          shinyWidgets::actionBttn(
+            inputId = ns("search_bttn"),
+            label = "Go!",
+            style = "gradient",
+            icon = icon("search"),
+            color = "primary",
+            block = TRUE,
+            size = "sm"
+          )
         ),
-        selectInput(
-          inputId = ns("output_form"),
-          label = "Plot output form",
-          choices = c("plotly", "ggplot2"),
-          selected = "plotly"
-        ),
-        selectInput(
-          inputId = ns("x_axis_type"),
-          label = "X axis type ",
-          choices = c("mean.diff", "median.diff"),
-          selected = "mean.diff"
-        ),
-        numericInput(inputId = ns("height"), label = "Height", value = 6),
-        numericInput(inputId = ns("width"), label = "Width", value = 8),
-        prettyRadioButtons(
-          inputId = ns("device"),
-          label = "Choose plot format (only support ggplot2)",
-          choices = c("pdf", "png"),
-          selected = "pdf",
-          inline = TRUE,
-          icon = icon("check"),
-          animation = "jelly",
-          fill = TRUE
-        ),
-        downloadBttn(
-          outputId = ns("download"),
-          style = "gradient",
-          color = "default",
-          block = TRUE,
-          size = "sm"
-        ),
-        width = 3
+        wellPanel(
+          numericInput(inputId = ns("height"), label = "Height", value = 6),
+          numericInput(inputId = ns("width"), label = "Width", value = 8),
+          prettyRadioButtons(
+            inputId = ns("device"),
+            label = "Choose plot format (only support ggplot2)",
+            choices = c("pdf", "png"),
+            selected = "pdf",
+            inline = TRUE,
+            icon = icon("check"),
+            animation = "jelly",
+            fill = TRUE
+          ),
+          downloadBttn(
+            outputId = ns("download"),
+            style = "gradient",
+            color = "default",
+            block = TRUE,
+            size = "sm"
+          )
+        )
       ),
-      mainPanel = mainPanel(
+      column(
+        width = 9,
         shinyjs::hidden(
           plotly::plotlyOutput(ns("gene_ccle_drug_target.plotly"), height = "600px")
         ),

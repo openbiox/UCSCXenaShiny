@@ -34,7 +34,7 @@ ui.modules_pcawg_sur_plot <- function(id) {
           inputId = ns("submit_bt"), label = "Submit",
           style = "gradient",
           icon = icon("check"),
-          color = "default",
+          color = "primary",
           block = TRUE,
           size = "sm"
         ),
@@ -84,7 +84,7 @@ ui.modules_pcawg_sur_plot <- function(id) {
             inputId = ns("go"), label = " GO!",
             style = "gradient",
             icon = icon("check"),
-            color = "default",
+            color = "primary",
             block = TRUE,
             size = "sm"
           ),

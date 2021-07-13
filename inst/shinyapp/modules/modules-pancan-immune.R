@@ -1,11 +1,9 @@
 ui.modules_pancan_immune <- function(id) {
   ns <- NS(id)
   fluidPage(
-    sidebarLayout(
-      sidebarPanel = sidebarPanel(
-        fluidRow(
-          column(
-            9,
+    fluidRow(
+      column(3,
+             wellPanel(
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile"), label = "Select a genomic profile:",
               choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2"),
@@ -23,20 +21,7 @@ ui.modules_pancan_immune <- function(id) {
                 placeholder = "Enter a gene symbol, e.g. TP53",
                 plugins = list("restore_on_backspace")
               )
-            )
           ),
-          column(
-            3,
-            shinyWidgets::actionBttn(
-              inputId = ns("search_bttn"), label = NULL,
-              style = "simple",
-              icon = icon("search"),
-              color = "primary",
-              block = FALSE,
-              size = "sm"
-            )
-          )
-        ),
         selectInput(
           inputId = ns("immune_sig"), "Select the immune signature source", selected = "Cibersort",
           choices = c("Yasin", "Wolf", "Attractors", "ICR", "c7atoms", "Bindea", "Cibersort")
@@ -49,6 +34,17 @@ ui.modules_pancan_immune <- function(id) {
         ),
         numericInput(inputId = ns("height"), label = "Height", value = 8),
         numericInput(inputId = ns("width"), label = "Width", value = 12),
+        tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
+        shinyWidgets::actionBttn(
+          inputId = ns("search_bttn"),
+          label = "Go!",
+          style = "gradient",
+          icon = icon("search"),
+          color = "primary",
+          block = TRUE,
+          size = "sm"
+        )),
+        wellPanel(
         prettyRadioButtons(
           inputId = ns("device"),
           label = "Choose plot format",
@@ -65,10 +61,9 @@ ui.modules_pancan_immune <- function(id) {
           color = "default",
           block = TRUE,
           size = "sm"
-        ),
-        width = 3
+        )),
       ),
-      mainPanel(
+      column(9,
         plotOutput(ns("hm_gene_immune_cor"), height = "500px"),
         hr(),
         h5("NOTEs:"),
@@ -81,8 +76,7 @@ ui.modules_pancan_immune <- function(id) {
             id = ns("save_csv"),
             downloadButton(ns("downloadTable"), "Save as csv")
           )
-        ),
-        width = 9
+        )
       )
     )
   )
