@@ -38,7 +38,7 @@ selected_database_rm_phenotype <- reactive({
   data
 })
 
-## upload custom data
+# Upload custom data
 custom_feature_data  <- eventReactive(input$ga_input_feature_file,{
   req(input$ga_input_feature_file)
   # 
@@ -63,21 +63,6 @@ custom_phenotype_data  <- eventReactive(input$ga_input_phenotype_file,{
   df <- data.table::fread(inFile$datapath, header = TRUE)
   return(df)
   
-})
-
-## upload feature data
-show_upfile_table <- reactive({
-  upfile <- upfile()
-  df <- data.frame("Cohort" = input$ga_input_cohort,
-                   "Dataset" = input$ga_input_dataset,
-                   "N" = ncol(upfile),
-                   "Subtype" = input$ga_input_subtype,
-                   "Label" = input$ga_input_label,
-                   "Type" = input$ga_input_type,
-                   "download" = "-",
-                   "browse" = "-"
-                    )
-  return(df)
 })
 
 output$ga_dataset_table <- DT::renderDataTable(
@@ -130,7 +115,7 @@ observeEvent(input$use_ga_page, {
   shinyalert(
     title = "General Analysis Usage",
     text = paste(
-      "Firstly, select datasets from Repository page, the datasets and corresonding clinical datasets will be automatically loaded here.",
+      "Firstly, select datasets from Repository page, the datasets and corresonding clinical datasets will be automatically loaded here (You can also upload your own data with the upload button).",
       "Secondly, use any analysis feature below by clicking the tab.",
       "Lastly, control how to analyze from left panel and filter samples from right panel. The result plot should be shown at the middle.",
       sep = "\n\n"
