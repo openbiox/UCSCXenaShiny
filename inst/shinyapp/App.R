@@ -65,6 +65,7 @@ pacman::p_load(
   tidyr,
   stringr,
   magrittr,
+  data.table,
   dplyr,
   ggplot2,
   cowplot,
