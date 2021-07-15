@@ -1,5 +1,10 @@
+custom_file <- reactiveValues()
+custom_file$fData <- NULL
+custom_file$pData <- NULL
+
 selected_database_add_url_and_phenotype <- reactive({
   data <- selected_database_add_url()
+  
   if (!is.null(data)) {
     # Add phenotype datasets
     # Type == "clinicalMatrix"
@@ -24,6 +29,48 @@ selected_database_add_url_and_phenotype <- reactive({
       data <- dplyr::bind_rows(data, add_datasets) %>%
         dplyr::arrange(XenaCohorts)
     }
+    
+    print(data)
+    data2 <<- data
+    
+    if (!is.null(custom_file$fData)) {
+      data <- dplyr::add_row(data, 
+                             XenaCohorts = "Custom", 
+                             XenaDatasets = "custom_feature_dataset", 
+                             Type = "genomicMatrix",
+                             SampleCount = ncol(custom_file$fData) - 1L)
+    }
+    if (!is.null(custom_file$pData)) {
+      data <- dplyr::add_row(data, 
+                             XenaCohorts = "Custom", 
+                             XenaDatasets = "custom_phenotype_dataset", 
+                             Type = "clinicalMatrix",
+                             SampleCount = nrow(custom_file$pData))
+    }
+  } else if (!is.null(custom_file$pData) | !is.null(custom_file$fData)) {
+    data <- dplyr::tibble()
+    if (!is.null(custom_file$fData)) {
+      data <- dplyr::bind_rows(
+        data, 
+        dplyr::tibble(
+          XenaCohorts = "Custom", 
+          XenaDatasets = "custom_feature_dataset", 
+          Type = "genomicMatrix",
+          SampleCount = ncol(custom_file$fData) - 1L,
+          DataSubtype = NA_character_
+        ))
+    }
+    if (!is.null(custom_file$pData)) {
+      data <- dplyr::bind_rows(
+        data, 
+        dplyr::tibble(
+          XenaCohorts = "Custom", 
+          XenaDatasets = "custom_phenotype_dataset", 
+          Type = "clinicalMatrix",
+          SampleCount = nrow(custom_file$pData),
+          DataSubtype = NA_character_
+        ))
+    }
   }
   data
 })
@@ -39,28 +86,33 @@ selected_database_rm_phenotype <- reactive({
 })
 
 # Upload custom feature/phenotype data
-custom_feature_data <- eventReactive(input$ga_input_feature_file,{
+observeEvent(input$ga_input_feature_file,{
   req(input$ga_input_feature_file)
-  # 
-  ext <- tools::file_ext(input$ga_input_feature_file$name)
-  validate(need(ext %in% c("csv","tsv", "gz"), "Please upload a csv/tsv file"))
+  
+  # ext <- tools::file_ext(input$ga_input_feature_file$name)
+  # shiny::validate(need(ext %in% c("csv","tsv", "gz"), "Please upload a csv/tsv file"))
+  
   inFile <- input$ga_input_feature_file
   if (is.null(inFile))
     return(NULL)
   df <- data.table::fread(inFile$datapath, header = TRUE)
-  return(df)
+  class(df) <- c("CustomfData", class(df))
+  
+  custom_file$fData <- df
 })
 
-custom_phenotype_data <- eventReactive(input$ga_input_phenotype_file,{
+observeEvent(input$ga_input_phenotype_file,{
   req(input$ga_input_phenotype_file)
-  # 
-  ext <- tools::file_ext(input$ga_input_phenotype_file$name)
-  validate(need(ext %in% c("csv","tsv", "gz"), "Please upload a csv/tsv file"))
+  
+  # ext <- tools::file_ext(input$ga_input_phenotype_file$name)
+  # shiny::validate(need(ext %in% c("csv","tsv", "gz"), "Please upload a csv/tsv file"))
+  
   inFile <- input$ga_input_phenotype_file
   if (is.null(inFile))
     return(NULL)
   df <- data.table::fread(inFile$datapath, header = TRUE)
-  return(df)
+
+  custom_file$pData <- df
 })
 
 output$ga_dataset_table <- DT::renderDataTable(
@@ -68,19 +120,22 @@ output$ga_dataset_table <- DT::renderDataTable(
     show_table <- selected_database_add_url_and_phenotype()
     if (!is.null(show_table)) {
       # 同时载入同队列的 phenotype (and probemap?)
-      show_table <- show_table %>%
-        dplyr::select(c("XenaCohorts", "XenaDatasets", "SampleCount", "DataSubtype", "Label", "Type", "download", "browse"))
+      if (!"Label" %in% colnames(show_table)) {
+        show_table <- show_table %>%
+          dplyr::select(c("XenaCohorts", "XenaDatasets", "SampleCount", "DataSubtype"))
+      } else {
+        show_table <- show_table %>%
+          dplyr::select(c("XenaCohorts", "XenaDatasets", "SampleCount", "DataSubtype", "Label", "Type", "download", "browse"))
+      }
+      
       colnames(show_table)[1:4] <- c("Cohort", "Dataset", "N", "Subtype")
     } else {
       sendSweetAlert(session,
-        title = "Warning!", text = "Please select datasets from Repository page or upload your own data firstly",
+        title = "Warning!", text = "Please select datasets from Repository page or upload your own data firstly!",
         type = "warning"
       )
     }
-    # show_upfile_table <- show_upfile_table()
-    # if (!is.null(show_upfile_table)) {
-    #   show_table = rbind(show_table, show_upfile_table)
-    # }
+    
     show_table
   },
   escape = FALSE

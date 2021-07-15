@@ -67,7 +67,6 @@ pacman::p_load(
   magrittr,
   R.utils,
   data.table,
-  digest,
   dplyr,
   ggplot2,
   cowplot,
@@ -96,6 +95,7 @@ pacman::p_load(
   zip
 )
 
+options(shiny.maxRequestSize=1024*1024^2)
 message("Starting...")
 
 # Put data here -----------------------------------------------------------
