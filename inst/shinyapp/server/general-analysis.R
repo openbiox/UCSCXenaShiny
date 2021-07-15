@@ -38,31 +38,29 @@ selected_database_rm_phenotype <- reactive({
   data
 })
 
-# Upload custom data
-custom_feature_data  <- eventReactive(input$ga_input_feature_file,{
+# Upload custom feature/phenotype data
+custom_feature_data <- eventReactive(input$ga_input_feature_file,{
   req(input$ga_input_feature_file)
   # 
   ext <- tools::file_ext(input$ga_input_feature_file$name)
-  validate(need(ext %in% c("csv","tsv"), "Please upload a csv/tsv file"))
+  validate(need(ext %in% c("csv","tsv", "gz"), "Please upload a csv/tsv file"))
   inFile <- input$ga_input_feature_file
   if (is.null(inFile))
     return(NULL)
   df <- data.table::fread(inFile$datapath, header = TRUE)
   return(df)
-  
 })
 
-custom_phenotype_data  <- eventReactive(input$ga_input_phenotype_file,{
+custom_phenotype_data <- eventReactive(input$ga_input_phenotype_file,{
   req(input$ga_input_phenotype_file)
   # 
   ext <- tools::file_ext(input$ga_input_phenotype_file$name)
-  validate(need(ext %in% c("csv","tsv"), "Please upload a csv/tsv file"))
+  validate(need(ext %in% c("csv","tsv", "gz"), "Please upload a csv/tsv file"))
   inFile <- input$ga_input_phenotype_file
   if (is.null(inFile))
     return(NULL)
   df <- data.table::fread(inFile$datapath, header = TRUE)
   return(df)
-  
 })
 
 output$ga_dataset_table <- DT::renderDataTable(
@@ -73,17 +71,16 @@ output$ga_dataset_table <- DT::renderDataTable(
       show_table <- show_table %>%
         dplyr::select(c("XenaCohorts", "XenaDatasets", "SampleCount", "DataSubtype", "Label", "Type", "download", "browse"))
       colnames(show_table)[1:4] <- c("Cohort", "Dataset", "N", "Subtype")
+    } else {
+      sendSweetAlert(session,
+        title = "Warning!", text = "Please select datasets from Repository page or upload your own data firstly",
+        type = "warning"
+      )
     }
-    # } else {
-    #   sendSweetAlert(session,
-    #     title = "Warning!", text = "Please select datasets from Repository page firstly",
-    #     type = "warning"
-    #   )
+    # show_upfile_table <- show_upfile_table()
+    # if (!is.null(show_upfile_table)) {
+    #   show_table = rbind(show_table, show_upfile_table)
     # }
-    show_upfile_table <- show_upfile_table()
-    if (!is.null(show_upfile_table)) {
-      show_table = rbind(show_table, show_upfile_table)
-    }
     show_table
   },
   escape = FALSE
