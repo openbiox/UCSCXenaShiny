@@ -23,7 +23,7 @@ Wang, S.; Xiong, Y.; Gu, K.; Zhao, L.; Li, Y.; Zhao, F.; Li, X.; Liu, X. UCSCXen
 
 ## :cloud: Use on cloud
 
-If you don't want to install R and packages locally, or you have no programming experience, try using this tool on Hiplot platform: <https://shiny.hiplot.com.cn/ucsc-xena-shiny/>.
+If you don't want to install R and packages locally, or you have no programming experience, try using this tool on Hiplot platform: `https://shiny.hiplot.com.cn/ucsc-xena-shiny/`.
 
 ## :package: Use with Docker
 
