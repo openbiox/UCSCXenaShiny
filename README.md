@@ -155,6 +155,9 @@ It can be 'client' or 'server'. You can directly set it in `app_run()`.
 - Quick PanCan Analysis page: <https://www.bilibili.com/video/bv1o64y1y7jW>.
 - Features:
   - Genomic Signature: <https://www.bilibili.com/video/bv1zB4y1c7eB>.
+  - Upload custom data for general analysis: <https://www.bilibili.com/video/BV1pf4y1j7eP>.
+  Please note that upload files must in the format of csv/tsv (gz compression is supported) and
+  files must have extension tsv/txt/csv/gz.
 
 ## :hammer_and_wrench: Troubleshooting
 
