@@ -126,8 +126,10 @@ ui.modules_ga_group_comparison <- function(id) {
 }
 
 
-server.modules_ga_group_comparison <- function(input, output, session,
-                                               selected_database_rm_phenotype, selected_database_add_url_and_phenotype) {
+server.modules_ga_group_comparison <- function(
+  input, output, session,
+  selected_database_rm_phenotype, selected_database_add_url_and_phenotype,
+  custom_file) {
   ns <- session$ns
 
   output$ga_data1_id <- renderUI({
@@ -143,7 +145,7 @@ server.modules_ga_group_comparison <- function(input, output, session,
 
   id1_choices <- eventReactive(input$ga_data1_id, {
     if (!identical(input$ga_data1_id, "NONE")) {
-      if (input$ga_data1_id %in% phenotype_datasets) {
+      if (input$ga_data1_id %in% phenotype_datasets || input$ga_data1_id == "custom_phenotype_dataset") {
         # A phenotype data is selected
         return(list(
           all = "NONE",
@@ -152,7 +154,8 @@ server.modules_ga_group_comparison <- function(input, output, session,
       } else {
         # !!Assume a dense matrix dataset is selected
         return(list(
-          all = all_preload_identifiers,
+          all = if (is.null(custom_file$fData)) all_preload_identifiers else
+            unique(c(custom_file$fData[[1]], all_preload_identifiers)),
           selected = "TP53"
         ))
       }
@@ -187,7 +190,7 @@ server.modules_ga_group_comparison <- function(input, output, session,
 
   id2_choices <- eventReactive(input$ga_data2_id, {
     if (!identical(input$ga_data2_id, "NONE")) {
-      if (input$ga_data2_id %in% phenotype_datasets) {
+      if (input$ga_data2_id %in% phenotype_datasets || input$ga_data2_id == "custom_phenotype_dataset") {
         # A phenotype data is selected
         return(list(
           all = "NONE",
@@ -196,7 +199,8 @@ server.modules_ga_group_comparison <- function(input, output, session,
       } else {
         # !!Assume a dense matrix dataset is selected
         return(list(
-          all = all_preload_identifiers,
+          all = if (is.null(custom_file$fData)) all_preload_identifiers else
+            unique(c(custom_file$fData[[1]], all_preload_identifiers)),
           selected = "TP53"
         ))
       }
@@ -235,7 +239,7 @@ server.modules_ga_group_comparison <- function(input, output, session,
         XenaPrepare() %>%
         as.data.frame()
     } else {
-      if (length(dataset1_id)) {
+      if (length(dataset1_id) || dataset1 == "custom_phenotype_dataset") {
         data1 <- get_data_df(dataset1, dataset1_id)
       } else {
         sendSweetAlert(session,
@@ -256,7 +260,7 @@ server.modules_ga_group_comparison <- function(input, output, session,
         XenaPrepare() %>%
         as.data.frame()
     } else {
-      if (length(dataset2_id)) {
+      if (length(dataset2_id) || dataset2 == "custom_phenotype_dataset") {
         data2 <- get_data_df(dataset2, dataset2_id)
       } else {
         sendSweetAlert(session,
@@ -599,7 +603,7 @@ server.modules_ga_group_comparison <- function(input, output, session,
     selectInput(
       inputId = ns("ga_data_filter1_id"),
       label = "Select phenotype dataset:",
-      choices = c("NONE", unique(show_table$XenaDatasets[show_table$XenaDatasets %in% phenotype_datasets])),
+      choices = c("NONE", unique(show_table$XenaDatasets[show_table$XenaDatasets %in% c(phenotype_datasets, "custom_phenotype_dataset")])),
       selected = "NONE",
       multiple = FALSE
     )

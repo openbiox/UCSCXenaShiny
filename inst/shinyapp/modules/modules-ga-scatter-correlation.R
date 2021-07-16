@@ -96,8 +96,10 @@ ui.modules_ga_scatter_correlation <- function(id) {
 }
 
 
-server.modules_ga_scatter_correlation <- function(input, output, session,
-                                                  selected_database_rm_phenotype, selected_database_add_url_and_phenotype) {
+server.modules_ga_scatter_correlation <- function(
+  input, output, session,
+  selected_database_rm_phenotype, selected_database_add_url_and_phenotype,
+  custom_file) {
   ns <- session$ns
 
   output$ga_data1_id <- renderUI({
@@ -115,7 +117,8 @@ server.modules_ga_scatter_correlation <- function(input, output, session,
     updateSelectizeInput(
       session,
       "ga_data1_mid",
-      choices = all_preload_identifiers,
+      choices = if (is.null(custom_file$fData)) all_preload_identifiers else
+        unique(c(custom_file$fData[[1]], all_preload_identifiers)),
       selected = "TP53",
       server = TRUE
     )
@@ -136,7 +139,8 @@ server.modules_ga_scatter_correlation <- function(input, output, session,
     updateSelectizeInput(
       session,
       "ga_data2_mid",
-      choices = all_preload_identifiers,
+      choices = if (is.null(custom_file$fData)) all_preload_identifiers else
+        unique(c(custom_file$fData[[1]], all_preload_identifiers)),
       selected = "KRAS",
       server = TRUE
     )

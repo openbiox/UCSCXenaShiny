@@ -30,9 +30,6 @@ selected_database_add_url_and_phenotype <- reactive({
         dplyr::arrange(XenaCohorts)
     }
     
-    print(data)
-    data2 <<- data
-    
     if (!is.null(custom_file$fData)) {
       data <- dplyr::add_row(data, 
                              XenaCohorts = "Custom", 
@@ -76,7 +73,7 @@ selected_database_add_url_and_phenotype <- reactive({
 })
 
 selected_database_rm_phenotype <- reactive({
-  data <- selected_database()
+  data <- selected_database_add_url_and_phenotype()
   if (!is.null(data)) {
     # Remove phenotype datasets
     # Type != "clinicalMatrix"
@@ -96,7 +93,8 @@ observeEvent(input$ga_input_feature_file,{
   if (is.null(inFile))
     return(NULL)
   df <- data.table::fread(inFile$datapath, header = TRUE)
-  class(df) <- c("CustomfData", class(df))
+  message("Saving custom feature data to temp directory.")
+  saveRDS(df, file = file.path(tempdir(), "custom_feature_data.rds"))
   
   custom_file$fData <- df
 })
@@ -111,6 +109,8 @@ observeEvent(input$ga_input_phenotype_file,{
   if (is.null(inFile))
     return(NULL)
   df <- data.table::fread(inFile$datapath, header = TRUE)
+  message("Saving custom phenotype data to temp directory.")
+  saveRDS(df, file = file.path(tempdir(), "custom_phenotype_data.rds"))
 
   custom_file$pData <- df
 })
@@ -146,19 +146,23 @@ output$ga_dataset_table <- DT::renderDataTable(
 
 callModule(
   server.modules_ga_scatter_correlation, "module_ga_scatter_correlation",
-  selected_database_rm_phenotype, selected_database_add_url_and_phenotype
+  selected_database_rm_phenotype, selected_database_add_url_and_phenotype,
+  custom_file
 )
 callModule(
   server.modules_ga_matrix_correlation, "module_ga_matrix_correlation",
-  selected_database_rm_phenotype, selected_database_add_url_and_phenotype
+  selected_database_rm_phenotype, selected_database_add_url_and_phenotype,
+  custom_file
 )
 callModule(
   server.modules_ga_group_comparison, "module_ga_group_comparison",
-  selected_database_rm_phenotype, selected_database_add_url_and_phenotype
+  selected_database_rm_phenotype, selected_database_add_url_and_phenotype,
+  custom_file
 )
 callModule(
   server.modules_ga_surv_analysis, "module_ga_surv_analysis",
-  selected_database_rm_phenotype, selected_database_add_url_and_phenotype
+  selected_database_rm_phenotype, selected_database_add_url_and_phenotype,
+  custom_file
 )
 
 # Show use alert ----------------------------------------------------------

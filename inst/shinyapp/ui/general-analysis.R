@@ -35,17 +35,17 @@ ui.page_general_analysis <- function() {
           br(),
           
           fileInput("ga_input_feature_file", 
-                    label = "Feature-by-sample file (*.csv/.tsv), e.g., a gene expression matrix", 
+                    label = "Feature-by-sample file (*.csv/.tsv/.txt), e.g., a gene expression matrix", 
                     accept = c("text/plain", ".gz")),
           tags$a(href="https://tcga-xena-hub.s3.us-east-1.amazonaws.com/download/TCGA.LAML.sampleMap%2FHiSeqV2.gz", "Click to download example feature data"),
           br(),
           
           fileInput("ga_input_phenotype_file",
-                    label = "Phenotype file (*.csv/.tsv)",
+                    label = "Phenotype file (*.csv/.tsv/.txt)",
                     accept = c("text/plain", ".gz")),
           tags$a(href="https://tcga-xena-hub.s3.us-east-1.amazonaws.com/download/TCGA.LAML.sampleMap%2FLAML_clinicalMatrix", "Click to download example phenotype data"),
           
-          tags$h5("Note: Not both files are required. Prepare your upload files based on your analysis plan"),
+          tags$h5("Note: Not both files are required. Prepare your upload files based on your analysis plan.\nBesides, make sure upload files have correct file extensions."),
           
           br(),
           icon = icon("upload"),
