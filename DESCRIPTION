@@ -1,6 +1,6 @@
 Package: UCSCXenaShiny
 Title: Interactive Analysis of UCSC Xena Data
-Version: 1.0.1.999
+Version: 1.1.0
 Authors@R: 
     c(person(given = "Shixiang",
              family = "Wang",

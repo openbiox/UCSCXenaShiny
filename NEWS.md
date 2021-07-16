@@ -1,5 +1,7 @@
 # UCSCXenaShiny 1.1.0
 
+- Improved user experience.
+- Added more contents in README.
 - Corrected LICENSE (this package is built on the top of code with GPLv3 LICENCE).
 - Added docker image for UCSCXenaShiny <https://hub.docker.com/r/shixiangwang/ucscxenashiny>.
 

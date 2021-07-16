@@ -90,6 +90,7 @@ pacman::p_load(
   fs,
   RColorBrewer,
   gganatogram,
+  ggcorrplot,
   ggstatsplot,
   ggradar,
   zip
