@@ -28,9 +28,10 @@ ui.page_general_analysis <- function() {
         )
       ),
       column(
-        1,
+        1, offset = 1,
         dropdownButton(
           inputId = "ga_drop_button_custom_data",
+          label = "Upload your data?",
           tags$h3("Upload your data file"),
           br(),
           
@@ -58,7 +59,7 @@ ui.page_general_analysis <- function() {
         )
       ),
       column(4,
-        offset = 5,
+        offset = 4,
         shinyWidgets::actionBttn(
           inputId = "use_ga_page",
           label = "How to use",
