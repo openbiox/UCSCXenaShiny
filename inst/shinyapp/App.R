@@ -267,7 +267,7 @@ get_data_df <- function(dataset, id) {
     id_value <- if (dataset == "custom_feature_dataset") {
       UCSCXenaShiny:::query_custom_feature_value(id)
     } else {
-      get_data(dataset, id)
+      UCSCXenaShiny:::get_data(dataset, id)
     }
     df <- dplyr::tibble(
       sample = names(id_value),

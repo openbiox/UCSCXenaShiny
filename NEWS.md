@@ -1,3 +1,7 @@
+# UCSCXenaShiny 1.1.1
+
+- Fixed the data loading bug due to function scope problem (#222).
+
 # UCSCXenaShiny 1.1.0
 
 - Supported uploading data files for analysis.
