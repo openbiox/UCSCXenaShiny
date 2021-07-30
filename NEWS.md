@@ -1,5 +1,6 @@
 # UCSCXenaShiny 1.1.1
 
+- Updated citation.
 - Fixed the data loading bug due to function scope problem (#222).
 
 # UCSCXenaShiny 1.1.0
