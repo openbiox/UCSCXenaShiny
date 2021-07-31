@@ -1,3 +1,8 @@
+# UCSCXenaShiny 1.1.2
+
+- Uploaded this tool to conda forge, the user can install it from conda now.
+For more details, please read the README file.
+
 # UCSCXenaShiny 1.1.1
 
 - Updated citation.
