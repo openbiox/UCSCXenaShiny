@@ -25,6 +25,24 @@ Shixiang Wang<sup>\#</sup>, Yi Xiong<sup>\#</sup>, Longfei Zhao<sup>\#</sup>, Ka
 
 If you don't want to install R and packages locally, or you have no programming experience, try using this tool on Hiplot platform: `https://shiny.hiplot.com.cn/ucsc-xena-shiny/`.
 
+## :snake: Use with Conda
+
+| Name | Downloads | Version | Platforms |
+| --- | --- | --- | --- |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-r--ucscxenashiny-green.svg)](https://github.com/conda-forge/r-ucscxenashiny-feedstock) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/r-ucscxenashiny.svg)](https://github.com/conda-forge/r-ucscxenashiny-feedstock) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/r-ucscxenashiny.svg)](https://github.com/conda-forge/r-ucscxenashiny-feedstock) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/r-ucscxenashiny.svg)](https://github.com/conda-forge/r-ucscxenashiny-feedstock) |
+
+Install from `conda-forge` channel with:
+
+```bash
+conda install -c conda-forge r-ucscxenashiny
+```
+
+It is possible to list all of the versions of `r-ucscxenashiny` available on your platform with:
+
+```bash
+conda search r-ucscxenashiny --channel conda-forge
+```
+
 ## :package: Use with Docker
 
 <img alt="Docker Image Version (latest by date)" src="https://img.shields.io/docker/v/shixiangwang/ucscxenashiny?color=blue"> <img alt="Docker Image Size (latest by date)" src="https://img.shields.io/docker/image-size/shixiangwang/ucscxenashiny"> <img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/shixiangwang/ucscxenashiny">
@@ -60,7 +78,7 @@ docker stop xenashiny
 docker start xenashiny
 ```
 
-## :arrow_double_down: Installation
+## :arrow_double_down: Manual installation
 
 You can install stable release of **UCSCXenaShiny** from CRAN with:
 
