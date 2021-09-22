@@ -255,6 +255,7 @@ server.modules_sur_plot <- function(input, output, session) {
     if (is.null(sur_dat_pre())) {
       return(NULL)
     }
+    message("cases before filtering: ", nrow(sur_dat_pre()))
     dat_filter(
       data = sur_dat_pre(), age = input$age,
       gender = input$sex, stage = input$stage,
@@ -385,12 +386,13 @@ dat_filter <- function(data, age, gender, stage, endpoint) {
   dat <- data %>%
     dplyr::rename(time = !!endpoint.time, status = !!endpoint) %>%
     dplyr::filter(
-      age > !!age[1],
-      age < !!age[2],
+      age >= !!age[1],
+      age <= !!age[2],
       gender %in% !!gender,
       stage %in% !!stage,
       !is.na(time),
       !is.na(status)
     )
+  message("cases after filtering: ", nrow(dat))
   return(dat)
 }

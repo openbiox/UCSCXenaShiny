@@ -201,6 +201,6 @@ p_survplot <- function(data, palette = "aaas", ...) {
     ...
   ) + ggplot2::guides(color = ggplot2::guide_legend(ncol = 3))
 
-  attr(p, "data") <- data[!is.na(data$group), ]
+  attr(p, "data") <- na.omit(data[, c("time", "status", "group")])
   p
 }
