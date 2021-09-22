@@ -213,7 +213,6 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = c("Boxplot", "Violinplot"),
 #' }
 #' @export
 vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", threshold = 0.5, values = c("grey", "#E31A1C", "#377DB8")) {
-  ## 写在 R 内的数据集需要更严格的引用方式
   tcga_surv <- load_data("tcga_surv")
   tcga_gtex <- load_data("tcga_gtex")
 
@@ -249,9 +248,10 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", t
         dplyr::mutate(group = factor(.data$group, levels = c("low", "high")))
     }
 
-
     unicox_res_genes <- ezcox::ezcox(
-      sss_can,
+      sss_can %>%
+        dplyr::select(c("values", paste0(measure, ".time"), measure)) %>%
+        na.omit(),
       covariates = "values",
       time = paste0(measure, ".time"),
       status = measure,
