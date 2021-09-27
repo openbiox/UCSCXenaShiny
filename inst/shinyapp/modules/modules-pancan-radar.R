@@ -72,7 +72,7 @@ ui.modules_pancan_radar <- function(id) {
         p("1. The data query may take some time based on your network. Wait until a plot shows"),
         p("2. If a void plot shows, please check your input"),
         p("3. ", tags$a(href = "https://toil.xenahubs.net/", "Genomic profile data source")),
-        p("4. Check description of ", tags$a(href = "https://zenodo.org/record/4698512#.YIYyHPfiv9E", "this link"), " for TMB/Stemness/MSI data source"),
+        p("4. Check description of ", tags$a(href = "https://zenodo.org/record/5531172", "this link"), " for TMB/Stemness/MSI data source"),
         tags$br(),
         DT::DTOutput(outputId = ns("tbl")),
         shinyjs::hidden(

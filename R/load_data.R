@@ -32,7 +32,7 @@ load_data <- function(name) {
     if (!file.exists(data_path)) {
       # Download it to inst/extdata from zenodo
       # Then load it
-      data_url <- file.path("https://zenodo.org/record/4751161/files", name2)
+      data_url <- file.path("https://zenodo.org/record/5531172/files", name2)
       message("Loading data from remote: ", data_url, ", please wait...")
       name <- FALSE
       tryCatch(
