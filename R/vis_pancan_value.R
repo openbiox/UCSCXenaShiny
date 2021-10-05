@@ -281,7 +281,7 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", t
     ggplot2::theme_bw() +
     ggplot2::geom_pointrange() +
     ggplot2::coord_flip() +
-    ggplot2::labs(x = "", y = "log (Hazard Ratio)") +
+    ggplot2::labs(x = "", y = "ln (Hazard Ratio)") +
     ggtitle(paste0(Gene, if (startsWith(data_type, "mRNA") | startsWith(data_type, "miRNA")) " Expression" else "")) +
     ggplot2::theme(
       axis.text.x = element_text(color = "black"),
