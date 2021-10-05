@@ -1,5 +1,6 @@
 # UCSCXenaShiny 1.1.2
 
+- Updated dataset doc.
 - Uploaded zenodo link.
 - Uploaded this tool to conda forge, the user can install it from conda now.
 For more details, please read the README file.
