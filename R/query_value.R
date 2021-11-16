@@ -107,7 +107,10 @@ query_pancan_value <- function(molecule,
     message("IDs include ", paste(ids, collapse = ", "))
     tryCatch(
       {
-        values <- purrr::map(ids, ~ query_value(., data_type, database, ...))
+        values <- lapply(ids, function(x) {
+          query_value(x, data_type, database, ...)
+        })
+        #values <- purrr::map(ids, ~ query_value(., data_type, database, ...))
         unit <- if (is.list(values[[1]]) && length(values[[1]]) > 1) values[[1]][[2]] else NULL
         if (is.null(unit)) {
           df <- as.data.frame(values %>% purrr::set_names(ids))
