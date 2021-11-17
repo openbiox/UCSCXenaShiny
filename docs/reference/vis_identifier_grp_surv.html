@@ -212,7 +212,7 @@
     </tr>
     <tr>
       <th>cutpoint</th>
-      <td><p>cut point (in percent) for "Custom" mode, default is <code><a href='https://rdrr.io/r/base/c.html'>c(50, 50)</a></code>.</p></td>
+      <td><p>cut point (in percent) for "Custom" mode, default is <code>c(50, 50)</code>.</p></td>
     </tr>
     <tr>
       <th>palette</th>
@@ -235,12 +235,12 @@ More see <code><a href='https://rdrr.io/pkg/survminer/man/ggsurvplot.html'>?surv
 <span class='va'>expr_dataset</span> <span class='op'>&lt;-</span> <span class='st'>"TCGA.LUAD.sampleMap/HiSeqV2_percentile"</span>
 <span class='va'>cli_dataset</span> <span class='op'>&lt;-</span> <span class='st'>"TCGA.LUAD.sampleMap/LUAD_clinicalMatrix"</span>
 <span class='va'>id</span> <span class='op'>&lt;-</span> <span class='st'>"KRAS"</span>
-<span class='va'>cli_df</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://docs.ropensci.org/UCSCXenaTools/reference/XenaGenerate.html'>XenaGenerate</a></span><span class='op'>(</span>
+<span class='va'>cli_df</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/UCSCXenaTools/man/XenaGenerate.html'>XenaGenerate</a></span><span class='op'>(</span>
   subset <span class='op'>=</span> <span class='va'>XenaDatasets</span> <span class='op'>==</span> <span class='st'>"TCGA.LUAD.sampleMap/LUAD_clinicalMatrix"</span>
-<span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://docs.ropensci.org/UCSCXenaTools/reference/XenaQuery.html'>XenaQuery</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://docs.ropensci.org/UCSCXenaTools/reference/XenaDownload.html'>XenaDownload</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://docs.ropensci.org/UCSCXenaTools/reference/XenaPrepare.html'>XenaPrepare</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='op'>)</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/UCSCXenaTools/man/XenaQuery.html'>XenaQuery</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/UCSCXenaTools/man/XenaDownload.html'>XenaDownload</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='%>%.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/UCSCXenaTools/man/XenaPrepare.html'>XenaPrepare</a></span><span class='op'>(</span><span class='op'>)</span>
 
 <span class='co'># Use individual survival data</span>
 <span class='va'>surv_df1</span> <span class='op'>&lt;-</span> <span class='va'>cli_df</span><span class='op'>[</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"sampleID"</span>, <span class='st'>"ABSOLUTE_Ploidy"</span>, <span class='st'>"days_to_death"</span>, <span class='st'>"vital_status"</span><span class='op'>)</span><span class='op'>]</span>

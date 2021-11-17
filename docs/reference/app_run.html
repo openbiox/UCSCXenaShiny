@@ -186,8 +186,11 @@
       <th>port</th>
       <td><p>The TCP port that the application should listen on. If the
 <code>port</code> is not specified, and the <code>shiny.port</code> option is set (with
-<code><a href='https://rdrr.io/r/base/options.html'>options(shiny.port = XX)</a></code>), then that port will be used. Otherwise,
-use a random port.</p></td>
+<code>options(shiny.port = XX)</code>), then that port will be used. Otherwise,
+use a random port between 3000:8000, excluding ports that are blocked
+by Google Chrome for being considered unsafe: 3659, 4045, 5060,
+5061, 6000, 6566, 6665:6669 and 6697. Up to twenty random
+ports will be tried.</p></td>
     </tr>
     </table>
 
