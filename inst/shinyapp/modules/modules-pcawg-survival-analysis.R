@@ -317,11 +317,16 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
       paste0(Sys.Date(), "_pcawg_surplot.", input$device)
     },
     content = function(file) {
-      p <- plot_func()
-      ggplot2::ggsave(
-        filename = file, plot = print(p, newpage = F), device = input$device,
-        units = "cm", width = input$width, height = input$height, dpi = 600
-      )
+      if(input$device == "png"){
+        png(filename = file,units = "cm", width = input$width, height = input$height, res = 600)
+        print(plot_func())
+        dev.off()
+      }
+      if(input$device == "pdf"){
+        pdf(file = file, onefile = FALSE)
+        print(plot_func())
+        dev.off()
+      }
     }
   )
   
