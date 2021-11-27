@@ -62,6 +62,13 @@ ui.modules_pcawg_unicox <- function(id) {
               icon = icon("check"),
               animation = "jelly",
               fill = TRUE
+            ),
+            downloadBttn(
+              outputId = ns("download"),
+              style = "gradient",
+              color = "default",
+              block = TRUE,
+              size = "sm"
             )
           )
         ),
