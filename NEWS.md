@@ -1,3 +1,7 @@
+# UCSCXenaShiny 1.1.3
+
+- Fixed survival KM plot output issue due to `ggsave()` failure. ([#230](https://github.com/openbiox/UCSCXenaShiny/issues/230))
+
 # UCSCXenaShiny 1.1.2
 
 - Fixed value query for gene signature with `purrr` lambda function.
