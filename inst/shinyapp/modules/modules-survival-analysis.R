@@ -20,12 +20,12 @@ ui.modules_sur_plot <- function(id) {
           placement = "right", options = list(container = "body")
         ),
         shinyjs::hidden(
-          shinyWidgets::textInputAddon(
+          shinyWidgets::textInputIcon(
             inputId = ns("item_input"),
             label = "Item:",
             value = NULL,
             placeholder = "",
-            addon = icon("dna"),
+            icon = icon("dna"),
             width = "100%"
           )
         ),

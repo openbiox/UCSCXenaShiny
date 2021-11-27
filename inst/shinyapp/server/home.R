@@ -10,8 +10,8 @@ output$Xenasummary1 <- plotly::renderPlotly({
     ggplot2::theme(panel.grid = ggplot2::element_blank()) + # 去除网格线
     ggplot2::theme(panel.border = ggplot2::element_blank()) + # 去除外层边框
     ggplot2::theme(axis.line = ggplot2::element_line(colour = "black")) + # 沿坐标轴显示直线
-    ggplot2::guides(fill = FALSE) +
-    ggplot2::guides(color = FALSE) +
+    ggplot2::guides(fill = "none") +
+    ggplot2::guides(color = "none") +
     ggplot2::scale_fill_manual(values = mycolor)
   plotly::ggplotly(p) %>% plotly::layout(showlegend = FALSE)
 })
