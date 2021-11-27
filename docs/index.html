@@ -51,7 +51,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">UCSCXenaShiny</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.3</span>
       </span>
     </div>
 
@@ -173,10 +173,10 @@
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"UCSCXenaShiny"</span><span class="op">)</span></code></pre></div>
 <p>You can install the development version of <strong>UCSCXenaShiny</strong> from Github with:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"openbiox/UCSCXenaShiny"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/remotes/man/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"openbiox/UCSCXenaShiny"</span><span class="op">)</span></code></pre></div>
 <p>Or Gitee (for Chinese users):</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_git.html">install_git</a></span><span class="op">(</span><span class="st">"https://gitee.com/XenaShiny/UCSCXenaShiny"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/remotes/man/install_git.html">install_git</a></span><span class="op">(</span><span class="st">"https://gitee.com/XenaShiny/UCSCXenaShiny"</span><span class="op">)</span></code></pre></div>
 <p>Other dependent R packages specific to the Shiny application will be automatically installed when you start with <code><a href="reference/app_run.html">app_run()</a></code> command. If you failed to install <strong>UCSCXenaShiny</strong>, please check if the following system dependencies have been properly installed or see <a href="#hammer_and_wrench-troubleshooting"><strong>Troubleshooting</strong></a> section for specific installation issues.</p>
 <div id="system-dependencies-installation" class="section level3">
 <h3 class="hasAnchor">
@@ -290,9 +290,9 @@
 <code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"gganatogram"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
    <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org">remotes</a></span><span class="op">)</span>
    <span class="kw"><a href="https://rdrr.io/r/base/conditions.html">tryCatch</a></span><span class="op">(</span>
-      <span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"jespermaag/gganatogram"</span><span class="op">)</span>,
+      <span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/remotes/man/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"jespermaag/gganatogram"</span><span class="op">)</span>,
       error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="op">{</span>
-         <span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_git.html">install_git</a></span><span class="op">(</span><span class="st">"https://gitee.com/XenaShiny/gganatogram"</span><span class="op">)</span>
+         <span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/remotes/man/install_git.html">install_git</a></span><span class="op">(</span><span class="st">"https://gitee.com/XenaShiny/gganatogram"</span><span class="op">)</span>
       <span class="op">}</span>
    <span class="op">)</span>
 <span class="op">}</span></code></pre></div>
@@ -304,9 +304,9 @@
 <code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"ggradar"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
    <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org">remotes</a></span><span class="op">)</span>
    <span class="kw"><a href="https://rdrr.io/r/base/conditions.html">tryCatch</a></span><span class="op">(</span>
-      <span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"ricardo-bion/ggradar"</span><span class="op">)</span>,
+      <span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/remotes/man/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"ricardo-bion/ggradar"</span><span class="op">)</span>,
       error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="op">{</span>
-         <span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_git.html">install_git</a></span><span class="op">(</span><span class="st">"https://gitee.com/XenaShiny/ggradar"</span><span class="op">)</span>
+         <span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/remotes/man/install_git.html">install_git</a></span><span class="op">(</span><span class="st">"https://gitee.com/XenaShiny/ggradar"</span><span class="op">)</span>
       <span class="op">}</span>
    <span class="op">)</span>
 <span class="op">}</span></code></pre></div>
