@@ -1,6 +1,7 @@
 # UCSCXenaShiny 1.1.3
 
-- Fixed survival KM plot output issue due to `ggsave()` failure. ([#230](https://github.com/openbiox/UCSCXenaShiny/issues/230))
+- Data check. (#225)
+- Fixed survival KM plot output issue due to `ggsave()` failure. (#230)
 
 # UCSCXenaShiny 1.1.2
 
