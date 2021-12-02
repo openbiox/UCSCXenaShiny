@@ -150,7 +150,7 @@ sur_plot <- function(data, cutoff_mode, cutpoint, palette = "aaas", ...) {
         TRUE ~ NA_character_
       ))
   }
-  p_survplot(data, palette = palette, ...)
+  p_survplot(data %>% dplyr::mutate(group = factor(group, c("Low", "High"))), palette = palette, ...)
 }
 
 ## Survival analysis for mutation DNA
@@ -161,7 +161,7 @@ sur_plot_mut <- function(data, palette = "aaas", ...) {
   if (length(table(data$group)) < 2) {
     return(NULL)
   }
-  p_survplot(data, palette = palette, ...)
+  p_survplot(data %>% dplyr::mutate(group = factor(group, c("WT", "MT"))), palette = palette, ...)
 }
 
 ## Survival analysis for CNV
@@ -175,7 +175,7 @@ sur_plot_cnv <- function(data, cnv_type = c("Duplicated", "Normal", "Deleted"), 
   if (length(table(data$group)) < 2) {
     return(NULL)
   }
-  p_survplot(data, palette = palette, ...)
+  p_survplot(data %>% dplyr::mutate(group = factor(group, c("Deleted", "Duplicated", "Normal"))), palette = palette, ...)
 }
 
 ## ggsurvplot
