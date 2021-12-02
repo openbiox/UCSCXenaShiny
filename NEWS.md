@@ -1,3 +1,9 @@
+# UCSCXenaShiny 1.1.4
+
+- Reversed default color setting for groups in survival analysis to fit conventional color grouping (in Xena).
+(#232, thanks to feedback from [Enrique](https://github.com/quiquemedina))
+- Supported known science palette and custom colors for survival analysis in Quick PanCan Analysis tab.
+
 # UCSCXenaShiny 1.1.3
 
 - Data check. (#225)

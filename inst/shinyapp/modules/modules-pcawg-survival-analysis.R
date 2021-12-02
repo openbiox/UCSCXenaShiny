@@ -80,6 +80,17 @@ ui.modules_pcawg_sur_plot <- function(id) {
               hr()
             )
           ),
+          selectInput(ns("color_palette"), "Color palette:",
+                      choices = c("npg", "aaas", "lancet", "jco", "ucscgb", "uchicago", "simpsons", "rickandmorty", "custom"),
+                      selected = "aaas"
+          ),
+          conditionalPanel(
+            condition = "input.color_palette == 'custom'", ns = ns,
+            colourpicker::colourInput(inputId = ns("custom_col_1"), "Color for 1st group", "#0000FF"),
+            colourpicker::colourInput(inputId = ns("custom_col_2"), "Color for 2nd group", "#FF0000"),
+            colourpicker::colourInput(inputId = ns("custom_col_3"), "Color for 3rd group", "#BEBEBE"),
+            hr()
+          ),
           shinyWidgets::actionBttn(
             inputId = ns("go"), label = " GO!",
             style = "gradient",
@@ -266,10 +277,16 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
   plot_func <- eventReactive(input$go, {
     if (!is.null(filter_dat())) {
       if (nrow(filter_dat()) >= 10) {
-        if(input$profile %in% c("mRNA", "miRNA_TMM", "miRNA_UQ","promoter_raw" ,"APOBEC") ){
-          p <- UCSCXenaShiny:::sur_plot(filter_dat(), input$cutoff_mode, input$cutpoint)
+        color_palette = if (input$color_palette == "custom") {
+          c(input$custom_col_1, input$custom_col_2, input$custom_col_3)
         } else {
-          p <- UCSCXenaShiny:::p_survplot(filter_dat())
+          input$color_palette
+        }
+        
+        if (input$profile %in% c("mRNA", "miRNA_TMM", "miRNA_UQ","promoter_raw" ,"APOBEC")) {
+          p <- UCSCXenaShiny:::sur_plot(filter_dat(), input$cutoff_mode, input$cutpoint, palette = color_palette)
+        } else {
+          p <- UCSCXenaShiny:::p_survplot(filter_dat(), palette = color_palette)
         }
         return(p)
       } else {

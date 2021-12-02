@@ -130,6 +130,17 @@ ui.modules_sur_plot <- function(id) {
               inline = TRUE
             )
           ),
+          selectInput(ns("color_palette"), "Color palette:",
+                      choices = c("npg", "aaas", "lancet", "jco", "ucscgb", "uchicago", "simpsons", "rickandmorty", "custom"),
+                      selected = "aaas"
+          ),
+          conditionalPanel(
+            condition = "input.color_palette == 'custom'", ns = ns,
+            colourpicker::colourInput(inputId = ns("custom_col_1"), "Color for 1st group", "#0000FF"),
+            colourpicker::colourInput(inputId = ns("custom_col_2"), "Color for 2nd group", "#FF0000"),
+            colourpicker::colourInput(inputId = ns("custom_col_3"), "Color for 3rd group", "#BEBEBE"),
+            hr()
+          ),
           shinyWidgets::actionBttn(
             inputId = ns("go"), label = " GO!",
             style = "gradient",
@@ -280,11 +291,18 @@ server.modules_sur_plot <- function(input, output, session) {
   plot_func <- eventReactive(input$go, {
     if (!is.null(filter_dat())) {
       if (nrow(filter_dat()) >= 10) {
+        color_palette = if (input$color_palette == "custom") {
+          c(input$custom_col_1, input$custom_col_2, input$custom_col_3)
+        } else {
+          input$color_palette
+        }
+        
         p <- tcga_surv_plot(filter_dat(),
           cutoff_mode = input$cutoff_mode,
           cutpoint = input$cutpoint,
           cnv_type = input$cs_cnv,
-          profile = input$profile
+          profile = input$profile,
+          palette = color_palette
         )
         if (is.null(p)) {
           sendSweetAlert(
