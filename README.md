@@ -13,6 +13,8 @@ It is mainly designed to provide a web app (built on the top of [`{shiny}`](http
 analyzing and visualizing datasets from [UCSC
 Xena](https://xenabrowser.net/datapages/).
 
+![Alt](https://repobeats.axiom.co/api/embed/2f1f0c9a7a5c3c710febb3ee3d1e26f249d5a3ed.svg "Repobeats analytics image")
+
 Please cite the following article when you used **UCSCXenaShiny** in your study:
 
 ---------------
