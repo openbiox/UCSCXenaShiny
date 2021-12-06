@@ -165,7 +165,7 @@ server.modules_ga_scatter_correlation <- function(
       error = function(e) {
         message("General analysis plot error:")
         print(e$message)
-        "Error"
+        e$message
       }
     )
   })
@@ -180,6 +180,7 @@ server.modules_ga_scatter_correlation <- function(
           session,
           title = "Error",
           text = tags$span(
+            tags$p(paste0("Error: ", p_scatter())),
             tags$p("Error to query data and plot. Please make sure the two selected datasets are 'genomicMatrix' type."),
             tags$p("'genomicMatrix' type means the dataset is stored in feature-by-sample format, e.g., gene-by-sample expression matrix."),
             tags$p("The type of datasets can be found at the dataset table by clicking 'Pre-selected Datasets for Analysis' on the 'General Analysis' Page."),
