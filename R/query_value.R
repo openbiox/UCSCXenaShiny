@@ -34,6 +34,7 @@ query_molecule_value <- function(dataset, molecule, host = NULL) {
       {
         values <- purrr::map(ids, ~ get_data(dataset, ., host = host))
         df <- as.data.frame(values %>% purrr::set_names(ids))
+        colnames(df) <- ids
         sig_values <- eval(fm, envir = df)
         names(sig_values) <- rownames(df)
         0L
@@ -116,6 +117,7 @@ query_pancan_value <- function(molecule,
         } else {
           df <- as.data.frame(purrr::map(values, ~ .[[1]]) %>% purrr::set_names(ids))
         }
+        colnames(df) <- ids
         sig_values <- eval(fm, envir = df)
         names(sig_values) <- rownames(df)
         0L
