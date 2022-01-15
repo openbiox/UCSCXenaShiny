@@ -524,10 +524,20 @@ server.modules_ga_surv_analysis <- function(
         paste0(Sys.Date(), "_surv_plot.", input$device)
       },
       content = function(file) {
-        ggplot2::ggsave(
-          filename = file, plot = print(p_surv(), newpage = F), device = input$device,
-          units = "cm", width = input$width, height = input$height, dpi = 600
-        )
+        if(input$device == "png"){
+          png(filename = file, units = "cm", width = input$width, height = input$height, res = 600)
+          print(p_surv())
+          dev.off()
+        }
+        if(input$device == "pdf"){
+          pdf(file = file, onefile = FALSE)
+          print(p_surv())
+          dev.off()
+        }
+        # ggplot2::ggsave(
+        #   filename = file, plot = print(p_surv(), newpage = F), device = input$device,
+        #   units = "cm", width = input$width, height = input$height, dpi = 600
+        # )
       }
     )
 

@@ -1,3 +1,7 @@
+# UCSCXenaShiny 1.1.5
+
+- Fixed survival KM plot output issue due to `ggsave()` failure in General Analysis page. (#230)
+
 # UCSCXenaShiny 1.1.4
 
 - Fixed the colnames being changed by `as.data.frame()` when querying a symbol with unvalid R name. (Related to #234)
