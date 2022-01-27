@@ -27,6 +27,12 @@ ui.page_help <- function() {
       fluidPage(
         includeMarkdown(set_md_path("citation.md"))
       )
+    ),
+    tabPanel(
+      "Extra Datasets",
+      fluidPage(
+        includeMarkdown(set_md_path("datasets.md"))
+      )
     )
   )
 }
