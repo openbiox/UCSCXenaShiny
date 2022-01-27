@@ -1,3 +1,7 @@
+# UCSCXenaShiny 1.1.6
+
+- Added description of extra datasets.
+
 # UCSCXenaShiny 1.1.5
 
 - Fixed survival KM plot output issue due to `ggsave()` failure in General Analysis page. (#230)
