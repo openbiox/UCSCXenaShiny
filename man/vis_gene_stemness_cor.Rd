@@ -29,5 +29,27 @@ Visualize Correlation between Gene and Tumor Stemness
 \examples{
 \dontrun{
 p <- vis_gene_stemness_cor(Gene = "TP53")
+p
 }
+## To generate a radar plot, uncomment the following code
+# pdata <- p$data \%>\%
+#   dplyr::mutate(cor = round(cor, digits = 3), p.value = round(p.value, digits = 3))
+#
+# df <- pdata \%>\%
+#   select(cor, cancer) \%>\%
+#   pivot_wider(names_from = cancer, values_from = cor)
+#
+# ggradar::ggradar(
+#   df[1, ],
+#   font.radar = "sans",
+#   values.radar = c("-1", "0", "1"),
+#   grid.min = -1, grid.mid = 0, grid.max = 1,
+#   # Background and grid lines
+#   background.circle.colour = "white",
+#   gridline.mid.colour = "grey",
+#   # Polygons
+#   group.line.width = 1,
+#   group.point.size = 3,
+#   group.colours = "#00AFBB") +
+#   theme(plot.title = element_text(hjust = .5))
 }
