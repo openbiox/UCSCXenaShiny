@@ -310,7 +310,11 @@ ui <- tagList(
     ui.page_developers(),
     footer = ui.footer(),
     collapsible = TRUE,
-    theme = shinythemes::shinytheme("flatly")
+    theme = tryCatch(shinythemes::shinytheme("flatly"),
+                     error = function(e) {
+                       "Theme 'flatly' is not available, use default."
+                       NULL
+                     })
   )
 )
 

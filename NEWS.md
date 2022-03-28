@@ -1,3 +1,8 @@
+# UCSCXenaShiny 1.1.7
+
+- Set default theme if `flatly` not available.
+- Added example to generate radar plot, close #239
+
 # UCSCXenaShiny 1.1.6
 
 - Added description of extra datasets.
