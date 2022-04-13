@@ -1,5 +1,6 @@
 # UCSCXenaShiny 1.1.7
 
+- Added option `include.Tumor.only` to control if include type 
 - Set default theme if `flatly` not available.
 - Added example to generate radar plot, close #239
 

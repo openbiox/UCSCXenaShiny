@@ -14,7 +14,8 @@ vis_toil_TvsN(
   values = c("#DF2020", "#DDDF21"),
   TCGA.only = FALSE,
   draw_quantiles = c(0.25, 0.5, 0.75),
-  trim = TRUE
+  trim = TRUE,
+  include.Tumor.only = FALSE
 )
 }
 \arguments{
@@ -40,6 +41,9 @@ including "mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
 \item{draw_quantiles}{draw quantiles for violinplot}
 
 \item{trim}{whether trim the violin}
+
+\item{include.Tumor.only}{if \code{TRUE}, include "UVM" and "MESO" these two types
+with matched normals samples.}
 }
 \value{
 a \code{ggplot} object

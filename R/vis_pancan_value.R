@@ -13,6 +13,8 @@
 #' @param data_type choose gene profile type,
 #' including "mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
 #' "cnv_gistic2", "methylation", "miRNA".
+#' @param include.Tumor.only if `TRUE`, include "UVM" and "MESO" these two types
+#' with matched normals samples.
 #' @return a `ggplot` object
 #' @examples
 #' \dontrun{
@@ -26,7 +28,7 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = c("Boxplot", "Violinplot"),
                           Show.P.label = TRUE, Method = c("wilcox.test", "t.test"),
                           values = c("#DF2020", "#DDDF21"),
                           TCGA.only = FALSE, draw_quantiles = c(0.25, 0.5, 0.75),
-                          trim = TRUE) {
+                          trim = TRUE, include.Tumor.only = FALSE) {
   tcga_gtex <- load_data("tcga_gtex")
 
   Mode <- match.arg(Mode)
@@ -73,8 +75,10 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = c("Boxplot", "Violinplot"),
   tcga_gtex_withNormal <- tcga_gtex[!(tcga_gtex$tissue %in% withoutNormal), ]
   tcga_gtex_withNormal <- tcga_gtex_withNormal %>%
     dplyr::mutate(dataset = ifelse(stringr::str_sub(.data$sample, 1, 4) == "TCGA", "TCGA", "GTEX"))
-  tcga_gtex_MESO <- tcga_gtex[tcga_gtex$tissue == "MESO", ]
-  tcga_gtex_UVM <- tcga_gtex[tcga_gtex$tissue == "UVM", ]
+  if (include.Tumor.only) {
+    tcga_gtex_MESO <- tcga_gtex[tcga_gtex$tissue == "MESO", ]
+    tcga_gtex_UVM <- tcga_gtex[tcga_gtex$tissue == "UVM", ]
+  }
   if (TCGA.only == TRUE) {
     tcga_gtex_withNormal <- tcga_gtex_withNormal %>% dplyr::filter(.data$dataset == "TCGA")
   }
@@ -100,8 +104,10 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = c("Boxplot", "Violinplot"),
         legend.position = c(0, 0), legend.justification = c(0, 0)
       ) +
       ggplot2::scale_fill_manual(values = values)
-    p <- p + ggplot2::geom_boxplot(data = tcga_gtex_MESO) +
-      ggplot2::geom_boxplot(data = tcga_gtex_UVM)
+    if (include.Tumor.only) {
+      p <- p + ggplot2::geom_boxplot(data = tcga_gtex_MESO) +
+        ggplot2::geom_boxplot(data = tcga_gtex_UVM)
+    }
 
     p <- p + ggplot2::ylab(
       if (is.null(unit)) Gene else paste0(Gene, " (", unit, ")")
@@ -129,7 +135,9 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = c("Boxplot", "Violinplot"),
     }
   }
   if (Mode == "Violinplot") {
-    p <- ggplot2::ggplot(tcga_gtex_withNormal, aes_string(x = "tissue", y = "tpm", fill = "type2")) +
+    p <- ggplot2::ggplot(
+      tcga_gtex_withNormal, aes_string(x = "tissue", y = "tpm", fill = "type2")
+    ) +
       geom_split_violin(
         draw_quantiles = draw_quantiles,
         trim = trim,
@@ -149,20 +157,10 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = c("Boxplot", "Violinplot"),
         legend.position = c(0, 0), legend.justification = c(0, 0)
       )
 
-    p + geom_split_violin(
-      data = tcga_gtex_MESO,
-      mapping = aes_string(x = "tissue", y = "tpm", fill = "type2"),
-      draw_quantiles = draw_quantiles,
-      trim = trim,
-      linetype = "solid",
-      color = "black",
-      size = 0.2,
-      na.rm = TRUE,
-      position = "identity"
-    ) +
-      geom_split_violin(
-        data = tcga_gtex_UVM,
-        mapping = ggplot2::aes_string(x = "tissue", y = "tpm", fill = "type2"),
+    if (include.Tumor.only) {
+      p <- p + geom_split_violin(
+        data = tcga_gtex_MESO,
+        mapping = aes_string(x = "tissue", y = "tpm", fill = "type2"),
         draw_quantiles = draw_quantiles,
         trim = trim,
         linetype = "solid",
@@ -170,7 +168,19 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = c("Boxplot", "Violinplot"),
         size = 0.2,
         na.rm = TRUE,
         position = "identity"
-      ) #+
+      ) +
+        geom_split_violin(
+          data = tcga_gtex_UVM,
+          mapping = ggplot2::aes_string(x = "tissue", y = "tpm", fill = "type2"),
+          draw_quantiles = draw_quantiles,
+          trim = trim,
+          linetype = "solid",
+          color = "black",
+          size = 0.2,
+          na.rm = TRUE,
+          position = "identity"
+        )
+    } #+
     # ggplot2::scale_x_discrete(limits = levels(tcga_gtex$tissue))
     p <- p + ggplot2::ylab(
       if (is.null(unit)) Gene else paste0(Gene, " (", unit, ")")
@@ -510,15 +520,15 @@ vis_gene_immune_cor <- function(Gene = "TP53", cor_method = "spearman", data_typ
     ) +
     ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "*** p < 0.001", "\n\n", "Correlation")) +
     ggtitle(paste0("The correlation between ", Gene, " ", data_type, " with immune signatures"))
-  
+
   if (Plot == TRUE) {
     return(p)
   } else {
-    pdata = ss
-    plist = list()
-    plist[[1]] = p 
-    plist[[2]] = pdata
-    names(plist) = c("plot","pdata")
+    pdata <- ss
+    plist <- list()
+    plist[[1]] <- p
+    plist[[2]] <- pdata
+    names(plist) <- c("plot", "pdata")
     return(plist)
   }
 }
@@ -587,14 +597,13 @@ vis_gene_tmb_cor <- function(Gene = "TP53", cor_method = "spearman", data_type =
   if (Plot == TRUE) {
     return(p)
   } else {
-    pdata = ss
-    plist = list()
-    plist[[1]] = p 
-    plist[[2]] = pdata
-    names(plist) = c("plot","pdata")
+    pdata <- ss
+    plist <- list()
+    plist[[1]] <- p
+    plist[[2]] <- pdata
+    names(plist) <- c("plot", "pdata")
     return(plist)
   }
-  
 }
 
 #' Visualize Correlation between Gene and MSI (Microsatellite instability)
@@ -662,11 +671,11 @@ vis_gene_msi_cor <- function(Gene = "TP53", cor_method = "spearman", data_type =
   if (Plot == TRUE) {
     return(p)
   } else {
-    pdata = ss
-    plist = list()
-    plist[[1]] = p 
-    plist[[2]] = pdata
-    names(plist) = c("plot","pdata")
+    pdata <- ss
+    plist <- list()
+    plist[[1]] <- p
+    plist[[2]] <- pdata
+    names(plist) <- c("plot", "pdata")
     return(plist)
   }
 }
@@ -753,15 +762,15 @@ vis_gene_stemness_cor <- function(Gene = "TP53", cor_method = "spearman", data_t
     ) + # 调整y轴文字
     # 调整legen
     ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "Correlation"))
-  
+
   if (Plot == TRUE) {
     return(p)
   } else {
-    pdata = ss
-    plist = list()
-    plist[[1]] = p 
-    plist[[2]] = pdata
-    names(plist) = c("plot","pdata")
+    pdata <- ss
+    plist <- list()
+    plist[[1]] <- p
+    plist[[2]] <- pdata
+    names(plist) <- c("plot", "pdata")
     return(plist)
   }
 }
@@ -1306,11 +1315,11 @@ vis_gene_TIL_cor <- function(Gene = "TP53",
   if (Plot == TRUE) {
     return(p)
   } else {
-    pdata = ss
-    plist = list()
-    plist[[1]] = p 
-    plist[[2]] = pdata
-    names(plist) = c("plot","pdata")
+    pdata <- ss
+    plist <- list()
+    plist[[1]] <- p
+    plist[[2]] <- pdata
+    names(plist) <- c("plot", "pdata")
     return(plist)
   }
 }

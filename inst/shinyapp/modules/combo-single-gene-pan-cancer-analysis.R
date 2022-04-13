@@ -38,10 +38,11 @@ server.combo.sg.pancan.analysis <- function(input, output, session) {
       output$gene_pancan_dist <- renderPlot({
         vis_toil_TvsN(
           Gene = input$Pancan_search,
-          Mode = ("Boxplot"),
+          Mode = "Boxplot",
           Method = "wilcox.test",
           Show.P.value = TRUE,
-          Show.P.label = TRUE
+          Show.P.label = TRUE,
+          include.Tumor.only = TRUE
         )
       })
 
