@@ -35,7 +35,7 @@ Finally, show K-M plot.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">UCSCXenaShiny</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.7</span>
       </span>
     </div>
 
@@ -44,7 +44,7 @@ Finally, show K-M plot.
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -153,14 +153,14 @@ More see <code><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html" class
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span>
-<span class="co"># 1. get data</span>
-<span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">tcga_surv_get</span><span class="op">(</span><span class="st">"TP53"</span><span class="op">)</span>
-<span class="co"># 2. filter data (optional)</span>
-
-<span class="co"># 3. show K-M plot</span>
-<span class="fu">tcga_surv_plot</span><span class="op">(</span><span class="va">data</span>, time <span class="op">=</span> <span class="st">"DSS.time"</span>, status <span class="op">=</span> <span class="st">"DSS"</span><span class="op">)</span>
-<span class="op">}</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
+<span class="r-in"><span class="co"># 1. get data</span></span>
+<span class="r-in"><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">tcga_surv_get</span><span class="op">(</span><span class="st">"TP53"</span><span class="op">)</span></span>
+<span class="r-in"><span class="co"># 2. filter data (optional)</span></span>
+<span class="r-in"></span>
+<span class="r-in"><span class="co"># 3. show K-M plot</span></span>
+<span class="r-in"><span class="fu">tcga_surv_plot</span><span class="op">(</span><span class="va">data</span>, time <span class="op">=</span> <span class="st">"DSS.time"</span>, status <span class="op">=</span> <span class="st">"DSS"</span><span class="op">)</span></span>
+<span class="r-in"><span class="op">}</span></span>
 </code></pre></div>
     </div>
   </div>

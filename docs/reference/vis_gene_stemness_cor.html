@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">UCSCXenaShiny</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.7</span>
       </span>
     </div>
 
@@ -38,7 +38,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -110,9 +110,31 @@ including "mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span>
-<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">vis_gene_stemness_cor</span><span class="op">(</span>Gene <span class="op">=</span> <span class="st">"TP53"</span><span class="op">)</span>
-<span class="op">}</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
+<span class="r-in"><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">vis_gene_stemness_cor</span><span class="op">(</span>Gene <span class="op">=</span> <span class="st">"TP53"</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">p</span></span>
+<span class="r-in"><span class="op">}</span></span>
+<span class="r-in"><span class="co">## To generate a radar plot, uncomment the following code</span></span>
+<span class="r-in"><span class="co"># pdata &lt;- p$data %&gt;%</span></span>
+<span class="r-in"><span class="co">#   dplyr::mutate(cor = round(cor, digits = 3), p.value = round(p.value, digits = 3))</span></span>
+<span class="r-in"><span class="co">#</span></span>
+<span class="r-in"><span class="co"># df &lt;- pdata %&gt;%</span></span>
+<span class="r-in"><span class="co">#   select(cor, cancer) %&gt;%</span></span>
+<span class="r-in"><span class="co">#   pivot_wider(names_from = cancer, values_from = cor)</span></span>
+<span class="r-in"><span class="co">#</span></span>
+<span class="r-in"><span class="co"># ggradar::ggradar(</span></span>
+<span class="r-in"><span class="co">#   df[1, ],</span></span>
+<span class="r-in"><span class="co">#   font.radar = "sans",</span></span>
+<span class="r-in"><span class="co">#   values.radar = c("-1", "0", "1"),</span></span>
+<span class="r-in"><span class="co">#   grid.min = -1, grid.mid = 0, grid.max = 1,</span></span>
+<span class="r-in"><span class="co">#   # Background and grid lines</span></span>
+<span class="r-in"><span class="co">#   background.circle.colour = "white",</span></span>
+<span class="r-in"><span class="co">#   gridline.mid.colour = "grey",</span></span>
+<span class="r-in"><span class="co">#   # Polygons</span></span>
+<span class="r-in"><span class="co">#   group.line.width = 1,</span></span>
+<span class="r-in"><span class="co">#   group.point.size = 3,</span></span>
+<span class="r-in"><span class="co">#   group.colours = "#00AFBB") +</span></span>
+<span class="r-in"><span class="co">#   theme(plot.title = element_text(hjust = .5))</span></span>
 </code></pre></div>
     </div>
   </div>

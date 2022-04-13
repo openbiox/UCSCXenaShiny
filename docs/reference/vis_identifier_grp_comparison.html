@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">UCSCXenaShiny</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.7</span>
       </span>
     </div>
 
@@ -38,7 +38,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -142,7 +142,7 @@ comparisons. Possible methods are: <code>"holm"</code> (default), <code>"hochber
 <dd><p>A <code>{ggplot2}</code> theme. Default value is
 <code><a href="https://indrajeetpatil.github.io/ggstatsplot/reference/theme_ggstatsplot.html" class="external-link">ggstatsplot::theme_ggstatsplot()</a></code>. Any of the <code>{ggplot2}</code> themes (e.g.,
 <code>theme_bw()</code>), or themes from extension packages are allowed
-(e.g., <code>ggthemes::theme_fivethirtyeight()</code>, <code>hrbrthemes::theme_ipsum_ps()</code>,
+(e.g., <code><a href="https://rdrr.io/pkg/ggthemes/man/theme_fivethirtyeight.html" class="external-link">ggthemes::theme_fivethirtyeight()</a></code>, <code>hrbrthemes::theme_ipsum_ps()</code>,
 etc.).</p></dd>
 <dt>...</dt>
 <dd><p>other parameters passing to <a href="https://indrajeetpatil.github.io/ggstatsplot/reference/ggbetweenstats.html" class="external-link">ggstatsplot::ggbetweenstats</a> or <a href="https://indrajeetpatil.github.io/ggstatsplot/reference/ggwithinstats.html" class="external-link">ggstatsplot::ggwithinstats</a>.</p></dd>
@@ -154,32 +154,32 @@ etc.).</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/UCSCXenaTools/" class="external-link">UCSCXenaTools</a></span><span class="op">)</span>
-<span class="va">expr_dataset</span> <span class="op">&lt;-</span> <span class="st">"TCGA.LUAD.sampleMap/HiSeqV2_percentile"</span>
-<span class="va">cli_dataset</span> <span class="op">&lt;-</span> <span class="st">"TCGA.LUAD.sampleMap/LUAD_clinicalMatrix"</span>
-<span class="va">id</span> <span class="op">&lt;-</span> <span class="st">"TP53"</span>
-<span class="va">cli_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://docs.ropensci.org/UCSCXenaTools/reference/XenaGenerate.html" class="external-link">XenaGenerate</a></span><span class="op">(</span>
-  subset <span class="op">=</span> <span class="va">XenaDatasets</span> <span class="op">==</span> <span class="st">"TCGA.LUAD.sampleMap/LUAD_clinicalMatrix"</span>
-<span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://docs.ropensci.org/UCSCXenaTools/reference/XenaQuery.html" class="external-link">XenaQuery</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://docs.ropensci.org/UCSCXenaTools/reference/XenaDownload.html" class="external-link">XenaDownload</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://docs.ropensci.org/UCSCXenaTools/reference/XenaPrepare.html" class="external-link">XenaPrepare</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="co"># group data.frame with 2 columns</span>
-<span class="fu">vis_identifier_grp_comparison</span><span class="op">(</span><span class="va">expr_dataset</span>, <span class="va">id</span>, <span class="va">cli_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sampleID"</span>, <span class="st">"gender"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
-<span class="co"># group data.frame with 3 columns</span>
-<span class="fu">vis_identifier_grp_comparison</span><span class="op">(</span>
-  <span class="va">expr_dataset</span>, <span class="va">id</span>,
-  <span class="va">cli_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sampleID"</span>, <span class="st">"pathologic_M"</span>, <span class="st">"gender"</span><span class="op">)</span><span class="op">]</span> <span class="op"><a href="pipe.html">%&gt;%</a></span>
-    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">pathologic_M</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"M0"</span>, <span class="st">"MX"</span><span class="op">)</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="co"># When not use the value of `identifier` from `dataset`</span>
-<span class="fu">vis_identifier_grp_comparison</span><span class="op">(</span>grp_df <span class="op">=</span> <span class="va">cli_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">71</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
-<span class="fu">vis_identifier_grp_comparison</span><span class="op">(</span>grp_df <span class="op">=</span> <span class="va">cli_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">71</span>, <span class="fl">111</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
-<span class="op">}</span>
-
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
+<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/UCSCXenaTools/" class="external-link">UCSCXenaTools</a></span><span class="op">)</span></span>
+<span class="r-in"><span class="va">expr_dataset</span> <span class="op">&lt;-</span> <span class="st">"TCGA.LUAD.sampleMap/HiSeqV2_percentile"</span></span>
+<span class="r-in"><span class="va">cli_dataset</span> <span class="op">&lt;-</span> <span class="st">"TCGA.LUAD.sampleMap/LUAD_clinicalMatrix"</span></span>
+<span class="r-in"><span class="va">id</span> <span class="op">&lt;-</span> <span class="st">"TP53"</span></span>
+<span class="r-in"><span class="va">cli_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://docs.ropensci.org/UCSCXenaTools/reference/XenaGenerate.html" class="external-link">XenaGenerate</a></span><span class="op">(</span></span>
+<span class="r-in">  subset <span class="op">=</span> <span class="va">XenaDatasets</span> <span class="op">==</span> <span class="st">"TCGA.LUAD.sampleMap/LUAD_clinicalMatrix"</span></span>
+<span class="r-in"><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
+<span class="r-in">  <span class="fu"><a href="https://docs.ropensci.org/UCSCXenaTools/reference/XenaQuery.html" class="external-link">XenaQuery</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
+<span class="r-in">  <span class="fu"><a href="https://docs.ropensci.org/UCSCXenaTools/reference/XenaDownload.html" class="external-link">XenaDownload</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
+<span class="r-in">  <span class="fu"><a href="https://docs.ropensci.org/UCSCXenaTools/reference/XenaPrepare.html" class="external-link">XenaPrepare</a></span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-in"></span>
+<span class="r-in"><span class="co"># group data.frame with 2 columns</span></span>
+<span class="r-in"><span class="fu">vis_identifier_grp_comparison</span><span class="op">(</span><span class="va">expr_dataset</span>, <span class="va">id</span>, <span class="va">cli_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sampleID"</span>, <span class="st">"gender"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span class="r-in"><span class="co"># group data.frame with 3 columns</span></span>
+<span class="r-in"><span class="fu">vis_identifier_grp_comparison</span><span class="op">(</span></span>
+<span class="r-in">  <span class="va">expr_dataset</span>, <span class="va">id</span>,</span>
+<span class="r-in">  <span class="va">cli_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sampleID"</span>, <span class="st">"pathologic_M"</span>, <span class="st">"gender"</span><span class="op">)</span><span class="op">]</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
+<span class="r-in">    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">pathologic_M</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"M0"</span>, <span class="st">"MX"</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span class="op">)</span></span>
+<span class="r-in"></span>
+<span class="r-in"><span class="co"># When not use the value of `identifier` from `dataset`</span></span>
+<span class="r-in"><span class="fu">vis_identifier_grp_comparison</span><span class="op">(</span>grp_df <span class="op">=</span> <span class="va">cli_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">71</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span class="r-in"><span class="fu">vis_identifier_grp_comparison</span><span class="op">(</span>grp_df <span class="op">=</span> <span class="va">cli_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">71</span>, <span class="fl">111</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span class="r-in"><span class="op">}</span></span>
+<span class="r-in"></span>
 </code></pre></div>
     </div>
   </div>

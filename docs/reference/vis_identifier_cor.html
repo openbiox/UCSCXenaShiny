@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">UCSCXenaShiny</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.7</span>
       </span>
     </div>
 
@@ -38,7 +38,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -130,25 +130,25 @@ Otherwise, data subtype will be labeled.</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span>
-<span class="va">dataset</span> <span class="op">&lt;-</span> <span class="st">"TcgaTargetGtex_rsem_isoform_tpm"</span>
-<span class="va">id1</span> <span class="op">&lt;-</span> <span class="st">"TP53"</span>
-<span class="va">id2</span> <span class="op">&lt;-</span> <span class="st">"KRAS"</span>
-<span class="fu">vis_identifier_cor</span><span class="op">(</span><span class="va">dataset</span>, <span class="va">id1</span>, <span class="va">dataset</span>, <span class="va">id2</span><span class="op">)</span>
-
-<span class="va">samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>
-  <span class="st">"TCGA-D5-5538-01"</span>, <span class="st">"TCGA-VM-A8C8-01"</span>,
-  <span class="st">"TCGA-ZN-A9VQ-01"</span>, <span class="st">"TCGA-EE-A17X-06"</span>,
-  <span class="st">"TCGA-05-4420-01"</span>
-<span class="op">)</span>
-<span class="fu">vis_identifier_cor</span><span class="op">(</span><span class="va">dataset</span>, <span class="va">id1</span>, <span class="va">dataset</span>, <span class="va">id2</span>, <span class="va">samples</span><span class="op">)</span>
-
-<span class="va">dataset1</span> <span class="op">&lt;-</span> <span class="st">"TCGA-BLCA.htseq_counts.tsv"</span>
-<span class="va">dataset2</span> <span class="op">&lt;-</span> <span class="st">"TCGA-BLCA.gistic.tsv"</span>
-<span class="va">id1</span> <span class="op">&lt;-</span> <span class="st">"TP53"</span>
-<span class="va">id2</span> <span class="op">&lt;-</span> <span class="st">"KRAS"</span>
-<span class="fu">vis_identifier_cor</span><span class="op">(</span><span class="va">dataset1</span>, <span class="va">id1</span>, <span class="va">dataset2</span>, <span class="va">id2</span><span class="op">)</span>
-<span class="op">}</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
+<span class="r-in"><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="st">"TcgaTargetGtex_rsem_isoform_tpm"</span></span>
+<span class="r-in"><span class="va">id1</span> <span class="op">&lt;-</span> <span class="st">"TP53"</span></span>
+<span class="r-in"><span class="va">id2</span> <span class="op">&lt;-</span> <span class="st">"KRAS"</span></span>
+<span class="r-in"><span class="fu">vis_identifier_cor</span><span class="op">(</span><span class="va">dataset</span>, <span class="va">id1</span>, <span class="va">dataset</span>, <span class="va">id2</span><span class="op">)</span></span>
+<span class="r-in"></span>
+<span class="r-in"><span class="va">samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span class="r-in">  <span class="st">"TCGA-D5-5538-01"</span>, <span class="st">"TCGA-VM-A8C8-01"</span>,</span>
+<span class="r-in">  <span class="st">"TCGA-ZN-A9VQ-01"</span>, <span class="st">"TCGA-EE-A17X-06"</span>,</span>
+<span class="r-in">  <span class="st">"TCGA-05-4420-01"</span></span>
+<span class="r-in"><span class="op">)</span></span>
+<span class="r-in"><span class="fu">vis_identifier_cor</span><span class="op">(</span><span class="va">dataset</span>, <span class="va">id1</span>, <span class="va">dataset</span>, <span class="va">id2</span>, <span class="va">samples</span><span class="op">)</span></span>
+<span class="r-in"></span>
+<span class="r-in"><span class="va">dataset1</span> <span class="op">&lt;-</span> <span class="st">"TCGA-BLCA.htseq_counts.tsv"</span></span>
+<span class="r-in"><span class="va">dataset2</span> <span class="op">&lt;-</span> <span class="st">"TCGA-BLCA.gistic.tsv"</span></span>
+<span class="r-in"><span class="va">id1</span> <span class="op">&lt;-</span> <span class="st">"TP53"</span></span>
+<span class="r-in"><span class="va">id2</span> <span class="op">&lt;-</span> <span class="st">"KRAS"</span></span>
+<span class="r-in"><span class="fu">vis_identifier_cor</span><span class="op">(</span><span class="va">dataset1</span>, <span class="va">id1</span>, <span class="va">dataset2</span>, <span class="va">id2</span><span class="op">)</span></span>
+<span class="r-in"><span class="op">}</span></span>
 </code></pre></div>
     </div>
   </div>

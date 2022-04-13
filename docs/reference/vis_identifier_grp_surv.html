@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">UCSCXenaShiny</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.7</span>
       </span>
     </div>
 
@@ -38,7 +38,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -126,31 +126,31 @@ More see <code><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html" class
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/UCSCXenaTools/" class="external-link">UCSCXenaTools</a></span><span class="op">)</span>
-<span class="va">expr_dataset</span> <span class="op">&lt;-</span> <span class="st">"TCGA.LUAD.sampleMap/HiSeqV2_percentile"</span>
-<span class="va">cli_dataset</span> <span class="op">&lt;-</span> <span class="st">"TCGA.LUAD.sampleMap/LUAD_clinicalMatrix"</span>
-<span class="va">id</span> <span class="op">&lt;-</span> <span class="st">"KRAS"</span>
-<span class="va">cli_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://docs.ropensci.org/UCSCXenaTools/reference/XenaGenerate.html" class="external-link">XenaGenerate</a></span><span class="op">(</span>
-  subset <span class="op">=</span> <span class="va">XenaDatasets</span> <span class="op">==</span> <span class="st">"TCGA.LUAD.sampleMap/LUAD_clinicalMatrix"</span>
-<span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://docs.ropensci.org/UCSCXenaTools/reference/XenaQuery.html" class="external-link">XenaQuery</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://docs.ropensci.org/UCSCXenaTools/reference/XenaDownload.html" class="external-link">XenaDownload</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://docs.ropensci.org/UCSCXenaTools/reference/XenaPrepare.html" class="external-link">XenaPrepare</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="co"># Use individual survival data</span>
-<span class="va">surv_df1</span> <span class="op">&lt;-</span> <span class="va">cli_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sampleID"</span>, <span class="st">"ABSOLUTE_Ploidy"</span>, <span class="st">"days_to_death"</span>, <span class="st">"vital_status"</span><span class="op">)</span><span class="op">]</span>
-<span class="va">surv_df1</span><span class="op">$</span><span class="va">vital_status</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">surv_df1</span><span class="op">$</span><span class="va">vital_status</span> <span class="op">==</span> <span class="st">"DECEASED"</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span>
-<span class="fu">vis_identifier_grp_surv</span><span class="op">(</span>surv_df <span class="op">=</span> <span class="va">surv_df1</span><span class="op">)</span>
-
-<span class="co"># Use both dataset argument and vis_identifier_grp_surv(surv_df = surv_df1)</span>
-<span class="va">surv_df2</span> <span class="op">&lt;-</span> <span class="va">surv_df1</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span><span class="op">]</span>
-<span class="fu">vis_identifier_grp_surv</span><span class="op">(</span><span class="va">expr_dataset</span>, <span class="va">id</span>, surv_df <span class="op">=</span> <span class="va">surv_df2</span><span class="op">)</span>
-<span class="fu">vis_identifier_grp_surv</span><span class="op">(</span><span class="va">expr_dataset</span>, <span class="va">id</span>,
-  surv_df <span class="op">=</span> <span class="va">surv_df2</span>,
-  cutoff_mode <span class="op">=</span> <span class="st">"Custom"</span>, cutpoint <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">75</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="op">}</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
+<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/UCSCXenaTools/" class="external-link">UCSCXenaTools</a></span><span class="op">)</span></span>
+<span class="r-in"><span class="va">expr_dataset</span> <span class="op">&lt;-</span> <span class="st">"TCGA.LUAD.sampleMap/HiSeqV2_percentile"</span></span>
+<span class="r-in"><span class="va">cli_dataset</span> <span class="op">&lt;-</span> <span class="st">"TCGA.LUAD.sampleMap/LUAD_clinicalMatrix"</span></span>
+<span class="r-in"><span class="va">id</span> <span class="op">&lt;-</span> <span class="st">"KRAS"</span></span>
+<span class="r-in"><span class="va">cli_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://docs.ropensci.org/UCSCXenaTools/reference/XenaGenerate.html" class="external-link">XenaGenerate</a></span><span class="op">(</span></span>
+<span class="r-in">  subset <span class="op">=</span> <span class="va">XenaDatasets</span> <span class="op">==</span> <span class="st">"TCGA.LUAD.sampleMap/LUAD_clinicalMatrix"</span></span>
+<span class="r-in"><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
+<span class="r-in">  <span class="fu"><a href="https://docs.ropensci.org/UCSCXenaTools/reference/XenaQuery.html" class="external-link">XenaQuery</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
+<span class="r-in">  <span class="fu"><a href="https://docs.ropensci.org/UCSCXenaTools/reference/XenaDownload.html" class="external-link">XenaDownload</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
+<span class="r-in">  <span class="fu"><a href="https://docs.ropensci.org/UCSCXenaTools/reference/XenaPrepare.html" class="external-link">XenaPrepare</a></span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-in"></span>
+<span class="r-in"><span class="co"># Use individual survival data</span></span>
+<span class="r-in"><span class="va">surv_df1</span> <span class="op">&lt;-</span> <span class="va">cli_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sampleID"</span>, <span class="st">"ABSOLUTE_Ploidy"</span>, <span class="st">"days_to_death"</span>, <span class="st">"vital_status"</span><span class="op">)</span><span class="op">]</span></span>
+<span class="r-in"><span class="va">surv_df1</span><span class="op">$</span><span class="va">vital_status</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">surv_df1</span><span class="op">$</span><span class="va">vital_status</span> <span class="op">==</span> <span class="st">"DECEASED"</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span></span>
+<span class="r-in"><span class="fu">vis_identifier_grp_surv</span><span class="op">(</span>surv_df <span class="op">=</span> <span class="va">surv_df1</span><span class="op">)</span></span>
+<span class="r-in"></span>
+<span class="r-in"><span class="co"># Use both dataset argument and vis_identifier_grp_surv(surv_df = surv_df1)</span></span>
+<span class="r-in"><span class="va">surv_df2</span> <span class="op">&lt;-</span> <span class="va">surv_df1</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span><span class="op">]</span></span>
+<span class="r-in"><span class="fu">vis_identifier_grp_surv</span><span class="op">(</span><span class="va">expr_dataset</span>, <span class="va">id</span>, surv_df <span class="op">=</span> <span class="va">surv_df2</span><span class="op">)</span></span>
+<span class="r-in"><span class="fu">vis_identifier_grp_surv</span><span class="op">(</span><span class="va">expr_dataset</span>, <span class="va">id</span>,</span>
+<span class="r-in">  surv_df <span class="op">=</span> <span class="va">surv_df2</span>,</span>
+<span class="r-in">  cutoff_mode <span class="op">=</span> <span class="st">"Custom"</span>, cutpoint <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">75</span><span class="op">)</span></span>
+<span class="r-in"><span class="op">)</span></span>
+<span class="r-in"><span class="op">}</span></span>
 </code></pre></div>
     </div>
   </div>

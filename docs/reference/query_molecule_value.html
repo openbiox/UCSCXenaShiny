@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">UCSCXenaShiny</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.7</span>
       </span>
     </div>
 
@@ -38,7 +38,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -107,18 +107,21 @@ genomic signature (<code>"TP53 + 2 * KRAS - 1.3 * PTEN"</code>).
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># What does dense matrix mean?</span>
-<span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu">UCSCXenaTools</span><span class="fu">::</span><span class="va"><a href="https://docs.ropensci.org/UCSCXenaTools/reference/XenaData.html" class="external-link">XenaData</a></span><span class="op">$</span><span class="va">Type</span><span class="op">)</span>
-<span class="co"># It is a the UCSC Xena dataset with "Type" equals to "genomicMatrix"</span>
-<span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span>
-<span class="va">dataset</span> <span class="op">&lt;-</span> <span class="st">"ccle/CCLE_copynumber_byGene_2013-12-03"</span>
-<span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">query_molecule_value</span><span class="op">(</span><span class="va">dataset</span>, <span class="st">"TP53"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>
-
-<span class="va">signature</span> <span class="op">&lt;-</span> <span class="st">"TP53 + 2*KRAS - 1.3*PTEN"</span> <span class="co"># a space must exist in the string</span>
-<span class="va">y</span> <span class="op">&lt;-</span> <span class="fu">query_molecule_value</span><span class="op">(</span><span class="va">dataset</span>, <span class="va">signature</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span>
-<span class="op">}</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># What does dense matrix mean?</span></span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu">UCSCXenaTools</span><span class="fu">::</span><span class="va"><a href="https://docs.ropensci.org/UCSCXenaTools/reference/XenaData.html" class="external-link">XenaData</a></span><span class="op">$</span><span class="va">Type</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> clinicalMatrix  genomicMatrix genomicSegment mutationVector </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            343            977            152            203 </span>
+<span class="r-in"><span class="co"># It is a the UCSC Xena dataset with "Type" equals to "genomicMatrix"</span></span>
+<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
+<span class="r-in"><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="st">"ccle/CCLE_copynumber_byGene_2013-12-03"</span></span>
+<span class="r-in"><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">query_molecule_value</span><span class="op">(</span><span class="va">dataset</span>, <span class="st">"TP53"</span><span class="op">)</span></span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span class="r-in"></span>
+<span class="r-in"><span class="va">signature</span> <span class="op">&lt;-</span> <span class="st">"TP53 + 2*KRAS - 1.3*PTEN"</span> <span class="co"># a space must exist in the string</span></span>
+<span class="r-in"><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu">query_molecule_value</span><span class="op">(</span><span class="va">dataset</span>, <span class="va">signature</span><span class="op">)</span></span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span></span>
+<span class="r-in"><span class="op">}</span></span>
 </code></pre></div>
     </div>
   </div>
