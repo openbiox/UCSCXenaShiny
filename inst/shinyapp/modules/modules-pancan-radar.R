@@ -131,8 +131,9 @@ server.modules_pancan_radar <- function(input, output, session) {
         dplyr::mutate(cor = round(cor, digits = 3), p.value = round(p.value, digits = 3))
       df <- pdata %>%
         select(cor, cancer) %>%
-        pivot_wider(names_from = cancer, values_from = cor)
-
+        pivot_wider(names_from = cancer, values_from = cor) %>%
+        tibble::rownames_to_column()
+      
       plot <- ggradar::ggradar(
         df[1, ],
         font.radar = "sans",
