@@ -1,3 +1,7 @@
+# UCSCXenaShiny 1.1.8
+
+- Fixed issue "Radar plot “stemness” does not plot the “ACC” tumor type" (#242).
+
 # UCSCXenaShiny 1.1.7
 
 - Added option `include.Tumor.only` to control if include type 
