@@ -86,7 +86,9 @@ vis_pcawg_dist <- function(Gene = "TP53",
     dplyr::inner_join(pcawg_info, by = "icgc_specimen_id")
 
   # table(pcawg_info$dcc_specimen_type)
-  pcawg_data <- t2 %>% dplyr::select("tpm", "dcc_project_code", "type2", "icgc_specimen_id")
+  pcawg_data <- t2 %>% 
+    dplyr::select("tpm", "dcc_project_code", "type2", "icgc_specimen_id")
+  pcawg_data$type2 <- factor(pcawg_data$type2, c("tumor", "normal"))
 
 
   if (Show.P.value == FALSE) {

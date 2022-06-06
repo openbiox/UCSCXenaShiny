@@ -1,5 +1,6 @@
 # UCSCXenaShiny 1.1.8
 
+- Fixed issue to set mislabelled color in pcawg pan-cancer analysis (#247, Thanks to Tangjian Li).
 - Fixed issue in querying gene signature in general analysis page (#244).
 - Fixed issue "Radar plot “stemness” does not plot the “ACC” tumor type" (#242).
 
