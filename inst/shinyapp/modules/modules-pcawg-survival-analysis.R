@@ -4,6 +4,10 @@ ui.modules_pcawg_sur_plot <- function(id) {
   fluidPage(
     fluidRow(
       column(3, wellPanel(
+        selectInput(
+          inputId = ns("dataset"), label = "Choose a dataset:",
+          choices = unique(pcawg_info$dcc_project_code)
+        ),
         shinyWidgets::prettyRadioButtons( 
           inputId = ns("profile"), label = "Select a genomic profile:", 
           choiceValues = c("mRNA", "miRNA_TMM", "miRNA_UQ",  
@@ -233,6 +237,7 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
     val_dat <- data.frame("icgc_specimen_id" = names(val),"val" = as.numeric(val))
     
     dat <- dplyr::inner_join(pcawg_info,val_dat,by="icgc_specimen_id") %>% 
+      dplyr::filter(.data$dcc_project_code %in% input$dataset) %>% 
       dplyr::filter(!is.na(.data$OS.time)) %>% 
       dplyr::select( sampleID = icgc_specimen_id,
                      status = OS ,
@@ -267,6 +272,7 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
   
   plot_text <- eventReactive(input$go, {
     paste(
+      paste("Dataset :", input$dataset),
       paste("Profile :", input$profile),
       paste("Item :", input$item_input),
       paste("Number of cases :", nrow(filter_dat())),

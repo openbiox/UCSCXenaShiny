@@ -1,3 +1,8 @@
+# UCSCXenaShiny 1.1.9
+
+- Added cancer type control for PCAWG survival analysis.
+- Added TCGA batch id from MDA.
+
 # UCSCXenaShiny 1.1.8
 
 - Fixed issue to set mislabelled color in pcawg pan-cancer analysis (#247, Thanks to Tangjian Li).
