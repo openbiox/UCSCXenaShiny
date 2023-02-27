@@ -46,6 +46,10 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = c("Boxplot", "Violinplot"),
     stop("data_type ", data_type, " does not support in this function!")
   }
   t1 <- query_pancan_value(Gene, data_type = data_type)
+  if (is.null(t1[[1]])) {
+    warning("No data available", immediate. = TRUE)
+    return(NULL)
+  }
   unit <- switch(data_type,
     cnv = NULL,
     mutation = NULL,
@@ -227,6 +231,10 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", t
   tcga_gtex <- load_data("tcga_gtex")
 
   t1 <- query_pancan_value(Gene, data_type = data_type)
+  if (is.null(t1[[1]])) {
+    warning("No data available", immediate. = TRUE)
+    return(NULL)
+  }
   if (is.list(t1)) t1 <- t1[[1]]
 
   # we filter out normal tissue
@@ -334,6 +342,10 @@ vis_pancan_anatomy <- function(Gene = "TP53",
   tcga_gtex <- tcga_gtex %>% dplyr::distinct(sample, .keep_all = TRUE)
 
   t1 <- query_pancan_value(Gene, data_type = data_type)
+  if (is.null(t1[[1]])) {
+    warning("No data available", immediate. = TRUE)
+    return(NULL)
+  }
   unit <- switch(data_type,
     cnv = NULL,
     mutation = NULL,
@@ -456,6 +468,10 @@ vis_gene_immune_cor <- function(Gene = "TP53", cor_method = "spearman", data_typ
     dplyr::mutate(sample = stringr::str_sub(.data$sample, 1, 15))
 
   t1 <- query_pancan_value(Gene, data_type = data_type)
+  if (is.null(t1[[1]])) {
+    warning("No data available", immediate. = TRUE)
+    return(NULL)
+  }
   if (is.list(t1)) t1 <- t1[[1]]
 
   if (all(is.na(t1))) {
@@ -547,6 +563,10 @@ vis_gene_tmb_cor <- function(Gene = "TP53", cor_method = "spearman", data_type =
   tcga_gtex <- load_data("tcga_gtex")
 
   t1 <- query_pancan_value(Gene, data_type = data_type)
+  if (is.null(t1[[1]])) {
+    warning("No data available", immediate. = TRUE)
+    return(NULL)
+  }
   if (is.list(t1)) t1 <- t1[[1]]
 
   if (all(is.na(t1))) {
@@ -619,6 +639,10 @@ vis_gene_msi_cor <- function(Gene = "TP53", cor_method = "spearman", data_type =
   tcga_gtex <- load_data("tcga_gtex")
 
   t1 <- query_pancan_value(Gene, data_type = data_type)
+  if (is.null(t1[[1]])) {
+    warning("No data available", immediate. = TRUE)
+    return(NULL)
+  }
   if (is.list(t1)) t1 <- t1[[1]]
 
   if (all(is.na(t1))) {
@@ -715,6 +739,10 @@ vis_gene_stemness_cor <- function(Gene = "TP53", cor_method = "spearman", data_t
   tcga_gtex <- load_data("tcga_gtex")
 
   t1 <- query_pancan_value(Gene, data_type = data_type)
+  if (is.null(t1[[1]])) {
+    warning("No data available", immediate. = TRUE)
+    return(NULL)
+  }
   if (is.list(t1)) t1 <- t1[[1]]
 
   if (all(is.na(t1))) {
@@ -795,6 +823,10 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = c("Violinplot", "Dotplot"
   }
 
   t1 <- query_pancan_value(Gene, data_type = data_type)
+  if (is.null(t1[[1]])) {
+    warning("No data available", immediate. = TRUE)
+    return(NULL)
+  }
   unit <- switch(data_type,
     cnv = NULL,
     mutation = NULL,
@@ -994,8 +1026,16 @@ vis_gene_cor <- function(Gene1 = "CSF1R",
     dplyr::distinct(.data$sample, .keep_all = TRUE)
 
   t1 <- query_pancan_value(Gene1, data_type = data_type1)
+  if (is.null(t1[[1]])) {
+    warning("No data available", immediate. = TRUE)
+    return(NULL)
+  }
   if (is.list(t1)) t1 <- t1[[1]]
   t3 <- query_pancan_value(Gene2, data_type = data_type2)
+  if (is.null(t3[[1]])) {
+    warning("No data available", immediate. = TRUE)
+    return(NULL)
+  }
   if (is.list(t3)) t3 <- t3[[1]]
 
   t2 <- t1 %>%
@@ -1106,8 +1146,16 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
     dplyr::distinct(.data$sample, .keep_all = TRUE)
 
   t1 <- query_pancan_value(Gene1, data_type = data_type1)
+  if (is.null(t1[[1]])) {
+    warning("No data available", immediate. = TRUE)
+    return(NULL)
+  }
   if (is.list(t1)) t1 <- t1[[1]]
   t3 <- query_pancan_value(Gene2, data_type = data_type2)
+  if (is.null(t3[[1]])) {
+    warning("No data available", immediate. = TRUE)
+    return(NULL)
+  }
   if (is.list(t3)) t3 <- t3[[1]]
 
   if (data_type1 == "cnv") data_type1 <- "GISTIC2 thresholded CNV"
@@ -1245,6 +1293,10 @@ vis_gene_TIL_cor <- function(Gene = "TP53",
   tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
 
   t1 <- query_pancan_value(Gene, data_type = data_type)
+  if (is.null(t1[[1]])) {
+    warning("No data available", immediate. = TRUE)
+    return(NULL)
+  }
   if (is.list(t1)) t1 <- t1[[1]]
 
   if (all(is.na(t1))) {

@@ -1,3 +1,7 @@
+# UCSCXenaShiny 1.1.10
+
+- Fixed check issue due to internet access (#253).
+
 # UCSCXenaShiny 1.1.9
 
 - Added cancer type control for PCAWG survival analysis.

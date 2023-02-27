@@ -95,7 +95,8 @@ try_query_value <- function(host, dataset,
     },
     error = function(e) {
       if (max_try == 1) {
-        stop("Tried 5 times but failed, please check URL or your internet connection or try it later!")
+        warning("Tried 5 times but failed, please check URL or your internet connection or try it later!", immediate. = TRUE)
+        return(NULL)
       } else {
         try_query_value(host, dataset,
           identifiers, samples,
@@ -372,7 +373,7 @@ get_data <- function(dataset, identifier, host = NULL) {
     label <- UCSCXenaTools::XenaData %>%
       dplyr::filter(.data$XenaDatasets == dataset) %>%
       dplyr::pull(.data$DataSubtype)
-    attr(value, "label") <- label
+    if (!is.null(value)) attr(value, "label") <- label
     save_data(value, identifier, dataset, host)
   }
   value
