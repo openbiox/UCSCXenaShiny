@@ -26,7 +26,7 @@ Shixiang Wang<sup>\#</sup>, Yi Xiong<sup>\#</sup>, Longfei Zhao<sup>\#</sup>, Ka
 
 ## :cloud: Use on cloud
 
-If you don't want to install R and packages locally, or you have no programming experience, try using this tool on `Hiplot-academic` platform (<https://shiny.hiplot-academic.com/ucsc-xena-shiny/>) or `shinyapps.io` (<https://shixiangwang.shinyapps.io/ucscxenashiny/>).
+If you don't want to install R and packages locally, or you have no programming experience, try using this tool on `Hiplot-academic` platform (<https://shiny.hiplot.cn/ucsc-xena-shiny/> recommended) or `shinyapps.io` (<https://shixiangwang.shinyapps.io/ucscxenashiny/>).
 
 ## :snake: Use with Conda
 
