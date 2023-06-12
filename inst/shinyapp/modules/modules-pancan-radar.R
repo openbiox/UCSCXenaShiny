@@ -126,6 +126,11 @@ server.modules_pancan_radar <- function(input, output, session) {
       )
 
       p <- vis_fun(Gene = input$Pancan_search, cor_method = input$cor_method, data_type = input$profile)
+      
+      if (is.null(p)) {
+        sendSweetAlert(session, title = "Warning", text = "No data could be queried!")
+        return(NULL)
+      }
 
       pdata <- p$data %>%
         dplyr::mutate(cor = round(cor, digits = 3), p.value = round(p.value, digits = 3))
