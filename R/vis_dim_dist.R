@@ -17,6 +17,9 @@
 #' @return  a `ggplot` object.
 #'
 #' @examples
+#' \donttest{
+#' # The examples work, but may take a long time to run.
+#'
 #' p <- vis_dim_dist(DR_method = "UMAP")
 #' p <- vis_dim_dist(Mode = "Clinical", group_name = "age")
 #'
@@ -41,7 +44,7 @@
 #'   dplyr::mutate(group = sample(c("TA", "TB"), size = nrow(.), replace = TRUE)) %>%
 #'   dplyr::select(sample, group)
 #' p <- vis_dim_dist(cancer_type = c("LUAD"), Mode = "Custom", custom_meta = custom_meta)
-#'
+#' }
 #' @export
 vis_dim_dist <- function(ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
                          data_type = "mRNA", cancer_type = "LIHC",
