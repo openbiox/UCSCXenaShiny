@@ -9,10 +9,9 @@
 tcga_surv_get(
   item,
   TCGA_cohort = "LUAD",
-  profile = c("mRNA", "miRNA", "methylation", "transcript", "protein", "mutation",
-    "cnv"),
-  TCGA_cli_data = dplyr::full_join(load_data("tcga_clinical"), load_data("tcga_surv"),
-    by = "sample")
+  profile = c("mRNA", "miRNA", "methylation", "transcript", "protein", "mutation", "cnv"),
+  TCGA_cli_data = dplyr::full_join(load_data("tcga_clinical"), load_data("tcga_surv"), by
+    = "sample")
 )
 
 tcga_surv_plot(
@@ -22,8 +21,7 @@ tcga_surv_plot(
   cutoff_mode = c("Auto", "Custom"),
   cutpoint = c(50, 50),
   cnv_type = c("Duplicated", "Normal", "Deleted"),
-  profile = c("mRNA", "miRNA", "methylation", "transcript", "protein", "mutation",
-    "cnv"),
+  profile = c("mRNA", "miRNA", "methylation", "transcript", "protein", "mutation", "cnv"),
   palette = "aaas",
   ...
 )

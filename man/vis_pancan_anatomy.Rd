@@ -19,9 +19,18 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 
 \item{data_type}{choose gene profile type, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"}
 
-\item{option}{A character string indicating the colormap option to use. Four
-options are available: "magma" (or "A"), "inferno" (or "B"), "plasma" (or "C"),
-"viridis" (or "D", the default option) and "cividis" (or "E").}
+\item{option}{A character string indicating the color map option to use.
+Eight options are available:
+\itemize{
+ \item "magma" (or "A")
+ \item "inferno" (or "B")
+ \item "plasma" (or "C")
+ \item "viridis" (or "D")
+ \item "cividis" (or "E")
+ \item "rocket" (or "F")
+ \item "mako" (or "G")
+ \item "turbo" (or "H")
+}}
 }
 \value{
 a \code{ggplot} object
