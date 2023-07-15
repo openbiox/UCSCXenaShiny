@@ -43,6 +43,10 @@ ui.page_pancan <- function() {
       ui.modules_sur_plot("modules_sur_plot")
     ),
     tabPanel(
+        "TCGA: Dimension Reduction Distribution",
+        ui.modules_dim_dist("modules_dim_dist")
+    ),
+    tabPanel(
       "CCLE: Molecular Profile Distribution Across Cancer Primary Sites",
       ui.modules_ccle_dist("modules_ccle_dist")
     ),

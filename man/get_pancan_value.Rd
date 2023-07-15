@@ -98,41 +98,41 @@ Identifier includes gene/probe etc.
 }
 \section{Functions}{
 \itemize{
-\item \code{get_ccle_cn_value}: Fetch copy number value from CCLE dataset
+\item \code{get_ccle_cn_value()}: Fetch copy number value from CCLE dataset
 
-\item \code{get_ccle_gene_value}: Fetch gene expression value from CCLE dataset
+\item \code{get_ccle_gene_value()}: Fetch gene expression value from CCLE dataset
 
-\item \code{get_ccle_protein_value}: Fetch gene protein expression value from CCLE dataset
+\item \code{get_ccle_protein_value()}: Fetch gene protein expression value from CCLE dataset
 
-\item \code{get_ccle_mutation_status}: Fetch gene mutation info from CCLE dataset
+\item \code{get_ccle_mutation_status()}: Fetch gene mutation info from CCLE dataset
 
-\item \code{get_pancan_value}: Fetch identifier value from pan-cancer dataset
+\item \code{get_pancan_value()}: Fetch identifier value from pan-cancer dataset
 
-\item \code{get_pancan_gene_value}: Fetch gene expression value from pan-cancer dataset
+\item \code{get_pancan_gene_value()}: Fetch gene expression value from pan-cancer dataset
 
-\item \code{get_pancan_transcript_value}: Fetch gene transcript expression value from pan-cancer dataset
+\item \code{get_pancan_transcript_value()}: Fetch gene transcript expression value from pan-cancer dataset
 
-\item \code{get_pancan_protein_value}: Fetch protein expression value from pan-cancer dataset
+\item \code{get_pancan_protein_value()}: Fetch protein expression value from pan-cancer dataset
 
-\item \code{get_pancan_mutation_status}: Fetch mutation status value from pan-cancer dataset
+\item \code{get_pancan_mutation_status()}: Fetch mutation status value from pan-cancer dataset
 
-\item \code{get_pancan_cn_value}: Fetch gene copy number value from pan-cancer dataset processed by GISTIC 2.0
+\item \code{get_pancan_cn_value()}: Fetch gene copy number value from pan-cancer dataset processed by GISTIC 2.0
 
-\item \code{get_pancan_methylation_value}: Fetch gene expression value from CCLE dataset
+\item \code{get_pancan_methylation_value()}: Fetch gene expression value from CCLE dataset
 
-\item \code{get_pancan_miRNA_value}: Fetch miRNA expression value from pan-cancer dataset
+\item \code{get_pancan_miRNA_value()}: Fetch miRNA expression value from pan-cancer dataset
 
-\item \code{get_pcawg_gene_value}: Fetch specimen-level gene expression value from PCAWG cohort
+\item \code{get_pcawg_gene_value()}: Fetch specimen-level gene expression value from PCAWG cohort
 
-\item \code{get_pcawg_fusion_value}: Fetch specimen-level gene fusion value from PCAWG cohort
+\item \code{get_pcawg_fusion_value()}: Fetch specimen-level gene fusion value from PCAWG cohort
 
-\item \code{get_pcawg_promoter_value}: Fetch specimen-level gene promoter activity value from PCAWG cohort
+\item \code{get_pcawg_promoter_value()}: Fetch specimen-level gene promoter activity value from PCAWG cohort
 
-\item \code{get_pcawg_miRNA_value}: Fetch specimen-level miRNA value from PCAWG cohort
+\item \code{get_pcawg_miRNA_value()}: Fetch specimen-level miRNA value from PCAWG cohort
 
-\item \code{get_pcawg_APOBEC_mutagenesis_value}: Fetch specimen-level gene fusion value from PCAWG cohort
+\item \code{get_pcawg_APOBEC_mutagenesis_value()}: Fetch specimen-level gene fusion value from PCAWG cohort
+
 }}
-
 \examples{
 \dontrun{
 # Fetch TP53 expression value from pan-cancer dataset
