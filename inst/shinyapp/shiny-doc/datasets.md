@@ -1,6 +1,6 @@
 <center> <h2> Extra Datasets </h2> </center>
 
-Extra datasets cleaned from UCSCXena hubs or references are deposited in [Zenodo repo](https://zenodo.org/record/5548587).
+Extra datasets cleaned from UCSCXena hubs or references are deposited in [Zenodo repo](https://zenodo.org/record/8174997).
 
 You can download them directly from the Zenodo repo or using `get_data()` function provided in UCSCXenaShiny R package.
 
