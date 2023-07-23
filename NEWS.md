@@ -1,3 +1,13 @@
+# UCSCXenaShiny 1.1.12
+
+This is a version created for implementing new features by Shensuo Li (@lishensuo).
+
+- added `vis_dim_dist()` funtion and corresponding shiny module.
+
+# UCSCXenaShiny 1.1.11
+
+- Fixed check warning in pan-cancer radar plot.
+
 # UCSCXenaShiny 1.1.10
 
 - Fixed check issue due to internet access (#253).
