@@ -162,6 +162,7 @@ themes_list <- list(
 )
 
 TIL_signatures <- colnames(load_data("tcga_TIL"))[-1]
+PW_signatures <- load_data("toil_sig_score")$meta$sig_name
 
 # CCLE tissues for drug analysis
 # "ALL" means all tissues
