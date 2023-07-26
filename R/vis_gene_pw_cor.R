@@ -11,6 +11,7 @@
 #'
 #' @return a `ggplot` object or  dataframe
 #' @examples
+#' \dontrun{
 #' p1_1 <- vis_gene_pw_cor(Gene = "TP53", data_type = "mRNA", Cancer = "ACC")
 #' p1_1_data <- vis_gene_pw_cor(Gene = "CD4", data_type = "mRNA", Cancer = "ACC", plot = FALSE)
 #' p1_2 <- vis_gene_pw_cor(Gene = "hsa-miR-1228-3p", data_type = "miRNA", Cancer = "ACC")
@@ -24,12 +25,13 @@
 #'   Gene = "TP53", data_type = "mRNA", Cancer = "Overall",
 #'   pw_name = "KEGG_VEGF_SIGNALING_PATHWAY"
 #' )
+#' }
 
 #' @export
 #'
 vis_gene_pw_cor <- function(Gene = "TP53", data_type = "mRNA",
                             pw_name = NULL, Cancer = "ACC",
-                            cor_method = "spearman", cor_cutoff = list(r = 0.3, p = 0.01),
+                            cor_method = "pearson", cor_cutoff = list(r = 0.3, p = 0.01),
                             plot = TRUE) {
   ## mode1**gene -- one cancer -- many pathways: bar plot(default)
   ## mode2**gene -- many cancers -- one pathway: lollipop plot
@@ -88,8 +90,8 @@ vis_gene_pw_cor <- function(Gene = "TP53", data_type = "mRNA",
   ## mode1**gene -- spe tcga -- all sig: bar plot(default)
   if (is.null(pw_name)) {
     res_pan <- toil_sig_score[rownames(toil_sig_score) %in% tcga_sp, ] %>%
-      reshape2::melt() %>%
-      dplyr::rename("sample" = "Var1", "pw_name" = "Var2", "pw_score" = "value") %>%
+      as.data.frame() %>% tibble::rownames_to_column("sample") %>% 
+      tidyr::pivot_longer(!sample, names_to = "pw_name", values_to = "pw_score") %>%
       dplyr::left_join(s) %>%
       dplyr::mutate(gene = Gene, .before = 1) %>%
       dplyr::group_by(pw_name)
@@ -143,8 +145,8 @@ vis_gene_pw_cor <- function(Gene = "TP53", data_type = "mRNA",
     ## mode2**gene -- pan tcga -- spe sig: lollipop plot
   } else if (length(Cancer) > 1) {
     res_pan_spe <- toil_sig_score[rownames(toil_sig_score) %in% tcga_sp, pw_name, drop = F] %>%
-      reshape2::melt() %>%
-      dplyr::rename("sample" = "Var1", "pw_name" = "Var2", "pw_score" = "value") %>%
+      as.data.frame() %>% tibble::rownames_to_column("sample") %>% 
+      tidyr::pivot_longer(!sample, names_to = "pw_name", values_to = "pw_score") %>%
       dplyr::left_join(s) %>%
       dplyr::mutate(gene = Gene, .before = 1) %>%
       dplyr::mutate(Cancer = tcga_gtex$tissue[match(sample, tcga_gtex$sample)], .before = 3)
@@ -201,8 +203,8 @@ vis_gene_pw_cor <- function(Gene = "TP53", data_type = "mRNA",
     ## mode3**gene -- spe tcga -- spe sig: point plot
   } else {
     res_pan_spe <- toil_sig_score[rownames(toil_sig_score) %in% tcga_sp, pw_name, drop = F] %>%
-      reshape2::melt() %>%
-      dplyr::rename("sample" = "Var1", "pw_name" = "Var2", "pw_score" = "value") %>%
+      as.data.frame() %>% tibble::rownames_to_column("sample") %>% 
+      tidyr::pivot_longer(!sample, names_to = "pw_name", values_to = "pw_score") %>%
       dplyr::left_join(s) %>%
       dplyr::mutate(gene = Gene, .before = 1) %>%
       dplyr::mutate(Cancer = tcga_gtex$tissue[match(sample, tcga_gtex$sample)], .before = 3) %>%

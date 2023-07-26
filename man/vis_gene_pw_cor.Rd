@@ -9,7 +9,7 @@ vis_gene_pw_cor(
   data_type = "mRNA",
   pw_name = NULL,
   Cancer = "ACC",
-  cor_method = "spearman",
+  cor_method = "pearson",
   cor_cutoff = list(r = 0.3, p = 0.01),
   plot = TRUE
 )
@@ -38,14 +38,19 @@ a \code{ggplot} object or  dataframe
 Visualize Correlation between Gene and Pathway signature Score
 }
 \examples{
-p1_1 = vis_gene_pw_cor(Gene="TP53", data_type="mRNA", Cancer='ACC')
-p1_1_data = vis_gene_pw_cor(Gene="CD4", data_type="mRNA", Cancer='ACC', plot=FALSE)
-p1_2 = vis_gene_pw_cor(Gene="hsa-miR-1228-3p", data_type="miRNA", Cancer='ACC')
+\dontrun{
+p1_1 <- vis_gene_pw_cor(Gene = "TP53", data_type = "mRNA", Cancer = "ACC")
+p1_1_data <- vis_gene_pw_cor(Gene = "CD4", data_type = "mRNA", Cancer = "ACC", plot = FALSE)
+p1_2 <- vis_gene_pw_cor(Gene = "hsa-miR-1228-3p", data_type = "miRNA", Cancer = "ACC")
 
+p2 <- vis_gene_pw_cor(
+  Gene = "TP53", data_type = "mRNA", Cancer = "ACC",
+  pw_name = "KEGG_VEGF_SIGNALING_PATHWAY"
+)
 
-p2 = vis_gene_pw_cor(Gene="TP53", data_type="mRNA", Cancer='ACC', 
-                     pw_name="KEGG_VEGF_SIGNALING_PATHWAY")
-
-p3 = vis_gene_pw_cor(Gene="TP53", data_type="mRNA", Cancer='Overall', 
-                     pw_name="KEGG_VEGF_SIGNALING_PATHWAY")
+p3 <- vis_gene_pw_cor(
+  Gene = "TP53", data_type = "mRNA", Cancer = "Overall",
+  pw_name = "KEGG_VEGF_SIGNALING_PATHWAY"
+)
+}
 }
