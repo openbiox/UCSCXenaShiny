@@ -39,6 +39,10 @@ ui.page_pancan <- function() {
       ui.modules_pancan_radar("modules_pancan_radar")
     ),
     tabPanel(
+        "TCGA: Association Between Molecular Profile and Pathway Score ",
+        ui.modules_pw_cor("modules_pw_cor")
+    ),
+    tabPanel(
       "TCGA: Survival Analysis",
       ui.modules_sur_plot("modules_sur_plot")
     ),

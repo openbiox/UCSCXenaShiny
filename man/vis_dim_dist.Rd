@@ -50,6 +50,9 @@ a \code{ggplot} object.
 Visualize the distribution difference of samples after dimension reduction analysis
 }
 \examples{
+\donttest{
+# The examples work, but may take a long time to run.
+
 p <- vis_dim_dist(DR_method = "UMAP")
 p <- vis_dim_dist(Mode = "Clinical", group_name = "age")
 
@@ -74,5 +77,5 @@ custom_meta <- tcga_gtex \%>\%
   dplyr::mutate(group = sample(c("TA", "TB"), size = nrow(.), replace = TRUE)) \%>\%
   dplyr::select(sample, group)
 p <- vis_dim_dist(cancer_type = c("LUAD"), Mode = "Custom", custom_meta = custom_meta)
-
+}
 }

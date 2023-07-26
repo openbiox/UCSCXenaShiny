@@ -50,6 +50,7 @@ Imports:
     ppcor,
     psych,
     purrr,
+    reshape2,
     Rtsne,
     shiny (>= 1.3.2),
     stats,

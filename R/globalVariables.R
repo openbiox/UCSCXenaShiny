@@ -12,6 +12,8 @@ utils::globalVariables(
     "icgc_specimen_id",
     "dcc_project_code",
     "OS",
-    "OS.time"
+    "OS.time",
+    "pval",
+    "cor"
   )
 )
