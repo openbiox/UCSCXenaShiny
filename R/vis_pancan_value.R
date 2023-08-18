@@ -1049,14 +1049,23 @@ vis_gene_cor <- function(Gene1 = "CSF1R",
     dplyr::rename("tpm" = ".") %>%
     tibble::rownames_to_column(var = "sample") %>%
     dplyr::inner_join(tcga_gtex, by = "sample")
-  df <- data.frame(
-    sample = t2$sample,
-    tissue = t2$tissue,
-    type2 = t2$type2,
-    gene1 = t2$tpm,
-    gene2 = t4$tpm,
-    stringsAsFactors = F
-  )
+
+  df <- dplyr::inner_join(
+    data.frame(
+      sample = t2$sample,
+      tissue = t2$tissue,
+      type2 = t2$type2,
+      gene1 = t2$tpm,
+      stringsAsFactors = FALSE
+    ),
+    data.frame(
+      sample = t4$sample,
+      gene2 = t4$tpm,
+      stringsAsFactors = FALSE
+    ),
+    by = "sample"
+  ) 
+
   df %>%
     dplyr::left_join(tcga_purity, by = "sample") -> df
   if (filter_tumor == TRUE) {
