@@ -65,7 +65,7 @@ ui.page_repository <- function() {
       ),
       mainPanel(
         DT::dataTableOutput("xena_table"),
-        useShinyalert(), # Set up shinyalert
+        # useShinyalert(), # Set up shinyalert
         # use_waiter(),
         hr(),
         fluidRow(
