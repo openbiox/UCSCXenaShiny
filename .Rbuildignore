@@ -33,6 +33,7 @@ inst/extdata/tcga_TIL.rda
 inst/extdata/tcga_tmb.rda
 inst/extdata/tcga_chr_alteration.rda
 inst/extdata/pancancer_conserved_immune_subtype.rda
+inst/extdata/toil_sig_score.rda
 
 inst/extdata/ccle_expr_and_drug_response.rda
 inst/extdata/transcript_identifier.rda
