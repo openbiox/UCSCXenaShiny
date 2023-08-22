@@ -1,4 +1,5 @@
 # Global setting ---------------------------------------------------------
+options(shiny.fullstacktrace=TRUE)
 xena.runMode <- getOption("xena.runMode", default = "client")
 message("Run mode: ", xena.runMode)
 
