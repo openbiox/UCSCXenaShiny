@@ -17,7 +17,8 @@ ui.page_home <- function() {
               tags$b(paste0(
                 "UCSCXenaShiny v", packageVersion("UCSCXenaShiny"),
                 " based on ",
-                "UCSCXenaTools v", packageVersion("UCSCXenaTools")
+                "UCSCXenaTools v", packageVersion("UCSCXenaTools"),
+                " (We are working on XenaShiny v2, so the app may be not stable. Any question please report to the Github issue.)"
               )),
               tags$br(),
               tags$b("Data source: "),
