@@ -164,7 +164,11 @@ callModule(
   selected_database_rm_phenotype, selected_database_add_url_and_phenotype,
   custom_file
 )
-
+callModule(
+  server.modules_ga_dim_distribution, "module_ga_dim_distribution",
+  selected_database_rm_phenotype, selected_database_add_url_and_phenotype,
+  custom_file
+)
 # Show use alert ----------------------------------------------------------
 
 observeEvent(input$use_ga_page, {
