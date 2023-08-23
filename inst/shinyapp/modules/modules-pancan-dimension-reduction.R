@@ -12,10 +12,21 @@ ui.modules_dim_dist = function(id){
 		              animation = "jelly"
 		            ),
 
-			        div(style="display: inline-block;vertical-align:middle; width: 250px;",
+		            shinyWidgets::prettyRadioButtons(
+		              inputId = ns("input_ways"), label = "Input the molecule ids (>=3) by ?",
+		              choiceValues = c("Select", "Pathway", "File"),
+		              choiceNames = c("Select", "Pathway", "File"),
+		              animation = "jelly",
+		              inline = TRUE
+		            ),
+
+					tabsetPanel(
+					  id = ns("input_params"),
+					  type = "hidden",
+					  tabPanel("Select",
 			        	selectizeInput(
-						inputId = ns("ids"),
-						label = "Input or Upload the genes (>=3)",
+						inputId = ns("ids_ways_1"),
+						label = NULL,
 						choice = NULL,
 						width = "100%",
 						multiple = TRUE, 
@@ -23,16 +34,44 @@ ui.modules_dim_dist = function(id){
 							create = TRUE,
 							maxOption = 5,
 							placeholder = "Enter the ids of selected profile",
-							plugins = list("restore_on_backspace")
+							plugins = list("restore_on_backspace")))),
+					  tabPanel("Pathway", 
+			        	selectizeInput(
+							inputId = ns("ids_ways_2"),
+							label = NULL,
+							choice = NULL,
+							width = "100%",
+							multiple = FALSE, 
+							options = list(
+								placeholder = "Choose the patwhay geneset(Symbol)"))),
+						tabPanel("File",
+							fileInput(ns("ids_ways_3"), NULL, placeholder = "One column molecule id file(.txt)" )
 						)
-					)),
-			        div(style="display: inline-block;vertical-align:middle; width: 30;",
-			        	actionButton(ns("reset_1"), NULL,icon("arrows-rotate"),style='padding:8px;'),),
+					),  
 
-			        div(style="display: inline-block;vertical-align:top; width: 250px;",
-			        	fileInput(ns("upload"), NULL, accept = c(".txt"))),
-			        div(style="display: inline-block;vertical-align:top; width: 30;",
-			        	actionButton(ns("reset_2"), NULL,icon("arrows-rotate"),style='padding:8px;'),),
+
+			  #       div(style="display: inline-block;vertical-align:middle; width: 250px;",
+			  #       	selectizeInput(
+					# 	inputId = ns("ids"),
+					# 	label = "Input the molecule ids (>=3)",
+					# 	choice = NULL,
+					# 	width = "100%",
+					# 	size = 3,
+					# 	multiple = TRUE, 
+					# 	options = list(
+					# 		create = TRUE,
+					# 		maxOption = 5,
+					# 		placeholder = "Enter the ids of selected profile",
+					# 		plugins = list("restore_on_backspace")
+					# 	)
+					# )),
+			  #       div(style="display: inline-block;vertical-align:middle; width: 30;",
+			  #       	actionButton(ns("reset_1"), NULL,icon("arrows-rotate"),style='padding:8px;'),),
+
+			  #       div(style="display: inline-block;vertical-align:top; width: 250px;",
+			  #       	fileInput(ns("upload"), NULL, accept = c(".txt"))),
+			  #       div(style="display: inline-block;vertical-align:top; width: 30;",
+			  #       	actionButton(ns("reset_2"), NULL,icon("arrows-rotate"),style='padding:8px;'),),
 
 					shinyWidgets::actionBttn(
 						inputId = ns("query_data"),
@@ -41,7 +80,8 @@ ui.modules_dim_dist = function(id){
 						color = "default",
 						block = TRUE,
 						size = "sm"
-					)
+					),
+					textOutput(ns("test_msg"))
 				),
 				wellPanel(
 		            shinyWidgets::prettyRadioButtons(
@@ -77,9 +117,7 @@ ui.modules_dim_dist = function(id){
 						color = "default",
 						block = TRUE,
 						size = "sm"
-					),
-					textOutput(ns("inspect_msg"))
-
+					)
 				),
 
 
@@ -160,14 +198,14 @@ server.modules_dim_dist = function(input, output, session){
 
 	profile_choices <- reactive({
 	  switch(input$profile,
-	    mRNA = list(all = pancan_identifiers$gene, default = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A")),
-	    methylation = list(all = pancan_identifiers$gene),
-	    protein = list(all = pancan_identifiers$protein),
-	    transcript = list(all = load_data("transcript_identifier")),
-	    mutation = list(all = pancan_identifiers$gene),
-	    miRNA = list(all = pancan_identifiers$miRNA),
-	    cnv_gistic2 = list(all = pancan_identifiers$gene),
-	    cnv = list(all = pancan_identifiers$gene),
+	    mRNA = list(all = pancan_identifiers$gene, default = c("TP53", "KRAS", "PTEN")),
+	    methylation = list(all = pancan_identifiers$gene, default = c("TP53", "KRAS", "PTEN")),
+	    protein = list(all = pancan_identifiers$protein, default = c("P53", "GATA3", "PTEN")),
+	    transcript = list(all = load_data("transcript_identifier"), default = c("ENST00000269305","ENST00000311936","ENST00000371953")),
+	    mutation = list(all = pancan_identifiers$gene, default = c("TP53", "KRAS", "PTEN")),
+	    miRNA = list(all = pancan_identifiers$miRNA, default = c("hsa-miR-522-3p","hsa-miR-1271-5p","hsa-miR-518e-3p")),
+	    cnv_gistic2 = list(all = pancan_identifiers$gene,default = c("TP53", "KRAS", "PTEN")),
+	    cnv = list(all = pancan_identifiers$gene,default = c("TP53", "KRAS", "PTEN")),
 	    list(all = "NONE", default = "NONE")
 	  )
 	})
@@ -175,12 +213,20 @@ server.modules_dim_dist = function(input, output, session){
 	observe({
 	  updateSelectizeInput(
 	    session,
-	    "ids",
+	    "ids_ways_1",
 	    choices = profile_choices()$all,
 	    selected = profile_choices()$default,
 	    server = TRUE
 	  )
+	  updateSelectizeInput(
+	    session,
+	    "ids_ways_2",
+	    choices = split(PW_meta$display, PW_meta$Type),
+	    selected = "SULFUR_METABOLISM (13)",
+	    server = TRUE
+	  )
 	})
+
 
     observeEvent(input$reset_1, {
         reset("ids")
@@ -189,35 +235,41 @@ server.modules_dim_dist = function(input, output, session){
         reset("upload")
     })
 
-	ids = reactive({
-	  if(!is.null(input$ids)){
-	  	ids = input$ids
-	  } else {
-	  	ids = read.table(input$upload$datapath, sep = "\n")[,1]
-	  }
-	  ids
-    })
+	observeEvent(input$input_ways, {
+	  updateTabsetPanel(inputId = "input_params", selected = input$input_ways)
+	}) 
 
-
-	observeEvent(input$query_data,{
-		withProgress(message="Query genes one by one",{
+    ids = eventReactive(input$query_data, {
+    	ids = switch(input$input_ways,
+    		"Select" = input$ids_ways_1,
+    		"Pathway" = strsplit(PW_meta$Gene[PW_meta$display==input$ids_ways_2], "/", fixed = TRUE)[[1]],
+    		"File" = read.table(input$ids_ways_3$datapath, sep = "\n")[,1]
+    	)
+	    unique(ids)
+	})
+	
+	observeEvent(input$query_data, {
+		withProgress(message=paste0("Query ", length(ids()), " molecules one by one"),{
 		  purrr::map(ids(), function(x) {
 		    # x = ids[1]
 		    data <- query_pancan_value(x, data_type=input$profile)
 		    data = data[[1]]
 		    data <- dplyr::tibble(sample = names(data), y = as.numeric(data))
 		    colnames(data)[2] <- x
-		    incProgress(1 / length(ids))
+		    incProgress(1 / length(ids()))
 		    data
 		  }) %>% purrr::reduce(dplyr::full_join, by = "sample")
-	
-		}) 
+	    })
 	})
+
+
 
 
 	observeEvent(input$Mode, {
 	  updateTabsetPanel(inputId = "group_params", selected = input$Mode)
 	}) 
+
+
 
 	inspect_msg = eventReactive(input$inspect_data,{
 			data.list = vis_dim_dist(

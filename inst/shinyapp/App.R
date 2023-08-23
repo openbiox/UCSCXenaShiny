@@ -152,6 +152,21 @@ phenotype_datasets <- UCSCXenaTools::XenaData %>%
   dplyr::filter(Type == "clinicalMatrix") %>%
   dplyr::pull(XenaDatasets)
 
+tumor_index_list = list(
+  tcga_purity = load_data("tcga_purity"),
+  tcga_stemness = load_data("tcga_stemness"),
+  tcga_tmb = load_data("tcga_tmb"),
+  tcga_msi = load_data("tcga_MSI"),
+  tcga_genome_instability = load_data("tcga_genome_instability")
+)
+colnames(tumor_index_list$tcga_tmb)[3] = "sample"
+tumor_index_list$tcga_msi = tcga_gtex %>%
+  dplyr::mutate(Barcode = stringr::str_sub(sample, 1, 12)) %>%
+  dplyr::select(Barcode, sample) %>%
+  dplyr::inner_join(tumor_index_list$tcga_msi)
+
+
+
 themes_list <- list(
   "cowplot" = cowplot::theme_cowplot(),
   "Light" = theme_light(),
@@ -162,8 +177,24 @@ themes_list <- list(
   "minimal_grid" = cowplot::theme_minimal_grid()
 )
 
-TIL_signatures <- colnames(load_data("tcga_TIL"))[-1]
-PW_signatures <- load_data("toil_sig_score")$meta$sig_name
+tcga_TIL = load_data("tcga_TIL")
+TIL_signatures <- colnames(tcga_TIL)[-1]
+TIL_meta = strsplit(TIL_signatures, "_") %>% 
+  do.call(rbind, .) %>% as.data.frame() %>% 
+  dplyr::rename("method"="V2", "celltype"="V1")
+
+tcga_PW = load_data("tcga_PW")
+# PW_signatures <- load_data("toil_sig_score")$meta$sig_name
+PW_meta <- load_data("tcga_PW_meta")
+PW_meta <- PW_meta %>% 
+  dplyr::arrange(Name) %>%
+  dplyr::mutate(size = purrr::map_int(Gene, function(x){
+    x_ids = strsplit(x, "/", fixed = TRUE)[[1]]
+    length(x_ids)
+  }), .before = 5) %>% 
+  dplyr::mutate(display = paste0(Name, " (", size, ")"), .before = 6)
+
+
 
 # CCLE tissues for drug analysis
 # "ALL" means all tissues

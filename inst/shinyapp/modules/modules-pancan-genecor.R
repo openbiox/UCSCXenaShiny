@@ -42,7 +42,8 @@ ui.modules_pancan_gene_cor <- function(id) {
             )
           ))),
       column(
-        3,wellPanel(
+        3,
+        wellPanel(
           materialSwitch(ns("purity_adj"), "Adjust Purity", inline = TRUE),
           selectInput(inputId = ns("use_all"), label = "Use All Cancer Types", choices = c("TRUE", "FALSE"), selected = "FALSE"),
           selectInput(

@@ -7,8 +7,14 @@ ui.modules_pancan_mut = function(id){
 	            selectizeInput(
 	              inputId = ns("mut_Gene"),
 	              label = "Input a gene with mutation ralated grouping",
-	              choices = pancan_identifiers$gene,
-	              selected = "TP53"
+	              choices = NULL,
+	              width = "100%",
+	              options = list(
+	              	create = TRUE,
+	              	maxOptions = 5,
+	              	placeholder = "Enter a gene symbol, e.g. TP53",
+	              	plugins = list("restore_on_backspace")
+     		      )
 	            ),
 	            shinyWidgets::prettyRadioButtons(
 	              inputId = ns("Mode"), label = "Select analysis cancer(s):",
@@ -90,9 +96,9 @@ ui.modules_pancan_mut = function(id){
 		    9,
 		    plotOutput(ns("mut_plot"), height = "600px",width = "600px"),
 		    hr(),
-		    h5("NOTEs:"),
-		    p("1. 500 common patwhay genesets from 3 resources(50 HALLMARK, 186 KEGG, 264 IOBR) were collected."),
-		    p("2. Pathway scores of TCGA(toil) tumor patients were calculated using ssGSEA method."),
+		    # h5("NOTEs:"),
+		    # p("1. 500 common patwhay genesets from 3 resources(50 HALLMARK, 186 KEGG, 264 IOBR) were collected."),
+		    # p("2. Pathway scores of TCGA(toil) tumor patients were calculated using ssGSEA method."),
 		    DT::DTOutput(ns("mut_data")),
 	        shinyjs::hidden(
 	          wellPanel(
@@ -107,6 +113,16 @@ ui.modules_pancan_mut = function(id){
 
 server.modules_pancan_mut = function(input, output, session){
 	ns = session$ns
+
+	observe({
+	  updateSelectizeInput(
+	    session,
+	    "mut_Gene",
+	    choices = pancan_identifiers$gene,
+	    selected = "TP53",
+	    server = TRUE
+	  )
+	})
 
 	observeEvent(input$Mode, {
 	  updateTabsetPanel(inputId = "Mode_params", selected = input$Mode)

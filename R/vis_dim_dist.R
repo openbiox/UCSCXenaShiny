@@ -170,7 +170,7 @@ vis_dim_dist <- function(ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
   exp_data <- exp_data[, which(!colnames(exp_data) %in% c(ids_NAN, ids_SD0))]
   meta_data <- meta_data[, c("id", "sample", "group")]
 
-  if ((ncol(exp_data) - 2) < 3) {
+  if (length(ids_OK) < 3) {
     stop("The number of valid ids is less than three. Please inspect the input ids and data_type(?query_pancan_value)")
   }
 
