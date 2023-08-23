@@ -88,6 +88,10 @@ ui.page_general_analysis <- function() {
       tabPanel(
         "Survival-Analysis",
         ui.modules_ga_surv_analysis("module_ga_surv_analysis")
+      ),
+      tabPanel(
+        "Dimension-Distribution",
+        ui.modules_ga_dim_distribution("module_ga_dim_distribution")
       )
     )
   )

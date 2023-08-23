@@ -32,6 +32,11 @@ inst/extdata/tcga_chr_alteration.rda
 inst/extdata/ccle_expr_and_drug_response.rda
 inst/extdata/transcript_identifier.rda
 
+inst/extdata/toil_sig_score.rda
+inst/extdata/tcga_PW.rda
+inst/extdata/tcga_PW_meta.rda
+
+
 doc
 Meta
 

@@ -39,20 +39,21 @@ vis_gene_pw_cor <- function(Gene = "TP53", data_type = "mRNA",
 
   ## step1
   # build-in 500 pathway signaure score(toil tcga)
-  if (!file.exists(file.path(get_zenodo_dir(), "toil_sig_score.rda"))) {
+  if (!file.exists(file.path(get_zenodo_dir(), "tcga_PW.rda"))) {
     print("This is the first download from zenodo, please wait a few minutes.")
   }
   if ((length(Cancer) > 1 | Cancer == "Overall") & is.null(pw_name)) {
     stop("You need provide specific pathway name when dealing with multiple cancers")
   }
-  pw_score <- load_data("toil_sig_score")
-  toil_sig_score <- pw_score$score # [1] 9807  500
-  toil_sig_meta <- pw_score$meta
-  colnames(toil_sig_meta) <- gsub("sig", "pw", colnames(toil_sig_meta))
+  toil_sig_score <- load_data("tcga_PW")
+  toil_sig_meta  <- load_data("tcga_PW_meta")
+  # toil_sig_score <- pw_score$score # [1] 9807  500
+  # toil_sig_meta <- pw_score$meta
+  # colnames(toil_sig_meta) <- gsub("sig", "pw", colnames(toil_sig_meta))
 
   if (!is.null(pw_name)) {
-    if (!(pw_name %in% toil_sig_meta$pw_name)) {
-      stop("You need provide valid pathway name (see load_data('toil_sig_score'))")
+    if (!(pw_name %in% toil_sig_meta$ID)) {
+      stop("You need provide valid pathway name (see load_data('tcga_PW_meta'))")
     }
   }
 
@@ -63,12 +64,10 @@ vis_gene_pw_cor <- function(Gene = "TP53", data_type = "mRNA",
     return(NULL)
   }
   if (is.list(t1)) t1 <- t1[[1]]
-
   if (all(is.na(t1))) {
     message("All NAs returned, return NULL instead.")
     return(NULL)
   }
-
   if (data_type == "cnv") data_type <- "GISTIC2 thresholded CNV"
   if (data_type == "cnv_gistic2") data_type <- "CNV"
 
@@ -88,7 +87,8 @@ vis_gene_pw_cor <- function(Gene = "TP53", data_type = "mRNA",
 
   ## step2
   ## mode1**gene -- spe tcga -- all sig: bar plot(default)
-  if (is.null(pw_name)) {
+  if (is.null(pw_name) && length(Cancer)==1) {
+    message("Mode-1: the significant correlated pathways to one specific cancer")
     res_pan <- toil_sig_score[rownames(toil_sig_score) %in% tcga_sp, ] %>%
       as.data.frame() %>% tibble::rownames_to_column("sample") %>% 
       tidyr::pivot_longer(!sample, names_to = "pw_name", values_to = "pw_score") %>%
@@ -109,7 +109,7 @@ vis_gene_pw_cor <- function(Gene = "TP53", data_type = "mRNA",
     )
     res_pan <- res_pan %>%
       dplyr::ungroup() %>%
-      dplyr::left_join(toil_sig_meta)
+      dplyr::left_join(toil_sig_meta[,1:4],by=c("pw_name"="ID"))
 
     res_pan_sig <- res_pan %>%
       dplyr::filter(abs(.data$cor) >= cor_cutoff$r, .data$pval <= cor_cutoff$p) %>%
@@ -125,10 +125,10 @@ vis_gene_pw_cor <- function(Gene = "TP53", data_type = "mRNA",
     if (!plot) {
       return(res_pan)
     } else {
-      p <- ggplot(res_pan_sig, aes(x = pw_name, y = cor, fill = .data$pw_type)) +
+      p <- ggplot(res_pan_sig, aes(x = .data$pw_name, y = .data$cor, fill = .data$Type)) +
         geom_col() +
         scale_fill_manual(values = c("HALLMARK" = "#7fc97f", "KEGG" = "#beaed4", "IOBR" = "#fdc086")) +
-        scale_x_discrete(labels = res_pan_sig$pw_name2) +
+        scale_x_discrete(labels = res_pan_sig$Name) +
         ylab(paste0(stringr::str_to_title(cor_method), " correlation coefficient")) +
         xlab("") +
         coord_flip() +
@@ -143,7 +143,8 @@ vis_gene_pw_cor <- function(Gene = "TP53", data_type = "mRNA",
       return(p)
     }
     ## mode2**gene -- pan tcga -- spe sig: lollipop plot
-  } else if (length(Cancer) > 1) {
+  } else if (length(Cancer) > 1 && !is.null(pw_name)) {
+    message("Mode-2: one specific pathway correlated to multiple cancers")
     res_pan_spe <- toil_sig_score[rownames(toil_sig_score) %in% tcga_sp, pw_name, drop = F] %>%
       as.data.frame() %>% tibble::rownames_to_column("sample") %>% 
       tidyr::pivot_longer(!sample, names_to = "pw_name", values_to = "pw_score") %>%
@@ -199,9 +200,11 @@ vis_gene_pw_cor <- function(Gene = "TP53", data_type = "mRNA",
           legend.position = "none",
           text = element_text(size = 15)
         )
+        return(p)
     }
     ## mode3**gene -- spe tcga -- spe sig: point plot
-  } else {
+  } else if (length(Cancer) == 1 && !is.null(pw_name)) {
+    message("Mode-3: one specific pathway correlated to one specific cancer")
     res_pan_spe <- toil_sig_score[rownames(toil_sig_score) %in% tcga_sp, pw_name, drop = F] %>%
       as.data.frame() %>% tibble::rownames_to_column("sample") %>% 
       tidyr::pivot_longer(!sample, names_to = "pw_name", values_to = "pw_score") %>%
@@ -230,5 +233,7 @@ vis_gene_pw_cor <- function(Gene = "TP53", data_type = "mRNA",
         theme(text = element_text(size = 15))
     }
     return(p)
+  } else {
+    stop("Please select one analysis mode and check the right parameters.")
   }
 }
