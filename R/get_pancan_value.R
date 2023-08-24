@@ -83,15 +83,52 @@ get_pancan_value <- function(identifier, subtype = NULL, dataset = NULL, host = 
 try_query_value <- function(host, dataset,
                             identifiers, samples,
                             check = FALSE, use_probeMap = TRUE,
+                            rule_out = NULL,
+                            aggr = c("NA", "mean", "Q0", "Q25", "Q50", "Q75", "Q100"),
                             max_try = 5L) {
-  Sys.sleep(0.1)
+  aggr = match.arg(aggr)
+  Sys.sleep(0.05)
+  
   tryCatch(
     {
       message("Try querying data #", abs(max_try - 6L))
-      UCSCXenaTools::fetch_dense_values(host, dataset,
-        identifiers = identifiers, samples = samples,
-        check = check, use_probeMap = use_probeMap
-      )
+      
+      if (aggr != "NA") {
+        # Designed for methylation data
+        # be careful!
+        message("Fetching all ids, take patience...")
+        #ids = UCSCXenaTools::fetch_dataset_identifiers(host, dataset)
+        xe = UCSCXenaTools::XenaQueryProbeMap(UCSCXenaTools::XenaGenerate(subset = XenaDatasets == dataset))
+        xd = UCSCXenaTools::XenaPrepare(UCSCXenaTools::XenaDownload(xe), col_names = FALSE)[, c(1, 2)]
+        xd = tidyr::separate_rows(xd, "X2", sep = ",")
+        xd = dplyr::filter(xd, X2 %in% identifiers)
+        
+        if (!is.null(rule_out)) {
+          xd = dplyr::filter(xd, !X2 %in% rule_out)
+        }
+        ids = xd$X1
+        
+        d = UCSCXenaTools::fetch_dense_values(host, dataset,
+                                              identifiers = ids, samples = samples,
+                                              check = FALSE, use_probeMap = FALSE
+        )
+        f = switch(aggr,
+                   mean = function(x) mean(x, na.rm = TRUE),
+                   Q0 = function(x) quantile(x, 0, na.rm = TRUE),
+                   Q25 = function(x) quantile(x, 0.25, na.rm = TRUE),
+                   Q50 = function(x) quantile(x, 0.5, na.rm = TRUE),
+                   Q75 = function(x) quantile(x, 0.75, na.rm = TRUE),
+                   Q100 = function(x) quantile(x, 1, na.rm = TRUE))
+        
+        z = apply(d, 2, f)
+        matrix(z, nrow = 1, dimnames = list("aggr_methy_value", names(z)))
+      } else {
+        UCSCXenaTools::fetch_dense_values(host, dataset,
+                                          identifiers = identifiers, samples = samples,
+                                          check = check, use_probeMap = use_probeMap
+        )
+      }
+      
     },
     error = function(e) {
       if (max_try == 1) {
@@ -101,7 +138,9 @@ try_query_value <- function(host, dataset,
         try_query_value(host, dataset,
           identifiers, samples,
           check = check, use_probeMap = use_probeMap,
-          max_try = max_try - 1L
+          max_try = max_try - 1L,
+          rule_out = rule_out,
+          aggr = aggr
         )
       }
     }
