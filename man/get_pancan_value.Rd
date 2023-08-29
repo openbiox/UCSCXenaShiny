@@ -34,7 +34,8 @@ get_pancan_value(
   subtype = NULL,
   dataset = NULL,
   host = available_hosts(),
-  samples = NULL
+  samples = NULL,
+  ...
 )
 
 get_pancan_gene_value(identifier)
@@ -47,7 +48,12 @@ get_pancan_mutation_status(identifier)
 
 get_pancan_cn_value(identifier, use_thresholded_data = TRUE)
 
-get_pancan_methylation_value(identifier, type = c("450K", "27K"))
+get_pancan_methylation_value(
+  identifier,
+  type = c("450K", "27K"),
+  rule_out = NULL,
+  aggr = c("NA", "mean", "Q0", "Q25", "Q50", "Q75", "Q100")
+)
 
 get_pancan_miRNA_value(identifier)
 
@@ -82,11 +88,20 @@ Gene symbol is highly recommended.}
 
 \item{samples}{a character vector representing samples want to be returned.}
 
+\item{...}{other parameters.}
+
 \item{use_thresholded_data}{if \code{TRUE} (default), use GISTIC2-thresholded value.}
 
 \item{type}{methylation type, one of "450K" and "27K".
 for function \code{get_pcawg_promoter_value}, it can be one of
 "raw", "relative", "outlier".}
+
+\item{rule_out}{methylation sites to rule out before analyzing.}
+
+\item{aggr}{apporaches to aggregate the methylation data, default is 'NA',
+in such case, a mean value is obtained for gene-level methylation.
+Allowed value is one of \code{c("NA", "mean", "Q0", "Q25", "Q50", "Q75", "Q100")}.
+Here, \code{Q50} is median.}
 
 \item{norm_method}{the normalization method.}
 }

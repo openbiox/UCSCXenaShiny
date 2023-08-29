@@ -23,7 +23,7 @@ available_hosts <- function() {
 #' `XenaDatasets` of [UCSCXenaTools::XenaData].
 #' @param host a character vector representing host name(s), e.g. "toilHub".
 #' @param samples a character vector representing samples want to be returned.
-#'
+#' @param ... other parameters.
 #' @return a named vector or `list`.
 #'
 #' @examples
@@ -42,7 +42,7 @@ available_hosts <- function() {
 #' @export
 #' @describeIn get_pancan_value Fetch identifier value from pan-cancer dataset
 get_pancan_value <- function(identifier, subtype = NULL, dataset = NULL, host = available_hosts(),
-                             samples = NULL) {
+                             samples = NULL, ...) {
   stopifnot(length(identifier) == 1, !all(is.null(subtype), is.null(dataset)))
   if (!requireNamespace("UCSCXenaTools", quietly = TRUE)) {
     stop("Package 'UCSCXenaTools' is not installed.")
@@ -72,7 +72,7 @@ get_pancan_value <- function(identifier, subtype = NULL, dataset = NULL, host = 
 
   res <- try_query_value(data[["XenaHosts"]], data[["XenaDatasets"]],
     identifiers = identifier, samples = samples,
-    check = FALSE, use_probeMap = TRUE
+    check = FALSE, use_probeMap = TRUE, ...
   )
   res2 <- res[1, ]
   names(res2) <- colnames(res)
@@ -292,9 +292,17 @@ get_pancan_cn_value <- function(identifier, use_thresholded_data = TRUE) {
 #' @param type methylation type, one of "450K" and "27K".
 #' for function `get_pcawg_promoter_value`, it can be one of
 #' "raw", "relative", "outlier".
+#' @param rule_out methylation sites to rule out before analyzing.
+#' @param aggr apporaches to aggregate the methylation data, default is 'NA',
+#' in such case, a mean value is obtained for gene-level methylation.
+#' Allowed value is one of `c("NA", "mean", "Q0", "Q25", "Q50", "Q75", "Q100")`.
+#' Here, `Q50` is median.
 #' @export
-get_pancan_methylation_value <- function(identifier, type = c("450K", "27K")) {
+get_pancan_methylation_value <- function(identifier, type = c("450K", "27K"),
+                                         rule_out = NULL,
+                                         aggr = c("NA", "mean", "Q0", "Q25", "Q50", "Q75", "Q100")) {
   type <- match.arg(type)
+  aggr = match.arg(aggr)
 
   if (type == "450K") {
     host <- "pancanAtlasHub"
@@ -304,7 +312,7 @@ get_pancan_methylation_value <- function(identifier, type = c("450K", "27K")) {
     dataset <- "TCGA.PANCAN.sampleMap/HumanMethylation27"
   }
 
-  data <- get_data(dataset, identifier, host)
+  data <- get_data(dataset, identifier, host, rule_out = rule_out, aggr = aggr)
 
   unit <- "beta value"
   report_dataset_info(dataset)
@@ -337,21 +345,23 @@ report_dataset_info <- function(dataset) {
   message(msg)
 }
 
-check_file <- function(id, dataset, host) {
+check_file <- function(id, dataset, host, ...) {
   f <- file.path(
     get_cache_dir(),
-    paste0(
-      host, "_",
-      gsub("[/]", "_", dataset),
-      "_", id, ".rds"
-    )
+    # paste0(
+    #   host, "_",
+    #   gsub("[/]", "_", dataset),
+    #   "_", id, ".rds"
+    # ),
+    paste0(digest::digest(list(id, dataset, host, ...)), ".rds")
   )
   return(f)
 }
 
-check_exist_data <- function(id, dataset, host) {
-  f <- check_file(id, dataset, host)
+check_exist_data <- function(id, dataset, host, ...) {
+  f <- check_file(id, dataset, host, ...)
   if (file.exists(f)) {
+    message("Reading cache data ", f)
     data <- tryCatch(
       readRDS(f),
       error = function(e) {
@@ -382,12 +392,14 @@ check_exist_data <- function(id, dataset, host) {
   }
 }
 
-save_data <- function(data, id, dataset, host) {
-  f <- check_file(id, dataset, host)
+save_data <- function(data, id, dataset, host, ...) {
+  f <- check_file(id, dataset, host, ...)
   if (!dir.exists(dirname(f))) {
     dir.create(dirname(f), recursive = TRUE)
   }
 
+  message("Saving data to file ", f)
+  
   tryCatch(
     saveRDS(data, file = f),
     error = function(e) {
@@ -396,7 +408,7 @@ save_data <- function(data, id, dataset, host) {
   )
 }
 
-get_data <- function(dataset, identifier, host = NULL) {
+get_data <- function(dataset, identifier, host = NULL, ...) {
   stopifnot(length(dataset) == 1)
 
   if (is.null(host)) {
@@ -404,16 +416,16 @@ get_data <- function(dataset, identifier, host = NULL) {
       dplyr::filter(.data$XenaDatasets == dataset) %>%
       dplyr::pull(.data$XenaHostNames)
   }
-  res <- check_exist_data(identifier, dataset, host)
+  res <- check_exist_data(identifier, dataset, host, ...)
   if (res$ok) {
     value <- res$data
   } else {
-    value <- get_pancan_value(identifier, dataset = dataset, host = host)
+    value <- get_pancan_value(identifier, dataset = dataset, host = host, ...)
     label <- UCSCXenaTools::XenaData %>%
       dplyr::filter(.data$XenaDatasets == dataset) %>%
       dplyr::pull(.data$DataSubtype)
     if (!is.null(value)) attr(value, "label") <- label
-    save_data(value, identifier, dataset, host)
+    save_data(value, identifier, dataset, host, ...)
   }
   value
 }
