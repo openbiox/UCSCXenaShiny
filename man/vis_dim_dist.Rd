@@ -7,33 +7,18 @@
 vis_dim_dist(
   ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
   data_type = "mRNA",
-  cancer_type = "LIHC",
-  Mode = c("TumorNomral", "Clinical", "Cancer", "Custom"),
-  group_name = NULL,
-  custom_meta = NULL,
-  TCGA.only = TRUE,
   return.data = FALSE,
   DR_method = c("PCA", "UMAP", "tSNE"),
   palette = "Set1",
-  add_margin = NULL
+  add_margin = NULL,
+  group_levels = NULL,
+  ...
 )
 }
 \arguments{
 \item{ids}{molecular identifiers (>=3)}
 
 \item{data_type}{molecular types, refer to query_pancan_value() fuuntion}
-
-\item{cancer_type}{select cancer cohort(s)}
-
-\item{Mode}{how to define group metadata}
-
-\item{group_name}{the provided phenotype under 'Clinical' mode. We collected six phenotypes based on TGCA project.
-("age","gender","race","stage_ajcc","stage_clinical","histological_grade"). For age, the older and yunger groups are determined by the median value.
-For other phenotypes (such as stage_ajcc), the primary phenotypes were substracted.}
-
-\item{custom_meta}{the provided metadata under 'Custom' mode}
-
-\item{TCGA.only}{whether to include GTEx normal samples under 'TumorNomral' mode}
 
 \item{return.data}{whether to reture the raw meta/matrix data (list) instead of plot}
 
@@ -42,40 +27,44 @@ For other phenotypes (such as stage_ajcc), the primary phenotypes were substract
 \item{palette}{the color setting of RColorBrewer}
 
 \item{add_margin}{the marginal plot (NULL, "density", "boxplot")}
+
+\item{group_levels}{group levels setting}
+
+\item{...}{parameters refer to query_tcga_group() function}
 }
 \value{
-a \code{ggplot} object.
+a ggplot object or rawdata list
 }
 \description{
 Visualize the distribution difference of samples after dimension reduction analysis
 }
 \examples{
-\donttest{
-# The examples work, but may take a long time to run.
-
-p <- vis_dim_dist(DR_method = "UMAP")
-p <- vis_dim_dist(Mode = "Clinical", group_name = "age")
-
-pancan_identifiers <- readRDS(
-  system.file(
-    "extdata", "pancan_identifier_list.rds",
-    package = "UCSCXenaShiny"
-  )
+\dontrun{
+vis_dim_dist(
+  ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
+  cancer = "BRCA",
+  group = "Gender",
+  group_levels = NULL
 )
-set.seed(42)
-ids <- sample(pancan_identifiers$miRNA, 20)
-p <- vis_dim_dist(ids = ids, data_type = "miRNA")
 
-p <- vis_dim_dist(cancer_type = c("LUAD", "LIHC", "LUSC"), Mode = "Cancer")
 
-set.seed(42)
-custom_meta <- tcga_gtex \%>\%
-  dplyr::mutate(across(where(is.factor), as.character)) \%>\%
-  dplyr::filter(tissue == "LUAD") \%>\%
-  dplyr::filter(grepl("TCGA", sample)) \%>\%
-  dplyr::sample_frac(0.8) \%>\%
-  dplyr::mutate(group = sample(c("TA", "TB"), size = nrow(.), replace = TRUE)) \%>\%
-  dplyr::select(sample, group)
-p <- vis_dim_dist(cancer_type = c("LUAD"), Mode = "Custom", custom_meta = custom_meta)
+vis_dim_dist(
+  ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
+  cancer = "BRCA",
+  group = "Code",
+  merge_by = list("Tumor"=c("TP","TM"),"Normal"=c("NT")),
+  group_levels = c("Normal","Tumor"),
+  add_margin = "boxplot"
+)
+
+vis_dim_dist(
+  ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
+  cancer = c("LIHC","BRCA"),
+  group = "Cancer",
+  group_levels = c("BRCA","LIHC"),
+  filter_by = list(c("Code",c("TP"),"+")),
+  add_margin = "density"
+)
 }
+
 }

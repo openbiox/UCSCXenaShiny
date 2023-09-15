@@ -50,14 +50,12 @@ Imports:
     ppcor,
     psych,
     purrr,
-    Rtsne,
     shiny (>= 1.3.2),
     stats,
     stringr,
     tibble (>= 2.1.3),
     tidyr,
     UCSCXenaTools,
-    umap,
     utils
 Suggests: 
     covr (>= 3.2.1),
@@ -73,10 +71,12 @@ Suggests:
     plyr,
     RColorBrewer (>= 1.1.2),
     rmarkdown,
+    Rtsne,
     scales,
     survival,
     survminer,
-    testthat (>= 2.0.1)
+    testthat (>= 2.0.1),
+    umap,
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
