@@ -16,6 +16,7 @@
 ^docs$
 ^paper$
 ^data-remote$
+^\.idea$
 
 data/pancan_MSI.rda
 data/tcga_pan_immune_signature.rda

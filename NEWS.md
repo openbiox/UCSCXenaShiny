@@ -3,6 +3,15 @@
 This is a version created for implementing new features by Shensuo Li (@lishensuo).
 
 - added `vis_dim_dist()` funtion and corresponding shiny module.
+- supported get more flexible methylation value.
+
+```r
+UCSCXenaShiny::get_pancan_methylation_value(
+  "RCAN2",
+  rule_out = c("cg21115430", "cg19452802"), 
+  aggr = "Q75"
+)
+```
 
 # UCSCXenaShiny 1.1.11
 
