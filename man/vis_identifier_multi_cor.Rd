@@ -46,7 +46,7 @@ Bayesian correlation based on frequentist partialization) are returned.}
 \item{sig.level}{Significance level (Default: \code{0.05}). If the \emph{p}-value in
 \emph{p}-value matrix is bigger than \code{sig.level}, then the corresponding
 correlation coefficient is regarded as insignificant and flagged as such in
-the plot. Relevant only when \code{output = "plot"}.}
+the plot.}
 
 \item{p.adjust.method}{Adjustment method for \emph{p}-values for multiple
 comparisons. Possible methods are: \code{"holm"} (default), \code{"hochberg"},
