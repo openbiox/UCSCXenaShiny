@@ -4,6 +4,7 @@ Version: 1.1.12
 Authors@R: c(
     person("Shixiang", "Wang", , "w_shixiang@163.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-9855-7357")),
+    person("Shensuo", "Li", , "lishensuo@163.com", role = "aut"),
     person("Yi", "Xiong", , "neuroxiong@openbiox.com", role = "aut",
            comment = c(ORCID = "0000-0002-4370-9824")),
     person("Longfei", "Zhao", , "longfei8533@126.com", role = "aut",
