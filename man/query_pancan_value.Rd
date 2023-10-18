@@ -10,7 +10,7 @@ query_pancan_value(
     "methylation", "miRNA", "fusion", "promoter", "APOBEC"),
   database = c("toil", "ccle", "pcawg"),
   reset_id = NULL,
-  ...
+  opt_pancan = .opt_pancan
 )
 }
 \arguments{
@@ -18,14 +18,14 @@ query_pancan_value(
 genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 
 \item{data_type}{data type. Can be one of "mRNA", "transcript", "protein",
-"mutation", "cnv" (-2, -1, 0, 1, 2), "cnv_gistic2", "methylation", "miRNA".}
+"mutation", "cnv", "methylation", "miRNA".}
 
 \item{database}{database, either 'toil' for TCGA TARGET GTEx, or 'ccle' for
 CCLE.}
 
 \item{reset_id}{if not \code{NULL}, set the specified variable at parent frame to "Signature".}
 
-\item{...}{other extra parameters passing to the underlying functions.}
+\item{opt_pancan}{other extra parameters passing to the underlying functions.}
 }
 \value{
 a list.
@@ -33,28 +33,72 @@ a list.
 \description{
 Query Single Identifier or Signature Value from Pan-cancer Database
 }
+\details{
+\code{query_pancan_value()} provide convenient interface to download multi-omics
+data from 3 databases by specifying one or several canonical datasets. It is
+derived from \code{query_pancan_value()} and support query for genomic signature.
+To query comprehensive datasets that UCSCXena supports, users can check
+\code{UCSCXenaTools::XenaData} and use \code{get_pancan_value()} directly.
+
+Option \code{opt_pancan} is a nested list and allow to adjust the downloading details.
+For now, only \code{cnv(toil)},\code{methylation(toil)},\code{miRNA(toil)},\code{miRNA(pcawg)},\code{promoter(pcawg)}
+support optional parameters. The default set is \code{.opt_pancan} and we check meanings of sublist(parameters)
+through the following relationship.
+}
+\section{"toil" database}{
+
+\enumerate{
+\item mRNA--\code{get_pancan_gene_value()}
+\item transcript--\code{get_pancan_transcript_value()}
+\item protein--\code{get_pancan_protein_value()}
+\item mutation--\code{get_pancan_mutation_status()}
+\item cnv--\code{get_pancan_cn_value()}
+\item methylation--\code{get_pancan_methylation_value()}
+\item miRNA--\code{get_pancan_miRNA_value()}
+}
+}
+
+\section{"ccle" database}{
+
+\enumerate{
+\item mRNA--\code{get_ccle_gene_value()}
+\item protein--\code{get_ccle_protein_value()}
+\item mutation--\code{get_ccle_mutation_status()}
+\item cnv--\code{get_ccle_cn_value()}
+}
+}
+
+\section{"pcawg" database}{
+
+\enumerate{
+\item mRNA--\code{get_pcawg_gene_value()}
+\item miRNA--\code{get_pcawg_miRNA_value()}
+\item promoter--\code{get_pcawg_promoter_value()}
+\item fusion--\code{get_pcawg_fusion_value()}
+\item APOBEC--\code{get_pcawg_APOBEC_mutagenesis_value()}
+}
+}
+
 \examples{
 \dontrun{
 query_pancan_value("KRAS")
 query_pancan_value("KRAS", database = "ccle")
 query_pancan_value("KRAS", database = "pcawg")
-query_pancan_value("hsa-let-7c-3p",
-  database = "pcawg",
-  data_type = "miRNA"
-)
-query_pancan_value("hsa-let-7c-3p",
-  database = "pcawg",
-  data_type = "miRNA", norm_method = "UQ"
-)
+
+
 query_pancan_value("ENSG00000000419",
   database = "pcawg",
   data_type = "fusion"
 ) # gene symbol also work
-query_pancan_value("tCa_MutLoad_MinEstimate",
-  database = "pcawg", data_type = "APOBEC"
-)
-query_pancan_value("prmtr.10000",
-  database = "pcawg", data_type = "promoter"
-)
+
+.opt_pancan
+
+opt_pancan = list(toil_cnv = list(use_thresholded_data = FALSE))
+query_pancan_value("PTEN",data_type = "cnv", database = "toil", opt_pancan = opt_pancan)
+
+
+opt_pancan = list(toil_methylation = list(type = "450K",rule_out = "cg21115430", aggr = "Q25"))
+query_pancan_value("PTEN",data_type = "methylation", database = "toil", opt_pancan = opt_pancan)
+
 }
 }
