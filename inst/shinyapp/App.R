@@ -325,8 +325,7 @@ ui <- tagList(
     )
   ),
   shinyjs::useShinyjs(),
-  use_waiter(),
-  waiter_on_busy(html = spin_3k(), color = transparent(0.7)),
+  autoWaiter(html = spin_loader(), color = transparent(0.5)), # change style https://shiny.john-coene.com/waiter/
   navbarPage(
     id = "navbar",
     title = div(
