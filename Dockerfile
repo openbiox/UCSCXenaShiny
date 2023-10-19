@@ -14,7 +14,7 @@ RUN install2.r remotes UCSCXenaShiny &&\
     R -e 'remotes::install_github("openbiox/UCSCXenaShiny", dependencies = TRUE)'
   
 # Install extra dependencies
-RUN R -e 'writeLines(readLines(system.file("shinyapp", "App.R", package = "UCSCXenaShiny"))[25:98], "/opt/ext-deps.R")' &&\
+RUN R -e 'writeLines(readLines(system.file("shinyapp", "App.R", package = "UCSCXenaShiny"))[25:99], "/opt/ext-deps.R")' &&\
     Rscript /opt/ext-deps.R &&\
     rm /opt/ext-deps.R
     
