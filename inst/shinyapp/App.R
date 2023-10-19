@@ -164,9 +164,7 @@ colnames(tumor_index_list$tcga_tmb)[3] = "sample"
 tumor_index_list$tcga_msi = tcga_gtex %>%
   dplyr::mutate(Barcode = stringr::str_sub(sample, 1, 12)) %>%
   dplyr::select(Barcode, sample) %>%
-  dplyr::inner_join(tumor_index_list$tcga_msi)
-
-
+  dplyr::inner_join(tumor_index_list$tcga_msi, by = "Barcode")
 
 themes_list <- list(
   "cowplot" = cowplot::theme_cowplot(),
@@ -340,7 +338,7 @@ ui <- tagList(
     ui.page_general_analysis(),
     ui.page_pancan(),
     ui.page_pancan2(),
-    ui.page_global(),
+    #ui.page_global(),
     ui.page_help(),
     ui.page_developers(),
     footer = ui.footer(),
@@ -362,7 +360,7 @@ server <- function(input, output, session) {
   source(server_file("home.R"), local = TRUE)
   source(server_file("repository.R"), local = TRUE)
   source(server_file("modules.R"), local = TRUE)
-  source(server_file("global.R"), local = TRUE)
+  #source(server_file("global.R"), local = TRUE)
   source(server_file("general-analysis.R"), local = TRUE)
 }
 
