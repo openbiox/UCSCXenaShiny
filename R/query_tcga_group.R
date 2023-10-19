@@ -92,43 +92,55 @@ query_tcga_group = function(cancer=NULL,
       meta_data = meta_data %>%
         dplyr::select(!all_of(dup_names))
     }
+    colnames(custom)[1] = "Sample"
     meta_data = dplyr::inner_join(meta_data, custom)
   }
 
-  if(return_all){
-    return(meta_data)
-  }
 
-  if(!group %in% colnames(meta_data)[-1:-2]){
-    stop(paste0("Please input the right group names:\n",
-      paste(colnames(meta_data)[-1:-2], collapse = " ")))
-  }
-  
+
   # step2: filter by cancer(s)
   if(is.null(cancer)){cancer = unique(meta_data$Cancer)}
   cancer = sort(cancer)
   meta_data_sub = meta_data %>% dplyr::filter(.data$Cancer %in% cancer)
   dim(meta_data_sub)
 
+  
+  # 对否返回全部值
+  if(return_all){
+    return(meta_data_sub)
+  }
+  
+  
+  if(!any(colnames(meta_data_sub)==group)){
+    stop(paste0("Please input the right group names:\n",
+      paste(colnames(meta_data_sub)[-1:-2], collapse = " ")))
+  }
 
   # step3: filter by groups
   if(!is.null(filter_by)){
     for (i in seq(filter_by)){
+      filter_by_L1 = trimws(filter_by[[i]][1])
+      filter_by_L3 = trimws(filter_by[[i]][3])
+      
+      filter_by_L2 = sapply(strsplit(filter_by[[i]][2],"|",fixed = T)[[1]],
+                            trimws,USE.NAMES = FALSE)
+      filter_by_L2[filter_by_L2 %in% "NA"] <- NA
+      
       # i = 1
-      if (trimws(filter_by[[i]][3])=="+"){
+      if (filter_by_L3=="+"){
         meta_data_sub = meta_data_sub %>% 
-          dplyr::filter(.data[[trimws(filter_by[[i]][1])]] %in% sapply(strsplit(filter_by[[i]][2],"|",fixed = T)[[1]],
-                                                                       trimws,USE.NAMES = FALSE)) 
-      } else if (trimws(filter_by[[i]][3])=="-"){
+          dplyr::filter(.data[[filter_by_L1]] %in% filter_by_L2) 
+      } else if (filter_by_L3=="-"){
         meta_data_sub = meta_data_sub %>% 
-          dplyr::filter(!.data[[trimws(filter_by[[i]][1])]] %in% sapply(strsplit(filter_by[[i]][2],"|",fixed = T)[[1]],
-                                                                       trimws,USE.NAMES = FALSE)) 
-      } else if (trimws(filter_by[[i]][3])==">"){
+          dplyr::filter(!.data[[filter_by_L1]] %in% filter_by_L2) 
+      } else if (filter_by_L3==">"){
+        filter_by_L2 = as.numeric(filter_by_L2)
         meta_data_sub = meta_data_sub %>% 
-          dplyr::filter(.data[[trimws(filter_by[[i]][1])]] > trimws(filter_by[[i]][2])) 
-      } else if (trimws(filter_by[[i]][3])=="<"){
+          dplyr::filter(.data[[filter_by_L1]] > filter_by_L2) 
+      } else if (filter_by_L3=="<"){
+        filter_by_L2 = as.numeric(filter_by_L2)
         meta_data_sub = meta_data_sub %>% 
-          dplyr::filter(.data[[trimws(filter_by[[i]][1])]] < trimws(filter_by[[i]][2])) 
+          dplyr::filter(.data[[filter_by_L1]] < filter_by_L2) 
       }
 
     }
@@ -145,16 +157,17 @@ query_tcga_group = function(cancer=NULL,
       colnames(merge_by_label)[1] = group
       meta_data_sub[,group] = dplyr::left_join(meta_data_sub, merge_by_label) %>% dplyr::pull(.data$label)
     } else if(is.numeric(meta_data_sub[,group,drop=T])){
+      
       merge_by = unlist(merge_by)
       merge_by_label = rep(tail(names(merge_by),1), nrow(meta_data_sub))
       for (i in seq(nrow(meta_data_sub))) {
         value <- as.numeric(meta_data_sub[i,group])
         if(is.na(value)) {
           merge_by_label[i] = NA
-          break
+          next
         }
         for (j in head(seq(merge_by),-1)) {
-          if (value <= merge_by[j]) {
+          if (value <= as.numeric(merge_by[j])) {
             merge_by_label[i] <- names(merge_by)[j]  
             break
           }
