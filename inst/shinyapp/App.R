@@ -331,6 +331,7 @@ ui <- tagList(
     title = div(
       img(src = "xena_shiny-logo_white.png", height = 49.6, style = "margin:-20px -15px -15px -15px")
     ),
+    windowTitle = "UCSCXenaShiny",
     # inst/shinyapp/ui
     ui.page_home(),
     ui.page_repository(),
