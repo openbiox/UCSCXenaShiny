@@ -3,9 +3,9 @@ download_feat_UI = function(id, button_name="Query data"){
 	tagList(
 	    shinyWidgets::prettyRadioButtons(
 	        inputId = ns("data_L1"), label = "Data type:",
-	        choiceValues = c("Molecular_profile", "Tumor_index", "Immune_Infiltration", "Pathway_activity"),
-	        choiceNames = c("Molecular profile", "Tumor index", "Immune Infiltration", "Pathway activity"),
-	        selected = "Molecular profile"
+	        choiceValues = c("Molecular_profile", "Tumor_index", "Immune_Infiltration", "Pathway_activity", "Custom_metadata"),
+	        choiceNames = c("Molecular profile", "Tumor index", "Immune Infiltration", "Pathway activity", "Custom metadata"),
+	        selected = "Molecular_profile"
 	    ),
 	    tabsetPanel(
 		    id = ns("data_L2_tab"),
@@ -53,7 +53,18 @@ download_feat_UI = function(id, button_name="Query data"){
 	              inputId = ns("pathway_activity_id"),
 	              label = "Identifier:",
 	              choices = NULL)	
+			),
+			tabPanel("Custom_metadata",
+				selectInput(
+					ns("custom_metadata"), "Data subtype:",
+					choices = c("custom_metadata"),
+					selected = "custom_metadata"),
+	            selectizeInput(
+	              inputId = ns("custom_metadata_id"),
+	              label = "Identifier:",
+	              choices = NULL)	
 			)
+
 		),
 		shinyWidgets::actionBttn(
 			ns("query_data"), button_name,
@@ -68,7 +79,7 @@ download_feat_UI = function(id, button_name="Query data"){
 
 
 
-download_feat_Server = function(input, output, session, cancers=NULL, samples=NULL){
+download_feat_Server = function(input, output, session, cancers=NULL, samples=NULL, custom_metadata=NULL, opt_pancan=NULL){
 	ns <- session$ns
 	observe({
 	  updateTabsetPanel(inputId = "data_L2_tab", selected = input$data_L1)
@@ -121,6 +132,23 @@ download_feat_Server = function(input, output, session, cancers=NULL, samples=NU
 	})
 
 
+	custom_metadata_choices <- reactive({
+		if(is.null(custom_metadata)){
+			choice_all = "NULL"
+			choice_default ="NULL"
+		} else {
+			choice_all = sort(colnames(custom_metadata()[-1]))
+			choice_default = sort(colnames(custom_metadata()[-1]))[1]
+
+		}
+
+	  switch(input$custom_metadata,
+	    `custom_metadata` = list(all = choice_all,  default = choice_default),
+	    list(all = "NONE", default = "NONE")
+	  )
+	})
+
+
 	observe({
 	  updateSelectizeInput(
 	    session,
@@ -150,11 +178,35 @@ download_feat_Server = function(input, output, session, cancers=NULL, samples=NU
 	    selected = pathway_activity_choices()$default,
 	    server = TRUE
 	  )
+	  updateSelectizeInput(
+	    session,
+	    "custom_metadata_id",
+	    choices = custom_metadata_choices()$all,
+	    selected = custom_metadata_choices()$default,
+	    server = TRUE
+	  )
 	})
+
+
+
 
 
 	download_data = eventReactive(input$query_data, {
 		if(input$data_L1 == "Molecular_profile"){
+			# 自定义数据集参数
+			if(is.null(opt_pancan)){
+				opt_pancan = list(
+					  toil_mRNA = list(),
+					  toil_transcript = list(),
+					  toil_protein = list(),
+					  toil_mutation = list(),
+					  toil_cnv = list(use_thresholded_data = TRUE),
+					  toil_methylation = list(type = "450K", aggr = "Q25"),
+					  toil_miRNA = list()
+				)
+			} else {
+				opt_pancan = opt_pancan()
+			}
 			x_genomic_profile = switch(input$genomic_profile,
 				`mRNA Expression` = "mRNA",
 				`Transcript Expression` = "transcript",
@@ -165,7 +217,9 @@ download_feat_Server = function(input, output, session, cancers=NULL, samples=NU
 				`Copy Number Variation` = "cnv"
 			)
 			x_data <- query_pancan_value(input$genomic_profile_id, 
-									   data_type = x_genomic_profile)
+									   data_type = x_genomic_profile,
+									   opt_pancan = opt_pancan
+								       )
 			if (is.list(x_data)) x_data <- x_data[[1]]
 			x_data <- data.frame(id = input$genomic_profile_id,
 							 	 sample = names(x_data), value = as.numeric(x_data),
@@ -201,6 +255,13 @@ download_feat_Server = function(input, output, session, cancers=NULL, samples=NU
 				tibble::rownames_to_column("sample") %>%
 				dplyr::mutate(id = input$pathway_activity_id, .before = 1) %>%
 				dplyr::mutate(level2 = input$pathway_activity) %>%
+				dplyr::filter(!is.na(value))		
+		} else if (input$data_L1 == "Custom_metadata"){
+			x_data = custom_metadata()[,c("Sample", input$custom_metadata_id)]
+			colnames(x_data) = c("sample","value")
+			x_data = x_data %>% as.data.frame() %>%
+				dplyr::mutate(id = input$custom_metadata_id, .before = 1) %>%
+				dplyr::mutate(level2 = input$custom_metadata) %>%
 				dplyr::filter(!is.na(value))		
 		}
 

@@ -1,13 +1,18 @@
 ui.modules_pancan_comp = function(id) {
 	ns = NS(id)
 	fluidPage(
-		# 第一行：初始参数及绘图参数
 		wellPanel(
-			h2("S1: Set out cancer(s) and samples", align = "center"),
-			style = "height:250px",
-			fluidRow(
-				column(
-					3, offset = 1,
+			h2("Comprehensive TCGA related differential comparison", align = "center"),
+			style = "height:150px",
+		),
+		fluidRow(
+			# 初始设置
+			column(
+				2,
+				wellPanel(
+					style = "height:1100px",
+					h2("S1: Preset", align = "center"),
+
 					h4("(1) Choose cancer(s)"),
 				    prettyRadioButtons(
 				      inputId = ns("overall_mode"),
@@ -17,55 +22,60 @@ ui.modules_pancan_comp = function(id) {
 				      animation = "tada",
 				      inline = TRUE,
 				      status = "default"),
-				    uiOutput(ns("choose_overall_mode"))
-				),
-				column(
-					3, offset = 2,
-					h4("(2) Choose samples (optional)"),
-					br(),
-				    filter_samples_UI(ns("filter_samples2comp")),
-				    br(),
-				    textOutput(ns("filter_phe_id_info")),
-				),
-				column(
-					3, 
-					# h5("Quick Filtering by code"),
-					br(),
-					uiOutput(ns("filter_by_code.ui"))
+				    uiOutput(ns("choose_overall_mode")),
+				    br(),br(),br(),
+
+					h4("(2) Choose samples[opt]"),
+					filter_samples_UI(ns("filter_samples2cor")),
+					uiOutput(ns("filter_by_code.ui")),
+					textOutput(ns("filter_phe_id_info")),
+					br(),br(),br(),
+
+					h4("(3) Upload sample info[opt]"),
+					fileInput(ns("upload_sp_info"),"User-defined metadata(.csv)", accept = ".csv"),
+					downloadButton(ns("example_sp_info"), "Download example data."),
+					br(),br(),br(),
+
+					h4("(4) Set data origin[opt]"),
+					shinyWidgets::actionBttn(
+						ns("data_origin"), "Available respositories",
+				        style = "gradient",
+				        icon = icon("box"),
+				        color = "primary",
+				        block = TRUE,
+				        size = "sm"
+					)
 				)
 			),
-		),
-		# 第二行：下载数据/分析可视化
-		fluidRow(
-			# 选择分组依据
+			# 分组设置
 			column(
 				3,
 				wellPanel(
-					style = "height:1000px",
+					style = "height:1100px",
 					h2("S2: Select var for group", align = "center"),
+					# 调用分组模块UI
 					group_samples_UI(ns("group_samples2comp"))  
 
 				)
 			),
-			# 下载Y轴数据
+			# 下载待比较数据
 			column(
 				3,
 				wellPanel(
-					style = "height:1000px",
+					style = "height:1100px",
 					h2("S3: Select var for compare", align = "center"),
-
 					# 调用模块
 					download_feat_UI(ns("download_y_axis"), button_name="Query data(y-axis)"),
-
 	            	br(),br(),br(),
-		            uiOutput(ns("y_axis_data_table"))				)
+		            uiOutput(ns("y_axis_data_table"))				
+		        )
 			),
-			# 分析绘图
+			# 分析/绘图/下载
 			column(
 				4,
 				wellPanel(
 					h2("S4: Analyze", align = "center"),
-					style = "height:1000px",
+					style = "height:1100px",
 
 					uiOutput(ns("step3_plot_bt.ui")),
 					br(),
@@ -79,7 +89,7 @@ ui.modules_pancan_comp = function(id) {
 							column(3, numericInput(inputId = ns("point_size"), label = "Point size", value = 3, step = 0.5)),
 							column(3, numericInput(inputId = ns("point_alpha"), label = "Point alpha", value = 0.4, step = 0.1, min = 0, max = 1))
 						),
-				      	fluidRow(column(12,uiOutput(ns("comp_plot_box.ui"))))
+				      	plotOutput({ns("comp_plot_box")}, height = "500px")
 				      ),
 				      tabPanel("Lineplot(multi-cancers)", 
 						fluidRow(
@@ -88,43 +98,37 @@ ui.modules_pancan_comp = function(id) {
 							column(6, radioButtons(inputId = ns("significance"), label = "Significance", 
 								choices = c("Value", "Symbol"), selected="Symbol",inline = TRUE)),
 						),
-				      	fluidRow(column(12,uiOutput(ns("comp_plot_line.ui"))))
+				      	plotOutput({ns("comp_plot_line")}, height = "500px")
 				      )
+				    ),
+				    br(),
+				    fluidRow(
+				    	column(3, downloadButton(ns("save_plot_bt"), "Save plot")),
+				    	column(3, offset = 0, downloadButton(ns("save_data_raw"), "Save raw data(.csv)")),
+				    	column(3, offset = 1, downloadButton(ns("save_data_cor"), "Save res data(.csv)"))
+				    ),
+
+				    br(),
+				    fluidRow(
+				    	column(2, p("Plot Height:")),
+				    	column(3, numericInput(ns("save_plot_H"), NULL ,min = 1, max = 20, value = 10, step = 0.5)),
+				    	column(2, p("Plot Width:")),
+				    	column(3, numericInput(ns("save_plot_W"), NULL, min = 1, max = 20, value = 10, step = 0.5)),
+				        column(
+				        	2,
+					        prettyRadioButtons(
+					          inputId = ns("save_plot_F"),
+					          label = NULL,
+					          choices = c("pdf", "png"),
+					          selected = "pdf",
+					          inline = TRUE,
+					          icon = icon("check"),
+					          animation = "jelly",
+					          fill = TRUE
+					        )
+				        )
 				    )
-
 				)
-			),
-			# 下载
-			column(
-				2,
-				wellPanel(
-					h2("S5: Download", align = "center"),
-					style = "height:1000px",
-			        br(),br(),br(),br(),
-					downloadButton(ns("save_plot_bt"), "Save plot"),
-			        br(),br(),
-					fluidRow(
-						numericInput(ns("save_plot_H"), "Height:", #width = "138px", 
-		                         min = 4, max = 20, value = 10, step = 0.5),
-						numericInput(ns("save_plot_W"), "Width:", #width = "138px", 
-		                         min = 4, max = 20, value = 10, step = 0.5)
-					),
-			        prettyRadioButtons(
-			          inputId = ns("save_plot_F"),
-			          label = "Format",
-			          choices = c("pdf", "png"),
-			          selected = "pdf",
-			          inline = TRUE,
-			          icon = icon("check"),
-			          animation = "jelly",
-			          fill = TRUE
-			        ),
-			        br(),br(),br(),br(),br(),
-					downloadButton(ns("save_data_raw"), "Save raw data(.csv)"),
-			        br(),br(),br(),br(),br(),
-					downloadButton(ns("save_data_comp"), "Save comp data(.csv)")
-				)
-
 			)
 		)
 	)
@@ -135,7 +139,7 @@ ui.modules_pancan_comp = function(id) {
 server.modules_pancan_comp = function(input, output, session) {
 	ns <- session$ns
 
-	# 更新选择器：单癌/泛癌
+	# 初始选择单癌/泛癌
 	output$choose_overall_mode = renderUI(
 		if(input$overall_mode == "Single cancer"){
 			pickerInput(
@@ -159,7 +163,7 @@ server.modules_pancan_comp = function(input, output, session) {
 			shinyWidgets::actionBttn(
 				ns("step3_plot_box"), "Go/Update BoxViolin",
 		        style = "gradient",
-		        icon = icon("search"),
+		        icon = icon("chart-line"),
 		        color = "primary",
 		        block = TRUE,
 		        size = "sm"
@@ -169,7 +173,7 @@ server.modules_pancan_comp = function(input, output, session) {
 			shinyWidgets::actionBttn(
 				ns("step3_plot_line"), "Go/Update line plot",
 		        style = "gradient",
-		        icon = icon("search"),
+		        icon = icon("chart-line"),
 		        color = "primary",
 		        block = TRUE,
 		        size = "sm"
@@ -177,7 +181,7 @@ server.modules_pancan_comp = function(input, output, session) {
 		}
 	)
 
-	# 更新绘图参数按钮/展示窗口
+	# 更新展示窗口
 	observeEvent(input$overall_mode, {
 	  updateTabsetPanel(inputId = "plot_layout", 
 	  	selected = switch(input$overall_mode,
@@ -197,6 +201,87 @@ server.modules_pancan_comp = function(input, output, session) {
 		}
 	})
 
+	# 样本自定义数据
+	custom_meta = reactive({
+		file = input$upload_sp_info
+		if(is.null(file$datapath)){
+			sp_info = query_tcga_group()$data[,"Sample"]
+			set.seed(42)
+			scores = matrix(rnorm(nrow(sp_info)*5,mean = 1, sd = 1), ncol = 5) %>% as.data.frame()
+			colnames(scores) = paste0("TF",1:5)
+			sp_info = cbind(sp_info, scores)
+		} else {
+			read.csv(file$datapath)
+		} 
+	})
+	output$example_sp_info = downloadHandler(
+		filename = function(){
+			"example_sample_info.csv"
+		},
+		content = function(file){
+			sp_info = query_tcga_group()$data[,"Sample"]
+			set.seed(42)
+			scores = matrix(rnorm(nrow(sp_info)*5,mean = 1, sd = 1), ncol = 5) %>% as.data.frame()
+			colnames(scores) = paste0("TF",1:5)
+			sp_info = cbind(sp_info, scores)
+			write.csv(sp_info, file, row.names = FALSE)
+		}
+	)
+
+	# 数据源设置
+	observeEvent(input$data_origin, {
+		showModal(
+			modalDialog(
+				title = "Set molecular profiles:",
+				footer = modalButton("Done!"),
+				size = "l",
+				fluidPage(
+					h4("1. mRNA Expression"),
+					h4("2. Transcript Expression"),
+					h4("3. DNA Methylation"),
+					fluidRow(
+						column(
+							6,
+							selectInput(ns("L2_3_methy_1"),"(1)Type",
+								choices = c("450K","27K"), selected = TRUE)
+						),
+						column(
+							6,
+							selectInput(ns("L2_3_methy_2"),"(1)Aggregation",
+								choices = c("NA", "mean", "Q0", "Q25", "Q50", "Q75", "Q100"), 
+								selected = "NA")
+						)
+					),
+					h4("4. Protein Expression"),
+					h4("5. miRNA Expression"),
+					h4("6. Mutation status"),
+					h4("7. Copy Number Variation"),
+					fluidRow(
+						column(
+							6,
+							selectInput(ns("L2_7_cnv_1"),"(1)Thresholded data",
+								choices = c(TRUE, FALSE), selected = TRUE)
+						)
+					)
+				)
+			)
+		)
+	})
+	opt_pancan = reactive({
+		list(
+			toil_mRNA = list(),
+			toil_transcript = list(),
+			toil_protein = list(),
+			toil_mutation = list(),
+			toil_cnv = list(use_thresholded_data = ifelse(is.null(input$L2_7_cnv_1),TRUE,as.logical(input$L2_7_cnv_1))),
+			toil_methylation = list(type = ifelse(is.null(input$L2_3_methy_1),"450K",input$L2_3_methy_1), 
+									aggr = ifelse(is.null(input$L2_3_methy_2),"NA",input$L2_3_methy_2)),
+			toil_miRNA = list()
+		)
+	})
+
+
+
 	# 过滤样本
 	## 快速过滤
 	observe({
@@ -215,8 +300,6 @@ server.modules_pancan_comp = function(input, output, session) {
 			checkboxGroupInput(
 				ns("filter_by_code"),
 				"Quick filtering by code:",
-				# choices = c("TP","NT","TM"),
-				# selected = c("TP","NT","TM")
 				choices = unlist(code_types_valid,use.names = F),
 				selected = unlist(code_types_valid,use.names = F),
 				inline = TRUE
@@ -224,10 +307,13 @@ server.modules_pancan_comp = function(input, output, session) {
 		)
 	})
 
-	## 精确过滤
+	## 调用模块，精确过滤
 	filter_phe_id = callModule(filter_samples_Server, "filter_samples2comp",
-					   cancers=reactive(cancer_choose$name))
+					   cancers=reactive(cancer_choose$name),
+					   custom_metadata=reactive(custom_meta()),
+					   opt_pancan = reactive(opt_pancan()))
 
+	## 综合上述二者
 	observe({
 		phe_primary = query_tcga_group(
 			cancer = cancer_choose$name, 
@@ -244,15 +330,9 @@ server.modules_pancan_comp = function(input, output, session) {
 		
 		choose_codes = names(code_types)[unlist(code_types) %in% input$filter_by_code]
 
-
-		# choose_codes =  stringr::str_trim(
-		# 	stringr::str_split(choose_codes," ",simplify = T)[,1])
-
 		filter_phe_id2 = phe_primary %>%
 			dplyr::filter(Code %in% choose_codes) %>%
 			dplyr::pull("Sample")
-
-		# if(length(filter_phe_id2)==0){filter_phe_id2=NULL}
 
 		if(is.null(filter_phe_id())){
 			cancer_choose$filter_phe_id = filter_phe_id2
@@ -268,17 +348,24 @@ server.modules_pancan_comp = function(input, output, session) {
 	})
 
 
-	# 分组相关操作
+
+
+	# 设置分组
 	group_final = callModule(group_samples_Server, "group_samples2comp",
 						   cancers=reactive(cancer_choose$name),
-						   samples=reactive(cancer_choose$filter_phe_id))
+						   samples=reactive(cancer_choose$filter_phe_id),
+						   custom_metadata=reactive(custom_meta()),
+						   opt_pancan = reactive(opt_pancan())
+						   )
 
 	output$choose_group_2levels_out = renderPrint({head(group_final())})
 
-	# y-axis panel
+	# 下载待比较数据
 	y_axis_data = callModule(download_feat_Server, "download_y_axis", 
 							 cancers=reactive(cancer_choose$name),
-							 samples=reactive(cancer_choose$filter_phe_id)
+							 samples=reactive(cancer_choose$filter_phe_id),
+							 custom_metadata=reactive(custom_meta()),
+						     opt_pancan = reactive(opt_pancan())
 							 )
 
 	output$y_axis_data_table = renderUI({
@@ -290,20 +377,10 @@ server.modules_pancan_comp = function(input, output, session) {
 		}) 
 		dataTableOutput(ns("y_tmp_table"))
 	})
-	
+
 
 
 	# 合并分析
-	observe({
-		if(length(cancer_choose$name)==1){
-			cancer_choose$single_cancer_ok = min(table(merge_data_box()$group))>=3
-		} else {
-			cancer_choose$multi_cancer_ok = 
-				sort(unique(merge_data_line()$cancer))[
-					apply(table(merge_data_line()$cancer,merge_data_line()$group),1,function(x) {min(x)>=3})]
-		}
-	})
-
 	# boxviolin逻辑：先绘图，再提取相关性结果
 	merge_data_box = eventReactive(input$step3_plot_box, {
 		group_data = group_final()[,c(1,4,5)]
@@ -313,6 +390,12 @@ server.modules_pancan_comp = function(input, output, session) {
 			dplyr::select(cancer, sample, value, group, everything())
 		data
 	})
+
+	# 检查数据
+	observe({
+		cancer_choose$single_cancer_ok = min(table(merge_data_box()$group))>=3
+	})
+
 
 	comp_plot_box = eventReactive(input$step3_plot_box, {
 		merge_data_box = merge_data_box()
@@ -343,22 +426,9 @@ server.modules_pancan_comp = function(input, output, session) {
 			return(p)
 		}
 	})
-	observeEvent(input$step3_plot_box, {
-		if(cancer_choose$single_cancer_ok){
-			output$comp_plot_box.ui = renderUI({
-				output$comp_plot_box_tmp = renderPlot({
-					comp_plot_box()
-				}) 
-			plotOutput({ns("comp_plot_box_tmp")}, height = "600px")
-			})
-		} else {
-			output$comp_plot_box.ui = renderText({comp_plot_box()})
-		}
-	})
 
-	observeEvent(input$step3_plot_line,{
-		output$tmp_step3_plot_line = renderPrint({cancer_choose$multi_cancer_ok})
-	})
+	output$comp_plot_box = renderPlot({comp_plot_box()})
+
 
 
 	# barplot逻辑：先批量计算相关性，再绘图
@@ -369,6 +439,14 @@ server.modules_pancan_comp = function(input, output, session) {
 		data = dplyr::inner_join(y_axis_data, group_data) %>%
 			dplyr::select(cancer, sample, value, group, everything())
 		data
+	})
+
+
+	# 检查数据
+	observe({
+		cancer_choose$multi_cancer_ok = 
+			sort(unique(merge_data_line()$cancer))[
+				apply(table(merge_data_line()$cancer,merge_data_line()$group),1,function(x) {min(x)>=3})]
 	})
 
 	comp_data_line = eventReactive(input$step3_plot_line, {
@@ -404,16 +482,6 @@ server.modules_pancan_comp = function(input, output, session) {
 		        plot.margin = margin(0,0,0,0),
 		        text = element_text(size=15))
 
-		p2 = comp_data_line() %>%
-		  dplyr::mutate(p.label=case_when(
-		    p.value < 0.001 ~ "***",
-		    p.value < 0.01 ~ "**",
-		    p.value < 0.05 ~ "*",
-		    TRUE ~ "ns"
-		  )) %>% ggplot() + 
-		  geom_text(aes(label=formatC(p.label, format = "e", digits = 2),
-		                x=cancer,y=1),) +
-		  coord_flip()
 		if(isolate(input$significance)=="Value"){
 			p2 = comp_data_line() %>% ggplot() + 
 			  geom_text(aes(label=formatC(p.value, format = "e", digits = 2),
@@ -446,14 +514,9 @@ server.modules_pancan_comp = function(input, output, session) {
 		return(p)
 	})
 
-	observeEvent(input$step3_plot_line, {
-		output$comp_plot_line.ui = renderUI({
-			output$comp_plot_line_tmp = renderPlot({
-				comp_plot_line()
-			}) 
-		plotOutput({ns("comp_plot_line_tmp")}, height = "600px")
-		})
-	})
+
+	output$comp_plot_line = renderPlot({comp_plot_line()})
+
 
 	# 3个下载按钮
 	output$save_plot_bt = downloadHandler(
@@ -510,5 +573,4 @@ server.modules_pancan_comp = function(input, output, session) {
 			write.csv(p_comp, file, row.names = FALSE)
 		}
 	)
-
 }

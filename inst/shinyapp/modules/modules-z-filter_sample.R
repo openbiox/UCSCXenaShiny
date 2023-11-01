@@ -1,10 +1,10 @@
-filter_samples_UI = function(id, button_name="Filter by multi-conditions"){
+filter_samples_UI = function(id, button_name="Multi-conditions filters"){
 	ns = NS(id)
 	tagList(
 		shinyWidgets::actionBttn(
 			ns("filter_phe"), button_name,
 	        style = "gradient",
-	        icon = icon("search"),
+	        icon = icon("filter"),
 	        color = "primary",
 	        block = TRUE,
 	        size = "sm"
@@ -14,9 +14,8 @@ filter_samples_UI = function(id, button_name="Filter by multi-conditions"){
 
 
 
-filter_samples_Server = function(input, output, session, cancers=NULL){
+filter_samples_Server = function(input, output, session, cancers=NULL, custom_metadata=NULL, opt_pancan=NULL){
 	ns <- session$ns
-
 
 	observeEvent(input$filter_phe, {
 		# message("filter samples by one/multiple phenotype(s)")
@@ -30,7 +29,7 @@ filter_samples_Server = function(input, output, session, cancers=NULL){
 				        h4("1. Add phenotypes (Optional)"),
 				        selectInput(
 				        	ns("data_L1"), "Data type:",
-				        	choices = c("Molecular profile", "Tumor index", "Immune Infiltration", "Pathway activity"),
+				        	choices = c("Molecular profile", "Tumor index", "Immune Infiltration", "Pathway activity","Custom metadata"),
 				        	selected = "Molecular profile"
 				        ),
 						tabsetPanel(
@@ -79,6 +78,16 @@ filter_samples_Server = function(input, output, session, cancers=NULL){
 						              inputId = ns("pathway_activity_id"),
 						              label = "Identifier:",
 						              choices = NULL)	
+								),
+								tabPanel("Custom metadata",
+									selectInput(
+										ns("custom_metadata"), "Data subtype:",
+										choices = c("custom_metadata"),
+										selected = "custom_metadata"),
+						            selectizeInput(
+						              inputId = ns("custom_metadata_id"),
+						              label = "Identifier:",
+						              choices = NULL)	
 								)
 						),
 
@@ -108,13 +117,29 @@ filter_samples_Server = function(input, output, session, cancers=NULL){
 				    wellPanel(
 					    h4("3. Set conditions"),
 					    fluidRow(
-					    	column(4,
-					    		textInput(ns("filter_phe_02_by"),"(1) Phenotype(s):", value = "Code")),
-					    	column(4,
-					    		textInput(ns("filter_phe_02_cutoff"),"(2) Threshold(s):", value = "TP")),
-					    	column(4,
-					    		textInput(ns("filter_phe_02_direct"),"(3) Direction(s):", value = "+")),
+						    actionBttn(
+						      inputId = ns("add_condi"),
+						      label = "Add filter",
+						      color = "primary",
+						      style = "bordered", size = "sm",
+						      block = F
+						    ),
+						    actionBttn(
+						      inputId = ns("del_condi"),
+						      label = "Del filter",
+						      color = "primary",
+						      style = "bordered", size = "sm",
+						      block = F
+						    )
 					    ),
+					    fluidRow(
+					    	column(5, h5("Phenotype(s):")),
+					    	column(5, h5("Threshold(s):")),
+					    	column(2, h5("Direction(s):"))
+
+					    ),
+					    uiOutput(ns("multi_condi.ui")),
+
 					    fluidRow(
 						    actionBttn(
 						      inputId = ns("button_phe_filter"),
@@ -129,24 +154,27 @@ filter_samples_Server = function(input, output, session, cancers=NULL){
 						      color = "primary",
 						      style = "bordered", size = "sm",
 						      block = F
-						    )       
+						    )  
+
 					    ),
+
 						textOutput(ns("filter_phe_02_out")),
+						
 						br(),
-						p(strong("Notions:")),
-						p("(1) Phenotype(s) : choose one or multiple phenotypes (seperated by ||), which is/are in above choices."),
-						p("(2) Threshold(s) : choose the respective thresholds (seperated by || for multiple phenotypes) according to above distributions."),
-						p("(2.1) For categorical phenotype, please input one or multiple phenotypes (seperated by |);"),
-						p("(2.2) For numerical phenotype, please input one cutoff."),	
-						p("(3) Direction(s) : set the respective logical symbol (seperated by || for multiple phenotypes)."),
-						p("(3.1) For discrete phenotype, set '+' or '-' to retain or discard samples"),
-						p("(3.2) For numerical phenotype, set '>' or '<' to retain samples."),	
-						br(),
-						p(strong("Examples:")),
-						p("(1) Code; (2) TP; (3) + : retain all tumor samples."),
-						p("(1) Code||Age; (2) TP|| 60; (3) + | <; : retain  tumor samples with age < 60."),
-						p("(1) Stage_ajcc; (2) Stage I | Stage II, (3) - : discard samples in Stage I or II of Stage_ajcc."),
-						p("(1) Add_1; (2) NA, (3) - : discard samples with NA value for Add_1 phenotype.")
+						# p(strong("Notions:")),
+						# p("(1) Phenotype(s) : choose one or multiple phenotypes (seperated by ||), which is/are in above choices."),
+						# p("(2) Threshold(s) : choose the respective thresholds (seperated by || for multiple phenotypes) according to above distributions."),
+						# p("(2.1) For categorical phenotype, please input one or multiple phenotypes (seperated by |);"),
+						# p("(2.2) For numerical phenotype, please input one cutoff."),	
+						# p("(3) Direction(s) : set the respective logical symbol (seperated by || for multiple phenotypes)."),
+						# p("(3.1) For discrete phenotype, set '+' or '-' to retain or discard samples"),
+						# p("(3.2) For numerical phenotype, set '>' or '<' to retain samples."),	
+						# br(),
+						# p(strong("Examples:")),
+						# p("(1) Code; (2) TP; (3) + : retain all tumor samples."),
+						# p("(1) Code||Age; (2) TP|| 60; (3) + | <; : retain  tumor samples with age < 60."),
+						# p("(1) Stage_ajcc; (2) Stage I | Stage II, (3) - : discard samples in Stage I or II of Stage_ajcc."),
+						# p("(1) Add_1; (2) NA, (3) - : discard samples with NA value for Add_1 phenotype.")
 					)
 
 		        )
@@ -156,6 +184,7 @@ filter_samples_Server = function(input, output, session, cancers=NULL){
 		observe({
 		  updateTabsetPanel(inputId = "data_L2_tab", selected = input$data_L1)
 		}) 
+		
 		observeEvent(input$genomic_profile, {
 			genomic_profile_choices <- reactive({
 			  switch(input$genomic_profile,
@@ -234,7 +263,29 @@ filter_samples_Server = function(input, output, session, cancers=NULL){
 		      server = TRUE
 		    )
 		})
+		observeEvent(input$custom_metadata, {
+			custom_metadata_choices <- reactive({
+				if(is.null(custom_metadata)){
+					choice_all = "NULL"
+					choice_default ="NULL"
+				} else {
+					choice_all = sort(colnames(custom_metadata()[-1]))
+					choice_default = sort(colnames(custom_metadata()[-1]))[1]
 
+				}
+			  switch(input$custom_metadata,
+			    `custom_metadata` = list(all = choice_all,  default = choice_default),
+			    list(all = "NONE", default = "NONE")
+			  )
+			})
+		    updateSelectizeInput(
+		      session,
+		      "custom_metadata_id",
+		      choices = custom_metadata_choices()$all,
+		      selected = custom_metadata_choices()$default,
+		      server = TRUE
+		    )
+		})
 
 
 	})
@@ -244,7 +295,8 @@ filter_samples_Server = function(input, output, session, cancers=NULL){
 	    `Molecular profile` = input$genomic_profile,
 	    `Tumor index` = input$tumor_index,
 	    `Immune Infiltration` = input$immune_infiltration,
-	    `Pathway activity` = input$pathway_activity
+	    `Pathway activity` = input$pathway_activity,
+	    `Custom metadata` = input$custom_metadata
 	  )
 	})
 	add_level3 = reactive({
@@ -252,7 +304,8 @@ filter_samples_Server = function(input, output, session, cancers=NULL){
 	    `Molecular profile` = input$genomic_profile_id,
 	    `Tumor index` = input$tumor_index_id,
 	    `Immune Infiltration` = input$immune_infiltration_id,
-	    `Pathway activity` = input$pathway_activity_id
+	    `Pathway activity` = input$pathway_activity_id,
+	    `Custom metadata` = input$custom_metadata_id
 	  )
 	})
 
@@ -267,12 +320,12 @@ filter_samples_Server = function(input, output, session, cancers=NULL){
 	observeEvent(input$button_phe_add, {
 		add_phes$click = add_phes$click+1	
 		add_phes$name = c(add_phes$name, 
-			paste0(input$data_L1,"-",add_level2(),"-",add_level3()))
+			paste0(input$data_L1,"--",add_level2(),"--",add_level3()))
 		add_phes$label = c(add_phes$label, 
 			paste0("Add_",add_phes$click))
 		add_phes$show = paste0(add_phes$show,
-			"Add_",add_phes$click,": ", input$data_L1,"-",add_level2(),
-			"-",add_level3(),"\n")
+			"Add_",add_phes$click,": ", input$data_L1,"--",add_level2(),
+			"--",add_level3(),"\n")
 	}) 
 	observeEvent(input$button_phe_add_reset, {
 		add_phes$click = 0	
@@ -288,11 +341,25 @@ filter_samples_Server = function(input, output, session, cancers=NULL){
 	add_phes_dat = eventReactive(input$button_phe_add, {
 
 		x_tmp = lapply(seq(add_phes$name), function(i){
-			tmp_data_type = str_split(add_phes$name[[i]], "-")[[1]][1]
-			tmp_data_sub = str_split(add_phes$name[[i]], "-")[[1]][2]
-			tmp_data_target = str_split(add_phes$name[[i]], "-")[[1]][3]
+			tmp_data_type = str_split(add_phes$name[[i]], "--")[[1]][1]
+			tmp_data_sub = str_split(add_phes$name[[i]], "--")[[1]][2]
+			tmp_data_target = str_split(add_phes$name[[i]], "--")[[1]][3]
 
 			if(tmp_data_type == "Molecular profile"){
+				# 自定义数据集参数
+				if(is.null(opt_pancan)){
+					opt_pancan = list(
+						  toil_mRNA = list(),
+						  toil_transcript = list(),
+						  toil_protein = list(),
+						  toil_mutation = list(),
+						  toil_cnv = list(use_thresholded_data = TRUE),
+						  toil_methylation = list(type = "450K", aggr = "Q25"),
+						  toil_miRNA = list()
+					)
+				} else {
+					opt_pancan = opt_pancan()
+				}
 				x_genomic_profile = switch(tmp_data_sub,
 					`mRNA Expression` = "mRNA",
 					`Transcript Expression` = "transcript",
@@ -303,7 +370,8 @@ filter_samples_Server = function(input, output, session, cancers=NULL){
 					`Copy Number Variation` = "cnv"
 				)
 				x_data <- query_pancan_value(tmp_data_target, 
-										   data_type = x_genomic_profile)
+										   data_type = x_genomic_profile,
+										   opt_pancan = opt_pancan)
 				if (is.list(x_data)) x_data <- x_data[[1]]
 				x_data <- data.frame(sample = names(x_data), value = as.numeric(x_data))
 
@@ -331,6 +399,11 @@ filter_samples_Server = function(input, output, session, cancers=NULL){
 				colnames(x_data) = "value"
 				x_data = x_data %>% as.data.frame() %>%
 					tibble::rownames_to_column("sample") %>%
+					dplyr::filter(!is.na(value))		
+			} else if (tmp_data_type == "Custom metadata"){
+				x_data = custom_metadata()[,c("Sample", tmp_data_target)]
+				colnames(x_data) = c("sample","value")
+				x_data = x_data %>% as.data.frame() %>%
 					dplyr::filter(!is.na(value))		
 			}
 			colnames(x_data)[2] = add_phes$label[[i]]
@@ -375,25 +448,116 @@ filter_samples_Server = function(input, output, session, cancers=NULL){
 	})
 
 	# filter--phe--step3
+	dynamic_condi = reactiveValues(add = 0, del = 0, sum = 0)
+	observeEvent(input$add_condi,{
+		dynamic_condi$add = dynamic_condi$add + 1
+		dynamic_condi$sum = dynamic_condi$add - dynamic_condi$del
+	})
+	observeEvent(input$del_condi,{
+		dynamic_condi$del = dynamic_condi$del + 1
+
+		if(dynamic_condi$del >= dynamic_condi$add){
+			dynamic_condi$del = dynamic_condi$add
+		}
+		dynamic_condi$sum = dynamic_condi$add - dynamic_condi$del
+	})
+
+	# 更新：个性化添加/减少条件
+	output$multi_condi.ui = renderUI({
+    	if(dynamic_condi$sum == 0) return()
+    	inputTagList <- tagList()
+    	lapply(1:dynamic_condi$sum,function(i){
+    		# item1(id) -- phenotype(label)
+    		id_condi_item1 = paste0("item1_",i)
+    		label_condi_item1 = paste0("Phe-",i)
+
+    		# item2(id) -- threshold(label)
+    		id_condi_item2 = paste0("item2_",i)
+    		choices_condi_item2 = unique(add_phes$phe_primary[,
+    			ifelse(is.null(input[[id_condi_item1]]),"Code",input[[id_condi_item1]]),drop=T])
+    		label_condi_item2 = paste0("Thres-",i)
+
+    		# item3(id) -- direction(label)
+    		id_condi_item3 = paste0("item3_",i)
+    		if(class(choices_condi_item2)=="character"){
+    			choices_condi_item3 = c("+", "-")
+			} else {
+				choices_condi_item3 = c(">", "<", "%>", "%<")
+			}
+    		label_condi_item3 = paste0("Direc-",i)
+
+    		# 添加新筛选器，不重置旧数据
+			new_phe <- "Code"
+			if (id_condi_item1 %in% names(input)) {
+				new_phe <- input[[id_condi_item1]]
+			}
+
+			new_thres = NULL
+			if (id_condi_item2 %in% names(input)) {
+				new_thres <- input[[id_condi_item2]]
+			}
+
+			new_direc <- NULL
+			if (id_condi_item3 %in% names(input)) {
+				new_direc <- input[[id_condi_item3]]
+			}
+
+			## 设置3个输入控件
+			dynamic_input = fluidRow(
+				column(
+					5, 
+					selectInput(ns(id_condi_item1), NULL,#label_condi_item1, 
+	    						colnames(add_phes$phe_primary)[-1:-2], selected=new_phe)),
+				column(
+					5, 
+					if(class(choices_condi_item2)=="character"){
+						selectInput(ns(id_condi_item2), NULL,#label_condi_item2, 
+		    						sort(choices_condi_item2,na.last = T), 
+		    						selected=new_thres, multiple = T)
+					} else {
+						numericInput(ns(id_condi_item2), NULL,# label_condi_item2, 
+							value = new_thres)
+					}
+				),
+				column(
+					2, 
+					selectInput(ns(id_condi_item3),  NULL,#label_condi_item3, 
+	    						choices_condi_item3, selected=new_direc))
+			)
+
+	    	phe_Input <- selectInput(id_condi_item1, label_condi_item1, 
+	    							 c("Option 1", "Option 2", "Option 3"), selected=new_phe)
+
+			inputTagList <<- tagAppendChild(inputTagList,       
+			                              	dynamic_input)
+			
+    	})
+    	inputTagList
+	})
+
+
+	filter_by_phe = eventReactive(input$button_phe_filter, {
+		if(dynamic_condi$sum==0){
+			NULL
+		} else {
+			lapply(1:dynamic_condi$sum,function(i){
+		      condi_item1 = input[[paste0("item1_",i)]]
+		      condi_item2 = paste(input[[paste0("item2_",i)]],collapse="|")
+		      condi_item3 = input[[paste0("item3_",i)]]
+		      c(condi_item1,condi_item2,condi_item3)
+		    })
+		}
+	})
+
 	# 重置筛选条件
 	observeEvent(input$button_phe_filter_reset, {
-	  updateTextInput(session, "filter_phe_02_by", value = "Code")
-	  updateTextInput(session, "filter_phe_02_cutoff", value = "TP")
-	  updateTextInput(session, "filter_phe_02_direct", value = "+")
+	  dynamic_condi$add = 0
+	  dynamic_condi$del = 0
+	  dynamic_condi$sum = 0
 	  add_phes$filter_phe_id = NULL
 	})
 	# 提取筛选条件
-	filter_by_phe = eventReactive(input$button_phe_filter, {
-		if(input$filter_phe_02_by==""){
-			NULL
-		} else {
-			lapply(seq(length(strsplit(input$filter_phe_02_by,"||",fixed = T)[[1]])), function(i){
-						  c(strsplit(input$filter_phe_02_by,"||",fixed = T)[[1]][i],
-						    strsplit(input$filter_phe_02_cutoff,"||",fixed = T)[[1]][i],
-						    strsplit(input$filter_phe_02_direct,"||",fixed = T)[[1]][i])
-						})
-		}
-	})
+
 
 	# 获取筛选后的样本ID
 	observe({

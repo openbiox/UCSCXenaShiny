@@ -1,13 +1,19 @@
 ui.modules_pancan_cor = function(id) {
 	ns = NS(id)
 	fluidPage(
-		# 第一列：初始参数及绘图参数
 		wellPanel(
-			h2("S1: Set out cancer(s) and samples", align = "center"),
-			style = "height:250px",
-			fluidRow(
-				column(
-					3, offset = 1,
+			h2("Comprehensive TCGA related correlation analysis", align = "center"),
+			style = "height:150px",
+		),
+
+		fluidRow(
+			# 初始设置
+			column(
+				2,
+				wellPanel(
+					style = "height:1100px",
+					h2("S1: Preset", align = "center"),
+
 					h4("(1) Choose cancer(s)"),
 				    prettyRadioButtons(
 				      inputId = ns("overall_mode"),
@@ -17,39 +23,39 @@ ui.modules_pancan_cor = function(id) {
 				      animation = "tada",
 				      inline = TRUE,
 				      status = "default"),
-				    uiOutput(ns("choose_overall_mode"))
-				),
-				column(
-					3, offset = 2,
-					h4("(2) Choose samples (optional)"),
-					br(),
-				    filter_samples_UI(ns("filter_samples2cor")),
-				    br(),
-				    textOutput(ns("filter_phe_id_info")),
+				    uiOutput(ns("choose_overall_mode")),
+				    br(),br(),br(),
 
-				),
-				column(
-					3, 
-					# h5("Quick Filtering by code"),
-					br(),
-					uiOutput(ns("filter_by_code.ui"))
+					h4("(2) Choose samples[opt]"),
+					filter_samples_UI(ns("filter_samples2cor")),
+					uiOutput(ns("filter_by_code.ui")),
+					textOutput(ns("filter_phe_id_info")),
+					br(),br(),br(),
+
+					h4("(3) Upload sample info[opt]"),
+					fileInput(ns("upload_sp_info"),"User-defined metadata(.csv)", accept = ".csv"),
+					downloadButton(ns("example_sp_info"), "Download example data."),
+					br(),br(),br(),
+
+					h4("(4) Set data origin[opt]"),
+					shinyWidgets::actionBttn(
+						ns("data_origin"), "Available respositories",
+				        style = "gradient",
+				        icon = icon("box"),
+				        color = "primary",
+				        block = TRUE,
+				        size = "sm"
+					)
 				)
 			),
-		),
-
-
-		# ),
-		# 第二列：下载数据/分析可视化
-		fluidRow(
+			# 下载X轴数据
 			column(
 				3,
 				wellPanel(
-					style = "height:1000px",
+					style = "height:1100px",
 					h2("S2: Select var for X", align = "center"),
-
-					# 调用模块
+					# 调用下载模块UI
 					download_feat_UI(ns("download_x_axis"), button_name="Query data(x-axis)"),
-
 	            	br(),br(),br(),
 		            uiOutput(ns("x_axis_data_table"))
 
@@ -59,23 +65,20 @@ ui.modules_pancan_cor = function(id) {
 			column(
 				3,
 				wellPanel(
-					style = "height:1000px",
+					style = "height:1100px",
 					h2("S3: Select var for Y", align = "center"),
-					# h3("select variable on Y axis", align = "center"),
-
-					# 调用模块
+					# 调用下载模块UI
 					download_feat_UI(ns("download_y_axis"), button_name="Query data(y-axis)"),
-
 	            	br(),br(),br(),
 		            uiOutput(ns("y_axis_data_table"))
 				)
 			),
-			# 分析绘图
+			# 分析/绘图/下载
 			column(
 				4,
 				wellPanel(
 					h2("S4: Analyze", align = "center"),
-					style = "height:1000px",
+					style = "height:1100px",
 					
 					uiOutput(ns("step3_plot_bt.ui")),
 					br(),
@@ -93,50 +96,47 @@ ui.modules_pancan_cor = function(id) {
 							column(3, numericInput(inputId = ns("point_size"), label = "Point size", value = 3, step = 0.5)),
 							column(3, numericInput(inputId = ns("point_alpha"), label = "Point alpha", value = 0.4, step = 0.1, min = 0, max = 1))
 						),
-				      	fluidRow(column(12,uiOutput(ns("cor_plot_sct.ui"))))
+				      	plotOutput({ns("cor_plot_sct")}, height = "500px"),
+
+
 				      ),
 				      tabPanel("Barplot(multi-cancers)", 
 				      	br(),
 						column(3, colourpicker::colourInput(inputId = ns("positive_color"), "Positive color", "#d53e4f")),
 						column(3, colourpicker::colourInput(inputId = ns("negative_color"), "Negative color", "#3288bd")),
-				      	fluidRow(column(12,uiOutput(ns("cor_plot_bar.ui"))))
+				      	br(),br(),br(),br(),
+				      	plotOutput({ns("cor_plot_bar")}, height = "500px"),
+
 				      )
+				    ),
+				    br(),
+				    fluidRow(
+				    	column(3, downloadButton(ns("save_plot_bt"), "Save plot")),
+				    	column(3, offset = 0, downloadButton(ns("save_data_raw"), "Save raw data(.csv)")),
+				    	column(3, offset = 1, downloadButton(ns("save_data_cor"), "Save res data(.csv)"))
+				    ),
+
+				    br(),
+				    fluidRow(
+				    	column(2, p("Plot Height:")),
+				    	column(3, numericInput(ns("save_plot_H"), NULL ,min = 1, max = 20, value = 10, step = 0.5)),
+				    	column(2, p("Plot Width:")),
+				    	column(3, numericInput(ns("save_plot_W"), NULL, min = 1, max = 20, value = 10, step = 0.5)),
+				        column(
+				        	2,
+					        prettyRadioButtons(
+					          inputId = ns("save_plot_F"),
+					          label = NULL,
+					          choices = c("pdf", "png"),
+					          selected = "pdf",
+					          inline = TRUE,
+					          icon = icon("check"),
+					          animation = "jelly",
+					          fill = TRUE
+					        )
+				        )
 				    )
-
 				)
-			),
-
-			# 下载数据
-			column(
-				2,
-				wellPanel(
-					h2("S5: Download", align = "center"),
-					style = "height:1000px",
-			        br(),br(),br(),br(),
-					downloadButton(ns("save_plot_bt"), "Save plot"),
-			        br(),br(),
-					fluidRow(
-						numericInput(ns("save_plot_H"), "Height:", #width = "138px", 
-		                         min = 4, max = 20, value = 10, step = 0.5),
-						numericInput(ns("save_plot_W"), "Width:", #width = "138px", 
-		                         min = 4, max = 20, value = 10, step = 0.5)
-					),
-			        prettyRadioButtons(
-			          inputId = ns("save_plot_F"),
-			          label = "Format",
-			          choices = c("pdf", "png"),
-			          selected = "pdf",
-			          inline = TRUE,
-			          icon = icon("check"),
-			          animation = "jelly",
-			          fill = TRUE
-			        ),
-			        br(),br(),br(),br(),br(),
-					downloadButton(ns("save_data_raw"), "Save raw data(.csv)"),
-			        br(),br(),br(),br(),br(),
-					downloadButton(ns("save_data_cor"), "Save cor data(.csv)")
-				)
-
 			)
 		)
 	)
@@ -150,11 +150,11 @@ server.modules_pancan_cor = function(input, output, session) {
 	output$choose_overall_mode = renderUI(
 		if(input$overall_mode == "Single cancer"){
 			pickerInput(
-				ns("choose_cancer"), NULL,#"Choose one cancer type",
+				ns("choose_cancer"), NULL,
 				choices = sort(tcga_cancer_choices))
 		} else if(input$overall_mode == "Multi-cancers"){
 			pickerInput(
-				ns("choose_cancers"), NULL,#"Choose multiple cancer types",
+				ns("choose_cancers"), NULL,
 				choices = sort(tcga_cancer_choices),
 				multiple = TRUE,
 				selected = sort(tcga_cancer_choices),
@@ -169,17 +169,16 @@ server.modules_pancan_cor = function(input, output, session) {
 			shinyWidgets::actionBttn(
 				ns("step3_plot_sct"), "Go/Update scatterplot",
 		        style = "gradient",
-		        icon = icon("search"),
+		        icon = icon("chart-line"),
 		        color = "primary",
 		        block = TRUE,
 		        size = "sm"
 			)
 		} else if(input$overall_mode == "Multi-cancers"){
-			# actionButton(ns("step3_plot_bar"), "GO Barplot")
 			shinyWidgets::actionBttn(
 				ns("step3_plot_bar"), "Go/Update barplot",
 		        style = "gradient",
-		        icon = icon("search"),
+		        icon = icon("chart-line"),
 		        color = "primary",
 		        block = TRUE,
 		        size = "sm"
@@ -187,7 +186,7 @@ server.modules_pancan_cor = function(input, output, session) {
 		}
 	)
 
-	# 更新绘图参数按钮/展示窗口
+	# 更新展示窗口
 	observeEvent(input$overall_mode, {
 	  updateTabsetPanel(inputId = "plot_layout", 
 	  	selected = switch(input$overall_mode,
@@ -204,6 +203,86 @@ server.modules_pancan_cor = function(input, output, session) {
 		} else if(input$overall_mode == "Multi-cancers"){
 			cancer_choose$name = input$choose_cancers
 		}
+	})
+
+
+	# 用户上传自定义数据
+	custom_meta = reactive({
+		file = input$upload_sp_info
+		if(is.null(file$datapath)){
+			sp_info = query_tcga_group()$data[,"Sample"]
+			set.seed(42)
+			scores = matrix(rnorm(nrow(sp_info)*5,mean = 1, sd = 1), ncol = 5) %>% as.data.frame()
+			colnames(scores) = paste0("TF",1:5)
+			sp_info = cbind(sp_info, scores)
+		} else {
+			read.csv(file$datapath)
+		} 
+	})
+	output$example_sp_info = downloadHandler(
+		filename = function(){
+			"example_sample_info.csv"
+		},
+		content = function(file){
+			sp_info = query_tcga_group()$data[,"Sample"]
+			set.seed(42)
+			scores = matrix(rnorm(nrow(sp_info)*5,mean = 1, sd = 1), ncol = 5) %>% as.data.frame()
+			colnames(scores) = paste0("TF",1:5)
+			sp_info = cbind(sp_info, scores)
+			write.csv(sp_info, file, row.names = FALSE)
+		}
+	)
+
+	# 数据源设置
+	observeEvent(input$data_origin, {
+		showModal(
+			modalDialog(
+				title = "Set molecular profiles:",
+				footer = modalButton("Done!"),
+				size = "l",
+				fluidPage(
+					h4("1. mRNA Expression"),
+					h4("2. Transcript Expression"),
+					h4("3. DNA Methylation"),
+					fluidRow(
+						column(
+							6,
+							selectInput(ns("L2_3_methy_1"),"(1)Type",
+								choices = c("450K","27K"), selected = TRUE)
+						),
+						column(
+							6,
+							selectInput(ns("L2_3_methy_2"),"(1)Aggregation",
+								choices = c("NA", "mean", "Q0", "Q25", "Q50", "Q75", "Q100"), 
+								selected = "NA")
+						)
+					),
+					h4("4. Protein Expression"),
+					h4("5. miRNA Expression"),
+					h4("6. Mutation status"),
+					h4("7. Copy Number Variation"),
+					fluidRow(
+						column(
+							6,
+							selectInput(ns("L2_7_cnv_1"),"(1)Thresholded data",
+								choices = c(TRUE, FALSE), selected = TRUE)
+						)
+					)
+				)
+			)
+		)
+	})
+	opt_pancan = reactive({
+		list(
+			toil_mRNA = list(),
+			toil_transcript = list(),
+			toil_protein = list(),
+			toil_mutation = list(),
+			toil_cnv = list(use_thresholded_data = ifelse(is.null(input$L2_7_cnv_1),TRUE,as.logical(input$L2_7_cnv_1))),
+			toil_methylation = list(type = ifelse(is.null(input$L2_3_methy_1),"450K",input$L2_3_methy_1), 
+									aggr = ifelse(is.null(input$L2_3_methy_2),"NA",input$L2_3_methy_2)),
+			toil_miRNA = list()
+		)
 	})
 
 
@@ -225,8 +304,6 @@ server.modules_pancan_cor = function(input, output, session) {
 			checkboxGroupInput(
 				ns("filter_by_code"),
 				"Quick filtering by code:",
-				# choices = c("TP","NT","TM"),
-				# selected = c("TP","NT","TM")
 				choices = unlist(code_types_valid,use.names = F),
 				selected = unlist(code_types_valid,use.names = F),
 				inline = TRUE
@@ -234,15 +311,17 @@ server.modules_pancan_cor = function(input, output, session) {
 		)
 	})
 
-	## 精确过滤
+	## 调用模块，精确过滤
 	filter_phe_id = callModule(filter_samples_Server, "filter_samples2cor",
-					   cancers=reactive(cancer_choose$name))
+					   cancers=reactive(cancer_choose$name),
+					   custom_metadata=reactive(custom_meta()),
+					   opt_pancan = reactive(opt_pancan()))
 
+	## 综合上述二者
 	observe({
 		phe_primary = query_tcga_group(
 			cancer = cancer_choose$name, 
 			return_all = T)
-
 
 		code_types = list("NT"= "NT (normal tissue)",
 						  "TP"= "TP (primary tumor)",
@@ -254,15 +333,9 @@ server.modules_pancan_cor = function(input, output, session) {
 		
 		choose_codes = names(code_types)[unlist(code_types) %in% input$filter_by_code]
 
-
-		# choose_codes =  stringr::str_trim(
-		# 	stringr::str_split(choose_codes," ",simplify = T)[,1])
-
 		filter_phe_id2 = phe_primary %>%
 			dplyr::filter(Code %in% choose_codes) %>%
 			dplyr::pull("Sample")
-
-		# if(length(filter_phe_id2)==0){filter_phe_id2=NULL}
 
 		if(is.null(filter_phe_id())){
 			cancer_choose$filter_phe_id = filter_phe_id2
@@ -270,19 +343,18 @@ server.modules_pancan_cor = function(input, output, session) {
 			cancer_choose$filter_phe_id = intersect(filter_phe_id2,filter_phe_id())
 		}
 
-		
 		output$filter_phe_id_info = renderText({
 			paste0("NOTE: A total of ", length(cancer_choose$filter_phe_id), " samples are selcted.")
-
 		})
-
 	})
 
 
 	## x-axis panel
 	x_axis_data = callModule(download_feat_Server, "download_x_axis", 
 							 cancers=reactive(cancer_choose$name),
-							 samples=reactive(cancer_choose$filter_phe_id)
+							 samples=reactive(cancer_choose$filter_phe_id),
+							 custom_metadata=reactive(custom_meta()),
+						     opt_pancan = reactive(opt_pancan())
 							 )
 	output$x_axis_data_table = renderUI({
 		output$x_tmp_table = renderDataTable({
@@ -293,13 +365,12 @@ server.modules_pancan_cor = function(input, output, session) {
 		}) 
 	dataTableOutput(ns("x_tmp_table"))
 	})
-
-
-
 	## y-axis panel
 	y_axis_data = callModule(download_feat_Server, "download_y_axis", 
 							 cancers=reactive(cancer_choose$name),
-							 samples=reactive(cancer_choose$filter_phe_id)
+							 samples=reactive(cancer_choose$filter_phe_id),
+							 custom_metadata=reactive(custom_meta()),
+						     opt_pancan = reactive(opt_pancan())
 							 )
 
 	output$y_axis_data_table = renderUI({
@@ -318,11 +389,9 @@ server.modules_pancan_cor = function(input, output, session) {
 	merge_data_sct = eventReactive(input$step3_plot_sct, {
 		x_axis_data = x_axis_data()
 		colnames(x_axis_data)[c(1:3,5)] = paste0("x_",colnames(x_axis_data)[c(1:3,5)])
-		# colnames(x_axis_data)[which(colnames(x_axis_data)=="value")] = c("x_value")
-
 		y_axis_data = y_axis_data()
 		colnames(y_axis_data)[c(1:3,5)] = paste0("y_",colnames(y_axis_data)[c(1:3,5)])
-		# colnames(y_axis_data)[which(colnames(y_axis_data)=="value")] = c("y_value")
+
 		data = dplyr::inner_join(x_axis_data, y_axis_data) %>%
 			dplyr::select(cancer, sample, everything())
 		data
@@ -350,25 +419,17 @@ server.modules_pancan_cor = function(input, output, session) {
 				  plot.title = element_text(size=20, hjust = 0.5))
 		return(p)
 	})
+	output$cor_plot_sct = renderPlot({cor_plot_sct()})
 
-	observeEvent(input$step3_plot_sct, {
-		output$cor_plot_sct.ui = renderUI({
-			output$cor_plot_sct_tmp = renderPlot({
-				cor_plot_sct()
-			}) 
-		plotOutput({ns("cor_plot_sct_tmp")}, height = "600px")
-		})
-	})
+
 
 	# barplot逻辑：先批量计算相关性，再绘图
 	merge_data_bar = eventReactive(input$step3_plot_bar, {
 		x_axis_data = x_axis_data()
 		colnames(x_axis_data)[c(1:3,5)] = paste0("x_",colnames(x_axis_data)[c(1:3,5)])
-		# colnames(x_axis_data)[which(colnames(x_axis_data)=="value")] = c("x_value")
-
 		y_axis_data = y_axis_data()
 		colnames(y_axis_data)[c(1:3,5)] = paste0("y_",colnames(y_axis_data)[c(1:3,5)])
-		# colnames(y_axis_data)[which(colnames(y_axis_data)=="value")] = c("y_value")
+
 		data = dplyr::inner_join(x_axis_data, y_axis_data) %>%
 			dplyr::select(cancer, sample, everything())
 		data
@@ -410,14 +471,8 @@ server.modules_pancan_cor = function(input, output, session) {
 		return(p)
 	})
 
-	observeEvent(input$step3_plot_bar, {
-		output$cor_plot_bar.ui = renderUI({
-			output$cor_plot_bar_tmp = renderPlot({
-				cor_plot_bar()
-			}) 
-		plotOutput({ns("cor_plot_bar_tmp")}, height = "600px")
-		})
-	})
+	output$cor_plot_bar = renderPlot({cor_plot_bar()})
+
 
 	# 3个下载按钮
 	output$save_plot_bt = downloadHandler(
@@ -442,6 +497,7 @@ server.modules_pancan_cor = function(input, output, session) {
 		    }
 		}
 	)
+
 	output$save_data_raw = downloadHandler(
 		filename = function(){
 			paste0("Correlation_rawdata_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
