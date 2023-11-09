@@ -83,6 +83,7 @@ pacman::p_load(
   shinyalert,
   shinyFiles,
   shinythemes,
+  shinyhelper,
   survival,
   survminer,
   ezcox,
@@ -165,6 +166,11 @@ tumor_index_list$tcga_msi = tcga_gtex %>%
   dplyr::mutate(Barcode = stringr::str_sub(sample, 1, 12)) %>%
   dplyr::select(Barcode, sample) %>%
   dplyr::inner_join(tumor_index_list$tcga_msi, by = "Barcode")
+
+# Help → ID reference
+id_merge = load_data("pancan_identifier_help")
+
+
 
 themes_list <- list(
   "cowplot" = cowplot::theme_cowplot(),
@@ -362,6 +368,9 @@ server <- function(input, output, session) {
   source(server_file("modules.R"), local = TRUE)
   #source(server_file("global.R"), local = TRUE)
   source(server_file("general-analysis.R"), local = TRUE)
+  # observe_helpers()
+  observe_helpers(help_dir ="helper")
+
 }
 
 # Run web app -------------------------------------------------------------

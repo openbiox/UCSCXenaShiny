@@ -2,7 +2,7 @@ ui.modules_pancan_cor = function(id) {
 	ns = NS(id)
 	fluidPage(
 		wellPanel(
-			h2("Comprehensive TCGA related correlation analysis", align = "center"),
+			h2("TCGA Association Analysis", align = "center"),
 			style = "height:150px",
 		),
 
@@ -26,18 +26,29 @@ ui.modules_pancan_cor = function(id) {
 				    uiOutput(ns("choose_overall_mode")),
 				    br(),br(),br(),
 
-					h4("(2) Choose samples[opt]"),
+					h4("(2) Choose samples[opt]") %>% 
+						helper(type = "markdown", size = "m", fade = TRUE, 
+					                   title = "Choose samples for personalized need", 
+					                   content = "choose_samples"),
 					filter_samples_UI(ns("filter_samples2cor")),
 					uiOutput(ns("filter_by_code.ui")),
 					textOutput(ns("filter_phe_id_info")),
 					br(),br(),br(),
 
-					h4("(3) Upload sample info[opt]"),
-					fileInput(ns("upload_sp_info"),"User-defined metadata(.csv)", accept = ".csv"),
+					h4("(3) Upload metadata[opt]") %>% 
+						helper(type = "markdown", size = "m", fade = TRUE, 
+					                   title = "Upload sample info", 
+					                   content = "custom_metadata"),
+					shinyFeedback::useShinyFeedback(),
+
+					fileInput(ns("upload_sp_info"),"", accept = ".csv"),
 					downloadButton(ns("example_sp_info"), "Download example data."),
 					br(),br(),br(),
 
-					h4("(4) Set data origin[opt]"),
+					h4("(4) Set data origin[opt]") %>% 
+						helper(type = "markdown", size = "m", fade = TRUE, 
+					                   title = "Set molecular profile origin", 
+					                   content = "data_origin"),
 					shinyWidgets::actionBttn(
 						ns("data_origin"), "Available respositories",
 				        style = "gradient",
@@ -207,6 +218,8 @@ server.modules_pancan_cor = function(input, output, session) {
 
 
 	# 用户上传自定义数据
+	# observe_helpers(session) 
+
 	custom_meta = reactive({
 		file = input$upload_sp_info
 		if(is.null(file$datapath)){
@@ -216,6 +229,9 @@ server.modules_pancan_cor = function(input, output, session) {
 			colnames(scores) = paste0("TF",1:5)
 			sp_info = cbind(sp_info, scores)
 		} else {
+			csv_format = tools::file_ext(file$name)=="csv"
+			shinyFeedback::feedbackDanger("upload_sp_info", !csv_format, "Non .csv format file")
+			req(csv_format,cancelOutput = TRUE)
 			read.csv(file$datapath)
 		} 
 	})
@@ -252,9 +268,27 @@ server.modules_pancan_cor = function(input, output, session) {
 						),
 						column(
 							6,
-							selectInput(ns("L2_3_methy_2"),"(1)Aggregation",
+							selectInput(ns("L2_3_methy_2"),"(2)Aggregation",
 								choices = c("NA", "mean", "Q0", "Q25", "Q50", "Q75", "Q100"), 
-								selected = "NA")
+								selected = "mean")
+						)
+					),
+					## relu_out
+					fluidRow(
+						column(
+							6,
+							selectizeInput(ns("L2_3_methy_3_gene"),"(3)Pinpoint CpG by Gene",
+								choices = NULL, options = list(create = TRUE, maxOptions = 5))
+						),
+						column(
+							6,
+				            selectizeInput(
+				              inputId = ns("L2_3_methy_3_cpg"),
+				              label = "CpG sites",
+				              choices = NULL,
+				              multiple = TRUE,
+				              options = list(create = TRUE, maxOptions = 5))
+
 						)
 					),
 					h4("4. Protein Expression"),
@@ -271,8 +305,60 @@ server.modules_pancan_cor = function(input, output, session) {
 				)
 			)
 		)
+	    updateSelectizeInput(
+	      session,
+	      "L2_3_methy_3_gene",
+	      choices = pancan_identifiers$gene,
+	      selected = "TP53",
+	      server = TRUE
+	    )
+		# observeEvent(input$L2_3_methy_3_gene,{
+		observe({
+			cpg_type = reactive({
+				if(is.null(input$L2_3_methy_1)){
+					L2_3_methy_1 = "450K"
+				} else {
+					L2_3_methy_1 = input$L2_3_methy_1
+				}
+				switch(L2_3_methy_1,
+					`450K` = id_merge$id_molecule$id_M450[,c("Level3","CpG")],
+					`27K` = id_merge$id_molecule$id_M27K[,c("Level3","CpG")]
+				)
+			})
+			cpg_ids = cpg_type() %>% 
+				dplyr::filter(Level3 %in% input$L2_3_methy_3_gene) %>% 
+				dplyr::pull(CpG)
+		    updateSelectizeInput(
+		      session,
+		      "L2_3_methy_3_cpg",
+		      choices = cpg_ids,
+		      selected = NULL,
+		      server = TRUE
+		    )
+		})
+
 	})
 	opt_pancan = reactive({
+		cpg_type = reactive({
+			if(is.null(input$L2_3_methy_1)){
+				L2_3_methy_1 = "450K"
+			} else {
+				L2_3_methy_1 = input$L2_3_methy_1
+			}
+			switch(L2_3_methy_1,
+				`450K` = id_merge$id_molecule$id_M450[,c("Level3","CpG")],
+				`27K` = id_merge$id_molecule$id_M27K[,c("Level3","CpG")]
+			)
+		})
+		cpg_ids = cpg_type() %>% 
+			dplyr::filter(Level3 %in% input$L2_3_methy_3_gene) %>% 
+			dplyr::pull(CpG)
+		if(is.null(input$L2_3_methy_3_cpg)){
+			cpg_ids_retain = NULL
+		} else {
+			cpg_ids_retain = setdiff(cpg_ids, input$L2_3_methy_3_cpg)
+		}
+
 		list(
 			toil_mRNA = list(),
 			toil_transcript = list(),
@@ -280,7 +366,8 @@ server.modules_pancan_cor = function(input, output, session) {
 			toil_mutation = list(),
 			toil_cnv = list(use_thresholded_data = ifelse(is.null(input$L2_7_cnv_1),TRUE,as.logical(input$L2_7_cnv_1))),
 			toil_methylation = list(type = ifelse(is.null(input$L2_3_methy_1),"450K",input$L2_3_methy_1), 
-									aggr = ifelse(is.null(input$L2_3_methy_2),"NA",input$L2_3_methy_2)),
+									aggr = ifelse(is.null(input$L2_3_methy_2),"NA",input$L2_3_methy_2),
+									rule_out = cpg_ids_retain),
 			toil_miRNA = list()
 		)
 	})
@@ -398,7 +485,13 @@ server.modules_pancan_cor = function(input, output, session) {
 	})
 
 	cor_plot_sct = eventReactive(input$step3_plot_sct, {
+		shiny::validate(
+			need(try(nrow(merge_data_sct())>0), 
+				"Please inspect whether to download valid X/Y axis data in S2 or S3 step."),
+		)
+
 		merge_data_sct = merge_data_sct()
+
 		cor_method = switch(isolate(input$cor_method),
 			Pearson = "parametric", Spearman = "nonparametric")
 		p = ggscatterstats(
@@ -420,7 +513,6 @@ server.modules_pancan_cor = function(input, output, session) {
 		return(p)
 	})
 	output$cor_plot_sct = renderPlot({cor_plot_sct()})
-
 
 
 	# barplot逻辑：先批量计算相关性，再绘图
@@ -453,6 +545,11 @@ server.modules_pancan_cor = function(input, output, session) {
 	})
 
 	cor_plot_bar = eventReactive(input$step3_plot_bar, {
+		shiny::validate(
+			need(try(nrow(cor_data_bar())>0), 
+				"Please inspect whether to download valid X/Y axis data in S2 or S3 step."),
+		)
+
 		cor_data_bar = cor_data_bar()
 		p = cor_data_bar %>% 
 		  dplyr::arrange(estimate) %>% 

@@ -36,6 +36,9 @@ inst/extdata/toil_sig_score.rda
 inst/extdata/tcga_PW.rda
 inst/extdata/tcga_PW_meta.rda
 
+inst/extdata/pancan_identifier_help.rda
+
+
 .idea
 doc
 Meta

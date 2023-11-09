@@ -2,7 +2,7 @@ ui.modules_pancan_comp = function(id) {
 	ns = NS(id)
 	fluidPage(
 		wellPanel(
-			h2("Comprehensive TCGA related differential comparison", align = "center"),
+			h2("TCGA Comparison Analysis", align = "center"),
 			style = "height:150px",
 		),
 		fluidRow(
@@ -25,18 +25,30 @@ ui.modules_pancan_comp = function(id) {
 				    uiOutput(ns("choose_overall_mode")),
 				    br(),br(),br(),
 
-					h4("(2) Choose samples[opt]"),
+					h4("(2) Choose samples[opt]") %>% 
+						helper(type = "markdown", size = "m", fade = TRUE, 
+					                   title = "Choose samples for personalized need", 
+					                   content = "choose_samples"),
+
 					filter_samples_UI(ns("filter_samples2cor")),
 					uiOutput(ns("filter_by_code.ui")),
 					textOutput(ns("filter_phe_id_info")),
 					br(),br(),br(),
 
-					h4("(3) Upload sample info[opt]"),
-					fileInput(ns("upload_sp_info"),"User-defined metadata(.csv)", accept = ".csv"),
+					h4("(3) Upload metadata[opt]") %>% 
+						helper(type = "markdown", size = "m", fade = TRUE, 
+					                   title = "Upload sample info", 
+					                   content = "custom_metadata"),
+					shinyFeedback::useShinyFeedback(),
+
+					fileInput(ns("upload_sp_info"),"", accept = ".csv"),
 					downloadButton(ns("example_sp_info"), "Download example data."),
 					br(),br(),br(),
 
-					h4("(4) Set data origin[opt]"),
+					h4("(4) Set data origin[opt]") %>% 
+						helper(type = "markdown", size = "m", fade = TRUE, 
+					                   title = "Set molecular profile origin", 
+					                   content = "data_origin"),
 					shinyWidgets::actionBttn(
 						ns("data_origin"), "Available respositories",
 				        style = "gradient",
@@ -83,6 +95,7 @@ ui.modules_pancan_comp = function(id) {
 					br(),
 				    tabsetPanel(id = ns("plot_layout"),
 				      tabPanel("BoxViolin(single cancer)", 
+				      	br(),
 						fluidRow(
 							column(3, colourpicker::colourInput(inputId = ns("group_1_color"), "Color (group-1)", "#E69F00")),
 							column(3, colourpicker::colourInput(inputId = ns("group_2_color"), "Color (group-2)", "#56B4E9")),
@@ -91,7 +104,8 @@ ui.modules_pancan_comp = function(id) {
 						),
 				      	plotOutput({ns("comp_plot_box")}, height = "500px")
 				      ),
-				      tabPanel("Lineplot(multi-cancers)", 
+				      tabPanel("Lineplot(multi-cancers)",
+				      	br(), 
 						fluidRow(
 							column(3, colourpicker::colourInput(inputId = ns("group_1_color_2"), "Color (group-1)", "#E69F00")),
 							column(3, colourpicker::colourInput(inputId = ns("group_2_color_2"), "Color (group-2)", "#56B4E9")),
@@ -211,6 +225,9 @@ server.modules_pancan_comp = function(input, output, session) {
 			colnames(scores) = paste0("TF",1:5)
 			sp_info = cbind(sp_info, scores)
 		} else {
+			csv_format = tools::file_ext(file$name)=="csv"
+			shinyFeedback::feedbackDanger("upload_sp_info", !csv_format, "Non .csv format file")
+			req(csv_format,cancelOutput = TRUE)
 			read.csv(file$datapath)
 		} 
 	})
@@ -247,9 +264,27 @@ server.modules_pancan_comp = function(input, output, session) {
 						),
 						column(
 							6,
-							selectInput(ns("L2_3_methy_2"),"(1)Aggregation",
+							selectInput(ns("L2_3_methy_2"),"(2)Aggregation",
 								choices = c("NA", "mean", "Q0", "Q25", "Q50", "Q75", "Q100"), 
-								selected = "NA")
+								selected = "mean")
+						)
+					),
+					## relu_out
+					fluidRow(
+						column(
+							6,
+							selectizeInput(ns("L2_3_methy_3_gene"),"(3)Pinpoint CpG by Gene",
+								choices = NULL, options = list(create = TRUE, maxOptions = 5))
+						),
+						column(
+							6,
+				            selectizeInput(
+				              inputId = ns("L2_3_methy_3_cpg"),
+				              label = "CpG sites",
+				              choices = NULL,
+				              multiple = TRUE,
+				              options = list(create = TRUE, maxOptions = 5))
+
 						)
 					),
 					h4("4. Protein Expression"),
@@ -266,8 +301,59 @@ server.modules_pancan_comp = function(input, output, session) {
 				)
 			)
 		)
+	    updateSelectizeInput(
+	      session,
+	      "L2_3_methy_3_gene",
+	      choices = pancan_identifiers$gene,
+	      selected = "TP53",
+	      server = TRUE
+	    )
+		observe({
+			cpg_type = reactive({
+				if(is.null(input$L2_3_methy_1)){
+					L2_3_methy_1 = "450K"
+				} else {
+					L2_3_methy_1 = input$L2_3_methy_1
+				}
+				switch(L2_3_methy_1,
+					`450K` = id_merge$id_molecule$id_M450[,c("Level3","CpG")],
+					`27K` = id_merge$id_molecule$id_M27K[,c("Level3","CpG")]
+				)
+			})
+			cpg_ids = cpg_type() %>% 
+				dplyr::filter(Level3 %in% input$L2_3_methy_3_gene) %>% 
+				dplyr::pull(CpG)
+		    updateSelectizeInput(
+		      session,
+		      "L2_3_methy_3_cpg",
+		      choices = cpg_ids,
+		      selected = NULL,
+		      server = TRUE
+		    )
+		})
+
 	})
 	opt_pancan = reactive({
+		cpg_type = reactive({
+			if(is.null(input$L2_3_methy_1)){
+				L2_3_methy_1 = "450K"
+			} else {
+				L2_3_methy_1 = input$L2_3_methy_1
+			}
+			switch(L2_3_methy_1,
+				`450K` = id_merge$id_molecule$id_M450[,c("Level3","CpG")],
+				`27K` = id_merge$id_molecule$id_M27K[,c("Level3","CpG")]
+			)
+		})
+		cpg_ids = cpg_type() %>% 
+			dplyr::filter(Level3 %in% input$L2_3_methy_3_gene) %>% 
+			dplyr::pull(CpG)
+		if(is.null(input$L2_3_methy_3_cpg)){
+			cpg_ids_retain = NULL
+		} else {
+			cpg_ids_retain = setdiff(cpg_ids, input$L2_3_methy_3_cpg)
+		}
+
 		list(
 			toil_mRNA = list(),
 			toil_transcript = list(),
@@ -275,11 +361,11 @@ server.modules_pancan_comp = function(input, output, session) {
 			toil_mutation = list(),
 			toil_cnv = list(use_thresholded_data = ifelse(is.null(input$L2_7_cnv_1),TRUE,as.logical(input$L2_7_cnv_1))),
 			toil_methylation = list(type = ifelse(is.null(input$L2_3_methy_1),"450K",input$L2_3_methy_1), 
-									aggr = ifelse(is.null(input$L2_3_methy_2),"NA",input$L2_3_methy_2)),
+									aggr = ifelse(is.null(input$L2_3_methy_2),"NA",input$L2_3_methy_2),
+									rule_out = cpg_ids_retain),
 			toil_miRNA = list()
 		)
 	})
-
 
 
 	# 过滤样本
@@ -398,6 +484,10 @@ server.modules_pancan_comp = function(input, output, session) {
 
 
 	comp_plot_box = eventReactive(input$step3_plot_box, {
+		shiny::validate(
+			need(try(nrow(merge_data_box())>0), 
+				"Please inspect whether to set groups or download variable data in S2 or S3 step."),
+		)
 		merge_data_box = merge_data_box()
 
 		if(!cancer_choose$single_cancer_ok){
@@ -468,6 +558,10 @@ server.modules_pancan_comp = function(input, output, session) {
 
 
 	comp_plot_line = eventReactive(input$step3_plot_line, {
+		shiny::validate(
+			need(try(nrow(merge_data_line())>0), 
+				"Please inspect whether to set groups or download variable data in S2 or S3 step."),
+		)
 		merge_data_line_sub = merge_data_line() %>%
 			dplyr::filter(cancer %in% cancer_choose$multi_cancer_ok)
 

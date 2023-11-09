@@ -110,12 +110,13 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 					    verbatimTextOutput(ns("add_info"))
 			        ),
 			        wellPanel(
-			        	h4("2. Obsever distribution"),
+			        	h4("2. Observe distribution"),
 						uiOutput(ns("filter_phe_01_by.ui")),
 						verbatimTextOutput(ns("filter_phe_01_out"))
 					),
 				    wellPanel(
 					    h4("3. Set conditions"),
+					    
 					    fluidRow(
 						    actionBttn(
 						      inputId = ns("add_condi"),
@@ -134,11 +135,14 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 					    ),
 					    fluidRow(
 					    	column(5, h5("Phenotype(s):")),
-					    	column(5, h5("Threshold(s):")),
-					    	column(2, h5("Direction(s):"))
+					    	column(5, h5("Direction(s):")),
+					    	column(2, h5("Threshold(s):"))
 
 					    ),
 					    uiOutput(ns("multi_condi.ui")),
+
+
+					    verbatimTextOutput(ns("filter_by_phe_prompt")),
 
 					    fluidRow(
 						    actionBttn(
@@ -160,21 +164,6 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 
 						textOutput(ns("filter_phe_02_out")),
 						
-						br(),
-						# p(strong("Notions:")),
-						# p("(1) Phenotype(s) : choose one or multiple phenotypes (seperated by ||), which is/are in above choices."),
-						# p("(2) Threshold(s) : choose the respective thresholds (seperated by || for multiple phenotypes) according to above distributions."),
-						# p("(2.1) For categorical phenotype, please input one or multiple phenotypes (seperated by |);"),
-						# p("(2.2) For numerical phenotype, please input one cutoff."),	
-						# p("(3) Direction(s) : set the respective logical symbol (seperated by || for multiple phenotypes)."),
-						# p("(3.1) For discrete phenotype, set '+' or '-' to retain or discard samples"),
-						# p("(3.2) For numerical phenotype, set '>' or '<' to retain samples."),	
-						# br(),
-						# p(strong("Examples:")),
-						# p("(1) Code; (2) TP; (3) + : retain all tumor samples."),
-						# p("(1) Code||Age; (2) TP|| 60; (3) + | <; : retain  tumor samples with age < 60."),
-						# p("(1) Stage_ajcc; (2) Stage I | Stage II, (3) - : discard samples in Stage I or II of Stage_ajcc."),
-						# p("(1) Add_1; (2) NA, (3) - : discard samples with NA value for Add_1 phenotype.")
 					)
 
 		        )
@@ -354,7 +343,7 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 						  toil_protein = list(),
 						  toil_mutation = list(),
 						  toil_cnv = list(use_thresholded_data = TRUE),
-						  toil_methylation = list(type = "450K", aggr = "Q25"),
+						  toil_methylation = list(type = "450K", aggr = "Q25", rule_out = NULL),
 						  toil_miRNA = list()
 					)
 				} else {
@@ -509,6 +498,10 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 					selectInput(ns(id_condi_item1), NULL,#label_condi_item1, 
 	    						colnames(add_phes$phe_primary)[-1:-2], selected=new_phe)),
 				column(
+					2, 
+					selectInput(ns(id_condi_item3),  NULL,#label_condi_item3, 
+	    						choices_condi_item3, selected=new_direc)),
+				column(
 					5, 
 					if(class(choices_condi_item2)=="character"){
 						selectInput(ns(id_condi_item2), NULL,#label_condi_item2, 
@@ -518,11 +511,8 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 						numericInput(ns(id_condi_item2), NULL,# label_condi_item2, 
 							value = new_thres)
 					}
-				),
-				column(
-					2, 
-					selectInput(ns(id_condi_item3),  NULL,#label_condi_item3, 
-	    						choices_condi_item3, selected=new_direc))
+				)
+
 			)
 
 	    	phe_Input <- selectInput(id_condi_item1, label_condi_item1, 
@@ -541,13 +531,37 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 			NULL
 		} else {
 			lapply(1:dynamic_condi$sum,function(i){
-		      condi_item1 = input[[paste0("item1_",i)]]
-		      condi_item2 = paste(input[[paste0("item2_",i)]],collapse="|")
-		      condi_item3 = input[[paste0("item3_",i)]]
-		      c(condi_item1,condi_item2,condi_item3)
+				# 验证非空
+				if(input[[paste0("item3_",i)]] %in% c("+","-")){
+					logic_item2_blank = is.null(input[[paste0("item2_",i)]])
+				} else {
+					logic_item2_blank = is.na(input[[paste0("item2_",i)]])
+				}
+				shiny::validate(
+					need(!logic_item2_blank, "Please input the null threshold."),
+				)
+				# 验证范围（百分位数）
+				if(input[[paste0("item3_",i)]] %in% c("%>","%<")){
+					logic_item2_quant = input[[paste0("item2_",i)]]>1 | input[[paste0("item2_",i)]]<0
+					shiny::validate(
+						need(!logic_item2_quant, "Please inspect the threshold range (0~1) when %> or %<.")
+					)
+				}
+
+			    condi_item1 = input[[paste0("item1_",i)]]  #表型
+			    condi_item2 = paste(input[[paste0("item2_",i)]],collapse="|") #阈值
+			    condi_item3 = input[[paste0("item3_",i)]] #方向
+			    c(condi_item1,condi_item2,condi_item3)
 		    })
 		}
 	})
+	output$filter_by_phe_prompt = renderPrint({
+		if(inherits(filter_by_phe(),"list")){
+			cat("Above conditions have been executed.")
+		} else {
+			filter_by_phe()
+		}
+	}) 
 
 	# 重置筛选条件
 	observeEvent(input$button_phe_filter_reset, {
