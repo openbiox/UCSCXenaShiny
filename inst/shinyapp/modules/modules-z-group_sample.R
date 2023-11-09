@@ -112,7 +112,10 @@ group_samples_UI = function(id, button_name="Filter by multi-conditions"){
     verbatimTextOutput(ns("tmp789")),
     verbatimTextOutput(ns("filter_phe_01_out_2")),
     
-    h4("3. Set two groups"),
+    h4("3. Set two groups") %>%
+        helper(type = "markdown", size = "m", fade = TRUE, 
+                   title = "Split above phenotype into 2 groups", 
+                   content = "set_groups"),
 		uiOutput(ns("set_quantile.ui")),
 		uiOutput(ns("set_group1.ui")),
 		uiOutput(ns("set_group2.ui")),
@@ -306,7 +309,7 @@ group_samples_Server = function(input, output, session, cancers=NULL, samples=NU
               toil_protein = list(),
               toil_mutation = list(),
               toil_cnv = list(use_thresholded_data = TRUE),
-              toil_methylation = list(type = "450K", aggr = "Q25"),
+              toil_methylation = list(type = "450K", aggr = "Q25",rule_out = NULL),
               toil_miRNA = list()
           )
         } else {
@@ -532,17 +535,19 @@ group_samples_Server = function(input, output, session, cancers=NULL, samples=NU
     choose_group_2merge_tmp
   })
 
-  
-  output$choose_group_2merge_out = renderPrint({
-    
-    if(add_phes$group == unique(merge_by_out()$phenotype)){
-      summary(merge_by_out()[,"group"])
-    } else {
-      "NULL, please update above steps."
-    }
+  observeEvent(input$button_merge,{
+    output$choose_group_2merge_out = renderPrint({
+      shiny::validate(
+        need(try(nrow(merge_by_out())>0), 
+          "Please inspect whether to input valid grouping set."),
+      )
+      if(add_phes$group == unique(merge_by_out()$phenotype)){
+        summary(merge_by_out()[,"group"])
+      } else {
+        cat("NULL, please update above steps.")
+      }
+    })
   })
-
-  # output$tmp123 = renderPrint({head(merge_by_out())})
 
   return(merge_by_out)
 

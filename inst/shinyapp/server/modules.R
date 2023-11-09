@@ -19,7 +19,11 @@ callModule(server.modules_pcawg_sur_plot, "modules_pcawg_sur_plot")
 callModule(server.modules_dim_dist, "modules_dim_dist")
 callModule(server.modules_pw_cor, "modules_pw_cor")
 callModule(server.modules_pancan_mut, "modules_pancan_mut")
+
+# general pancan
 callModule(server.modules_pancan_cor, "modules_pancan_cor")
 callModule(server.modules_pancan_comp, "modules_pancan_comp")
 callModule(server.modules_pancan_sur, "modules_pancan_sur")
-callModule(server.modules_pancan_test, "modules_pancan_test")
+
+# identifier help
+callModule(server.modules_id_reference, "modules_id_reference")

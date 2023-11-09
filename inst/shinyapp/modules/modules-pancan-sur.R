@@ -2,7 +2,7 @@ ui.modules_pancan_sur = function(id) {
 	ns = NS(id)
 	fluidPage(
 		wellPanel(
-			h2("Comprehensive TCGA related survival analysis", align = "center"),
+			h2("TCGA Survival Analysis", align = "center"),
 			style = "height:150px",
 		),
 		fluidRow(
@@ -24,19 +24,28 @@ ui.modules_pancan_sur = function(id) {
 				      status = "default"),
 				    uiOutput(ns("choose_overall_mode")),
 				    br(),br(),br(),
-
-					h4("(2) Choose samples[opt]"),
+					h4("(2) Choose samples[opt]") %>% 
+						helper(type = "markdown", size = "m", fade = TRUE, 
+					                   title = "Choose samples for personalized need", 
+					                   content = "choose_samples"),
 					filter_samples_UI(ns("filter_samples2cor")),
 					uiOutput(ns("filter_by_code.ui")),
 					textOutput(ns("filter_phe_id_info")),
 					br(),br(),br(),
-
-					h4("(3) Upload sample info[opt]"),
+					h4("(3) Upload metadata[opt]") %>% 
+						helper(type = "markdown", size = "m", fade = TRUE, 
+					                   title = "Upload sample info", 
+					                   content = "custom_metadata"),
+					shinyFeedback::useShinyFeedback(),
+					
 					fileInput(ns("upload_sp_info"),"User-defined metadata(.csv)", accept = ".csv"),
 					downloadButton(ns("example_sp_info"), "Download example data."),
 					br(),br(),br(),
 
-					h4("(4) Set data origin[opt]"),
+					h4("(4) Set data origin[opt]") %>% 
+						helper(type = "markdown", size = "m", fade = TRUE, 
+					                   title = "Set molecular profile origin", 
+					                   content = "data_origin"),
 					shinyWidgets::actionBttn(
 						ns("data_origin"), "Available respositories",
 				        style = "gradient",
@@ -55,13 +64,14 @@ ui.modules_pancan_sur = function(id) {
 					h2("S2: Select sur type", align = "center"),
 
 				    shinyWidgets::prettyRadioButtons(
-				        inputId = ns("endpoint_type"), label = "1. Endpoint type:",
+				        inputId = ns("endpoint_type"), label = "Endpoint type:",
 				        choiceValues = c("OS", "DSS", "DFI", "PFI"),
 				        choiceNames = c("OS (Overall Survial)", "DSS (Disease-Specific Survival)", 
 				        				"DFI (Disease-Free Interval)", "PFI (Progression-Free Interval)"),
 				        selected = "OS"
 				    ),
-				    br(),
+				    br(),br(),br(),
+				    p("Below is the group information after S3 step"),
 				    uiOutput(ns("phe_sur_table.ui")),
 				)
 			),
@@ -81,28 +91,29 @@ ui.modules_pancan_sur = function(id) {
 				wellPanel(
 					style = "height:1100px",
 					h2("S4: Analyze", align = "center"),
-
-				    shinyWidgets::prettyRadioButtons(
-				        inputId = ns("sur_method"), label = "2. Analysis method:",
-				        choiceValues = c("log_rank", "cox_reg"),
-				        choiceNames = c("Log-rank test", "Univariate Cox regression"),
-				        selected = "log_rank"
-				    ),
-				    materialSwitch(ns("use_origin"), 
-				    	"3. Whether use initial data before grouping"),
-				    h4("Note:"),
-				    p("If initial data type is numerical, 
-				       the best grouping cutoff will be calculated for log_rank test"),
-				   
 				    # 绘图按钮
 					uiOutput(ns("sur_analysis_bt.ui")),
 
+					selectInput(ns("sur_method"), "1. Survival metohd",
+						choices = c("Log-rank test", "Univariate Cox regression")),
+
+				    materialSwitch(ns("use_origin"), 
+				    	"2. Whether use initial data before grouping") %>% 
+						helper(type = "markdown", size = "m", fade = TRUE, 
+					                   title = "About the initial phenotype", 
+					                   content = "sur_initial_group"),
+
+
+					br(),
+
 				    tabsetPanel(id = ns("plot_layout"),
 				      tabPanel("Curve(single cancer)",
+				      	br(),
 				      	uiOutput(ns("one_params.ui")),
 				      	plotOutput({ns("sur_plot_one")}, height = "500px")
 				      ),
 				      tabPanel("Lineplot(multi-cancers)",
+				      	br(),
 				      	uiOutput(ns("multi_params.ui")),
 				      	plotOutput({ns("sur_plot_multi")}, height = "500px"),
 					    h4("Note:"),
@@ -218,6 +229,9 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 			colnames(scores) = paste0("TF",1:5)
 			sp_info = cbind(sp_info, scores)
 		} else {
+			csv_format = tools::file_ext(file$name)=="csv"
+			shinyFeedback::feedbackDanger("upload_sp_info", !csv_format, "Non .csv format file")
+			req(csv_format,cancelOutput = TRUE)
 			read.csv(file$datapath)
 		} 
 	})
@@ -254,9 +268,26 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 						),
 						column(
 							6,
-							selectInput(ns("L2_3_methy_2"),"(1)Aggregation",
+							selectInput(ns("L2_3_methy_2"),"(2)Aggregation",
 								choices = c("NA", "mean", "Q0", "Q25", "Q50", "Q75", "Q100"), 
-								selected = "NA")
+								selected = "mean")
+						)
+					),
+					## relu_out
+					fluidRow(
+						column(
+							6,
+							selectizeInput(ns("L2_3_methy_3_gene"),"(3)Pinpoint CpG by Gene",
+								choices = NULL, options = list(create = TRUE, maxOptions = 5))
+						),
+						column(
+							6,
+				            selectizeInput(
+				              inputId = ns("L2_3_methy_3_cpg"),
+				              label = "CpG sites",
+				              choices = NULL,
+				              multiple = TRUE,
+				              options = list(create = TRUE, maxOptions = 5))
 						)
 					),
 					h4("4. Protein Expression"),
@@ -273,8 +304,61 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 				)
 			)
 		)
+
+	    updateSelectizeInput(
+	      session,
+	      "L2_3_methy_3_gene",
+	      choices = pancan_identifiers$gene,
+	      selected = "TP53",
+	      server = TRUE
+	    )
+		# observeEvent(input$L2_3_methy_3_gene,{
+		observe({
+			cpg_type = reactive({
+				if(is.null(input$L2_3_methy_1)){
+					L2_3_methy_1 = "450K"
+				} else {
+					L2_3_methy_1 = input$L2_3_methy_1
+				}
+				switch(L2_3_methy_1,
+					`450K` = id_merge$id_molecule$id_M450[,c("Level3","CpG")],
+					`27K` = id_merge$id_molecule$id_M27K[,c("Level3","CpG")]
+				)
+			})
+			cpg_ids = cpg_type() %>% 
+				dplyr::filter(Level3 %in% input$L2_3_methy_3_gene) %>% 
+				dplyr::pull(CpG)
+		    updateSelectizeInput(
+		      session,
+		      "L2_3_methy_3_cpg",
+		      choices = cpg_ids,
+		      selected = NULL,
+		      server = TRUE
+		    )
+		})
+
 	})
 	opt_pancan = reactive({
+		cpg_type = reactive({
+			if(is.null(input$L2_3_methy_1)){
+				L2_3_methy_1 = "450K"
+			} else {
+				L2_3_methy_1 = input$L2_3_methy_1
+			}
+			switch(L2_3_methy_1,
+				`450K` = id_merge$id_molecule$id_M450[,c("Level3","CpG")],
+				`27K` = id_merge$id_molecule$id_M27K[,c("Level3","CpG")]
+			)
+		})
+		cpg_ids = cpg_type() %>% 
+			dplyr::filter(Level3 %in% input$L2_3_methy_3_gene) %>% 
+			dplyr::pull(CpG)
+		if(is.null(input$L2_3_methy_3_cpg)){
+			cpg_ids_retain = NULL
+		} else {
+			cpg_ids_retain = setdiff(cpg_ids, input$L2_3_methy_3_cpg)
+		}
+
 		list(
 			toil_mRNA = list(),
 			toil_transcript = list(),
@@ -282,12 +366,11 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 			toil_mutation = list(),
 			toil_cnv = list(use_thresholded_data = ifelse(is.null(input$L2_7_cnv_1),TRUE,as.logical(input$L2_7_cnv_1))),
 			toil_methylation = list(type = ifelse(is.null(input$L2_3_methy_1),"450K",input$L2_3_methy_1), 
-									aggr = ifelse(is.null(input$L2_3_methy_2),"NA",input$L2_3_methy_2)),
+									aggr = ifelse(is.null(input$L2_3_methy_2),"NA",input$L2_3_methy_2),
+									rule_out = cpg_ids_retain),
 			toil_miRNA = list()
 		)
 	})
-
-
 
 
 	# 过滤样本
@@ -385,11 +468,23 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 	sur_res_multi = reactiveValues(sur_dat = NULL, cutoff=NULL, sur_res = NULL)	
 
 	group_sur_final = reactive({
-		dplyr::inner_join(group_final(),sur_dat_v1()[,-1],by=c("Sample"="sample"))
+		dat = dplyr::inner_join(group_final(),sur_dat_v1()[,-1],by=c("Sample"="sample"))
+		## 验证是否只有一组分组的癌症
+		dat = dat %>%
+			dplyr::filter(Cancer %in% sort(unique(dat$Cancer))[
+				apply(table(dat$Cancer,dat$group),1,function(x) {min(x)>=1})])
+		dat
 	})
 	output$phe_sur_dat = renderPrint({head(group_sur_final())})
 
+
+
 	output$phe_sur_table.ui = renderUI({
+		shiny::validate(
+			need(try(nrow(group_sur_final())>0), 
+				"Please inspect whether to set valid groups in S3 step."),
+		)
+
 		output$phe_sur_table = renderDataTable({
 			datatable(group_sur_final()[,c("Cancer","Sample","phenotype","group")], 
 				options = list(pageLength = 5,
@@ -401,7 +496,7 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 
 	# 根据选项，动态更新绘图参数
 	output$multi_params.ui = renderUI(
-		if(input$sur_method=="log_rank"){
+		if(input$sur_method=="Log-rank test"){
 		  	fluidRow(
 		  		column(3,colourpicker::colourInput(ns("multi_log_color1"), "Bar color1", "#d53e4f")),
 		  		column(3,colourpicker::colourInput(ns("multi_log_color2"), "Bar color2", "#3288bd")),
@@ -409,7 +504,7 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 		  		column(3, selectInput(ns("multi_log_label"),"Add text",
 		  			choices = c("Signif.(symbol)", "Signif.(value)"),selected = "Signif.(symbol)"))	
 		  	)
-		} else if(input$sur_method=="cox_reg") {
+		} else if(input$sur_method=="Univariate Cox regression") {
 		  	fluidRow(
 		  		column(4,colourpicker::colourInput(ns("multi_cox_color"), "Bar color", "grey")),
 		  		column(4, numericInput(ns("multi_cox_line"), "Add line(P)", 0.05)),
@@ -420,12 +515,12 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 	)
 
 	output$one_params.ui = renderUI(
-		if(input$sur_method=="log_rank"){
+		if(input$sur_method=="Log-rank test"){
 		  	fluidRow(
 		  		column(4,colourpicker::colourInput(ns("one_log_color1"), "Curve color1", "#E7B800")),
 		  		column(4,colourpicker::colourInput(ns("one_log_color2"), "Curve color2", "#2E9FDF")),
 		  	)
-		} else if(input$sur_method=="cox_reg") {
+		} else if(input$sur_method=="Univariate Cox regression") {
 		}
 	)
 
@@ -433,7 +528,7 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 	observeEvent(input$sur_analysis_bt_single, {
 		sur_res_one$sur_dat = group_sur_final()
 
-		if(input$sur_method=="log_rank"){
+		if(input$sur_method=="Log-rank test"){
 			if(!input$use_origin){ #是否使用分组前的原始值
 				sur_res_one$sur_dat$Group = sur_res_one$sur_dat$group
 			} else {
@@ -451,8 +546,7 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 				    dplyr::mutate(Cancer = cancer_choose$name, .before = 1) %>% 
 				    dplyr::mutate(p.value = pval)
 
-
-		} else if (input$sur_method=="cox_reg"){
+		} else if (input$sur_method=="Univariate Cox regression"){
 			if(!input$use_origin){
 				sur_res_one$sur_dat$Group = sur_res_one$sur_dat$group
 			} else {
@@ -467,8 +561,12 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 	})
 
 	sur_plot_one = eventReactive(input$sur_analysis_bt_single,{
+		shiny::validate(
+			need(try(nrow(sur_res_one$sur_dat)>0), 
+				"Please inspect whether to set valid groups in S3 step."),
+		)
 		dat = sur_res_one$sur_dat
-		if(input$sur_method=="log_rank"){	
+		if(input$sur_method=="Log-rank test"){	
 			fit <- survfit(Surv(time, status) ~ Group, data = dat)
 
 			p <- ggsurvplot(fit, data = dat,#data = group_sur_final(), 
@@ -485,7 +583,7 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
                            risk.table.height = 0.3, 
                            ggtheme = ggplot2::theme_classic()) + 
 			  ggplot2::guides(color = ggplot2::guide_legend(ncol = 3))
-		}  else if (input$sur_method=="cox_reg"){
+		}  else if (input$sur_method=="Univariate Cox regression"){
 			fit = coxph(Surv(time, status) ~ Group , data = dat)
 			p = ggforest(fit,data = dat)
 		}
@@ -493,8 +591,9 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 	})
 
 	observeEvent(input$sur_analysis_bt_multi, {
-		sur_res_multi$sur_dat = group_sur_final()
-		if(input$sur_method=="log_rank"){
+		sur_res_multi$sur_dat = group_sur_final()	
+
+		if(input$sur_method=="Log-rank test"){
 			if(!input$use_origin){ #是否使用分组前的原始值
 				sur_res_multi$sur_dat$Group = sur_res_multi$sur_dat$group
 			} else {
@@ -511,6 +610,7 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 			}
 			sur_res_multi$sur_res = lapply(sort(unique(sur_res_multi$sur_dat$Cancer)), function(x){
 			  sur_dat_sub = subset(sur_res_multi$sur_dat, Cancer==x)
+			  
 			  surv_diff <- survdiff(Surv(time, status) ~ Group, data = sur_dat_sub)
 			  pval = 1 - pchisq(surv_diff$chisq, length(surv_diff$n) - 1)
 			  
@@ -520,7 +620,7 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 			    dplyr::mutate(p.value = pval)
 			}) %>% do.call(rbind, .)
 
-		} else if (input$sur_method=="cox_reg"){
+		} else if (input$sur_method=="Univariate Cox regression"){
 			if(!input$use_origin){
 				sur_res_multi$sur_dat$Group = sur_res_multi$sur_dat$group
 			} else {
@@ -537,7 +637,11 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 	})
 
 	sur_plot_multi = eventReactive(input$sur_analysis_bt_multi,{
-		if(input$sur_method=="log_rank"){
+		shiny::validate(
+			need(try(nrow(sur_res_multi$sur_dat)>0), 
+				"Please inspect whether to set valid groups in S3 step."),
+		)
+		if(input$sur_method=="Log-rank test"){
 			dat = sur_res_multi$sur_res
 			pval_df = dat %>%
 			  dplyr::select(Cancer, Group, rmean, p.value) %>% 
@@ -591,7 +695,7 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 			        panel.grid.minor.x = element_blank())
 			p = p1 + p2 + plot_layout(widths = c(5,1))
 			p
-		} else if (input$sur_method=="cox_reg") {
+		} else if (input$sur_method=="Univariate Cox regression") {
 			dat = sur_res_multi$sur_dat
 			sur_res = lapply(sort(unique(dat$Cancer)), function(x){
 			  sur_dat_sub = subset(dat, Cancer==x)

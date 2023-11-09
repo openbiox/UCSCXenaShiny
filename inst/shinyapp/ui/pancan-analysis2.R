@@ -3,15 +3,15 @@ ui.page_pancan2 <- function() {
     title = "Pan-Can Analysis",
     icon = icon("buromobelexperte"),
     tabPanel(
-      "Correlation Analysis",
+      "TCGA Association Analysis",
       ui.modules_pancan_cor("modules_pancan_cor")
     ),
     tabPanel(
-      "Grouping Comparison",
+      "TCGA Comparison Analysis",
       ui.modules_pancan_comp("modules_pancan_comp")
     ),
     tabPanel(
-      "Survival Analysis",
+      "TCGA Survival Analysis",
       ui.modules_pancan_sur("modules_pancan_sur")
     ),
     tabPanel(

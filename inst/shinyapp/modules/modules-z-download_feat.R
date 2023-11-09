@@ -32,7 +32,8 @@ download_feat_UI = function(id, button_name="Query data"){
 	            selectizeInput(
 	              inputId = ns("tumor_index_id"),
 	              label = "Identifier:",
-	              choices = NULL)
+	              choices = NULL,
+	              options = list(create = FALSE, maxOptions = 5))
 			),
 			tabPanel("Immune_Infiltration",
 				selectInput(
@@ -42,7 +43,8 @@ download_feat_UI = function(id, button_name="Query data"){
 	            selectizeInput(
 	              inputId = ns("immune_infiltration_id"),
 	              label = "Identifier:",
-	              choices = NULL)
+	              choices = NULL,
+	              options = list(create = FALSE, maxOptions = 5))
 			),
 			tabPanel("Pathway_activity",
 				selectInput(
@@ -52,7 +54,8 @@ download_feat_UI = function(id, button_name="Query data"){
 	            selectizeInput(
 	              inputId = ns("pathway_activity_id"),
 	              label = "Identifier:",
-	              choices = NULL)	
+	              choices = NULL,
+	              options = list(create = FALSE, maxOptions = 5))
 			),
 			tabPanel("Custom_metadata",
 				selectInput(
@@ -62,7 +65,8 @@ download_feat_UI = function(id, button_name="Query data"){
 	            selectizeInput(
 	              inputId = ns("custom_metadata_id"),
 	              label = "Identifier:",
-	              choices = NULL)	
+	              choices = NULL,
+	              options = list(create = FALSE, maxOptions = 5))
 			)
 
 		),
@@ -201,7 +205,7 @@ download_feat_Server = function(input, output, session, cancers=NULL, samples=NU
 					  toil_protein = list(),
 					  toil_mutation = list(),
 					  toil_cnv = list(use_thresholded_data = TRUE),
-					  toil_methylation = list(type = "450K", aggr = "Q25"),
+					  toil_methylation = list(type = "450K", aggr = "Q25", rule_out = NULL),
 					  toil_miRNA = list()
 				)
 			} else {

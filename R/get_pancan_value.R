@@ -104,7 +104,7 @@ try_query_value <- function(host, dataset,
         xd = dplyr::filter(xd, X2 %in% identifiers)
         
         if (!is.null(rule_out)) {
-          xd = dplyr::filter(xd, !X2 %in% rule_out)
+          xd = dplyr::filter(xd, !X1 %in% rule_out)  # X2 → X1
         }
         ids = xd$X1
         
