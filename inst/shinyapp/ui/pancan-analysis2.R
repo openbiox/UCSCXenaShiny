@@ -13,6 +13,10 @@ ui.page_pancan2 <- function() {
     tabPanel(
       "TCGA Survival Analysis",
       ui.modules_pancan_sur("modules_pancan_sur")
+    ),
+    tabPanel(
+      "Test Analysis",
+      ui.modules_pancan_test("modules_pancan_test")
     )
   )
 }

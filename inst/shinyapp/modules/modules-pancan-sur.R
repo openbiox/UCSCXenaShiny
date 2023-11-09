@@ -24,7 +24,6 @@ ui.modules_pancan_sur = function(id) {
 				      status = "default"),
 				    uiOutput(ns("choose_overall_mode")),
 				    br(),br(),br(),
-
 					h4("(2) Choose samples[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Choose samples for personalized need", 
@@ -33,7 +32,6 @@ ui.modules_pancan_sur = function(id) {
 					uiOutput(ns("filter_by_code.ui")),
 					textOutput(ns("filter_phe_id_info")),
 					br(),br(),br(),
-
 					h4("(3) Upload metadata[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Upload sample info", 
@@ -93,7 +91,6 @@ ui.modules_pancan_sur = function(id) {
 				wellPanel(
 					style = "height:1100px",
 					h2("S4: Analyze", align = "center"),
-
 				    # 绘图按钮
 					uiOutput(ns("sur_analysis_bt.ui")),
 
@@ -291,7 +288,6 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 				              choices = NULL,
 				              multiple = TRUE,
 				              options = list(create = TRUE, maxOptions = 5))
-
 						)
 					),
 					h4("4. Protein Expression"),
@@ -308,6 +304,7 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 				)
 			)
 		)
+
 	    updateSelectizeInput(
 	      session,
 	      "L2_3_methy_3_gene",
@@ -374,7 +371,6 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 			toil_miRNA = list()
 		)
 	})
-
 
 
 	# 过滤样本
@@ -550,7 +546,6 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 				    dplyr::mutate(Cancer = cancer_choose$name, .before = 1) %>% 
 				    dplyr::mutate(p.value = pval)
 
-
 		} else if (input$sur_method=="Univariate Cox regression"){
 			if(!input$use_origin){
 				sur_res_one$sur_dat$Group = sur_res_one$sur_dat$group
@@ -616,7 +611,6 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 			sur_res_multi$sur_res = lapply(sort(unique(sur_res_multi$sur_dat$Cancer)), function(x){
 			  sur_dat_sub = subset(sur_res_multi$sur_dat, Cancer==x)
 			  
-
 			  surv_diff <- survdiff(Surv(time, status) ~ Group, data = sur_dat_sub)
 			  pval = 1 - pchisq(surv_diff$chisq, length(surv_diff$n) - 1)
 			  

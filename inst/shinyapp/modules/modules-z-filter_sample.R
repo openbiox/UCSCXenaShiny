@@ -140,10 +140,7 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 
 					    ),
 					    uiOutput(ns("multi_condi.ui")),
-
-
 					    verbatimTextOutput(ns("filter_by_phe_prompt")),
-
 					    fluidRow(
 						    actionBttn(
 						      inputId = ns("button_phe_filter"),
@@ -512,7 +509,6 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 							value = new_thres)
 					}
 				)
-
 			)
 
 	    	phe_Input <- selectInput(id_condi_item1, label_condi_item1, 
@@ -562,6 +558,16 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 			filter_by_phe()
 		}
 	}) 
+
+	# 重置筛选条件
+	observeEvent(input$button_phe_filter_reset, {
+	  dynamic_condi$add = 0
+	  dynamic_condi$del = 0
+	  dynamic_condi$sum = 0
+	  add_phes$filter_phe_id = NULL
+	})
+	# 提取筛选条件
+
 
 	# 重置筛选条件
 	observeEvent(input$button_phe_filter_reset, {

@@ -535,7 +535,6 @@ group_samples_Server = function(input, output, session, cancers=NULL, samples=NU
     choose_group_2merge_tmp
   })
 
-  
   observeEvent(input$button_merge,{
     output$choose_group_2merge_out = renderPrint({
       shiny::validate(

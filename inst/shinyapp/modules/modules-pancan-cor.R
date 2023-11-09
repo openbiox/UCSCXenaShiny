@@ -25,7 +25,6 @@ ui.modules_pancan_cor = function(id) {
 				      status = "default"),
 				    uiOutput(ns("choose_overall_mode")),
 				    br(),br(),br(),
-
 					h4("(2) Choose samples[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Choose samples for personalized need", 
@@ -34,7 +33,6 @@ ui.modules_pancan_cor = function(id) {
 					uiOutput(ns("filter_by_code.ui")),
 					textOutput(ns("filter_phe_id_info")),
 					br(),br(),br(),
-
 					h4("(3) Upload metadata[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Upload sample info", 
@@ -218,8 +216,6 @@ server.modules_pancan_cor = function(input, output, session) {
 
 
 	# 用户上传自定义数据
-	# observe_helpers(session) 
-
 	custom_meta = reactive({
 		file = input$upload_sp_info
 		if(is.null(file$datapath)){

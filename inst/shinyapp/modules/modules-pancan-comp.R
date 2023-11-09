@@ -24,17 +24,14 @@ ui.modules_pancan_comp = function(id) {
 				      status = "default"),
 				    uiOutput(ns("choose_overall_mode")),
 				    br(),br(),br(),
-
 					h4("(2) Choose samples[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Choose samples for personalized need", 
 					                   content = "choose_samples"),
-
 					filter_samples_UI(ns("filter_samples2cor")),
 					uiOutput(ns("filter_by_code.ui")),
 					textOutput(ns("filter_phe_id_info")),
 					br(),br(),br(),
-
 					h4("(3) Upload metadata[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Upload sample info", 
@@ -284,7 +281,6 @@ server.modules_pancan_comp = function(input, output, session) {
 				              choices = NULL,
 				              multiple = TRUE,
 				              options = list(create = TRUE, maxOptions = 5))
-
 						)
 					),
 					h4("4. Protein Expression"),
@@ -353,7 +349,6 @@ server.modules_pancan_comp = function(input, output, session) {
 		} else {
 			cpg_ids_retain = setdiff(cpg_ids, input$L2_3_methy_3_cpg)
 		}
-
 		list(
 			toil_mRNA = list(),
 			toil_transcript = list(),
@@ -366,7 +361,6 @@ server.modules_pancan_comp = function(input, output, session) {
 			toil_miRNA = list()
 		)
 	})
-
 
 	# 过滤样本
 	## 快速过滤
