@@ -166,7 +166,7 @@ query_pancan_value <- function(molecule,
     tryCatch(
       {
         values <- purrr::map(ids, function(x) {
-          query_value(x, data_type, database, pancan_opt)
+          query_value(x, data_type, database, opt_pancan)
         })
         unit <- if (is.list(values[[1]]) && length(values[[1]]) > 1) values[[1]][[2]] else NULL
         if (is.null(unit)) {
