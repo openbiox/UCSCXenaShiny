@@ -59,7 +59,7 @@ query_molecule_value <- function(dataset, molecule, host = NULL) {
   toil_protein = list(),
   toil_mutation = list(),
   toil_cnv = list(use_thresholded_data = TRUE),
-  toil_methylation = list(type = "450K",rule_out = NULL, aggr = "Q25"),
+  toil_methylation = list(type = "450K", rule_out = NULL, aggr = "NA"),
   toil_miRNA = list(),
   # PCAWG
   pcawg_gene = list(),
