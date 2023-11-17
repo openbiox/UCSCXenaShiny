@@ -82,6 +82,7 @@ pacman::p_load(
   shinyWidgets,
   shinyalert,
   shinyFiles,
+  shinyFeedback,
   shinythemes,
   shinyhelper,
   survival,
