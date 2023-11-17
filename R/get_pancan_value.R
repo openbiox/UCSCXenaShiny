@@ -101,10 +101,10 @@ try_query_value <- function(host, dataset,
         xe = UCSCXenaTools::XenaQueryProbeMap(UCSCXenaTools::XenaGenerate(subset = XenaDatasets == dataset))
         xd = UCSCXenaTools::XenaPrepare(UCSCXenaTools::XenaDownload(xe), col_names = FALSE)[, c(1, 2)]
         xd = tidyr::separate_rows(xd, "X2", sep = ",")
-        xd = dplyr::filter(xd, X2 %in% identifiers)
+        xd = dplyr::filter(xd, .data$X2 %in% identifiers)
         
         if (!is.null(rule_out)) {
-          xd = dplyr::filter(xd, !X1 %in% rule_out)  # X2 → X1
+          xd = dplyr::filter(xd, !.data$X1 %in% rule_out)  # X2 → X1
         }
         ids = xd$X1
         

@@ -1,11 +1,6 @@
 ui.modules_pancan_cor = function(id) {
 	ns = NS(id)
 	fluidPage(
-		wellPanel(
-			h2("TCGA Association Analysis", align = "center"),
-			style = "height:150px",
-		),
-
 		fluidRow(
 			# 初始设置
 			column(
@@ -14,7 +9,7 @@ ui.modules_pancan_cor = function(id) {
 					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
 
-					h4("(1) Choose cancer(s)"),
+					h4("1. Choose cancer(s)"),
 				    prettyRadioButtons(
 				      inputId = ns("overall_mode"),
 				      label = NULL,
@@ -24,37 +19,38 @@ ui.modules_pancan_cor = function(id) {
 				      inline = TRUE,
 				      status = "default"),
 				    uiOutput(ns("choose_overall_mode")),
-				    br(),br(),br(),
-					h4("(2) Choose samples[opt]") %>% 
+				    br(),br(),
+
+					h4("2. Filter samples[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Choose samples for personalized need", 
 					                   content = "choose_samples"),
+					h5("Quick filter:"),
+					pickerInput(
+						ns("filter_by_code"), NULL,
+						choices = NULL, selected =  NULL,
+						multiple = TRUE, options = list(`actions-box` = TRUE)
+					),
+					h5("Exact filter:"),
 					filter_samples_UI(ns("filter_samples2cor")),
-					uiOutput(ns("filter_by_code.ui")),
-					textOutput(ns("filter_phe_id_info")),
-					br(),br(),br(),
-					h4("(3) Upload metadata[opt]") %>% 
+					br(),
+					verbatimTextOutput(ns("filter_phe_id_info")),
+					br(),br(),
+
+					h4("3. Upload metadata[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Upload sample info", 
 					                   content = "custom_metadata"),
 					shinyFeedback::useShinyFeedback(),
+					custom_meta_UI(ns("custom_meta2cor")),
+					br(),br(),
 
-					fileInput(ns("upload_sp_info"),"", accept = ".csv"),
-					downloadButton(ns("example_sp_info"), "Download example data."),
-					br(),br(),br(),
-
-					h4("(4) Set data origin[opt]") %>% 
+					h4("4. Modify datasets[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Set molecular profile origin", 
 					                   content = "data_origin"),
-					shinyWidgets::actionBttn(
-						ns("data_origin"), "Available respositories",
-				        style = "gradient",
-				        icon = icon("box"),
-				        color = "primary",
-				        block = TRUE,
-				        size = "sm"
-					)
+
+					mol_origin_UI(ns("mol_origin2cor"))
 				)
 			),
 			# 下载X轴数据
@@ -62,7 +58,7 @@ ui.modules_pancan_cor = function(id) {
 				3,
 				wellPanel(
 					style = "height:1100px",
-					h2("S2: Select var for X", align = "center"),
+					h2("S2: Select item for X", align = "center"),
 					# 调用下载模块UI
 					download_feat_UI(ns("download_x_axis"), button_name="Query data(x-axis)"),
 	            	br(),br(),br(),
@@ -75,7 +71,7 @@ ui.modules_pancan_cor = function(id) {
 				3,
 				wellPanel(
 					style = "height:1100px",
-					h2("S3: Select var for Y", align = "center"),
+					h2("S3: Select item for Y", align = "center"),
 					# 调用下载模块UI
 					download_feat_UI(ns("download_y_axis"), button_name="Query data(y-axis)"),
 	            	br(),br(),br(),
@@ -205,229 +201,60 @@ server.modules_pancan_cor = function(input, output, session) {
 
 
 	# 记录选择癌症
-	cancer_choose <- reactiveValues(name = "ACC", phe_primary="",filter_phe_id=NULL)
+	cancer_choose <- reactiveValues(name = "ACC", phe_primary="",
+		filter_phe_id=query_tcga_group(cancer = "BRCA", return_all = T))
 	observe({
 		if(input$overall_mode == "Single cancer"){
 			cancer_choose$name = input$choose_cancer
 		} else if(input$overall_mode == "Multi-cancers"){
 			cancer_choose$name = input$choose_cancers
 		}
+		cancer_choose$phe_primary <- query_tcga_group(cancer = cancer_choose$name, return_all = T)
 	})
+	
 
-
-	# 用户上传自定义数据
-	custom_meta = reactive({
-		file = input$upload_sp_info
-		if(is.null(file$datapath)){
-			sp_info = query_tcga_group()$data[,"Sample"]
-			set.seed(42)
-			scores = matrix(rnorm(nrow(sp_info)*5,mean = 1, sd = 1), ncol = 5) %>% as.data.frame()
-			colnames(scores) = paste0("TF",1:5)
-			sp_info = cbind(sp_info, scores)
-		} else {
-			csv_format = tools::file_ext(file$name)=="csv"
-			shinyFeedback::feedbackDanger("upload_sp_info", !csv_format, "Non .csv format file")
-			req(csv_format,cancelOutput = TRUE)
-			read.csv(file$datapath)
-		} 
-	})
-	output$example_sp_info = downloadHandler(
-		filename = function(){
-			"example_sample_info.csv"
-		},
-		content = function(file){
-			sp_info = query_tcga_group()$data[,"Sample"]
-			set.seed(42)
-			scores = matrix(rnorm(nrow(sp_info)*5,mean = 1, sd = 1), ncol = 5) %>% as.data.frame()
-			colnames(scores) = paste0("TF",1:5)
-			sp_info = cbind(sp_info, scores)
-			write.csv(sp_info, file, row.names = FALSE)
-		}
-	)
+	# 自定义上传metadata数据
+	custom_meta = callModule(custom_meta_Server, "custom_meta2cor")
 
 	# 数据源设置
-	observeEvent(input$data_origin, {
-		showModal(
-			modalDialog(
-				title = "Set molecular profiles:",
-				footer = modalButton("Done!"),
-				size = "l",
-				fluidPage(
-					h4("1. mRNA Expression"),
-					h4("2. Transcript Expression"),
-					h4("3. DNA Methylation"),
-					fluidRow(
-						column(
-							6,
-							selectInput(ns("L2_3_methy_1"),"(1)Type",
-								choices = c("450K","27K"), selected = TRUE)
-						),
-						column(
-							6,
-							selectInput(ns("L2_3_methy_2"),"(2)Aggregation",
-								choices = c("NA", "mean", "Q0", "Q25", "Q50", "Q75", "Q100"), 
-								selected = "mean")
-						)
-					),
-					## relu_out
-					fluidRow(
-						column(
-							6,
-							selectizeInput(ns("L2_3_methy_3_gene"),"(3)Pinpoint CpG by Gene",
-								choices = NULL, options = list(create = TRUE, maxOptions = 5))
-						),
-						column(
-							6,
-				            selectizeInput(
-				              inputId = ns("L2_3_methy_3_cpg"),
-				              label = "CpG sites",
-				              choices = NULL,
-				              multiple = TRUE,
-				              options = list(create = TRUE, maxOptions = 5))
-
-						)
-					),
-					h4("4. Protein Expression"),
-					h4("5. miRNA Expression"),
-					h4("6. Mutation status"),
-					h4("7. Copy Number Variation"),
-					fluidRow(
-						column(
-							6,
-							selectInput(ns("L2_7_cnv_1"),"(1)Thresholded data",
-								choices = c(TRUE, FALSE), selected = TRUE)
-						)
-					)
-				)
-			)
-		)
-	    updateSelectizeInput(
-	      session,
-	      "L2_3_methy_3_gene",
-	      choices = pancan_identifiers$gene,
-	      selected = "TP53",
-	      server = TRUE
-	    )
-		# observeEvent(input$L2_3_methy_3_gene,{
-		observe({
-			cpg_type = reactive({
-				if(is.null(input$L2_3_methy_1)){
-					L2_3_methy_1 = "450K"
-				} else {
-					L2_3_methy_1 = input$L2_3_methy_1
-				}
-				switch(L2_3_methy_1,
-					`450K` = id_merge$id_molecule$id_M450[,c("Level3","CpG")],
-					`27K` = id_merge$id_molecule$id_M27K[,c("Level3","CpG")]
-				)
-			})
-			cpg_ids = cpg_type() %>% 
-				dplyr::filter(Level3 %in% input$L2_3_methy_3_gene) %>% 
-				dplyr::pull(CpG)
-		    updateSelectizeInput(
-		      session,
-		      "L2_3_methy_3_cpg",
-		      choices = cpg_ids,
-		      selected = NULL,
-		      server = TRUE
-		    )
-		})
-
-	})
-	opt_pancan = reactive({
-		cpg_type = reactive({
-			if(is.null(input$L2_3_methy_1)){
-				L2_3_methy_1 = "450K"
-			} else {
-				L2_3_methy_1 = input$L2_3_methy_1
-			}
-			switch(L2_3_methy_1,
-				`450K` = id_merge$id_molecule$id_M450[,c("Level3","CpG")],
-				`27K` = id_merge$id_molecule$id_M27K[,c("Level3","CpG")]
-			)
-		})
-		cpg_ids = cpg_type() %>% 
-			dplyr::filter(Level3 %in% input$L2_3_methy_3_gene) %>% 
-			dplyr::pull(CpG)
-		if(is.null(input$L2_3_methy_3_cpg)){
-			cpg_ids_retain = NULL
-		} else {
-			cpg_ids_retain = setdiff(cpg_ids, input$L2_3_methy_3_cpg)
-		}
-
-		list(
-			toil_mRNA = list(),
-			toil_transcript = list(),
-			toil_protein = list(),
-			toil_mutation = list(),
-			toil_cnv = list(use_thresholded_data = ifelse(is.null(input$L2_7_cnv_1),TRUE,as.logical(input$L2_7_cnv_1))),
-			toil_methylation = list(type = ifelse(is.null(input$L2_3_methy_1),"450K",input$L2_3_methy_1), 
-									aggr = ifelse(is.null(input$L2_3_methy_2),"NA",input$L2_3_methy_2),
-									rule_out = cpg_ids_retain),
-			toil_miRNA = list()
-		)
-	})
+	opt_pancan = callModule(mol_origin_Server, "mol_origin2cor")
 
 
-	# 过滤样本
-	## 快速过滤
-	observe({
-		phe_primary = query_tcga_group(
-			cancer = cancer_choose$name, 
-			return_all = T)
-		code_types = list("NT"= "NT (normal tissue)",
-						  "TP"= "TP (primary tumor)",
-						  "TR"= "TR (recurrent tumor)",
-						  "TB"= "TB (blood derived tumor)",
-						  "TAP"="TAP (additional primary)",
-						  "TM"= "TM (metastatic tumor)",
-						  "TAM"="TAM (additional metastatic)")
-		code_types_valid = code_types[names(code_types) %in% unique(phe_primary$Code)]
-		output$filter_by_code.ui = renderUI(
-			checkboxGroupInput(
-				ns("filter_by_code"),
-				"Quick filtering by code:",
-				choices = unlist(code_types_valid,use.names = F),
-				selected = unlist(code_types_valid,use.names = F),
-				inline = TRUE
-			)
-		)
-	})
-
-	## 调用模块，精确过滤
+	## 过滤样本
+	# exact filter module
 	filter_phe_id = callModule(filter_samples_Server, "filter_samples2cor",
 					   cancers=reactive(cancer_choose$name),
 					   custom_metadata=reactive(custom_meta()),
 					   opt_pancan = reactive(opt_pancan()))
-
-	## 综合上述二者
+	# quick filter widget
 	observe({
-		phe_primary = query_tcga_group(
-			cancer = cancer_choose$name, 
-			return_all = T)
+		code_types_valid = code_types[names(code_types) %in% 
+							unique(cancer_choose$phe_primary$Code)]
+		updatePickerInput(
+			session,
+			"filter_by_code",
+			choices = unlist(code_types_valid,use.names = F),
+			selected =  unlist(code_types_valid,use.names = F)
+		)
+	})
 
-		code_types = list("NT"= "NT (normal tissue)",
-						  "TP"= "TP (primary tumor)",
-						  "TR"= "TR (recurrent tumor)",
-						  "TB"= "TB (blood derived tumor)",
-						  "TAP"="TAP (additional primary)",
-						  "TM"= "TM (metastatic tumor)",
-						  "TAM"="TAM (additional metastatic)")
-		
+	# 综合上述二者
+	observe({
+		# quick filter
 		choose_codes = names(code_types)[unlist(code_types) %in% input$filter_by_code]
-
-		filter_phe_id2 = phe_primary %>%
+		filter_phe_id2 = cancer_choose$phe_primary %>%
 			dplyr::filter(Code %in% choose_codes) %>%
 			dplyr::pull("Sample")
 
+		# exact filter
 		if(is.null(filter_phe_id())){
 			cancer_choose$filter_phe_id = filter_phe_id2
 		} else {
 			cancer_choose$filter_phe_id = intersect(filter_phe_id2,filter_phe_id())
 		}
 
-		output$filter_phe_id_info = renderText({
-			paste0("NOTE: A total of ", length(cancer_choose$filter_phe_id), " samples are selcted.")
+		output$filter_phe_id_info = renderPrint({
+			cat(paste0("Tip: ", length(cancer_choose$filter_phe_id), " samples are retained"))
 		})
 	})
 

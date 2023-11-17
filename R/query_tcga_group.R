@@ -149,44 +149,44 @@ query_tcga_group = function(cancer=NULL,
       # 6种过滤方式
       if (filter_by_L3=="+"){         #保留
         meta_data_sub %>% 
-          dplyr::filter(.data[[filter_by_L1]] %in% filter_by_L2) %>% dplyr::pull(Sample)
+          dplyr::filter(.data[[filter_by_L1]] %in% filter_by_L2) %>% dplyr::pull('Sample')
       } else if (filter_by_L3=="-"){  #剔除
         meta_data_sub %>% 
-          dplyr::filter(!.data[[filter_by_L1]] %in% filter_by_L2) %>% dplyr::pull(Sample)
+          dplyr::filter(!.data[[filter_by_L1]] %in% filter_by_L2) %>% dplyr::pull('Sample')
       } else if (filter_by_L3==">"){  #大于 绝对值
         filter_by_L2 = as.numeric(filter_by_L2)
         meta_data_sub %>% 
-          dplyr::filter(.data[[filter_by_L1]] > filter_by_L2) %>% dplyr::pull(Sample)
+          dplyr::filter(.data[[filter_by_L1]] > filter_by_L2) %>% dplyr::pull('Sample')
       } else if (filter_by_L3=="%>"){ #大于 分位数
         filter_by_L2 = as.numeric(filter_by_L2)
         meta_data_sub %>% 
-          dplyr::group_by(Cancer) %>% 
+          dplyr::group_by("Cancer") %>% 
           dplyr::filter(.data[[filter_by_L1]] > 
-                          quantile(.data[[filter_by_L1]],filter_by_L2,na.rm=T)) %>% dplyr::pull(Sample)
+                          quantile(.data[[filter_by_L1]],filter_by_L2,na.rm=T)) %>% dplyr::pull('Sample')
       } else if (filter_by_L3=="<"){ #小于 绝对值
         filter_by_L2 = as.numeric(filter_by_L2)
         meta_data_sub %>% 
-          dplyr::filter(.data[[filter_by_L1]] < filter_by_L2) %>% dplyr::pull(Sample)  
+          dplyr::filter(.data[[filter_by_L1]] < filter_by_L2) %>% dplyr::pull('Sample')  
       } else if (filter_by_L3=="%<"){#小于 分位数
         filter_by_L2 = as.numeric(filter_by_L2)
         meta_data_sub %>% 
-          dplyr::group_by(Cancer) %>% 
+          dplyr::group_by("Cancer") %>% 
           dplyr::filter(.data[[filter_by_L1]] < 
-                          quantile(.data[[filter_by_L1]],filter_by_L2,na.rm=T)) %>% dplyr::pull(Sample)  
+                          quantile(.data[[filter_by_L1]],filter_by_L2,na.rm=T)) %>% dplyr::pull('Sample')  
       }
     }) %>% unlist()
     
     # 统计频数，保留符合全部条件的样本
     Samples_freq = table(Samples_retain)
     meta_data_sub = meta_data_sub %>% 
-      dplyr::filter(Sample %in% names(Samples_freq)[Samples_freq==length(filter_by)])
+      dplyr::filter(.data$Sample %in% names(Samples_freq)[Samples_freq==length(filter_by)])
   }
 
   
   # step3-2: filter by sample id
   if(!is.null(filter_id)){
     meta_data_sub = meta_data_sub %>% 
-      dplyr::filter(Sample %in% filter_id)
+      dplyr::filter(.data$Sample %in% filter_id)
   }
   
   
