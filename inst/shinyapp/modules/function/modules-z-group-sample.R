@@ -1,7 +1,7 @@
 group_samples_UI = function(id, button_name="Filter by multi-conditions"){
   ns = NS(id)
   tagList(
-    h4("1. Add phenotypes(optional)"),
+    h4("1. Add phenotypes[opt]"),
     
     fluidRow(
       column(
@@ -469,7 +469,7 @@ group_samples_Server = function(input, output, session, cancers=NULL, samples=NU
   output$set_quantile.ui = renderUI({
   	choice_chrs = add_phes$phe_primary[,ifelse(is.null(add_phes$group),"Code",add_phes$group),drop=T]
   	if(class(choice_chrs)!="character"){
-  		materialSwitch(ns("set_quantile"),"Whether group by percentile?")
+  		materialSwitch(ns("set_quantile"),"Whether group by percentile?",value = TRUE)
   	}
   })
 

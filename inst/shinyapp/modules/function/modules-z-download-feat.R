@@ -1,6 +1,14 @@
 download_feat_UI = function(id, button_name="Query data"){
 	ns = NS(id)
 	tagList(
+		shinyWidgets::actionBttn(
+			ns("query_data"), button_name,
+	        style = "gradient",
+	        icon = icon("search"),
+	        color = "primary",
+	        block = TRUE,
+	        size = "sm"
+		),
 	    shinyWidgets::prettyRadioButtons(
 	        inputId = ns("data_L1"), label = "Data type:",
 	        choiceValues = c("Molecular_profile", "Tumor_index", "Immune_Infiltration", "Pathway_activity", "Custom_metadata"),
@@ -68,16 +76,8 @@ download_feat_UI = function(id, button_name="Query data"){
 	              choices = NULL,
 	              options = list(create = FALSE, maxOptions = 5))
 			)
-
-		),
-		shinyWidgets::actionBttn(
-			ns("query_data"), button_name,
-	        style = "gradient",
-	        icon = icon("search"),
-	        color = "primary",
-	        block = TRUE,
-	        size = "sm"
 		)
+
 	)
 }
 
@@ -143,7 +143,6 @@ download_feat_Server = function(input, output, session, cancers=NULL, samples=NU
 		} else {
 			choice_all = sort(colnames(custom_metadata()[-1]))
 			choice_default = sort(colnames(custom_metadata()[-1]))[1]
-
 		}
 
 	  switch(input$custom_metadata,

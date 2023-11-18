@@ -1,4 +1,4 @@
-ui.page_pancan <- function() {
+ui.page_pancan_quick <- function() {
   navbarMenu(
     title = "Quick PanCan Analysis",
     icon = icon("buromobelexperte"),

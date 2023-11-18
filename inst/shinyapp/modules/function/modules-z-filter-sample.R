@@ -1,4 +1,4 @@
-filter_samples_UI = function(id, button_name="Multi-conditions filters"){
+filter_samples_UI = function(id, button_name="Enter"){
 	ns = NS(id)
 	tagList(
 		shinyWidgets::actionBttn(

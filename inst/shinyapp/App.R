@@ -168,8 +168,6 @@ tumor_index_list$tcga_msi = tcga_gtex %>%
   dplyr::select(Barcode, sample) %>%
   dplyr::inner_join(tumor_index_list$tcga_msi, by = "Barcode")
 
-# Help → ID reference
-id_merge = load_data("pancan_identifier_help")
 
 
 
@@ -201,6 +199,55 @@ PW_meta <- PW_meta %>%
   dplyr::mutate(display = paste0(Name, " (", size, ")"), .before = 6)
 
 
+
+code_types = list("NT"= "NT (normal tissue)",
+          "TP"= "TP (primary tumor)",
+          "TR"= "TR (recurrent tumor)",
+          "TB"= "TB (blood derived tumor)",
+          "TAP"="TAP (additional primary)",
+          "TM"= "TM (metastatic tumor)",
+          "TAM"="TAM (additional metastatic)")
+
+# Help → ID reference
+id_merge = load_data("pancan_identifier_help")
+
+id_list = list(
+   `mRNA Expression` = list(all = pancan_identifiers$gene, default = "TP53"),
+   `Transcript Expression` = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
+   `DNA Methylation` = list(all = pancan_identifiers$gene, default = "TP53"),
+   `Protein Expression` = list(all = pancan_identifiers$protein, default = "P53"),
+   `miRNA Expression` = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+   `Mutation status` = list(all = pancan_identifiers$gene, default = "TP53"),
+   `Copy Number Variation` = list(all = pancan_identifiers$gene, default = "TP53"),
+
+   `Tumor Purity` = list(all = colnames(tumor_index_list$tcga_purity)[3:7], default = "ESTIMATE"),
+   `Tumor Stemness` = list(all = colnames(tumor_index_list$tcga_stemness)[2:6], default = "RNAss"),
+   `Tumor Mutation Burden` = list(all = colnames(tumor_index_list$tcga_tmb)[4:5], default = "Non_silent_per_Mb"),
+   `Microsatellite Instability` = list(all = colnames(tumor_index_list$tcga_msi)[3:21], default = "Total_nb_MSI_events"),
+   `Genome Instability` = list(all = colnames(tumor_index_list$tcga_genome_instability)[2:6], default = "ploidy"),
+
+   `CIBERSORT` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="CIBERSORT"]), default = "Monocyte"),
+   `CIBERSORT-ABS` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="CIBERSORT-ABS"]), default = "Monocyte"),
+   `EPIC` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="EPIC"]), default = "Macrophage"),
+   `MCPCOUNTER` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="MCPCOUNTER"]), default = "Monocyte"),
+   `QUANTISEQ` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="QUANTISEQ"]), default = "Monocyte"),
+   `TIMER` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="TIMER"]), default = "Macrophage"),
+   `XCELL` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="XCELL"]), default = "Monocyte"),
+
+   `HALLMARK` = list(all = sort(PW_meta$Name[PW_meta$Type=="HALLMARK"]), default = "APOPTOSIS"),
+   `KEGG` = list(all = sort(PW_meta$Name[PW_meta$Type=="KEGG"]), default = "CELL_CYCLE"),
+   `IOBR` = list(all = sort(PW_meta$Name[PW_meta$Type=="IOBR"]), default = "Biotin_Metabolism")
+)
+id_category = list(
+  `Molecular_profile` = list("mRNA Expression", "Transcript Expression", "DNA Methylation", 
+        "Protein Expression", "miRNA Expression", "Mutation status","Copy Number Variation"),
+  `Tumor_index` = list("Tumor Purity","Tumor Stemness","Tumor Mutation Burden",
+        "Microsatellite Instability","Genome Instability"),
+  `Immune_Infiltration`=list("CIBERSORT", "CIBERSORT-ABS", "EPIC", "MCPCOUNTER",
+        "QUANTISEQ", "TIMER", "XCELL"),
+  `Pathway_activity` = list("HALLMARK","KEGG","IOBR"),
+  `Custom_metadata` = list("Custom_metadata")
+)
 
 # CCLE tissues for drug analysis
 # "ALL" means all tissues
@@ -241,13 +288,13 @@ mycolor <- c(RColorBrewer::brewer.pal(12, "Paired"))
 
 # Put modules here --------------------------------------------------------
 modules_path <- system.file("shinyapp", "modules", package = "UCSCXenaShiny", mustWork = TRUE)
-modules_file <- dir(modules_path, pattern = "\\.R$", full.names = TRUE)
+modules_file <- dir(modules_path, pattern = "\\.R$", full.names = TRUE, recursive = TRUE)
 sapply(modules_file, function(x, y) source(x, local = y), y = environment())
 
 
 # Put page UIs here -----------------------------------------------------
 pages_path <- system.file("shinyapp", "ui", package = "UCSCXenaShiny", mustWork = TRUE)
-pages_file <- dir(pages_path, pattern = "\\.R$", full.names = TRUE)
+pages_file <- dir(pages_path, pattern = "\\.R$", full.names = TRUE, recursive = TRUE)
 sapply(pages_file, function(x, y) source(x, local = y), y = environment())
 
 
@@ -343,8 +390,11 @@ ui <- tagList(
     ui.page_home(),
     ui.page_repository(),
     ui.page_general_analysis(),
-    ui.page_pancan(),
-    ui.page_pancan2(),
+    ui.page_pancan_tcga(),
+    ui.page_pancan_pcawg(),
+    ui.page_pancan_ccle(),
+    ui.page_pancan_quick(),
+    ui.page_download(),
     #ui.page_global(),
     ui.page_help(),
     ui.page_developers(),

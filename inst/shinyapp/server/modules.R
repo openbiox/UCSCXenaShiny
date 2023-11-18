@@ -22,8 +22,15 @@ callModule(server.modules_pancan_mut, "modules_pancan_mut")
 
 # general pancan
 callModule(server.modules_pancan_cor, "modules_pancan_cor")
+callModule(server.modules_pancan_cor_batch, "modules_pancan_cor_batch")
+
 callModule(server.modules_pancan_comp, "modules_pancan_comp")
+callModule(server.modules_pancan_comp_batch, "modules_pancan_comp_batch")
+
 callModule(server.modules_pancan_sur, "modules_pancan_sur")
+callModule(server.modules_pancan_sur_batch, "modules_pancan_sur_batch")
+
+
 
 # identifier help
 callModule(server.modules_id_reference, "modules_id_reference")
