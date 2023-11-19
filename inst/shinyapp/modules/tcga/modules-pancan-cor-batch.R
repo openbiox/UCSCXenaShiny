@@ -292,7 +292,7 @@ server.modules_pancan_cor_batch = function(input, output, session) {
 			    incProgress(1 / length(L3s_x()), detail = paste0("(Run ",i,"/",length(L3s_x()),")"))
 
 				L3_x = L3_x = L3s_x()[i]
-				x_data = batch_download(L1_x, input$L2_x, L3_x,
+				x_data = UCSCXenaShiny:::batch_download(L1_x, input$L2_x, L3_x,
 							   tumor_index_list, tcga_TIL, tcga_PW, opt_pancan())
 				x_data = x_data %>%
 					dplyr::inner_join(load_data("tcga_clinical")[,c("sample","type")]) %>%
@@ -328,7 +328,7 @@ server.modules_pancan_cor_batch = function(input, output, session) {
 	# y axis数据
 	L3_y_data = eventReactive(input$inspect_data_y, {
 		L1_y = names(id_category)[sapply(id_category, function(x){any(x %in% input$L2_y)})]
-		y_data = batch_download(L1_y, input$L2_y, input$L3_y,
+		y_data = UCSCXenaShiny:::batch_download(L1_y, input$L2_y, input$L3_y,
 									tumor_index_list, tcga_TIL, tcga_PW, opt_pancan())
 		y_data = y_data %>%
 			dplyr::inner_join(load_data("tcga_clinical")[,c("sample","type")]) %>%

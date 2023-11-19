@@ -290,7 +290,7 @@ server.modules_pancan_sur_batch = function(input, output, session) {
 			    incProgress(1 / length(L3s_x()), detail = paste0("(Run ",i,"/",length(L3s_x()),")"))
 
 				L3_x = L3_x = L3s_x()[i]
-				x_data = batch_download(L1_x, input$L2_x, L3_x,
+				x_data = UCSCXenaShiny:::batch_download(L1_x, input$L2_x, L3_x,
 							   tumor_index_list, tcga_TIL, tcga_PW, opt_pancan())
 				x_data = x_data %>%
 					dplyr::inner_join(load_data("tcga_clinical")[,c("sample","type")]) %>%

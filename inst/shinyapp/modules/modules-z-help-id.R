@@ -1,23 +1,25 @@
 ui.modules_id_reference = function(id) {
 	ns = NS(id)
 	fluidPage(
-		wellPanel(
-			p("Here are 4 types (Level1) of full ID referrence corresponding to the input widgets of general pan-cancer modules
-			  and other similar modules"),
-			p("(1): The id information is mainly based on metadata of default quering cohorts;"),
-			p("(2): For the genome coordinate of molecules, GENCODE V23(hg38) is showed;"),
-			p("(3): ......"),
-		),
+		# wellPanel(
+		# 	p("Here are 4 types (Level1) of full ID referrence corresponding to the input widgets of general pan-cancer modules
+		# 	  and other similar modules"),
+		# 	p("(1): The id information is mainly based on metadata of default quering cohorts;"),
+		# 	p("(2): For the genome coordinate of molecules, GENCODE V23(hg38) is showed;"),
+		# 	p("(3): ......"),
+		# ),
 
-		h2("Ⅰ Molecular profile"),
+		h2("Ⅰ Molecular profile") %>%
+			helper(type = "inline", size = "m", fade = TRUE, title="Tip:" , 
+				content = "The Chromosomal coordinates is based on GENCODE V23(hg38)"),
 		tabsetPanel(
 			tabPanel("Gene", dataTableOutput(ns("dt_1_1_gene"))),
 			tabPanel("Protein", dataTableOutput(ns("dt_1_2_pro"))),
 			tabPanel("Mutation", dataTableOutput(ns("dt_1_3_mut"))),
 			tabPanel("CNV", dataTableOutput(ns("dt_1_4_cn"))),
 			tabPanel("Transcript", dataTableOutput(ns("dt_1_5_trans"))),
-			tabPanel("Methylation(450)", dataTableOutput(ns("dt_1_6_450"))),
-			tabPanel("Methylation(25K)", dataTableOutput(ns("dt_1_7_27k"))),
+			tabPanel("Methylation(450K)", dataTableOutput(ns("dt_1_6_450"))),
+			tabPanel("Methylation(27K)", dataTableOutput(ns("dt_1_7_27k"))),
 			tabPanel("miRNA", dataTableOutput(ns("dt_1_8_mi"))),
 		),
 		h2("Ⅱ Tumor index"),

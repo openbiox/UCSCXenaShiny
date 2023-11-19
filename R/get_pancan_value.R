@@ -98,9 +98,23 @@ try_query_value <- function(host, dataset,
         # be careful!
         message("Fetching all ids, take patience...")
         #ids = UCSCXenaTools::fetch_dataset_identifiers(host, dataset)
-        xe = UCSCXenaTools::XenaQueryProbeMap(UCSCXenaTools::XenaGenerate(subset = XenaDatasets == dataset))
-        xd = UCSCXenaTools::XenaPrepare(UCSCXenaTools::XenaDownload(xe), col_names = FALSE)[, c(1, 2)]
-        xd = tidyr::separate_rows(xd, "X2", sep = ",")
+        ## Download probeMap time-cost
+        # xe = UCSCXenaTools::XenaQueryProbeMap(UCSCXenaTools::XenaGenerate(subset = XenaDatasets == dataset))
+        # xd = UCSCXenaTools::XenaPrepare(UCSCXenaTools::XenaDownload(xe), col_names = FALSE)[, c(1, 2)]
+        # xd = tidyr::separate_rows(xd, "X2", sep = ",")
+        
+        ## Use the prepared ID referrence data
+        id_ref = load_data("pancan_identifier_help")[["id_molecule"]]
+        if(grepl(dataset,"450")){
+          xd = id_ref[["id_M450"]] %>%
+            dplyr::select(CpG, Level3) %>% 
+            dplyr::rename(X1 = CpG, X2 = Level3)
+        } else {
+          xd = id_ref[["id_M27K"]] %>%
+            dplyr::select(CpG, Level3) %>% 
+            dplyr::rename(X1 = CpG, X2 = Level3)   
+        }
+        
         xd = dplyr::filter(xd, .data$X2 %in% identifiers)
         
         if (!is.null(rule_out)) {
