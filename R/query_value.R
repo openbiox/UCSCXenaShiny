@@ -62,7 +62,7 @@ query_molecule_value <- function(dataset, molecule, host = NULL) {
   toil_methylation = list(type = "450K", rule_out = NULL, aggr = "NA"),
   toil_miRNA = list(),
   # PCAWG
-  pcawg_gene = list(),
+  pcawg_mRNA = list(),
   pcawg_fusion = list(),
   pcawg_miRNA = list(norm_method = "TMM"),
   pcawg_promoter = list(type = "relative"),

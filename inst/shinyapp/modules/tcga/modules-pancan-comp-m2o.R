@@ -1,11 +1,11 @@
-ui.modules_pancan_comp_batch = function(id) {
+ui.modules_pancan_comp_m2o = function(id) {
 	ns = NS(id)
 	fluidPage(
 		# 第一行：选择肿瘤及样本
 		fluidRow(
 			# 选择分组依据
 			column(
-				2,
+				3,
 				wellPanel(
 					style = "height:1000px",
 					h2("S1: Preset", align = "center"),
@@ -50,68 +50,23 @@ ui.modules_pancan_comp_batch = function(id) {
 			),
 			# 分组设置
 			column(
-				3,
-				wellPanel(
-					style = "height:1000px",
-					h2("S2: Group samples", align = "center"),
-					# 调用分组模块UI
-					group_samples_UI(ns("group_samples2comp_batch"))  
-				)
-			),
-			column(
-				3,
-				wellPanel(
-					style = "height:1000px",
-
-					h2("S3: Select items for compare", align = "center"),
-
-					br(),br(),
-					shinyWidgets::actionBttn(
-						ns("inspect_data_x"), "Query data",
-				        style = "gradient",
-				        icon = icon("search"),
-				        color = "primary",
-				        block = TRUE,
-				        size = "sm"
-					),
-					br(),br(),
-
-					selectInput(ns("L2_x"), "Choose data type", id_category),
-					
-					prettyRadioButtons(ns("L3_x_type"),"Choose multi-ids by",
-						choices = c("Selection","All","File"), selected = "Selection", inline=TRUE) %>% 
-							helper(type = "markdown", sie = "m", fade = TRUE,
-									title = "Notes for IDs selction", content = "batch_ids"),
-					tabsetPanel(id = ns("L3_x_type_tab"),
-						type = "hidden",
-						tabPanel("Selection",
-							# materialSwitch(ns("all_ids"), "All ids?", inline = FALSE),
-							selectizeInput(ns("L3_x"), NULL,choices=NULL, multiple=T),
-						),
-						tabPanel("File",
-							fluidRow(
-								column(8, fileInput(ns("fl_L3_x"),NULL, accept = ".txt")),
-								column(3, downloadButton(ns("dw_L3_x"), "e.g."))
-							)
-						),
-						tabPanel("All"
-						)
-					),
-
-					br(),
-					verbatimTextOutput(ns("L3s_x_tip")),
-					br(),
-					uiOutput(ns("L3s_x_data.ui"))
-
-				)
-			),
-			column(
 				4,
 				wellPanel(
 					style = "height:1000px",
-					h2("S4: Batch analyze", align = "center"),
+					h2("S2: Get data", align = "center"),
+					# 调用分组模块UI
+					group_samples_UI(ns("group_samples2comp_batch")),
+					# 批量数据下载
+					multi_upload_UI(ns("multi_upload2comp"),"Query variables to compare")
+				)
+			),
 
-					br(),br(),
+			column(
+				5,
+				wellPanel(
+					style = "height:1000px",
+					h2("S3: Batch analyze", align = "center"),
+
 					shinyWidgets::actionBttn(
 						ns("cal_batch_comp"), "Start calculation",
 				        style = "gradient",
@@ -125,19 +80,20 @@ ui.modules_pancan_comp_batch = function(id) {
 					selectInput(ns("comp_method"), NULL,choices = c("t.test", "wilcox.test")),
 
 					br(),br(),
-					uiOutput(ns("comp_stat_tb.ui")),
-					br(),
+					fluidRow(
+						column(10, offset = 1,
+							   div(uiOutput(ns("comp_stat_tb.ui")),style = "height:600px"),
+							   )
+					),
 					uiOutput(ns("comp_stat_dw.ui"))
 				)
-
 			)
 		)
 	)
 }
 
 
-
-server.modules_pancan_comp_batch = function(input, output, session) {
+server.modules_pancan_comp_m2o = function(input, output, session) {
 	ns <- session$ns
 
 
@@ -202,113 +158,15 @@ server.modules_pancan_comp_batch = function(input, output, session) {
 						   opt_pancan = reactive(opt_pancan())
 						   )
 
-
-
-	# 
-	id_list_custom = reactive({
-
-		id_list$Custom_metadata = list(
-			all = sort(colnames(custom_meta()[-1])),
-			default = sort(colnames(custom_meta()[-1]))[1])
-		id_list
-	})
-
-
-	observe({
-	  updateSelectizeInput(
-	    session,
-	    "L3_x",
-	    choices = id_list_custom()[[input$L2_x]]$all,
-	    selected = id_list_custom()[[input$L2_x]]$default,
-	    server = TRUE
-	  )
-	})
-
-	observeEvent(input$L3_x_type, {
-	  updateTabsetPanel(inputId = "L3_x_type_tab", 
-	  	selected = input$L3_x_type)
-	}) 
-
-
-	output$dw_L3_x = downloadHandler(
-		filename = function(){
-			"sample_multiple_ids.txt"
-		},
-		content = function(file){
-			set.seed(42)
-			all_ids = id_list_custom()[[input$L2_x]]$all
-			sample_ids = sample(all_ids,ifelse(length(all_ids)>10,10,length(all_ids)))
-			write.table(sample_ids, file,
-				quote = F, row.names = F, col.names = F)
-		}
-	)
-
-	#  多分子数据
+	# 批量下载数据
+	L3s_x_data =  callModule(multi_upload_Server, "multi_upload2comp", 
+							 samples=reactive(cancer_choose$filter_phe_id),
+							 custom_metadata=reactive(custom_meta()),
+						     opt_pancan = reactive(opt_pancan()),
+						     table.ui = FALSE
+							 )
 	L3s_x = reactive({
-		if(input$L3_x_type=="Selection"){
-			L3s_x = input$L3_x
-		} else if (input$L3_x_type=="File"){
-			file = input$upload_sp_info
-			all_ids = id_list_custom()[[input$L2_x]]$all
-			if(is.null(file$datapath)){  # 如果空文件
-				set.seed(42)
-				sample_ids = sample(all_ids,ifelse(length(all_ids)>10,10,length(all_ids)))
-				L3s_x = sample_ids
-			} else {
-				L3s_x = read.table(file$datapath)[,1]
-				L3s_x = L3s_x[L3s_x %in% all_ids]
-				if(length(input$L2_x)>100 & input$L2_x %in% id_category[["Molecular_profile"]]){
-					L3s_x = L3s_x[1:100]
-				}
-			}
-		} else if (input$L3_x_type=="All"){
-			L3s_x = id_list_custom()[[input$L2_x]]$all
-			if(input$L2_x %in% id_category[["Molecular_profile"]]){
-				set.seed = 42
-				L3s_x = sample(L3s_x, 100)
-			}
-		}
-		L3s_x = L3s_x[L3s_x %in% id_list_custom()[[input$L2_x]]$all]
-		L3s_x
-	})
-
-	L3s_x_data = eventReactive(input$inspect_data_x, {
-		L1_x = names(id_category)[sapply(id_category, function(x){any(x %in% input$L2_x)})]
-		withProgress(message = "Your provided ids are being inspected and prepared. Please wait for a while.",{
-			x_data_merge = lapply(seq(L3s_x()), function(i){
-				# 进度提醒
-			    incProgress(1 / length(L3s_x()), detail = paste0("(Run ",i,"/",length(L3s_x()),")"))
-
-				L3_x = L3_x = L3s_x()[i]
-				x_data = UCSCXenaShiny:::batch_download(L1_x, input$L2_x, L3_x,
-							   tumor_index_list, tcga_TIL, tcga_PW, opt_pancan())
-				x_data = x_data %>%
-					dplyr::inner_join(load_data("tcga_clinical")[,c("sample","type")]) %>%
-					dplyr::filter(type %in% cancer_choose$name) %>%
-					dplyr::filter(sample %in% cancer_choose$filter_phe_id) %>%
-				    dplyr::select(id, sample, value)
-			}) %>% do.call(rbind, .)
-			x_data_merge
-		})
-	})
-	L3s_x_tip = eventReactive(input$inspect_data_x, {
-		paste0("Tip: ",length(L3s_x())," valid ids are successfully provided.\n")
-	})
-	output$L3s_x_tip = renderPrint({
-		cat(L3s_x_tip())
-	})
-
-	output$L3s_x_data.ui = renderUI({
-		output$L3s_x_data = renderDataTable({
-			datatable(L3s_x_data(),
-				# class = "nowrap row-border",
-				options = list(pageLength = 5, 
-					columnDefs = list(list(className = 'dt-center', targets="_all")))
-			) %>%
-				formatRound(columns = c("value"), digits = 3)
-
-		})
-	dataTableOutput(ns("L3s_x_data"))
+		unique(L3s_x_data()$id)
 	})
 
 
@@ -347,23 +205,27 @@ server.modules_pancan_comp_batch = function(input, output, session) {
 				  dplyr::pull(value)
 
 				comp_res = c(means, comp_obj$p.value)
-				names(comp_res) = c(levels(data$group),"p.value")
 				comp_res
 			}) %>% do.call(rbind, .) %>% as.data.frame()
+
+			colnames(comp_stat) = c(levels(group_final()$group),"p.value")
 			comp_stat = comp_stat %>% 
-			  dplyr::mutate(id = L3s_x(), .before = 1)
+			  dplyr::mutate(id = L3s_x(), .before = 1) %>%
+			  dplyr::arrange(p.value)
 			comp_stat
 		})
+
 	})
 
 	output$comp_stat_tb.ui = renderUI({
 		output$comp_stat_tb = renderDataTable({
+			# comp_stat()
 			comp_stat_ = comp_stat()
 			comp_stat_$p.value = format(comp_stat_$p.value, scientific=T, digits = 3)
 
 			datatable(comp_stat_,
 				# class = "nowrap row-border",
-				options = list(pageLength = 5, 
+				options = list(pageLength = 10, 
 					columnDefs = list(list(className = 'dt-center', targets="_all")))
 			) %>%
 				formatRound(columns = levels(group_final()$group), digits = 3)
@@ -373,8 +235,8 @@ server.modules_pancan_comp_batch = function(input, output, session) {
 
 	output$comp_stat_dw.ui = renderUI({
 		fluidRow(
-			column(6,downloadButton(ns("comp_batch_raw"), "Save raw date(.csv)")),
-			column(6,downloadButton(ns("comp_batch_res"), "Save result data(.csv)"))
+			column(6,downloadButton(ns("comp_batch_raw"), "Raw data(.csv)")),
+			column(6,downloadButton(ns("comp_batch_res"), "Analyzied data(.csv)"))
 		)
 	})
 	output$comp_batch_raw = downloadHandler(

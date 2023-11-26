@@ -155,18 +155,7 @@ phenotype_datasets <- UCSCXenaTools::XenaData %>%
   dplyr::filter(Type == "clinicalMatrix") %>%
   dplyr::pull(XenaDatasets)
 
-tumor_index_list = list(
-  tcga_purity = load_data("tcga_purity"),
-  tcga_stemness = load_data("tcga_stemness"),
-  tcga_tmb = load_data("tcga_tmb"),
-  tcga_msi = load_data("tcga_MSI"),
-  tcga_genome_instability = load_data("tcga_genome_instability")
-)
-colnames(tumor_index_list$tcga_tmb)[3] = "sample"
-tumor_index_list$tcga_msi = tcga_gtex %>%
-  dplyr::mutate(Barcode = stringr::str_sub(sample, 1, 12)) %>%
-  dplyr::select(Barcode, sample) %>%
-  dplyr::inner_join(tumor_index_list$tcga_msi, by = "Barcode")
+
 
 
 
@@ -181,14 +170,31 @@ themes_list <- list(
   "minimal_grid" = cowplot::theme_minimal_grid()
 )
 
+
+
+## 肿瘤指标
+tumor_index_list = list(
+  tcga_purity = load_data("tcga_purity"),
+  tcga_stemness = load_data("tcga_stemness"),
+  tcga_tmb = load_data("tcga_tmb"),
+  tcga_msi = load_data("tcga_MSI"),
+  tcga_genome_instability = load_data("tcga_genome_instability")
+)
+colnames(tumor_index_list$tcga_tmb)[3] = "sample"
+tumor_index_list$tcga_msi = tcga_gtex %>%
+  dplyr::mutate(Barcode = stringr::str_sub(sample, 1, 12)) %>%
+  dplyr::select(Barcode, sample) %>%
+  dplyr::inner_join(tumor_index_list$tcga_msi, by = "Barcode")
+
+## 免疫浸润
 tcga_TIL = load_data("tcga_TIL")
 TIL_signatures <- colnames(tcga_TIL)[-1]
 TIL_meta = strsplit(TIL_signatures, "_") %>% 
   do.call(rbind, .) %>% as.data.frame() %>% 
   dplyr::rename("method"="V2", "celltype"="V1")
 
+## 通路打分
 tcga_PW = load_data("tcga_PW")
-# PW_signatures <- load_data("toil_sig_score")$meta$sig_name
 PW_meta <- load_data("tcga_PW_meta")
 PW_meta <- PW_meta %>% 
   dplyr::arrange(Name) %>%
@@ -197,6 +203,58 @@ PW_meta <- PW_meta %>%
     length(x_ids)
   }), .before = 5) %>% 
   dplyr::mutate(display = paste0(Name, " (", size, ")"), .before = 6)
+
+
+## 临床表型
+clinical_phe = query_tcga_group(return_all = T) %>% as.data.frame()
+
+# Help → ID reference
+id_referrence = load_data("pancan_identifier_help")
+# names(id_merge)
+# # [1] "id_molecule"    "id_tumor_index" "id_TIL"         "id_PW"
+
+
+id_option = list(
+  "Molecular profile" = list(
+     `mRNA Expression` = list(all = pancan_identifiers$gene, default = "TP53"),
+     `Transcript Expression` = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
+     `DNA Methylation` = list(all = pancan_identifiers$gene, default = "TP53"),
+     `Protein Expression` = list(all = pancan_identifiers$protein, default = "P53"),
+     `miRNA Expression` = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+     `Mutation status` = list(all = pancan_identifiers$gene, default = "TP53"),
+     `Copy Number Variation` = list(all = pancan_identifiers$gene, default = "TP53")
+  ),
+  "Tumor index" = list(
+     `Tumor Purity` = list(all = colnames(tumor_index_list$tcga_purity)[3:7], default = "ESTIMATE"),
+     `Tumor Stemness` = list(all = colnames(tumor_index_list$tcga_stemness)[2:6], default = "RNAss"),
+     `Tumor Mutation Burden` = list(all = colnames(tumor_index_list$tcga_tmb)[4:5], default = "Non_silent_per_Mb"),
+     `Microsatellite Instability` = list(all = colnames(tumor_index_list$tcga_msi)[3:21], default = "Total_nb_MSI_events"),
+     `Genome Instability` = list(all = colnames(tumor_index_list$tcga_genome_instability)[2:6], default = "ploidy")
+  ),
+  "Immune Infiltration" = list(
+     `CIBERSORT` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="CIBERSORT"]), default = "Monocyte"),
+     `CIBERSORT-ABS` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="CIBERSORT-ABS"]), default = "Monocyte"),
+     `EPIC` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="EPIC"]), default = "Macrophage"),
+     `MCPCOUNTER` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="MCPCOUNTER"]), default = "Monocyte"),
+     `QUANTISEQ` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="QUANTISEQ"]), default = "Monocyte"),
+     `TIMER` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="TIMER"]), default = "Macrophage"),
+     `XCELL` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="XCELL"]), default = "Monocyte")
+  ),
+  "Pathway activity" = list(
+     `HALLMARK` = list(all = sort(PW_meta$Name[PW_meta$Type=="HALLMARK"]), default = "APOPTOSIS"),
+     `KEGG` = list(all = sort(PW_meta$Name[PW_meta$Type=="KEGG"]), default = "CELL_CYCLE"),
+     `IOBR` = list(all = sort(PW_meta$Name[PW_meta$Type=="IOBR"]), default = "Biotin_Metabolism")
+  ),
+  "Other metadata" = list(
+     `Clinical Phenotype` = list(all = colnames(clinical_phe)[4:9], default = "Code")
+     ,
+     `Custom metadata` = list(all = NULL, default = NULL)
+  )
+)
+id_category = lapply(id_option, names)
+
+
+
 
 
 
@@ -208,46 +266,6 @@ code_types = list("NT"= "NT (normal tissue)",
           "TM"= "TM (metastatic tumor)",
           "TAM"="TAM (additional metastatic)")
 
-# Help → ID reference
-id_merge = load_data("pancan_identifier_help")
-
-id_list = list(
-   `mRNA Expression` = list(all = pancan_identifiers$gene, default = "TP53"),
-   `Transcript Expression` = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
-   `DNA Methylation` = list(all = pancan_identifiers$gene, default = "TP53"),
-   `Protein Expression` = list(all = pancan_identifiers$protein, default = "P53"),
-   `miRNA Expression` = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-   `Mutation status` = list(all = pancan_identifiers$gene, default = "TP53"),
-   `Copy Number Variation` = list(all = pancan_identifiers$gene, default = "TP53"),
-
-   `Tumor Purity` = list(all = colnames(tumor_index_list$tcga_purity)[3:7], default = "ESTIMATE"),
-   `Tumor Stemness` = list(all = colnames(tumor_index_list$tcga_stemness)[2:6], default = "RNAss"),
-   `Tumor Mutation Burden` = list(all = colnames(tumor_index_list$tcga_tmb)[4:5], default = "Non_silent_per_Mb"),
-   `Microsatellite Instability` = list(all = colnames(tumor_index_list$tcga_msi)[3:21], default = "Total_nb_MSI_events"),
-   `Genome Instability` = list(all = colnames(tumor_index_list$tcga_genome_instability)[2:6], default = "ploidy"),
-
-   `CIBERSORT` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="CIBERSORT"]), default = "Monocyte"),
-   `CIBERSORT-ABS` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="CIBERSORT-ABS"]), default = "Monocyte"),
-   `EPIC` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="EPIC"]), default = "Macrophage"),
-   `MCPCOUNTER` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="MCPCOUNTER"]), default = "Monocyte"),
-   `QUANTISEQ` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="QUANTISEQ"]), default = "Monocyte"),
-   `TIMER` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="TIMER"]), default = "Macrophage"),
-   `XCELL` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="XCELL"]), default = "Monocyte"),
-
-   `HALLMARK` = list(all = sort(PW_meta$Name[PW_meta$Type=="HALLMARK"]), default = "APOPTOSIS"),
-   `KEGG` = list(all = sort(PW_meta$Name[PW_meta$Type=="KEGG"]), default = "CELL_CYCLE"),
-   `IOBR` = list(all = sort(PW_meta$Name[PW_meta$Type=="IOBR"]), default = "Biotin_Metabolism")
-)
-id_category = list(
-  `Molecular_profile` = list("mRNA Expression", "Transcript Expression", "DNA Methylation", 
-        "Protein Expression", "miRNA Expression", "Mutation status","Copy Number Variation"),
-  `Tumor_index` = list("Tumor Purity","Tumor Stemness","Tumor Mutation Burden",
-        "Microsatellite Instability","Genome Instability"),
-  `Immune_Infiltration`=list("CIBERSORT", "CIBERSORT-ABS", "EPIC", "MCPCOUNTER",
-        "QUANTISEQ", "TIMER", "XCELL"),
-  `Pathway_activity` = list("HALLMARK","KEGG","IOBR"),
-  `Custom_metadata` = list("Custom_metadata")
-)
 
 # CCLE tissues for drug analysis
 # "ALL" means all tissues

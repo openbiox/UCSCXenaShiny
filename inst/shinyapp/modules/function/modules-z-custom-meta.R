@@ -10,16 +10,12 @@ custom_meta_UI = function(id, button_name="Multi-conditions filters"){
 
 
 
-custom_meta_Server = function(input, output, session, cancers=NULL, custom_metadata=NULL, opt_pancan=NULL){
+custom_meta_Server = function(input, output, session){
 	ns <- session$ns
 	custom_meta = reactive({
 		file = input$upload_sp_info
 		if(is.null(file$datapath)){
-			sp_info = query_tcga_group()$data[,"Sample"]
-			set.seed(42)
-			scores = matrix(rnorm(nrow(sp_info)*5,mean = 1, sd = 1), ncol = 5) %>% as.data.frame()
-			colnames(scores) = paste0("TF",1:5)
-			sp_info = cbind(sp_info, scores)
+			NULL
 		} else {
 			csv_format = tools::file_ext(file$name)=="csv"
 			shinyFeedback::feedbackDanger("upload_sp_info", !csv_format, "Non .csv format file")

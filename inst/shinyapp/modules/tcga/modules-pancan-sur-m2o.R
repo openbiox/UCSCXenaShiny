@@ -1,11 +1,11 @@
-ui.modules_pancan_sur_batch = function(id) {
+ui.modules_pancan_sur_m2o = function(id) {
 	ns = NS(id)
 	fluidPage(
 		fluidRow(
 			column(
-				2,
+				3,
 				wellPanel(
-					style = "height:1000px",
+					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
 
 					h4("1. Choose one cancer"),
@@ -47,68 +47,25 @@ ui.modules_pancan_sur_batch = function(id) {
 				)
 			),
 			column(
-				3,
+				4,
 				wellPanel(
 					style = "height:1000px",
 
-					h2("S2: Select event and items", align = "center"),
-
-					br(),
-					shinyWidgets::actionBttn(
-						ns("inspect_data_x"), "Query data",
-				        style = "gradient",
-				        icon = icon("search"),
-				        color = "primary",
-				        block = TRUE,
-				        size = "sm"
-					),
-					br(),
+					h2("S2: Get data", align = "center"),
 
 				    shinyWidgets::prettyRadioButtons(
 				        inputId = ns("endpoint_type"), label = "Endpoint type:",
 				        choiceValues = c("OS", "DSS", "DFI", "PFI"),
-				        choiceNames = c("OS", "DSS", "DFI", "PFI"),
-				        # choiceNames = c("OS (Overall Survial)", "DSS (Disease-Specific Survival)", 
-				        # 				"DFI (Disease-Free Interval)", "PFI (Progression-Free Interval)"),
+				        choiceNames = c("OS (Overall Survial)", "DSS (Disease-Specific Survival)", 
+				        				"DFI (Disease-Free Interval)", "PFI (Progression-Free Interval)"),
 				        selected = "OS",inline = TRUE
 				    ),
+				    br(),
+					multi_upload_UI(ns("multi_upload2sur"),"Select multiple conditions"),
+				    # uiOutput(ns("L3s_x_data_sur.ui")),
 
-					selectInput(ns("L2_x"), "Choose data type", id_category),
-					
-					prettyRadioButtons(ns("L3_x_type"),"Choose multi-ids by",
-						choices = c("Selection","All","File"), selected = "Selection", inline=TRUE) %>% 
-							helper(type = "markdown", sie = "m", fade = TRUE,
-									title = "Notes for IDs selction", content = "batch_ids"),
-					tabsetPanel(id = ns("L3_x_type_tab"),
-						type = "hidden",
-						tabPanel("Selection",
-							# materialSwitch(ns("all_ids"), "All ids?", inline = FALSE),
-							selectizeInput(ns("L3_x"), NULL,choices=NULL, multiple=T),
-						),
-						tabPanel("File",
-							fluidRow(
-								column(8, fileInput(ns("fl_L3_x"),NULL, accept = ".txt")),
-								column(3, downloadButton(ns("dw_L3_x"), "e.g."))
-							)
-						),
-						tabPanel("All"
-						)
-					),
-					verbatimTextOutput(ns("L3s_x_tip")),
-					br(),
-					uiOutput(ns("L3s_x_data_sur.ui")),
-				)
-			),	
-			column(
-				3,
-				wellPanel(
-					style = "height:1000px",
-
-					h2("S3: Group samples", align = "center"),
-
-					br(),
 					shinyWidgets::actionBttn(
-						ns("set_group"), "Set groups",
+						ns("set_group"), "Group by two range",
 				        style = "gradient",
 				        icon = icon("search"),
 				        color = "primary",
@@ -122,9 +79,9 @@ ui.modules_pancan_sur_batch = function(id) {
 					br(),
 					uiOutput(ns("L3s_x_data_sur_group.ui"))
 				)
-			),
+			),	
 			column(
-				4,
+				5,
 				wellPanel(
 					style = "height:1000px",
 					h2("S4: Batch analyze", align = "center"),
@@ -145,8 +102,11 @@ ui.modules_pancan_sur_batch = function(id) {
 						                   title = "About the initial phenotype", 
 						                   content = "sur_initial_group"),
 					br(),br(),
-					uiOutput(ns("sur_stat_tb.ui")),
-					br(),
+					fluidRow(
+						column(10, offset = 1,
+							   div(uiOutput(ns("sur_stat_tb.ui")),style = "height:600px"),
+							   )
+					),
 					uiOutput(ns("sur_stat_dw.ui"))
 				)
 			)
@@ -158,7 +118,7 @@ ui.modules_pancan_sur_batch = function(id) {
 
 
 
-server.modules_pancan_sur_batch = function(input, output, session) {
+server.modules_pancan_sur_m2o = function(input, output, session) {
 	ns <- session$ns
 
 	# 记录选择癌症
@@ -214,118 +174,29 @@ server.modules_pancan_sur_batch = function(input, output, session) {
 	opt_pancan = callModule(mol_origin_Server, "mol_origin2sur_batch")
 
 
-
-	id_list_custom = reactive({
-
-		id_list$Custom_metadata = list(
-			all = sort(colnames(custom_meta()[-1])),
-			default = sort(colnames(custom_meta()[-1]))[1])
-		id_list
-	})
-
-
-	observe({
-	  updateSelectizeInput(
-	    session,
-	    "L3_x",
-	    choices = id_list_custom()[[input$L2_x]]$all,
-	    selected = id_list_custom()[[input$L2_x]]$default,
-	    server = TRUE
-	  )
-	})
-
-	observeEvent(input$L3_x_type, {
-	  updateTabsetPanel(inputId = "L3_x_type_tab", 
-	  	selected = input$L3_x_type)
-	}) 
-
-
-	output$dw_L3_x = downloadHandler(
-		filename = function(){
-			"sample_multiple_ids.txt"
-		},
-		content = function(file){
-			set.seed(42)
-			all_ids = id_list_custom()[[input$L2_x]]$all
-			sample_ids = sample(all_ids,ifelse(length(all_ids)>10,10,length(all_ids)))
-			write.table(sample_ids, file,
-				quote = F, row.names = F, col.names = F)
-		}
-	)
-
-	#  多分子数据
+	# 批量下载数据
+	L3s_x_data =  callModule(multi_upload_Server, "multi_upload2sur", 
+							 samples=reactive(cancer_choose$filter_phe_id),
+							 custom_metadata=reactive(custom_meta()),
+						     opt_pancan = reactive(opt_pancan()),
+						     table.ui = FALSE
+							 )
 	L3s_x = reactive({
-		if(input$L3_x_type=="Selection"){
-			L3s_x = input$L3_x
-		} else if (input$L3_x_type=="File"){
-			file = input$upload_sp_info
-			all_ids = id_list_custom()[[input$L2_x]]$all
-			if(is.null(file$datapath)){  # 如果空文件
-				set.seed(42)
-				sample_ids = sample(all_ids,ifelse(length(all_ids)>10,10,length(all_ids)))
-				L3s_x = sample_ids
-			} else {
-				L3s_x = read.table(file$datapath)[,1]
-				L3s_x = L3s_x[L3s_x %in% all_ids]
-				if(length(input$L2_x)>100 & input$L2_x %in% id_category[["Molecular_profile"]]){
-					L3s_x = L3s_x[1:100]
-				}
-			}
-		} else if (input$L3_x_type=="All"){
-			L3s_x = id_list_custom()[[input$L2_x]]$all
-			if(input$L2_x %in% id_category[["Molecular_profile"]]){
-				set.seed = 42
-				L3s_x = sample(L3s_x, 100)
-			}
-		}
-		L3s_x = L3s_x[L3s_x %in% id_list_custom()[[input$L2_x]]$all]
-		L3s_x
+		unique(L3s_x_data()$id)
 	})
 
-	L3s_x_data_sur = eventReactive(input$inspect_data_x, {
-		L1_x = names(id_category)[sapply(id_category, function(x){any(x %in% input$L2_x)})]
-		withProgress(message = "Your provided ids are being inspected and prepared. Please wait for a while.",{
-			x_data_merge = lapply(seq(L3s_x()), function(i){
-				# 进度提醒
-			    incProgress(1 / length(L3s_x()), detail = paste0("(Run ",i,"/",length(L3s_x()),")"))
 
-				L3_x = L3_x = L3s_x()[i]
-				x_data = UCSCXenaShiny:::batch_download(L1_x, input$L2_x, L3_x,
-							   tumor_index_list, tcga_TIL, tcga_PW, opt_pancan())
-				x_data = x_data %>%
-					dplyr::inner_join(load_data("tcga_clinical")[,c("sample","type")]) %>%
-					dplyr::filter(type %in% cancer_choose$name) %>%
-					dplyr::filter(sample %in% cancer_choose$filter_phe_id) %>%
-				    dplyr::select(id, sample, value)
-			}) %>% do.call(rbind, .)
-		})
+	L3s_x_data_sur = reactive({
 		sur_dat_raw = load_data("tcga_surv") %>%
 			dplyr::select("sample",contains(input$endpoint_type)) %>%
 			na.omit()
 		colnames(sur_dat_raw)[2:3] = c("status","time")
-		x_data_merge = x_data_merge %>%
+		x_data_merge = L3s_x_data() %>%
 			dplyr::inner_join(sur_dat_raw)
 		x_data_merge
+
 	})
 
-	L3s_x_tip = eventReactive(input$inspect_data_x, {
-		paste0("Tip: ",length(L3s_x())," valid ids are successfully provided.\n")
-	})
-	output$L3s_x_tip = renderPrint({
-		cat(L3s_x_tip())
-	})
-	output$L3s_x_data_sur.ui = renderUI({
-		output$L3s_x_data_sur = renderDataTable({
-			L3s_x_data_sur_ = L3s_x_data_sur()
-			colnames(L3s_x_data_sur_)[4:5] = paste0(input$endpoint_type,c(".status",".time"))
-			L3s_x_data_sur_ = L3s_x_data_sur_[,c(-4,-5)]
-			datatable(L3s_x_data_sur_, 
-				options = list(pageLength = 5,
-					columnDefs = list(list(className = 'dt-center', targets="_all")))
-			)
-		}) 
-		dataTableOutput(ns("L3s_x_data_sur"))
-	})
 
 	# 分组方式
 	output$set_group1.ui = renderUI({
@@ -334,16 +205,16 @@ server.modules_pancan_sur_batch = function(input, output, session) {
 			if(class(choice_chrs)=="character"){
 				column(
 					8,
-					selectInput(ns("group1_range"),"Group-1 Range",
+					selectInput(ns("group1_range"),"Group1 Range",
 						sort(unique(choice_chrs), ,na.last = T), multiple=T)
 				)
 			} else {
 				column(8,
 					fluidRow(
 						column(6,
-							numericInput(ns("group1_min"),"Group-1 min",value=NA)),
+							numericInput(ns("group1_min"),"Group1 [min",value=NA)),
 						column(6,
-							numericInput(ns("group1_max"),"max",
+							numericInput(ns("group1_max"),"max)",
 								value=ifelse(input$set_quantile,0.5,median(choice_chrs, na.rm=T))))
 					)
 				)
@@ -351,7 +222,7 @@ server.modules_pancan_sur_batch = function(input, output, session) {
 			,
 			column(
 				4,
-				textInput(ns("group1_name"),"Group-1 Name", "Group1")
+				textInput(ns("group1_name"),"Group Name", "Group1")
 			)
 		)
 	})
@@ -361,24 +232,24 @@ server.modules_pancan_sur_batch = function(input, output, session) {
 			if(class(choice_chrs)=="character"){
 				column(
 					8,
-					selectInput(ns("group2_range"),"Group-2 Range",
+					selectInput(ns("group2_range"),"Group2 Range",
 						sort(unique(choice_chrs), ,na.last = T), multiple=T)
 				)
 			} else {
 				column(8,
 					fluidRow(
 						column(6,
-							numericInput(ns("group2_min"),"Group-2 min",
+							numericInput(ns("group2_min"),"Group2 [min",
 								value=ifelse(input$set_quantile,0.5,median(choice_chrs, na.rm=T)))),
 						column(6,
-							numericInput(ns("group2_max"),"max",value=NA))
+							numericInput(ns("group2_max"),"max]",value=NA))
 					)
 				)
 			}
 			,
 			column(
 				4,
-				textInput(ns("group2_name"),"Group-2 Name", "Group2")
+				textInput(ns("group2_name"),"Group Name", "Group2")
 			)
 		)
 	})
@@ -454,7 +325,7 @@ server.modules_pancan_sur_batch = function(input, output, session) {
 
 			datatable(group_stat,
 				# class = "nowrap row-border",
-				options = list(pageLength = 6, 
+				options = list(pageLength = 2, 
 					columnDefs = list(list(className = 'dt-center', targets="_all")))
 			)
 		})
@@ -466,47 +337,56 @@ server.modules_pancan_sur_batch = function(input, output, session) {
 		datas = L3s_x_data_sur_group()
 		valid_ids = unique(datas$id)
 
-		sur_stat = lapply(seq(valid_ids), function(i){
-			valid_id = valid_ids[i]
-			datas_sub = subset(datas, id %in% valid_id)
-			if(input$sur_method=="Log-rank test"){
-				if(!input$use_origin){
-					datas_sub$Group = datas_sub$group
-				} else {
-					datas_sub$Group = datas_sub$value
-					if(class(datas_sub$value)!="character"){
-						res.cut <- surv_cutpoint(datas_sub, 
-							time = "time", event = "status", variables = "Group")
-						res.cat <- surv_categorize(res.cut)
-						datas_sub$Group = res.cat$Group
+
+		withProgress(message = "Your analyzation has been submitted. Please wait for a while.",{
+			sur_stat = lapply(seq(valid_ids), function(i){
+			    incProgress(1 / length(valid_ids), detail = paste0("(Finished ",i,"/",length(valid_ids),")"))
+				valid_id = valid_ids[i]
+				datas_sub = subset(datas, id %in% valid_id)
+				if(input$sur_method=="Log-rank test"){
+					if(!input$use_origin){
+						datas_sub$Group = datas_sub$group
+					} else {
+						datas_sub$Group = datas_sub$value
+						if(class(datas_sub$value)!="character"){
+							res.cut <- surv_cutpoint(datas_sub, 
+								time = "time", event = "status", variables = "Group")
+							res.cat <- surv_categorize(res.cut)
+							datas_sub$Group = res.cat$Group
+						}
 					}
+					surv_diff <- survdiff(Surv(time, status) ~ Group, data = datas_sub)
+					pval = 1 - pchisq(surv_diff$chisq, length(surv_diff$n) - 1)
+					sur_res = summary(survfit(Surv(time, status) ~ Group, data = datas_sub))$table %>% 
+						    as.data.frame() %>% dplyr::pull(median)
+					sur_res = c(sur_res,pval)
+					names(sur_res) = c(input$group1_name,input$group2_name,"p.value")
+					names(sur_res)[1:2] = paste0(names(sur_res)[1:2],"\nmedian.time")
+				} else if (input$sur_method=="Cox regression"){
+					if(!input$use_origin){
+						datas_sub$Group = datas_sub$group
+					} else {
+						datas_sub$Group = datas_sub$value
+					}
+					fit <- coxph(Surv(time, status) ~ Group, data = datas_sub)
+					sur_res = summary(fit)$coefficients %>% as.data.frame() %>%
+						tibble::rownames_to_column("Group.obs")
+					sur_res = sur_res[,c(1,3,6)]
+					sur_res[,1] = gsub("^Group","",sur_res[,1])
+					sur_res[,2] = round(sur_res[,2], 3)
+					colnames(sur_res)[2:3] = c("HR","p.value")
 				}
-				surv_diff <- survdiff(Surv(time, status) ~ Group, data = datas_sub)
-				pval = 1 - pchisq(surv_diff$chisq, length(surv_diff$n) - 1)
-				sur_res = summary(survfit(Surv(time, status) ~ Group, data = datas_sub))$table %>% 
-					    as.data.frame() %>% dplyr::pull(median)
-				sur_res = c(sur_res,pval)
-				names(sur_res) = c(input$group1_name,input$group2_name,"p.value")
-				names(sur_res)[1:2] = paste0(names(sur_res)[1:2],"_median.time")
-			} else if (input$sur_method=="Cox regression"){
-				if(!input$use_origin){
-					datas_sub$Group = datas_sub$group
-				} else {
-					datas_sub$Group = datas_sub$value
-				}
-				fit <- coxph(Surv(time, status) ~ Group, data = datas_sub)
-				sur_res = summary(fit)$coefficients %>% as.data.frame() %>%
-					tibble::rownames_to_column("Group.obs")
-				sur_res = sur_res[,c(1,3,6)]
-				sur_res[,1] = gsub("^Group","",sur_res[,1])
-				sur_res[,2] = round(sur_res[,2], 3)
-				colnames(sur_res)[2:3] = c("HR","p.value")
-			}
-			sur_res
-		}) %>% do.call(rbind, .)
-		sur_stat = sur_stat %>% as.data.frame() %>%
-			dplyr::mutate(id = valid_ids, .before = 1)
-		sur_stat
+				sur_res
+			}) %>% do.call(rbind, .)
+			sur_stat = sur_stat %>% as.data.frame() %>%
+				dplyr::mutate(id = valid_ids, .before = 1) %>%
+				dplyr::arrange(p.value)
+			sur_stat
+		})
+
+
+
+
 	})
 	output$sur_stat_tb.ui = renderUI({
 		output$sur_stat_tb = renderDataTable({
@@ -516,7 +396,7 @@ server.modules_pancan_sur_batch = function(input, output, session) {
 
 			datatable(sur_stat_,
 				# class = "nowrap row-border",
-				options = list(pageLength = 5, 
+				options = list(pageLength = 10, 
 					columnDefs = list(list(className = 'dt-center', targets="_all")))
 			)
 		}) 
@@ -525,8 +405,8 @@ server.modules_pancan_sur_batch = function(input, output, session) {
 
 	output$sur_stat_dw.ui = renderUI({
 		fluidRow(
-			column(6,downloadButton(ns("sur_batch_raw"), "Save raw date(.csv)")),
-			column(6,downloadButton(ns("sur_batch_res"), "Save result data(.csv)"))
+			column(6,downloadButton(ns("sur_batch_raw"), "Raw data(.csv)")),
+			column(6,downloadButton(ns("sur_batch_res"), "Result data(.csv)"))
 		)
 	})
 
@@ -549,13 +429,3 @@ server.modules_pancan_sur_batch = function(input, output, session) {
 		}
 	)
 }
-
-
-
-#         id          sample value status time  group
-# 1 ATP6V1B1 TCGA-C8-A1HL-01 3.660      0  317 Group2
-# 2 ATP6V1B1 TCGA-EW-A2FS-01 2.057      0 1604 Group1
-# 3 ATP6V1B1 TCGA-B6-A402-01 4.793      0 2281 Group2
-# 4 ATP6V1B1 TCGA-A2-A3XX-01 3.254      1 1439 Group2
-# 5 ATP6V1B1 TCGA-BH-A0BQ-11 4.131      0 2255 Group2
-# 6 ATP6V1B1 TCGA-Z7-A8R5-01 4.114      0 3287 Group2
