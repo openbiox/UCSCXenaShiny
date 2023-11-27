@@ -11,6 +11,7 @@ batch_download(
   tumor_index_list,
   tcga_TIL,
   tcga_PW,
+  clinical_phe,
   opt_pancan,
   custom_metadata = NULL
 )
@@ -27,6 +28,8 @@ batch_download(
 \item{tcga_TIL}{Tumor immune infiltration  data. See shiny App.R file}
 
 \item{tcga_PW}{Pathway activity data. See shiny App.R file}
+
+\item{clinical_phe}{common TCGA patient clinical phenotype}
 
 \item{opt_pancan}{molecular datasets parameters}
 

@@ -27,70 +27,93 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 				fluidPage(
 			        wellPanel(
 				        h4("1. Add phenotypes (Optional)"),
-				        selectInput(
-				        	ns("data_L1"), "Data type:",
-				        	choices = c("Molecular profile", "Tumor index", "Immune Infiltration", "Pathway activity","Custom metadata"),
-				        	selected = "Molecular profile"
-				        ),
-						tabsetPanel(
-							    id = ns("data_L2_tab"),
-							    type = "hidden",
-							    # selected = "Molecular_profile",
-								tabPanel("Molecular profile", 
-									selectInput(
-										ns("genomic_profile"), "Data subtype:",
-										choices = c("mRNA Expression", "Transcript Expression", "DNA Methylation", 
-													"Protein Expression", "miRNA Expression", "Mutation status","Copy Number Variation"),
-										selected = "mRNA Expression"),
-						            selectizeInput(
-						              inputId = ns("genomic_profile_id"),
-						              label = "Identifier:",
-						              choices = NULL,
-						              options = list(create = TRUE, maxOptions = 5))
-								),
-								tabPanel("Tumor index",
-									selectInput(
-										ns("tumor_index"), "Data subtype:",
-										choices = c("Tumor Purity","Tumor Stemness","Tumor Mutation Burden",
-													"Microsatellite Instability","Genome Instability"),
-										selected = "Tumor Purity"),
-						            selectizeInput(
-						              inputId = ns("tumor_index_id"),
-						              label = "Identifier:",
-						              choices = NULL)
-								),
-								tabPanel("Immune Infiltration",
-									selectInput(
-										ns("immune_infiltration"), "Data subtype:",
-										choices = sort(unique(TIL_meta$method)),
-										selected = "CIBERSORT"),
-						            selectizeInput(
-						              inputId = ns("immune_infiltration_id"),
-						              label = "Identifier:",
-						              choices = NULL)
-								),
-								tabPanel("Pathway activity",
-									selectInput(
-										ns("pathway_activity"), "Data subtype:",
-										choices = c("HALLMARK","KEGG","IOBR"),
-										selected = "HALLMARK"),
-						            selectizeInput(
-						              inputId = ns("pathway_activity_id"),
-						              label = "Identifier:",
-						              choices = NULL)	
-								),
-								tabPanel("Custom metadata",
-									selectInput(
-										ns("custom_metadata"), "Data subtype:",
-										choices = c("custom_metadata"),
-										selected = "custom_metadata"),
-						            selectizeInput(
-						              inputId = ns("custom_metadata_id"),
-						              label = "Identifier:",
-						              choices = NULL)	
-								)
-						),
 
+					    fluidRow(
+					    	column(
+					    		6,
+							    selectInput(
+							    	ns("data_L1"), label = "Data type:",
+							    	choices = names(id_option),
+							    	selected = "Molecular profile"
+							    )
+					    	),
+					    	column(
+					    		6,
+							    tabsetPanel(
+								    id = ns("data_L2_tab"),
+								    type = "hidden",
+									tabPanel("Molecular profile", 
+										selectInput(
+											ns("genomic_profile"), "Data subtype:",
+											choices = names(id_option[["Molecular profile"]]),
+											selected = "mRNA Expression")
+									),
+									tabPanel("Tumor index",
+										selectInput(
+											ns("tumor_index"), "Data subtype:",
+											choices = names(id_option[["Tumor index"]]),
+											selected = "Tumor Purity")
+									),
+									tabPanel("Immune Infiltration",
+										selectInput(
+											ns("immune_infiltration"), "Data subtype:",
+											choices = names(id_option[["Immune Infiltration"]]),
+											selected = "CIBERSORT")
+									),
+									tabPanel("Pathway activity",
+										selectInput(
+											ns("pathway_activity"), "Data subtype:",
+											choices = names(id_option[["Pathway activity"]]),
+											selected = "HALLMARK")
+									),
+									tabPanel("Other metadata",
+										selectInput(
+											ns("other_metadata"), "Data subtype:",
+											choices = names(id_option[["Other metadata"]]),
+											selected = "Clinical Phenotype")
+									)
+								)
+					    	)
+					    ),
+					    tabsetPanel(
+						    id = ns("data_L3_tab"),
+						    type = "hidden",
+							tabPanel("Molecular profile",
+					            selectizeInput(
+					              inputId = ns("genomic_profile_id"),
+					              label = "Identifier:",
+					              choices = NULL,
+					              options = list(create = TRUE, maxOptions = 5))
+							),
+							tabPanel("Tumor index",
+					            selectizeInput(
+					              inputId = ns("tumor_index_id"),
+					              label = "Identifier:",
+					              choices = NULL,
+					              options = list(create = FALSE, maxOptions = 5))
+							),
+							tabPanel("Immune Infiltration",
+					            selectizeInput(
+					              inputId = ns("immune_infiltration_id"),
+					              label = "Identifier:",
+					              choices = NULL,
+					              options = list(create = FALSE, maxOptions = 5))
+							),
+							tabPanel("Pathway activity",
+					            selectizeInput(
+					              inputId = ns("pathway_activity_id"),
+					              label = "Identifier:",
+					              choices = NULL,
+					              options = list(create = FALSE, maxOptions = 5))
+							),
+							tabPanel("Other metadata",
+					            selectizeInput(
+					              inputId = ns("other_metadata_id"),
+					              label = "Identifier:",
+					              choices = NULL,
+					              options = list(create = FALSE, maxOptions = 5))
+							)
+						),
 					    fluidRow(
 						    actionBttn(
 						      inputId = ns("button_phe_add"),
@@ -169,20 +192,12 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 		# 更新分子的三级选择菜单
 		observe({
 		  updateTabsetPanel(inputId = "data_L2_tab", selected = input$data_L1)
+	  	  updateTabsetPanel(inputId = "data_L3_tab", selected = input$data_L1)
 		}) 
 		
 		observeEvent(input$genomic_profile, {
 			genomic_profile_choices <- reactive({
-			  switch(input$genomic_profile,
-			    `mRNA Expression` = list(all = pancan_identifiers$gene, default = "TP53"),
-			    `Transcript Expression` = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
-			    `DNA Methylation` = list(all = pancan_identifiers$gene, default = "TP53"),
-			    `Protein Expression` = list(all = pancan_identifiers$protein, default = "P53"),
-			    `miRNA Expression` = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-			    `Mutation status` = list(all = pancan_identifiers$gene, default = "TP53"),
-			    `Copy Number Variation` = list(all = pancan_identifiers$gene, default = "TP53"),
-			    list(all = "NONE", default = "NONE")
-			  )
+			  id_option[["Molecular profile"]][[input$genomic_profile]]
 			})
 		    updateSelectizeInput(
 		      session,
@@ -194,14 +209,7 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 		})
 		observeEvent(input$tumor_index, {
 			tumor_index_choices <- reactive({
-			  switch(input$tumor_index,
-			    `Tumor Purity` = list(all = colnames(tumor_index_list$tcga_purity)[3:7], default = "ESTIMATE"),
-			    `Tumor Stemness` = list(all = colnames(tumor_index_list$tcga_stemness)[2:6], default = "RNAss"),
-			    `Tumor Mutation Burden` = list(all = colnames(tumor_index_list$tcga_tmb)[4:5], default = "Non_silent_per_Mb"),
-			    `Microsatellite Instability` = list(all = colnames(tumor_index_list$tcga_msi)[3:21], default = "Total_nb_MSI_events"),
-			    `Genome Instability` = list(all = colnames(tumor_index_list$tcga_genome_instability)[2:6], default = "ploidy"),
-			    list(all = "NONE", default = "NONE")
-			  )
+			  id_option[["Tumor index"]][[input$tumor_index]]
 			})
 		    updateSelectizeInput(
 		      session,
@@ -213,16 +221,7 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 		})
 		observeEvent(input$immune_infiltration, {
 			immune_infiltration_choices <- reactive({
-			  switch(input$immune_infiltration,
-			    `CIBERSORT` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="CIBERSORT"]), default = "Monocyte"),
-			    `CIBERSORT-ABS` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="CIBERSORT-ABS"]), default = "Monocyte"),
-			    `EPIC` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="EPIC"]), default = "Macrophage"),
-			    `MCPCOUNTER` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="MCPCOUNTER"]), default = "Monocyte"),
-			    `QUANTISEQ` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="QUANTISEQ"]), default = "Monocyte"),
-			    `TIMER` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="TIMER"]), default = "Macrophage"),
-			    `XCELL` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="XCELL"]), default = "Monocyte"),
-			    list(all = "NONE", default = "NONE")
-			  )
+			  id_option[["Immune Infiltration"]][[input$immune_infiltration]]
 			})
 		    updateSelectizeInput(
 		      session,
@@ -234,12 +233,7 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 		})
 		observeEvent(input$pathway_activity, {
 			pathway_activity_choices <- reactive({
-			  switch(input$pathway_activity,
-			    `HALLMARK` = list(all = sort(PW_meta$Name[PW_meta$Type=="HALLMARK"]), default = "APOPTOSIS"),
-			    `KEGG` = list(all = sort(PW_meta$Name[PW_meta$Type=="KEGG"]), default = "CELL_CYCLE"),
-			    `IOBR` = list(all = sort(PW_meta$Name[PW_meta$Type=="IOBR"]), default = "Biotin_Metabolism"),
-			    list(all = "NONE", default = "NONE")
-			  )
+			  id_option[["Pathway activity"]][[input$pathway_activity]]
 			})
 		    updateSelectizeInput(
 		      session,
@@ -249,31 +243,23 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 		      server = TRUE
 		    )
 		})
-		observeEvent(input$custom_metadata, {
-			custom_metadata_choices <- reactive({
-				if(is.null(custom_metadata)){
-					choice_all = "NULL"
-					choice_default ="NULL"
-				} else {
-					choice_all = sort(colnames(custom_metadata()[-1]))
-					choice_default = sort(colnames(custom_metadata()[-1]))[1]
-
+		observeEvent(input$other_metadata, {
+			other_metadata_choices <- reactive({
+			    id_tmp = id_option[["Other metadata"]]
+				if(!is.null(custom_metadata)){
+					id_tmp[["Custom metadata"]]$all = sort(colnames(custom_metadata()[-1]))
+					id_tmp[["Custom metadata"]]$default = sort(colnames(custom_metadata()[-1]))[1]
 				}
-			  switch(input$custom_metadata,
-			    `custom_metadata` = list(all = choice_all,  default = choice_default),
-			    list(all = "NONE", default = "NONE")
-			  )
+				id_tmp[[input$other_metadata]]
 			})
-		    updateSelectizeInput(
-		      session,
-		      "custom_metadata_id",
-		      choices = custom_metadata_choices()$all,
-		      selected = custom_metadata_choices()$default,
-		      server = TRUE
-		    )
+			updateSelectizeInput(
+			  session,
+			  "other_metadata_id",
+			  choices = other_metadata_choices()$all,
+			  selected = other_metadata_choices()$default,
+			  server = TRUE
+			)
 		})
-
-
 	})
 
 	add_level2 = reactive({
@@ -308,9 +294,9 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 		add_phes$name = c(add_phes$name, 
 			paste0(input$data_L1,"--",add_level2(),"--",add_level3()))
 		add_phes$label = c(add_phes$label, 
-			paste0("Add_",add_phes$click))
+			paste0("Condition_",add_phes$click))
 		add_phes$show = paste0(add_phes$show,
-			"Add_",add_phes$click,": ", input$data_L1,"--",add_level2(),
+			"Condition_",add_phes$click,": ", input$data_L1,"--",add_level2(),
 			"--",add_level3(),"\n")
 	}) 
 	observeEvent(input$button_phe_add_reset, {
@@ -320,8 +306,6 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 		add_phes$show=""
 	}) 
 	output$add_info = renderPrint({cat(add_phes$show)})
-
-
 
 	# 下载已添加的变量数据
 	add_phes_dat = eventReactive(input$button_phe_add, {
@@ -340,7 +324,7 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 						  toil_protein = list(),
 						  toil_mutation = list(),
 						  toil_cnv = list(use_thresholded_data = TRUE),
-						  toil_methylation = list(type = "450K", aggr = "Q25", rule_out = NULL),
+						  toil_methylation = list(type = "450K", aggr = "NA", rule_out = NULL),
 						  toil_miRNA = list()
 					)
 				} else {
@@ -427,10 +411,15 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 	output$filter_phe_01_out = renderPrint({
 
 		filter_phe_01_out_tmp = as.data.frame(add_phes$phe_primary[,input$filter_phe_01_by])
-		head(filter_phe_01_out_tmp)
-		filter_phe_01_out_tmp = filter_phe_01_out_tmp %>% 
-			mutate(across(where(is.character), as.factor))
-		summary(filter_phe_01_out_tmp)
+
+    	if(is.null(input$filter_phe_01_by)) return(NULL)
+
+	    if(class(filter_phe_01_out_tmp[,input$filter_phe_01_by,drop=TRUE])=="numeric"){
+	      summary(filter_phe_01_out_tmp[,input$filter_phe_01_by,drop=TRUE])
+	    } else {
+	      table(filter_phe_01_out_tmp[,input$filter_phe_01_by,drop=TRUE])
+	    }
+
 	})
 
 	# filter--phe--step3

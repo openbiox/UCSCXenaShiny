@@ -8,11 +8,12 @@
 #' @param tcga_PW         Pathway activity data. See shiny App.R file
 #' @param opt_pancan      molecular datasets parameters
 #' @param custom_metadata user customized metadata
+#' @param clinical_phe    common TCGA patient clinical phenotype 
 #'
 batch_download = function(L1, L2, L3,
-                          tumor_index_list, tcga_TIL, tcga_PW, 
+                          tumor_index_list, tcga_TIL, tcga_PW, clinical_phe,
                           opt_pancan, custom_metadata=NULL){
-  if(L1 == "Molecular_profile"){
+  if(L1 == "Molecular profile"){
     # L2 = "mRNA Expression"
     # L3 = "TP53"
     x_genomic_profile = switch(L2,
@@ -32,7 +33,7 @@ batch_download = function(L1, L2, L3,
     x_data <- data.frame(id = L3,
                          sample = names(x_data), value = as.numeric(x_data),
                          level2 = L2)
-  } else if (L1 == "Tumor_index"){
+  } else if (L1 == "Tumor index"){
     # L2 = "Tumor Purity"
     # L3 = L3_candi$id_tumor_index$tcga_purity$Level3[1]
     x_tumor_index = switch(L2,
@@ -48,7 +49,7 @@ batch_download = function(L1, L2, L3,
       dplyr::mutate(id = L3, .before = 1) %>%
       dplyr::mutate(level2 = L2) %>%
       dplyr::filter(!is.na(.data$value))
-  } else if (L1 == "Immune_Infiltration"){
+  } else if (L1 == "Immune Infiltration"){
     # L2 = "CIBERSORT"
     # L3 = L3_candi$id_TIL$CIBERSORT$Level3[1]
     x_data = tcga_TIL[,c("cell_type",
@@ -58,7 +59,7 @@ batch_download = function(L1, L2, L3,
       dplyr::mutate(id = L3, .before = 1) %>%
       dplyr::mutate(level2 = L2) %>%
       dplyr::filter(!is.na(.data$value))
-  } else if (L1 == "Pathway_activity"){
+  } else if (L1 == "Pathway activity"){
     # L2 = "HALLMARK"
     # L3 = L3_candi$id_PW$HALLMARK$Level3[1]
     x_data = tcga_PW[,paste0(L2,"_",L3),drop=FALSE]
@@ -68,21 +69,19 @@ batch_download = function(L1, L2, L3,
       dplyr::mutate(id = L3, .before = 1) %>%
       dplyr::mutate(level2 = L2) %>%
       dplyr::filter(!is.na(.data$value))	
-  } else if (L1 == "Custom_metadata"){
-    if(is.null(custom_metadata)){
-      set.seed(42)
-      sp_info = query_tcga_group()$data[,"Sample"]
-      scores = matrix(stats::rnorm(nrow(sp_info)*5,mean = 1, sd = 1), ncol = 5) %>% as.data.frame()
-      colnames(scores) = paste0("TF",1:5)
-      custom_metadata = cbind(sp_info, scores)
+  } else if (L1 == "Other metadata"){
+    if(L2 =="Clinical Phenotype"){
+        x_data = clinical_phe[,c("Sample", L3)]
+    } else {
+        x_data = custom_metadata[,c("Sample", L3)]
     }
-    x_data = custom_metadata[,c("Sample", L3)]
     colnames(x_data) = c("sample","value")
     x_data = x_data %>% as.data.frame() %>%
       dplyr::mutate(id = L3, .before = 1) %>%
       dplyr::mutate(level2 = L2) %>%
       dplyr::filter(!is.na(.data$value))	
   }
+  x_data = as.data.frame(x_data)
   x_data
   # id                  sample value          level2
   # 1 TP53 GTEX-S4Q7-0003-SM-3NM8M 4.785 mRNA Expression

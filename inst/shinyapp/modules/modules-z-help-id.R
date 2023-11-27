@@ -1,14 +1,6 @@
 ui.modules_id_reference = function(id) {
 	ns = NS(id)
 	fluidPage(
-		# wellPanel(
-		# 	p("Here are 4 types (Level1) of full ID referrence corresponding to the input widgets of general pan-cancer modules
-		# 	  and other similar modules"),
-		# 	p("(1): The id information is mainly based on metadata of default quering cohorts;"),
-		# 	p("(2): For the genome coordinate of molecules, GENCODE V23(hg38) is showed;"),
-		# 	p("(3): ......"),
-		# ),
-
 		h2("Ⅰ Molecular profile") %>%
 			helper(type = "inline", size = "m", fade = TRUE, title="Tip:" , 
 				content = "The Chromosomal coordinates is based on GENCODE V23(hg38)"),
@@ -53,62 +45,62 @@ ui.modules_id_reference = function(id) {
 server.modules_id_reference = function(input, output, session){
 	ns = session$ns
 	
-	# id_merge = load_data("pancan_identifier_help")
+	# id_referrence = load_data("pancan_identifier_help")
 
 
 	## Molecular profile
 
 	output$dt_1_1_gene = renderDataTable({
-		dt = datatable(id_merge$id_molecule$id_gene,
+		dt = datatable(id_referrence$id_molecule$id_gene,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)),
 						search = list(regex = TRUE))) 
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
 		dt
 	})
 	output$dt_1_2_pro = renderDataTable({
-		dt = datatable(id_merge$id_molecule$id_pro,
+		dt = datatable(id_referrence$id_molecule$id_pro,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)),
 						search = list(regex = TRUE))) 
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
 		dt
 	})
 	output$dt_1_3_mut = renderDataTable({
-		dt = datatable(id_merge$id_molecule$id_mut,
+		dt = datatable(id_referrence$id_molecule$id_mut,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)),
 						search = list(regex = TRUE))) 
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
 		dt
 	})
 	output$dt_1_4_cn = renderDataTable({
-		dt = datatable(id_merge$id_molecule$id_cn,
+		dt = datatable(id_referrence$id_molecule$id_cn,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)),
 						search = list(regex = TRUE)))  
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
 		dt
 	})
 	output$dt_1_5_trans = renderDataTable({
-		dt = datatable(id_merge$id_molecule$id_trans,
+		dt = datatable(id_referrence$id_molecule$id_trans,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)),
 						search = list(regex = TRUE))) 
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
 		dt
 	})
 	output$dt_1_6_450 = renderDataTable({
-		dt = datatable(id_merge$id_molecule$id_M450,
+		dt = datatable(id_referrence$id_molecule$id_M450,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)),
 						search = list(regex = TRUE))) 
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
 		dt
 	})
 	output$dt_1_7_27k = renderDataTable({
-		dt = datatable(id_merge$id_molecule$id_M27K,
+		dt = datatable(id_referrence$id_molecule$id_M27K,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)),
 						search = list(regex = TRUE))) 
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
 		dt
 	})
 	output$dt_1_8_mi = renderDataTable({
-		dt = datatable(id_merge$id_molecule$id_mi,
+		dt = datatable(id_referrence$id_molecule$id_mi,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)),
 						search = list(regex = TRUE))) 
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
@@ -117,31 +109,31 @@ server.modules_id_reference = function(input, output, session){
 
 	## Tumor index
 	output$dt_2_1_purity = renderDataTable({
-		dt = datatable(id_merge$id_tumor_index$tcga_purity ,
+		dt = datatable(id_referrence$id_tumor_index$tcga_purity ,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)))) 
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
 		dt
 	})
 	output$dt_2_2_stemness = renderDataTable({
-		dt = datatable(id_merge$id_tumor_index$tcga_stemness,
+		dt = datatable(id_referrence$id_tumor_index$tcga_stemness,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)))) 
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
 		dt
 	})
 	output$dt_2_3_tmb = renderDataTable({
-		dt = datatable(id_merge$id_tumor_index$tcga_tmb,
+		dt = datatable(id_referrence$id_tumor_index$tcga_tmb,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)))) 
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
 		dt
 	})
 	output$dt_2_4_msi = renderDataTable({
-		dt = datatable(id_merge$id_tumor_index$tcga_msi,
+		dt = datatable(id_referrence$id_tumor_index$tcga_msi,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)))) 
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
 		dt
 	})
 	output$dt_2_5_instability = renderDataTable({
-		dt = datatable(id_merge$id_tumor_index$tcga_genome_instability,
+		dt = datatable(id_referrence$id_tumor_index$tcga_genome_instability,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)))) 
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
 		dt
@@ -149,43 +141,43 @@ server.modules_id_reference = function(input, output, session){
 
 	## Immune infiltration
 	output$dt_3_1_ciber = renderDataTable({
-		dt = datatable(id_merge$id_TIL$CIBERSORT ,
+		dt = datatable(id_referrence$id_TIL$CIBERSORT ,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)))) 
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
 		dt
 	})
 	output$dt_3_2_ciberABS = renderDataTable({
-		dt = datatable(id_merge$id_TIL$`CIBERSORT-ABS` ,
+		dt = datatable(id_referrence$id_TIL$`CIBERSORT-ABS` ,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)))) 
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
 		dt
 	})
 	output$dt_3_3_epic = renderDataTable({
-		dt = datatable(id_merge$id_TIL$EPIC ,
+		dt = datatable(id_referrence$id_TIL$EPIC ,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)))) 
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
 		dt
 	})
 	output$dt_3_4_mcp = renderDataTable({
-		dt = datatable(id_merge$id_TIL$MCPCOUNTER ,
+		dt = datatable(id_referrence$id_TIL$MCPCOUNTER ,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)))) 
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
 		dt
 	})
 	output$dt_3_5_quan = renderDataTable({
-		dt = datatable(id_merge$id_TIL$QUANTISEQ ,
+		dt = datatable(id_referrence$id_TIL$QUANTISEQ ,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)))) 
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
 		dt
 	})
 	output$dt_3_6_timer = renderDataTable({
-		dt = datatable(id_merge$id_TIL$TIMER ,
+		dt = datatable(id_referrence$id_TIL$TIMER ,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)))) 
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
 		dt
 	})
 	output$dt_3_7_xcell = renderDataTable({
-		dt = datatable(id_merge$id_TIL$XCELL ,
+		dt = datatable(id_referrence$id_TIL$XCELL ,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)))) 
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
 		dt
@@ -193,19 +185,19 @@ server.modules_id_reference = function(input, output, session){
 
 	## Pathway activity
 	output$dt_4_1_hm = renderDataTable({
-		dt = datatable(id_merge$id_PW$HALLMARK ,
+		dt = datatable(id_referrence$id_PW$HALLMARK ,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)))) 
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
 		dt
 	})
 	output$dt_4_2_kegg = renderDataTable({
-		dt = datatable(id_merge$id_PW$KEGG ,
+		dt = datatable(id_referrence$id_PW$KEGG ,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)))) 
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
 		dt
 	})
 	output$dt_4_3_iobr = renderDataTable({
-		dt = datatable(id_merge$id_PW$IOBR ,
+		dt = datatable(id_referrence$id_PW$IOBR ,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)))) 
 		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
 		dt

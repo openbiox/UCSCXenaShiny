@@ -95,8 +95,8 @@ mol_origin_Server = function(input, output, session, cancers=NULL, custom_metada
 				L2_3_methy_1 = input$L2_3_methy_1
 			}
 			switch(L2_3_methy_1,
-				`450K` = id_merge$id_molecule$id_M450[,c("Level3","CpG")],
-				`27K` = id_merge$id_molecule$id_M27K[,c("Level3","CpG")]
+				`450K` = id_referrence$id_molecule$id_M450[,c("Level3","CpG")],
+				`27K` = id_referrence$id_molecule$id_M27K[,c("Level3","CpG")]
 			)
 		})
 		cpg_ids = cpg_type() %>% 
@@ -119,8 +119,8 @@ mol_origin_Server = function(input, output, session, cancers=NULL, custom_metada
 				L2_3_methy_1 = input$L2_3_methy_1
 			}
 			switch(L2_3_methy_1,
-				`450K` = id_merge$id_molecule$id_M450[,c("Level3","CpG")],
-				`27K` = id_merge$id_molecule$id_M27K[,c("Level3","CpG")]
+				`450K` = id_referrence$id_molecule$id_M450[,c("Level3","CpG")],
+				`27K` = id_referrence$id_molecule$id_M27K[,c("Level3","CpG")]
 			)
 		})
 		cpg_ids = cpg_type() %>% 

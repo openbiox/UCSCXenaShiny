@@ -1,24 +1,22 @@
-ui.modules_pancan_sur = function(id) {
+ui.modules_pancan_sur_o2m = function(id) {
 	ns = NS(id)
 	fluidPage(
 		fluidRow(
 			# 初始设置
 			column(
-				2,
+				3,
 				wellPanel(
 					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
 
 					h4("1. Choose cancer(s)"),
-				    prettyRadioButtons(
-				      inputId = ns("overall_mode"),
-				      label = NULL,
-				      icon = icon("check"),
-				      choices = c("Single cancer", "Multi-cancers"),
-				      animation = "tada",
-				      inline = TRUE,
-				      status = "default"),
-				    uiOutput(ns("choose_overall_mode")),
+					pickerInput(
+						ns("choose_cancers"), NULL,
+						choices = sort(tcga_cancer_choices),
+						multiple = TRUE,
+						selected = sort(tcga_cancer_choices),
+						options = list(`actions-box` = TRUE)
+					),
 				    br(),br(),
 
 					h4("2. Filter samples[opt]") %>% 
@@ -54,7 +52,7 @@ ui.modules_pancan_sur = function(id) {
 			),
 			# 选择生存资料
 			column(
-				3,
+				4,
 				wellPanel(
 					style = "height:1100px",
 					h2("S2: Select survival event", align = "center"),
@@ -67,27 +65,24 @@ ui.modules_pancan_sur = function(id) {
 				        selected = "OS"
 				    ),
 				    br(),br(),
-				    uiOutput(ns("sur_dat_v1.ui")),
-				)
-			),
-			# 选择分组
-			column(
-				3,
-				wellPanel(
-					style = "height:1100px",
-					h2("S3: Group samples", align = "center"),
-					group_samples_UI(ns("group_samples2sur"))  
-
+				    group_samples_UI(ns("group_samples2sur")) 
 				)
 			),
 			# 分析/可视化/下载
 			column(
-				4,
+				5,
 				wellPanel(
 					style = "height:1100px",
-					h2("S4: Analyze", align = "center"),
+					h2("S3: Analyze", align = "center"),
 				    # 绘图按钮
-					uiOutput(ns("sur_analysis_bt.ui")),
+					shinyWidgets::actionBttn(
+						ns("sur_analysis_bt_multi"), "Go/Update Lineplot",
+				        style = "gradient",
+				        icon = icon("chart-line"),
+				        color = "primary",
+				        block = TRUE,
+				        size = "sm"
+					),
 
 					selectInput(ns("sur_method"), "1. Survival metohd",
 						choices = c("Log-rank test", "Univariate Cox regression")),
@@ -98,28 +93,23 @@ ui.modules_pancan_sur = function(id) {
 					                   title = "About the initial phenotype", 
 					                   content = "sur_initial_group"),
 
-
 					br(),
 
-				    tabsetPanel(id = ns("plot_layout"),
-				      tabPanel("Curve(single cancer)",
-				      	br(),
-				      	uiOutput(ns("one_params.ui")),
-				      	plotOutput({ns("sur_plot_one")}, height = "500px")
-				      ),
-				      tabPanel("Lineplot(multi-cancers)",
-				      	br(),
-				      	uiOutput(ns("multi_params.ui")),
-				      	plotOutput({ns("sur_plot_multi")}, height = "500px"),
-					    h4("Note:"),
-					    p("For visualization, the maximum -log10(p.value) is limited to 10."),
-				      )
-				    ),
+			      	uiOutput(ns("multi_params.ui")),
+
+					fluidRow(
+						column(10, offset = 1,
+							   plotOutput({ns("sur_plot_multi")}, height = "500px") 
+						)
+					),
+
+				    h4("Note:"),
+
 				    br(),
 				    fluidRow(
-				    	column(3, downloadButton(ns("save_plot_bt"), "Save plot")),
-				    	column(3, offset = 0, downloadButton(ns("save_data_raw"), "Save raw data(.csv)")),
-				    	column(3, offset = 1, downloadButton(ns("save_data_cor"), "Save res data(.csv)"))
+				    	column(3, downloadButton(ns("save_plot_bt"), "Figure")),
+				    	column(3, offset = 0, downloadButton(ns("save_data_raw"), "Raw data(.csv)")),
+				    	column(3, offset = 1, downloadButton(ns("save_data_res"), "Analyzed data(.csv)"))
 				    ),
 
 				    br(),
@@ -148,68 +138,15 @@ ui.modules_pancan_sur = function(id) {
 	)
 }
 
-server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
+
+server.modules_pancan_sur_o2m = function(input, output, session, cancer="BRCA") {
 	ns <- session$ns
-
-	# 初始选择单癌/泛癌
-	output$choose_overall_mode = renderUI(
-		if(input$overall_mode == "Single cancer"){
-			pickerInput(
-				ns("choose_cancer"), NULL,
-				choices = sort(tcga_cancer_choices),
-				selected = "BRCA")
-		} else if(input$overall_mode == "Multi-cancers"){
-			pickerInput(
-				ns("choose_cancers"), NULL,
-				choices = sort(tcga_cancer_choices),
-				multiple = TRUE,
-				selected = sort(tcga_cancer_choices),
-				options = list(`actions-box` = TRUE)
-			)
-		}
-	)
-	# 更新绘图按钮
-	output$sur_analysis_bt.ui = renderUI(
-		if(input$overall_mode == "Single cancer"){
-			shinyWidgets::actionBttn(
-				ns("sur_analysis_bt_single"), "Go/Update Curve",
-		        style = "gradient",
-		        icon = icon("chart-line"),
-		        color = "primary",
-		        block = TRUE,
-		        size = "sm"
-			)
-		} else if(input$overall_mode == "Multi-cancers"){
-			shinyWidgets::actionBttn(
-				ns("sur_analysis_bt_multi"), "Go/Update Lineplot",
-		        style = "gradient",
-		        icon = icon("chart-line"),
-		        color = "primary",
-		        block = TRUE,
-		        size = "sm"
-			)
-		}
-	)
-
-	# 更新展示窗口
-	observeEvent(input$overall_mode, {
-	  updateTabsetPanel(inputId = "plot_layout", 
-	  	selected = switch(input$overall_mode,
-	  		`Single cancer`="Curve(single cancer)",
-	  		`Multi-cancers`="Lineplot(multi-cancers)"))
-	}) 
-
-
 
 	# 记录选择癌症
 	cancer_choose <- reactiveValues(name = "BRCA", filter_phe_id=NULL,
 		phe_primary=query_tcga_group(cancer = "BRCA", return_all = T))
 	observe({
-		if(input$overall_mode == "Single cancer"){
-			cancer_choose$name = input$choose_cancer
-		} else if(input$overall_mode == "Multi-cancers"){
-			cancer_choose$name = input$choose_cancers
-		}
+		cancer_choose$name = input$choose_cancers
 		cancer_choose$phe_primary <- query_tcga_group(cancer = cancer_choose$name, return_all = T)
 	})
 
@@ -245,7 +182,6 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 		filter_phe_id2 = cancer_choose$phe_primary %>%
 			dplyr::filter(Code %in% choose_codes) %>%
 			dplyr::pull("Sample")
-
 		# exact filter
 		if(is.null(filter_phe_id())){
 			cancer_choose$filter_phe_id = filter_phe_id2
@@ -274,17 +210,6 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 
 
 
-	output$sur_dat_v1.ui = renderUI({
-		output$sur_dat_v1 = renderDataTable({
-			sur_dat_v1_ = sur_dat_v1()
-			colnames(sur_dat_v1_)[3:4] = paste0(input$endpoint_type,c(".status",".time"))
-			datatable(sur_dat_v1_, 
-				options = list(pageLength = 5,
-					columnDefs = list(list(className = 'dt-center', targets="_all")))
-			)
-		}) 
-		dataTableOutput(ns("sur_dat_v1"))
-	})
 
 
 	# 设置分组
@@ -297,7 +222,7 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 						   )
 
 	# 合并分组与生存
-	sur_res_one = reactiveValues(sur_dat = NULL, cutoff=NULL, sur_res = NULL)
+	# sur_res_one = reactiveValues(sur_dat = NULL, cutoff=NULL, sur_res = NULL)
 	sur_res_multi = reactiveValues(sur_dat = NULL, cutoff=NULL, sur_res = NULL)	
 
 	group_sur_final = reactive({
@@ -308,24 +233,8 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 				apply(table(dat$Cancer,dat$group),1,function(x) {min(x)>=1})])
 		dat
 	})
-	output$phe_sur_dat = renderPrint({head(group_sur_final())})
 
 
-
-	# output$phe_sur_table.ui = renderUI({
-	# 	shiny::validate(
-	# 		need(try(nrow(group_sur_final())>0), 
-	# 			"Please inspect whether to set valid groups in S3 step."),
-	# 	)
-
-	# 	output$phe_sur_table = renderDataTable({
-	# 		datatable(group_sur_final()[,c("Cancer","Sample","phenotype","group")], 
-	# 			options = list(pageLength = 5,
-	# 				columnDefs = list(list(className = 'dt-center', targets="_all")))
-	# 		)
-	# 	}) 
-	# 	dataTableOutput(ns("phe_sur_table"))
-	# })
 
 	# 根据选项，动态更新绘图参数
 	output$multi_params.ui = renderUI(
@@ -347,81 +256,6 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 		}
 	)
 
-	output$one_params.ui = renderUI(
-		if(input$sur_method=="Log-rank test"){
-		  	fluidRow(
-		  		column(4,colourpicker::colourInput(ns("one_log_color1"), "Curve color1", "#E7B800")),
-		  		column(4,colourpicker::colourInput(ns("one_log_color2"), "Curve color2", "#2E9FDF")),
-		  	)
-		} else if(input$sur_method=="Univariate Cox regression") {
-		}
-	)
-
-	# 生存分析的输入（供绘图）与输出结果（供下载）
-	observeEvent(input$sur_analysis_bt_single, {
-		sur_res_one$sur_dat = group_sur_final()
-
-		if(input$sur_method=="Log-rank test"){
-			if(!input$use_origin){ #是否使用分组前的原始值
-				sur_res_one$sur_dat$Group = sur_res_one$sur_dat$group
-			} else {
-				sur_res_one$sur_dat$Group = sur_res_one$sur_dat$origin
-				if(class(group_sur_final()$origin) != "character"){ #若原始值为数值型，则寻找最佳阈值
-					res.cut <- surv_cutpoint(sur_res_one$sur_dat, time = "time", event = "status", variables = "Group")
-					res.cat <- surv_categorize(res.cut)
-					sur_res_one$sur_dat$Group = res.cat$Group
-				}
-			}
-			surv_diff <- survdiff(Surv(time, status) ~ Group, data = sur_res_one$sur_dat)
-			pval = 1 - pchisq(surv_diff$chisq, length(surv_diff$n) - 1)
-			sur_res_one$sur_res = summary(survfit(Surv(time, status) ~ Group, data = sur_res_one$sur_dat))$table %>% 
-				    as.data.frame() %>% tibble::rownames_to_column("Group") %>% 
-				    dplyr::mutate(Cancer = cancer_choose$name, .before = 1) %>% 
-				    dplyr::mutate(p.value = pval)
-
-		} else if (input$sur_method=="Univariate Cox regression"){
-			if(!input$use_origin){
-				sur_res_one$sur_dat$Group = sur_res_one$sur_dat$group
-			} else {
-				sur_res_one$sur_dat$Group = sur_res_one$sur_dat$origin
-
-			}
-			fit <- coxph(Surv(time, status) ~ Group, data = sur_res_one$sur_dat)
-			# sur_res_one$pval = summary(fit)$coefficients[1,5]
-			sur_res_one$sur_res = summary(fit)$coefficients %>% as.data.frame()
-		}
-	})
-
-	sur_plot_one = eventReactive(input$sur_analysis_bt_single,{
-		shiny::validate(
-			need(try(nrow(sur_res_one$sur_dat)>0), 
-				"Please inspect whether to set valid groups in S3 step."),
-		)
-		dat = sur_res_one$sur_dat
-		if(input$sur_method=="Log-rank test"){	
-			fit <- survfit(Surv(time, status) ~ Group, data = dat)
-
-			p <- ggsurvplot(fit, data = dat,#data = group_sur_final(), 
-                           pval = TRUE, pval.method = TRUE, 
-                           palette = c(input$one_log_color1, input$one_log_color2), 
-                           size = 1.2, font.legend = c(14, "black"), 
-                           font.x = c(14, "bold", "black"), 
-                           font.y = c(14,  "bold", "black"), 
-                           font.tickslab = c(12, "bold", "black"), 
-                           xlab = paste(input$endpoint_type, "(days)"),
-                           risk.table = TRUE, risk.table.col = "strata", risk.table.y.text = FALSE, 
-                           ncensor.plot = FALSE, 
-                           surv.plot.height = 0.7, 
-                           risk.table.height = 0.3, 
-                           ggtheme = ggplot2::theme_classic()) + 
-			  ggplot2::guides(color = ggplot2::guide_legend(ncol = 3))
-		}  else if (input$sur_method=="Univariate Cox regression"){
-			fit = coxph(Surv(time, status) ~ Group , data = dat)
-			p = ggforest(fit,data = dat)
-		}
-		p
-	})
-
 	observeEvent(input$sur_analysis_bt_multi, {
 		sur_res_multi$sur_dat = group_sur_final()	
 
@@ -430,13 +264,17 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 				sur_res_multi$sur_dat$Group = sur_res_multi$sur_dat$group
 			} else {
 				if(class(sur_res_multi$sur_dat$origin) != "character"){ #若原始值为数值型，则寻找最佳阈值
-					res.cut <- surv_cutpoint(sur_res_multi$sur_dat, time = "time", event = "status", variables = "Group")
-					res.cat <- surv_categorize(res.cut)
+					# res.cut <- surv_cutpoint(sur_res_multi$sur_dat, time = "time", event = "status", variables = "Group")
+					# res.cat <- surv_categorize(res.cut)
 					sur_res_multi$sur_dat = lapply(sort(unique(sur_res_multi$sur_dat$Cancer)), function(x) {
 						sur_dat_sub = subset(sur_res_multi$sur_dat, Cancer==x)
 						res.cut <- surv_cutpoint(sur_dat_sub, time = "time", event = "status", variables = "origin")
-						sur_dat_sub$Group = surv_categorize(res.cut)$origin
-					}) %>% do.call(rbind, .)
+						sur_dat_sub$Group = factor(surv_categorize(res.cut)$origin, levels=c("low","high")) #因子不可修改
+						sur_dat_sub
+					}) %>% do.call(rbind, .) %>% as.data.frame()
+
+				} else {
+					sur_res_multi$sur_dat$Group = sur_res_multi$sur_dat$group
 				}
 
 			}
@@ -450,7 +288,7 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 			    as.data.frame() %>% tibble::rownames_to_column("Group") %>% 
 			    dplyr::mutate(Cancer = x, .before = 1) %>% 
 			    dplyr::mutate(p.value = pval)
-			}) %>% do.call(rbind, .)
+			}) %>% do.call(rbind, .) %>% as.data.frame()
 
 		} else if (input$sur_method=="Univariate Cox regression"){
 			if(!input$use_origin){
@@ -464,17 +302,18 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 			  summary(fit)$coefficients %>% as.data.frame() %>% 
 			    tibble::rownames_to_column("Group") %>% 
 			    dplyr::mutate(Cancer = x, .before = 1)
-			}) %>% do.call(rbind, .)
+			}) %>% do.call(rbind, .) %>% as.data.frame()
 		}
 	})
 
 	sur_plot_multi = eventReactive(input$sur_analysis_bt_multi,{
 		shiny::validate(
 			need(try(nrow(sur_res_multi$sur_dat)>0), 
-				"Please inspect whether to set valid groups in S3 step."),
+				"Please inspect whether to set valid groups in S2 step."),
 		)
 		if(input$sur_method=="Log-rank test"){
 			dat = sur_res_multi$sur_res
+			print(head(dat))
 			pval_df = dat %>%
 			  dplyr::select(Cancer, Group, rmean, p.value) %>% 
 			  dplyr::group_by(Cancer) %>% 
@@ -483,6 +322,7 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 			                              paste0("High risk(", Group[1],")"))) %>% 
 			  dplyr::distinct(Cancer, p.value, Risk) %>% as.data.frame() %>% 
 			  dplyr::mutate(Cancer = factor(Cancer, levels = rev(sort(Cancer))))
+			print(head(pval_df))
 			fill_cols = c(input$multi_log_color1, input$multi_log_color2)
 			names(fill_cols) = c(
 				paste0("Low risk(Group=",levels(sur_res_multi$sur_dat$Group)[1], ")"),
@@ -580,21 +420,17 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 		p
 	})
 
-	output$sur_plot_one = renderPlot({sur_plot_one()})
+	# output$sur_plot_one = renderPlot({sur_plot_one()})
 	output$sur_plot_multi = renderPlot({sur_plot_multi()})
 
 
 	# 3个下载按钮
 	output$save_plot_bt = downloadHandler(
 		filename = function(){
-			paste0(switch(input$overall_mode, `Single cancer` = "Curve", `Multi-cancers` = "Bar"),
-						  "_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".",input$save_plot_F)
+			paste0("Bar", "_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".",input$save_plot_F)
 		},
 		content = function(file){
-			p = switch(input$overall_mode,
-				`Single cancer` = sur_plot_one(),
-				`Multi-cancers` = sur_plot_multi()
-				)
+			p = sur_plot_multi()
 			
 		    if (input$save_plot_F == "pdf") {
 		      pdf(file, width = input$save_plot_W, height = input$save_plot_H)
@@ -613,8 +449,7 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 			paste0("Survival_rawdata_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
 		},
 		content = function(file){
-			p_raw = switch(input$overall_mode, 
-				`Single cancer` = sur_res_one$sur_dat, `Multi-cancers` = sur_res_multi$sur_dat)
+			p_raw = sur_res_multi$sur_dat
 			write.csv(p_raw, file, row.names = FALSE)
 		}
 	)
@@ -624,8 +459,7 @@ server.modules_pancan_sur = function(input, output, session, cancer="BRCA") {
 			paste0("Survival_result_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
 		},
 		content = function(file){
-			p_raw = switch(input$overall_mode, 
-				`Single cancer` = sur_res_one$sur_res, `Multi-cancers` = sur_res_multi$sur_res)
+			p_raw = sur_res_multi$sur_res
 			write.csv(p_raw, file, row.names = FALSE)
 		}
 	)

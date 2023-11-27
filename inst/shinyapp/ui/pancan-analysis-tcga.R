@@ -1,15 +1,16 @@
 ui.page_pancan_tcga <- function() {
   navbarMenu(
-    title = "TCGA Analysis",
-    icon = icon("buromobelexperte"),
     tags$style(
-      '[data-value = "Single item analysis(one/pan-cancers)"] {
-        width: 500px;
+      '[data-value = "One analysis for one cancer"] {
+        width: 400px;
        background-color: #bdbdbd;
       }
-
-       [data-value = "Multiple items analysis(one cancer)"] {
-        width: 500px;
+       [data-value = "One analysis for many cancers"] {
+        width: 400px;
+       background-color: #525252;
+      }
+       [data-value = "Batch analysis for one cancer"] {
+        width: 400px;
        background-color: #525252;
       }
       .tab-pane {
@@ -18,19 +19,27 @@ ui.page_pancan_tcga <- function() {
         }
       '
     ),
+    title = "TCGA Analysis",
+    icon = icon("buromobelexperte"),
     tabPanel(
       "TCGA Association Analysis",
       h1("TCGA Association Analysis", align = "center"),
       tabsetPanel(
         tabPanel(
-          "Single item analysis(one/pan-cancers)",
+          "One analysis for one cancer",
           br(),
-          ui.modules_pancan_cor("modules_pancan_cor")
+          ui.modules_pancan_cor_o2o("modules_pancan_cor_o2o")
         ),
         tabPanel(
-          "Multiple items analysis(one cancer)",
+          "One analysis for many cancers",
           br(),
-          ui.modules_pancan_cor_batch("modules_pancan_cor_batch")
+          ui.modules_pancan_cor_o2m("modules_pancan_cor_o2m")
+        ),
+        tabPanel(
+          # "Multiple items analysis(one cancer)",
+          "Batch analysis for one cancer",
+          br(),
+          ui.modules_pancan_cor_m2o("modules_pancan_cor_m2o")
         )
       )
     ),
@@ -39,14 +48,19 @@ ui.page_pancan_tcga <- function() {
       h1("TCGA Comparison Analysis", align = "center"),
       tabsetPanel(
         tabPanel(
-          "Single item analysis(one/pan-cancers)",
+          "One analysis for one cancer",
           br(),
-          ui.modules_pancan_comp("modules_pancan_comp")
+          ui.modules_pancan_comp_o2o("modules_pancan_comp_o2o")
         ),
         tabPanel(
-          "Multiple items analysis(one cancer)",
+          "One analysis for many cancers",
           br(),
-          ui.modules_pancan_comp_batch("modules_pancan_comp_batch")
+          ui.modules_pancan_comp_o2m("modules_pancan_comp_o2m")
+        ),
+        tabPanel(
+          "Batch analysis for one cancer",
+          br(),
+          ui.modules_pancan_comp_m2o("modules_pancan_comp_m2o")
         )
       )
     ),
@@ -55,14 +69,19 @@ ui.page_pancan_tcga <- function() {
       h1("TCGA Survival Analysis", align = "center"),
       tabsetPanel(
         tabPanel(
-          "Single item analysis(one/pan-cancers)",
+          "One analysis for one cancer",
           br(),
-          ui.modules_pancan_sur("modules_pancan_sur")
+          ui.modules_pancan_sur_o2o("modules_pancan_sur_o2o")
         ),
         tabPanel(
-          "Multiple items analysis(one cancer)",
+          "One analysis for many cancers",
           br(),
-          ui.modules_pancan_sur_batch("modules_pancan_sur_batch")
+          ui.modules_pancan_sur_o2m("modules_pancan_sur_o2m")
+        ),
+        tabPanel(
+          "Batch analysis for one cancer",
+          br(),
+          ui.modules_pancan_sur_m2o("modules_pancan_sur_m2o")
         )
       )
     )
