@@ -8,6 +8,7 @@
 #' @param tcga_PW         Pathway activity data. See shiny App.R file
 #' @param opt_pancan      molecular datasets parameters
 #' @param custom_metadata user customized metadata
+#' @param clinical_phe    common TCGA patient clinical phenotype 
 #'
 batch_download = function(L1, L2, L3,
                           tumor_index_list, tcga_TIL, tcga_PW, clinical_phe,

@@ -105,15 +105,15 @@ try_query_value <- function(host, dataset,
         
         ## Use the prepared ID referrence data
         id_ref = load_data("pancan_identifier_help")[["id_molecule"]]
-        if(grepl("450", dataset)){
-          xd = id_ref[["id_M450"]] %>%
-            dplyr::select(CpG, Level3) %>% 
-            dplyr::rename(X1 = CpG, X2 = Level3)
-        } else {
-          xd = id_ref[["id_M27K"]] %>%
-            dplyr::select(CpG, Level3) %>% 
-            dplyr::rename(X1 = CpG, X2 = Level3)   
-        }
+        # if(grepl("450", dataset)){
+        #   xd = id_ref[["id_M450"]]
+        # } else {
+        #   xd = id_ref[["id_M27K"]]  
+        # }
+        xd = ifelse(grepl("450", dataset), id_ref[["id_M450"]], id_ref[["id_M27K"]])
+        xd = xd %>%
+          dplyr::select("CpG", "Level3") %>% 
+          dplyr::rename("X1" = "CpG", "X2" = "Level3")
         
         xd = dplyr::filter(xd, .data$X2 %in% identifiers)
         
