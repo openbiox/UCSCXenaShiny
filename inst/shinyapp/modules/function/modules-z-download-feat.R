@@ -1,4 +1,4 @@
-download_feat_UI = function(id, button_name="Query data"){
+download_feat_UI = function(id, button_name="Query data",id_option = tcga_id_option){
 	ns = NS(id)
 	tagList(
 		shinyWidgets::actionBttn(
@@ -47,10 +47,10 @@ download_feat_UI = function(id, button_name="Query data"){
 							choices = names(id_option[["Pathway activity"]]),
 							selected = "HALLMARK")
 					),
-					tabPanel("Other metadata",
+					tabPanel("Phenotype data",
 						selectInput(
-							ns("other_metadata"), "Data subtype:",
-							choices = names(id_option[["Other metadata"]]),
+							ns("phenotype_data"), "Data subtype:",
+							choices = names(id_option[["Phenotype data"]]),
 							selected = "Clinical Phenotye")
 					)
 				)
@@ -87,21 +87,22 @@ download_feat_UI = function(id, button_name="Query data"){
 	              choices = NULL,
 	              options = list(create = FALSE, maxOptions = 10))
 			),
-			tabPanel("Other metadata",
+			tabPanel("Phenotype data",
 	            selectizeInput(
-	              inputId = ns("other_metadata_id"),
+	              inputId = ns("phenotype_data_id"),
 	              label = "Identifier:",
 	              choices = NULL,
 	              options = list(create = FALSE, maxOptions = 10))
 			)
 		),
-		uiOutput(ns("x_axis_data_table")),
+		uiOutput(ns("x_axis_data_table"))
 	)
 }
 
 
 
-download_feat_Server = function(input, output, session, samples=NULL, custom_metadata=NULL, opt_pancan=NULL){
+download_feat_Server = function(input, output, session, cohort = "TOIL",id_option=tcga_id_option,
+								samples=NULL, custom_metadata=NULL, opt_pancan=NULL, check_numeric=FALSE){
 	ns <- session$ns
 	observe({
 	  updateTabsetPanel(inputId = "data_L2_tab", selected = input$data_L1)
@@ -125,13 +126,13 @@ download_feat_Server = function(input, output, session, samples=NULL, custom_met
 	})
 
 
-	other_metadata_choices <- reactive({
-	    id_tmp = id_option[["Other metadata"]]
+	phenotype_data_choices <- reactive({
+	    id_tmp = id_option[["Phenotype data"]]
 		if(!is.null(custom_metadata)){
 			id_tmp[["Custom metadata"]]$all = sort(colnames(custom_metadata()[-1]))
 			id_tmp[["Custom metadata"]]$default = sort(colnames(custom_metadata()[-1]))[1]
 		}
-		id_tmp[[input$other_metadata]]
+		id_tmp[[input$phenotype_data]]
 	})
 
 
@@ -166,9 +167,9 @@ download_feat_Server = function(input, output, session, samples=NULL, custom_met
 	  )
 	  updateSelectizeInput(
 	    session,
-	    "other_metadata_id",
-	    choices = other_metadata_choices()$all,
-	    selected = other_metadata_choices()$default,
+	    "phenotype_data_id",
+	    choices = phenotype_data_choices()$all,
+	    selected = phenotype_data_choices()$default,
 	    server = TRUE
 	  )
 	})
@@ -180,33 +181,53 @@ download_feat_Server = function(input, output, session, samples=NULL, custom_met
 		    `Tumor index` = input$tumor_index,
 		    `Immune Infiltration` = input$immune_infiltration,
 		    `Pathway activity` = input$pathway_activity,
-		    `Other metadata` = input$other_metadata
+		    `Phenotype data` = input$phenotype_data
 		)
 		L3_x = switch(input$data_L1,
 		    `Molecular profile` = input$genomic_profile_id,
 		    `Tumor index` = input$tumor_index_id,
 		    `Immune Infiltration` = input$immune_infiltration_id,
 		    `Pathway activity` = input$pathway_activity_id,
-		    `Other metadata` = input$other_metadata_id
+		    `Phenotype data` = input$phenotype_data_id
 		)
+		id_category = lapply(id_option, names)
 		L1_x = names(id_category)[sapply(id_category, function(x){any(x %in% L2_x)})]
 		if(is.null(opt_pancan)){
-			opt_pancan = list(
-				  toil_mRNA = list(),
-				  toil_transcript = list(),
-				  toil_protein = list(),
-				  toil_mutation = list(),
-				  toil_cnv = list(use_thresholded_data = TRUE),
-				  toil_methylation = list(type = "450K", aggr = "NA", rule_out = NULL),
-				  toil_miRNA = list()
-			)
+			# opt_pancan = list(
+			# 	  toil_mRNA = list(),
+			# 	  toil_transcript = list(),
+			# 	  toil_protein = list(),
+			# 	  toil_mutation = list(),
+			# 	  toil_cnv = list(use_thresholded_data = TRUE),
+			# 	  toil_methylation = list(type = "450K", aggr = "NA", rule_out = NULL),
+			# 	  toil_miRNA = list(),
+			# 	  pcawg_mRNA = list(),
+			# 	  pcawg_fusion = list(),
+			# 	  pcawg_miRNA = list(norm_method = "TMM"),
+			# 	  pcawg_promoter = list(type = "relative"),
+			# 	  pcawg_APOBEC = list()
+			# )
+			opt_pancan = .opt_pancan
 		} else {
 			opt_pancan = opt_pancan()
 		}
 		## 利用内部自定义下载函数获取数据
-		x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x,
-					   tumor_index_list, tcga_TIL, tcga_PW, clinical_phe,
-					   opt_pancan,custom_metadata())
+		if(cohort=="TOIL"){
+			clinical_phe = tcga_clinical_fine
+			x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, cohort,
+						   tumor_index_list, tcga_TIL, tcga_PW, tcga_clinical_fine,
+						   opt_pancan,custom_metadata())
+		} else if(cohort=="PCAWG"){
+			clinical_phe = pcawg_info_fine
+			x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, cohort,
+						   pcawg_index_list, pcawg_TIL, pcawg_PW, pcawg_info_fine,
+						   opt_pancan,custom_metadata())
+		} else if (cohort=="CCLE"){
+			clinical_phe = ccle_info_fine
+			x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, cohort,
+						   ccle_index_list, NULL, NULL, ccle_info_fine,
+						   opt_pancan,custom_metadata())
+		}
 		if(!is.null(samples)){
 			if(!is.null(samples())){
 				x_data = x_data %>%
@@ -214,25 +235,63 @@ download_feat_Server = function(input, output, session, samples=NULL, custom_met
 			}
 		}
 		x_data$level1 = L1_x
-		x_data$cancer = clinical_phe$Cancer[match(x_data$sample, clinical_phe$Sample)]
+		## 这里PCAWG应该是Project，但为了统一起见，先都叫cancer，包括后面的ccle
+		x_data$cancer = clinical_phe[,2,drop=T][match(x_data$sample, clinical_phe$Sample)]
 		x_data = x_data[,c("id","level1","level2","sample","value","cancer")] %>%
 			dplyr::arrange(cancer,sample)
 		x_data
 	})
 
-	output$x_axis_data_table = renderUI({
-		output$x_tmp_table = renderDataTable({
-			x_axis_data_ = download_data()[,c("sample","value","cancer")]
-			if(class(x_axis_data_[,"value"])=="numeric"){
-				x_axis_data_[,"value"] = round(x_axis_data_[,"value"], digits = 3)
-			}
-			datatable(x_axis_data_, 
-				options = list(pageLength = 3,
-					columnDefs = list(list(className = 'dt-center', targets="_all")))
-			)
-		}) 
-		dataTableOutput(ns("x_tmp_table"))
+	observeEvent(input$query_data,{
+		output$x_axis_data_table = renderUI({
+			output$x_tmp_table = renderDataTable({
+				shiny::validate(
+					need(try(nrow(download_data())>0), 
+						"No sample data were available. Please inspect operations in Preset step."),
+				)
+				if(check_numeric){
+					shiny::validate(
+						need(try(class(download_data()$value)!="character"), 
+							"Please select a numeric variable."),
+					)	
+				}
+				x_axis_data_ = download_data()[,c("sample","value","cancer")]
+
+				if(class(x_axis_data_[,"value"])=="numeric"){
+					x_axis_data_[,"value"] = round(x_axis_data_[,"value"], digits = 3)
+				}
+				datatable(x_axis_data_, 
+					options = list(pageLength = 3,
+						columnDefs = list(list(className = 'dt-center', targets="_all")))
+				)
+				# download_data()
+			}) 
+			dataTableOutput(ns("x_tmp_table"))
+		})
 	})
+
+	# observeEvent(input$query_data,{
+	# 	if(input$query_data==1){
+	# 	  shinyalert(
+	# 	    title = "Clicked",
+	# 	    text = paste("You query has been uploaded successfully.\n",
+	# 	    	"Please wait a moment for Molecular profile type due to network.\n",
+	# 	    	"The notion will only appear once."),
+	# 	    size = "s", 
+	# 	    closeOnEsc = TRUE,
+	# 	    closeOnClickOutside = FALSE,
+	# 	    html = FALSE,
+	# 	    type = "success",
+	# 	    showConfirmButton = TRUE,
+	# 	    showCancelButton = FALSE,
+	# 	    confirmButtonText = "OK",
+	# 	    confirmButtonCol = "#AEDEF4",
+	# 	    timer = 0,
+	# 	    imageUrl = "",
+	# 	    animation = TRUE
+	# 	  )
+	# 	}
+	# })
 	return(download_data)
 }
 

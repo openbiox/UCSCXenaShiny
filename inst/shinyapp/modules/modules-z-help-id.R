@@ -1,7 +1,7 @@
 ui.modules_id_reference = function(id) {
 	ns = NS(id)
 	fluidPage(
-		h2("Ⅰ Molecular profile") %>%
+		h2("Ⅰ Molecular profile(TCGA)") %>%
 			helper(type = "inline", size = "m", fade = TRUE, title="Tip:" , 
 				content = "The Chromosomal coordinates is based on GENCODE V23(hg38)"),
 		tabsetPanel(
@@ -13,6 +13,25 @@ ui.modules_id_reference = function(id) {
 			tabPanel("Methylation(450K)", dataTableOutput(ns("dt_1_6_450"))),
 			tabPanel("Methylation(27K)", dataTableOutput(ns("dt_1_7_27k"))),
 			tabPanel("miRNA", dataTableOutput(ns("dt_1_8_mi"))),
+		),
+		h2("Ⅰ Molecular profile(PCAWG)") %>%
+			helper(type = "inline", size = "m", fade = TRUE, title="Tip:" , 
+				content = "The Chromosomal coordinates is based on GENCODE 19(hg19)"),
+		tabsetPanel(
+			tabPanel("Gene", dataTableOutput(ns("dt_5_1_gene"))),
+			tabPanel("Promoter", dataTableOutput(ns("dt_5_2_pro"))),
+			tabPanel("Fusion", dataTableOutput(ns("dt_5_3_fu"))),
+			tabPanel("miRNA", dataTableOutput(ns("dt_5_4_mi"))),
+			tabPanel("APOBEC", dataTableOutput(ns("dt_5_5_apo")))
+		),
+		h2("Ⅰ Molecular profile(CCLE)") %>%
+			helper(type = "inline", size = "m", fade = TRUE, title="Tip:" , 
+				content = "The Chromosomal coordinates is based on GENCODE 19(hg19)"),
+		tabsetPanel(
+			tabPanel("Gene", dataTableOutput(ns("dt_6_1_gene"))),
+			tabPanel("Protein", dataTableOutput(ns("dt_6_2_pro"))),
+			tabPanel("CNV", dataTableOutput(ns("dt_6_3_cn"))),
+			tabPanel("Mutation", dataTableOutput(ns("dt_6_4_mu")))
 		),
 		h2("Ⅱ Tumor index"),
 		tabsetPanel(
@@ -45,11 +64,7 @@ ui.modules_id_reference = function(id) {
 server.modules_id_reference = function(input, output, session){
 	ns = session$ns
 	
-	# id_referrence = load_data("pancan_identifier_help")
-
-
-	## Molecular profile
-
+	## Molecular profile(TCGA)
 	output$dt_1_1_gene = renderDataTable({
 		dt = datatable(id_referrence$id_molecule$id_gene,
 			options=list(columnDefs = list(list(orderable=TRUE, targets=0)),
@@ -107,6 +122,73 @@ server.modules_id_reference = function(input, output, session){
 		dt
 	})
 
+
+	## Molecular profile(PCAWG)
+	output$dt_5_1_gene = renderDataTable({
+		dt = datatable(pcawg_id_referrence$id_gene,
+			options=list(columnDefs = list(list(orderable=TRUE, targets=0)),
+						search = list(regex = TRUE))) 
+		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
+		dt
+	})
+	output$dt_5_2_pro = renderDataTable({
+		dt = datatable(pcawg_id_referrence$id_pro,
+			options=list(columnDefs = list(list(orderable=TRUE, targets=0)),
+						search = list(regex = TRUE))) 
+		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
+		dt
+	})
+	output$dt_5_3_fu = renderDataTable({
+		dt = datatable(pcawg_id_referrence$id_fusion,
+			options=list(columnDefs = list(list(orderable=TRUE, targets=0)),
+						search = list(regex = TRUE))) 
+		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
+		dt
+	})
+	output$dt_5_4_mi = renderDataTable({
+		dt = datatable(pcawg_id_referrence$id_mi,
+			options=list(columnDefs = list(list(orderable=TRUE, targets=0)),
+						search = list(regex = TRUE))) 
+		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
+		dt
+	})
+	output$dt_5_5_apo = renderDataTable({
+		dt = datatable(pcawg_id_referrence$id_maf,
+			options=list(columnDefs = list(list(orderable=TRUE, targets=0)),
+						search = list(regex = TRUE))) 
+		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
+		dt
+	})
+	## Molecular profile(CCLE)
+	output$dt_6_1_gene = renderDataTable({
+		dt = datatable(ccle_id_referrence$id_gene,
+			options=list(columnDefs = list(list(orderable=TRUE, targets=0)),
+						search = list(regex = TRUE))) 
+		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
+		dt
+	})
+	output$dt_6_2_pro = renderDataTable({
+		dt = datatable(ccle_id_referrence$id_pro,
+			options=list(columnDefs = list(list(orderable=TRUE, targets=0)),
+						search = list(regex = TRUE))) 
+		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
+		dt
+	})
+	output$dt_6_3_cn = renderDataTable({
+		dt = datatable(ccle_id_referrence$id_cnv,
+			options=list(columnDefs = list(list(orderable=TRUE, targets=0)),
+						search = list(regex = TRUE))) 
+		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
+		dt
+	})
+	output$dt_6_4_mu = renderDataTable({
+		dt = datatable(ccle_id_referrence$id_mut,
+			options=list(columnDefs = list(list(orderable=TRUE, targets=0)),
+						search = list(regex = TRUE))) 
+		dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
+		dt
+	})
+	
 	## Tumor index
 	output$dt_2_1_purity = renderDataTable({
 		dt = datatable(id_referrence$id_tumor_index$tcga_purity ,

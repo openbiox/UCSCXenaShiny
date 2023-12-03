@@ -105,12 +105,12 @@ try_query_value <- function(host, dataset,
         
         ## Use the prepared ID referrence data
         id_ref = load_data("pancan_identifier_help")[["id_molecule"]]
-        # if(grepl("450", dataset)){
-        #   xd = id_ref[["id_M450"]]
-        # } else {
-        #   xd = id_ref[["id_M27K"]]  
-        # }
-        xd = ifelse(grepl("450", dataset), id_ref[["id_M450"]], id_ref[["id_M27K"]])
+        if(grepl("450", dataset)){
+          xd = id_ref[["id_M450"]]
+        } else {
+          xd = id_ref[["id_M27K"]]
+        }
+        # xd = ifelse(grepl("450", dataset), id_ref[["id_M450"]], id_ref[["id_M27K"]])
         xd = xd %>%
           dplyr::select("CpG", "Level3") %>% 
           dplyr::rename("X1" = "CpG", "X2" = "Level3")
@@ -166,9 +166,15 @@ try_query_value <- function(host, dataset,
 
 #' @describeIn get_pancan_value Fetch gene expression value from pan-cancer dataset
 #' @export
-get_pancan_gene_value <- function(identifier) {
+get_pancan_gene_value <- function(identifier, norm = c("tpm","fpkm","nc")) {
   host <- "toilHub"
-  dataset <- "TcgaTargetGtex_rsem_gene_tpm"
+  
+  norm = match.arg(norm)
+  dataset = switch(norm, 
+                   "tpm"="TcgaTargetGtex_rsem_gene_tpm",
+                   "fpkm"="TcgaTargetGtex_rsem_gene_fpkm",
+                   "nc"="TcgaTargetGtex_RSEM_Hugo_norm_count")
+  # dataset <- "TcgaTargetGtex_rsem_gene_tpm"
 
   expression <- get_data(dataset, identifier, host)
   unit <- "log2(tpm+0.001)"
@@ -177,14 +183,21 @@ get_pancan_gene_value <- function(identifier) {
   res
 }
 
+
 #' @describeIn get_pancan_value Fetch gene transcript expression value from pan-cancer dataset
 #' @export
-get_pancan_transcript_value <- function(identifier) {
+get_pancan_transcript_value <- function(identifier, norm = c("tpm", "fpkm", "isopct")) {
   # ENST00000000233
   id <- identifier
   host <- "toilHub"
-  dataset <- "TcgaTargetGtex_rsem_isoform_tpm"
 
+  norm = match.arg(norm)
+  
+  dataset = switch(norm, 
+                   "tpm"="TcgaTargetGtex_rsem_isoform_tpm",
+                   "fpkm"="TcgaTargetGtex_RSEM_isoform_fpkm",
+                   "isopct"="TcgaTargetGtex_rsem_isopct")
+  
   res_p <- check_exist_data("mp", dataset, host)
   if (res_p$ok) {
     ids <- res_p$data
@@ -319,14 +332,22 @@ get_pancan_methylation_value <- function(identifier, type = c("450K", "27K"),
   aggr = match.arg(aggr)
 
   if (type == "450K") {
-    host <- "pancanAtlasHub"
-    dataset <- "jhu-usc.edu_PANCAN_HumanMethylation450.betaValue_whitelisted.tsv.synapse_download_5096262.xena"
+    # host <- "pancanAtlasHub"
+    # dataset <- "jhu-usc.edu_PANCAN_HumanMethylation450.betaValue_whitelisted.tsv.synapse_download_5096262.xena"
+    host <- "gdcHub"
+    dataset <- "GDC-PANCAN.methylation450.tsv"
   } else {
-    host <- "tcgaHub"
-    dataset <- "TCGA.PANCAN.sampleMap/HumanMethylation27"
+    # host <- "tcgaHub"
+    # dataset <- "TCGA.PANCAN.sampleMap/HumanMethylation27"
+    host <- "gdcHub"
+    dataset <- "GDC-PANCAN.methylation27.tsv"
   }
 
   data <- get_data(dataset, identifier, host, rule_out = rule_out, aggr = aggr)
+  ## 去重，优先取No.16位字符为A的情况
+  data = sort(data)
+  names(data) = substr(names(data),1,15)
+  data = data[!duplicated(names(data))]
 
   unit <- "beta value"
   report_dataset_info(dataset)

@@ -1,70 +1,63 @@
-ui.modules_pancan_comp_m2o = function(id) {
+ui.modules_ccle_comp_m2o = function(id) {
 	ns = NS(id)
 	fluidPage(
-		# 第一行：选择肿瘤及样本
 		fluidRow(
-			# 选择分组依据
+			# 初始设置
 			column(
 				3,
 				wellPanel(
-					style = "height:1000px",
+					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
+					h4("1. Choose sites"),
 
-					h4("1. Choose one cancer"),
 					pickerInput(
-						ns("choose_cancer"), NULL,
-						choices = sort(tcga_cancer_choices),
-						selected = "BRCA"),
-					br(),br(),
-
-					h4("2. Filter samples[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Choose samples for personalized need", 
-					                   content = "choose_samples"),
-					h5("Quick filter:"),
-					pickerInput(
-						ns("filter_by_code"), NULL,
-						choices = NULL, selected =  NULL,
-						multiple = TRUE, options = list(`actions-box` = TRUE)
+						ns("choose_cancer"),NULL,
+						choices = sort(unique(ccle_info_fine$Site_Primary)),
+						multiple = TRUE,
+						selected = sort(unique(ccle_info_fine$Site_Primary)),
+						options = list(`actions-box` = TRUE)
 					),
+					br(),br(),
+					h4("2. Filter samples[opt]"),
 					h5("Exact filter:"),
-					filter_samples_UI(ns("filter_samples2comp_batch")),
+					filter_samples_UI(ns("filter_samples2cor")),
 					br(),
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),br(),
-					
+
 					h4("3. Upload metadata[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Upload sample info", 
 					                   content = "custom_metadata"),
 					shinyFeedback::useShinyFeedback(),
-					custom_meta_UI(ns("custom_meta2comp_batch")),
+					custom_meta_UI(ns("custom_meta2cor")),
 					br(),br(),
 
 					h4("4. Modify datasets[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Set molecular profile origin", 
 					                   content = "data_origin"),
-					mol_origin_UI(ns("mol_origin2comp_batch"))
+
+					mol_origin_UI(ns("mol_origin2cor"))
 				)
 			),
 			# 分组设置
 			column(
 				4,
 				wellPanel(
-					style = "height:1000px",
+					style = "height:1100px",
 					h2("S2: Get data", align = "center"),
 					# 调用分组模块UI
-					group_samples_UI(ns("group_samples2comp_batch")),
+					group_samples_UI(ns("group_samples2comp"),id_option = ccle_id_option),
 					# 批量数据下载
-					multi_upload_UI(ns("multi_upload2comp"),"Query variables to compare"),
-
+					multi_upload_UI(ns("multi_upload2comp"),
+						button_name="Query variables to compare",id_option = ccle_id_option),
 				)
 			),
 			column(
 				5,
 				wellPanel(
-					style = "height:1000px",
+					style = "height:1100px",
 					h2("S3: Batch analyze", align = "center"),
 
 					shinyWidgets::actionBttn(
@@ -89,77 +82,61 @@ ui.modules_pancan_comp_m2o = function(id) {
 				)
 			)
 		)
+
 	)
+	
+
+
 }
 
 
-server.modules_pancan_comp_m2o = function(input, output, session) {
+server.modules_ccle_comp_m2o = function(input, output, session) {
 	ns <- session$ns
-
-
 	# 记录选择癌症
-	cancer_choose <- reactiveValues(name = "BRCA", filter_phe_id=NULL,
-		phe_primary=query_tcga_group(cancer = "BRCA", return_all = T))
+	cancer_choose <- reactiveValues(name = "lung", phe_primary="",
+		filter_phe_id=query_tcga_group(cohort = "CCLE", cancer = "lung", return_all = T))
 	observe({
 		cancer_choose$name = input$choose_cancer
-		cancer_choose$phe_primary <- query_tcga_group(cancer = cancer_choose$name, return_all = T)
+		cancer_choose$phe_primary <- query_tcga_group(cohort = "CCLE",
+			cancer = cancer_choose$name, return_all = T)
 	})
+
+	# 自定义上传metadata数据
+	custom_meta = callModule(custom_meta_Server, "custom_meta2cor")
+
+	# 数据源设置
+	opt_pancan = callModule(mol_origin_Server, "mol_origin2cor")
 
 	## 过滤样本
 	# exact filter module
-	filter_phe_id = callModule(filter_samples_Server, "filter_samples2comp_batch",
+	filter_phe_id = callModule(filter_samples_Server, "filter_samples2cor",
+					   cohort = "CCLE",id_option = ccle_id_option,
 					   cancers=reactive(cancer_choose$name),
 					   custom_metadata=reactive(custom_meta()),
 					   opt_pancan = reactive(opt_pancan()))
-	# quick filter widget
 	observe({
-		code_types_valid = code_types[names(code_types) %in% 
-							unique(cancer_choose$phe_primary$Code)]
-		updatePickerInput(
-			session,
-			"filter_by_code",
-			choices = unlist(code_types_valid,use.names = F),
-			selected =  unlist(code_types_valid,use.names = F)
-		)
-	})
-	# 综合上述二者
-	observe({
-		# quick filter
-		choose_codes = names(code_types)[unlist(code_types) %in% input$filter_by_code]
-		filter_phe_id2 = cancer_choose$phe_primary %>%
-			dplyr::filter(Code %in% choose_codes) %>%
-			dplyr::pull("Sample")
-
 		# exact filter
 		if(is.null(filter_phe_id())){
-			cancer_choose$filter_phe_id = filter_phe_id2
+			cancer_choose$filter_phe_id = cancer_choose$phe_primary$Sample
 		} else {
-			cancer_choose$filter_phe_id = intersect(filter_phe_id2,filter_phe_id())
+			cancer_choose$filter_phe_id = filter_phe_id()
 		}
 
 		output$filter_phe_id_info = renderPrint({
 			cat(paste0("Tip: ", length(cancer_choose$filter_phe_id), " samples are retained"))
 		})
 	})
-
-	# 自定义上传metadata数据
-	custom_meta = callModule(custom_meta_Server, "custom_meta2comp_batch")
-
-
-	# 数据源设置
-	opt_pancan = callModule(mol_origin_Server, "mol_origin2comp_batch")
-
-
 	# 设置分组
-	group_final = callModule(group_samples_Server, "group_samples2comp_batch",
+	group_final = callModule(group_samples_Server, "group_samples2comp",
+						   cohort = "CCLE",id_option = ccle_id_option,
 						   cancers=reactive(cancer_choose$name),
 						   samples=reactive(cancer_choose$filter_phe_id),
 						   custom_metadata=reactive(custom_meta()),
 						   opt_pancan = reactive(opt_pancan())
 						   )
-
 	# 批量下载数据
 	L3s_x_data =  callModule(multi_upload_Server, "multi_upload2comp", 
+							 cohort = "CCLE",id_option = ccle_id_option,
 							 samples=reactive(cancer_choose$filter_phe_id),
 							 custom_metadata=reactive(custom_meta()),
 						     opt_pancan = reactive(opt_pancan()),
@@ -168,7 +145,6 @@ server.modules_pancan_comp_m2o = function(input, output, session) {
 	L3s_x = reactive({
 		unique(L3s_x_data()$id)
 	})
-
 	## 比较分析
 	comp_stat = eventReactive(input$cal_batch_comp, {
 		shiny::validate(
@@ -237,11 +213,11 @@ server.modules_pancan_comp_m2o = function(input, output, session) {
 
 	output$comp_stat_dw.ui = renderUI({
 		fluidRow(
-			column(6,downloadButton(ns("comp_batch_raw"), "Raw data(.csv)")),
-			column(6,downloadButton(ns("comp_batch_res"), "Analyzied data(.csv)"))
+			column(6,downloadButton(ns("comp_raw"), "Raw data(.csv)")),
+			column(6,downloadButton(ns("comp_res"), "Analyzied data(.csv)"))
 		)
 	})
-	output$comp_batch_raw = downloadHandler(
+	output$comp_raw = downloadHandler(
 		filename = function(){
 			paste0("Batch_comparison_rawdata_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
 		},
@@ -255,7 +231,7 @@ server.modules_pancan_comp_m2o = function(input, output, session) {
 			write.csv(data, file, row.names = FALSE)
 		}
 	)
-	output$comp_batch_res = downloadHandler(
+	output$comp_res = downloadHandler(
 		filename = function(){
 			paste0("Batch_comparison_result_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
 		},

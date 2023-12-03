@@ -19,6 +19,16 @@ NULL
 #' data("ccle_info")
 NULL
 
+#' Cleaned Phenotype Info of CCLE Database for grouping
+#' @docType data
+#' @name ccle_info_fine
+#' @format A `data.frame`
+#' @source UCSC Xena.
+#' @examples
+#' data("ccle_info_fine")
+NULL
+
+
 #' Phenotype Info of PCAWG Database
 #' @docType data
 #' @name pcawg_info
@@ -27,6 +37,18 @@ NULL
 #' @examples
 #' data("pcawg_info")
 NULL
+
+
+#' Cleaned Phenotype Info of PCAWG Database for grouping
+#' @docType data
+#' @name pcawg_info_fine
+#' @format A `data.frame`
+#' @source UCSC Xena.
+#' @examples
+#' data("pcawg_info_fine")
+NULL
+
+
 
 #' ABSOLUTE Result of CCLE Database
 #' @docType data
@@ -57,6 +79,19 @@ NULL
 #' @examples
 #' data("tcga_clinical")
 NULL
+
+
+#' Toil Hub: Cleaned TCGA Clinical Data for grouping
+#'
+#' See `tcga_surv` for TCGA survival data.
+#' @docType data
+#' @name tcga_clinical_fine
+#' @format A [data.frame]
+#' @source Generate from data-raw
+#' @examples
+#' data("tcga_clinical_fine")
+NULL
+
 
 #' Toil Hub: TCGA Survival Data
 #' @docType data

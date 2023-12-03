@@ -22,6 +22,7 @@ data/tcga_TIL.rda
 data/tcga_tmb.rda
 data/tcga_chr_alteration.rda
 
+
 inst/extdata/pancan_MSI.rda
 inst/extdata/tcga_pan_immune_signature.rda
 inst/extdata/tcga_MSI.rda
@@ -37,6 +38,13 @@ inst/extdata/tcga_PW.rda
 inst/extdata/tcga_PW_meta.rda
 
 inst/extdata/pancan_identifier_help.rda
+
+inst/extdata/pcawg_PW.rda
+inst/extdata/pcawg_TIL.rda
+inst/extdata/pcawg_identifier.rda
+inst/extdata/ccle_identifier.rda
+
+
 
 
 .idea

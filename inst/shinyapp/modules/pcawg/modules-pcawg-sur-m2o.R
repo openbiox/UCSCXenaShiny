@@ -1,24 +1,20 @@
-ui.modules_pancan_sur_m2o = function(id) {
+ui.modules_pcawg_sur_m2o = function(id) {
 	ns = NS(id)
 	fluidPage(
 		fluidRow(
+			# 初始设置
 			column(
 				3,
 				wellPanel(
 					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
+					h4("1. Choose project"),
 
-					h4("1. Choose one cancer"),
 					pickerInput(
-						ns("choose_cancer"), NULL,
-						choices = sort(tcga_cancer_choices),
-						selected = "BRCA"),
+						ns("choose_cancer"),NULL,
+						choices = pcawg_items),
 					br(),br(),
-
-					h4("2. Filter samples[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Choose samples for personalized need", 
-					                   content = "choose_samples"),
+					h4("2. Filter samples[opt]"),
 					h5("Quick filter:"),
 					pickerInput(
 						ns("filter_by_code"), NULL,
@@ -26,26 +22,27 @@ ui.modules_pancan_sur_m2o = function(id) {
 						multiple = TRUE, options = list(`actions-box` = TRUE)
 					),
 					h5("Exact filter:"),
-					filter_samples_UI(ns("filter_samples2sur_batch")),
+					filter_samples_UI(ns("filter_samples2cor")),
 					br(),
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),br(),
-					
+
 					h4("3. Upload metadata[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Upload sample info", 
 					                   content = "custom_metadata"),
 					shinyFeedback::useShinyFeedback(),
-					custom_meta_UI(ns("custom_meta2sur_batch")),
+					custom_meta_UI(ns("custom_meta2cor")),
 					br(),br(),
 
 					h4("4. Modify datasets[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Set molecular profile origin", 
 					                   content = "data_origin"),
-					mol_origin_UI(ns("mol_origin2sur_batch"))
+
+					mol_origin_UI(ns("mol_origin2cor"))
 				)
-			),
+			),	
 			column(
 				4,
 				wellPanel(
@@ -53,15 +50,8 @@ ui.modules_pancan_sur_m2o = function(id) {
 
 					h2("S2: Get data", align = "center"),
 
-				    shinyWidgets::prettyRadioButtons(
-				        inputId = ns("endpoint_type"), label = "Endpoint type:",
-				        choiceValues = c("OS", "DSS", "DFI", "PFI"),
-				        choiceNames = c("OS (Overall Survial)", "DSS (Disease-Specific Survival)", 
-				        				"DFI (Disease-Free Interval)", "PFI (Progression-Free Interval)"),
-				        selected = "OS",inline = TRUE
-				    ),
-				    br(),
-					multi_upload_UI(ns("multi_upload2sur"),"Select multiple conditions"),
+					multi_upload_UI(ns("multi_upload2sur"),
+						button_name="Select multiple conditions",id_option = pcawg_id_option),
 				    # uiOutput(ns("L3s_x_data_sur.ui")),
 
 					shinyWidgets::actionBttn(
@@ -116,48 +106,48 @@ ui.modules_pancan_sur_m2o = function(id) {
 
 
 
-
-
-server.modules_pancan_sur_m2o = function(input, output, session) {
+server.modules_pcawg_sur_m2o = function(input, output, session) {
 	ns <- session$ns
 
 	# 记录选择癌症
-	cancer_choose <- reactiveValues(name = "BRCA", filter_phe_id=NULL,
-		phe_primary=query_tcga_group(cancer = "BRCA", return_all = T))
+	cancer_choose <- reactiveValues(name = "BLCA-US", phe_primary="",
+		filter_phe_id=query_tcga_group(cohort = "PCAWG", cancer = "BLCA-US", return_all = T))
 	observe({
 		cancer_choose$name = input$choose_cancer
-		cancer_choose$phe_primary <- query_tcga_group(cancer = cancer_choose$name, return_all = T)
+		cancer_choose$phe_primary <- query_tcga_group(cohort = "PCAWG",
+			cancer = cancer_choose$name, return_all = T)
 	})
 
 	# 自定义上传metadata数据
-	custom_meta = callModule(custom_meta_Server, "custom_meta2sur_batch")
+	custom_meta = callModule(custom_meta_Server, "custom_meta2cor")
 
 	# 数据源设置
-	opt_pancan = callModule(mol_origin_Server, "mol_origin2sur_batch")
+	opt_pancan = callModule(mol_origin_Server, "mol_origin2cor")
+
 
 	## 过滤样本
-	# exact filter module
-	filter_phe_id = callModule(filter_samples_Server, "filter_samples2sur_batch",
-					   cancers=reactive(cancer_choose$name),
-					   custom_metadata=reactive(custom_meta()),
-					   opt_pancan = reactive(opt_pancan()))
 	# quick filter widget
 	observe({
-		code_types_valid = code_types[names(code_types) %in% 
-							unique(cancer_choose$phe_primary$Code)]
+		code_types_valid = unique(cancer_choose$phe_primary$Type)
 		updatePickerInput(
 			session,
 			"filter_by_code",
-			choices = unlist(code_types_valid,use.names = F),
-			selected =  unlist(code_types_valid,use.names = F)
+			choices = code_types_valid,
+			selected =  code_types_valid
 		)
 	})
+	# exact filter module
+	filter_phe_id = callModule(filter_samples_Server, "filter_samples2cor",
+					   cohort = "PCAWG",id_option = pcawg_id_option,
+					   cancers=reactive(cancer_choose$name),
+					   custom_metadata=reactive(custom_meta()),
+					   opt_pancan = reactive(opt_pancan()))
+
 	# 综合上述二者
 	observe({
 		# quick filter
-		choose_codes = names(code_types)[unlist(code_types) %in% input$filter_by_code]
 		filter_phe_id2 = cancer_choose$phe_primary %>%
-			dplyr::filter(Code %in% choose_codes) %>%
+			dplyr::filter(Type %in% input$filter_by_code) %>%
 			dplyr::pull("Sample")
 
 		# exact filter
@@ -173,9 +163,9 @@ server.modules_pancan_sur_m2o = function(input, output, session) {
 	})
 
 
-
 	# 批量下载数据
 	L3s_x_data =  callModule(multi_upload_Server, "multi_upload2sur", 
+							 cohort = "PCAWG",id_option = pcawg_id_option,
 							 samples=reactive(cancer_choose$filter_phe_id),
 							 custom_metadata=reactive(custom_meta()),
 						     opt_pancan = reactive(opt_pancan()),
@@ -187,16 +177,14 @@ server.modules_pancan_sur_m2o = function(input, output, session) {
 
 
 	L3s_x_data_sur = reactive({
-		sur_dat_raw = load_data("tcga_surv") %>%
-			dplyr::select("sample",contains(input$endpoint_type)) %>%
-			na.omit()
-		colnames(sur_dat_raw)[2:3] = c("status","time")
+		sur_dat_raw = pcawg_info[,c("icgc_specimen_id","OS","OS.time")]
+		colnames(sur_dat_raw) = c("sample","status","time")
+		sur_dat_sub = sur_dat_raw %>%  dplyr::distinct() %>% na.omit()
+
 		x_data_merge = L3s_x_data() %>%
-			dplyr::inner_join(sur_dat_raw)
+			dplyr::inner_join(sur_dat_sub)
 		x_data_merge
-
 	})
-
 
 	# 分组方式
 	output$set_group1.ui = renderUI({
@@ -337,7 +325,6 @@ server.modules_pancan_sur_m2o = function(input, output, session) {
 		datas = L3s_x_data_sur_group()
 		valid_ids = unique(datas$id)
 
-
 		withProgress(message = "Your analyzation has been submitted. Please wait for a while.",{
 			sur_stat = lapply(seq(valid_ids), function(i){
 			    incProgress(1 / length(valid_ids), detail = paste0("(Finished ",i,"/",length(valid_ids),")"))
@@ -428,4 +415,7 @@ server.modules_pancan_sur_m2o = function(input, output, session) {
 			write.csv(sur_stat_, file, row.names = FALSE)
 		}
 	)
+
+
+
 }

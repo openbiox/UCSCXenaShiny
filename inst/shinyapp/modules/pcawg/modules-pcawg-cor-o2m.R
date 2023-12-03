@@ -1,4 +1,4 @@
-ui.modules_pancan_cor_o2m = function(id) {
+ui.modules_pcawg_cor_o2m = function(id) {
 	ns = NS(id)
 	fluidPage(
 		fluidRow(
@@ -8,21 +8,17 @@ ui.modules_pancan_cor_o2m = function(id) {
 				wellPanel(
 					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
-					h4("1. Choose cancers"),
+					h4("1. Choose projects"),
+
 					pickerInput(
-						ns("choose_cancers"), NULL,
-						choices = sort(tcga_cancer_choices),
+						ns("choose_cancers"),NULL,
+						choices = pcawg_items,
 						multiple = TRUE,
-						selected = sort(tcga_cancer_choices),
+						selected = pcawg_items,
 						options = list(`actions-box` = TRUE)
 					),
-
-				    br(),br(),
-
-					h4("2. Filter samples[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Choose samples for personalized need", 
-					                   content = "choose_samples"),
+					br(),br(),
+					h4("2. Filter samples[opt]"),
 					h5("Quick filter:"),
 					pickerInput(
 						ns("filter_by_code"), NULL,
@@ -51,16 +47,20 @@ ui.modules_pancan_cor_o2m = function(id) {
 					mol_origin_UI(ns("mol_origin2cor"))
 				)
 			),
-			# 下载X轴数据
+			# 下载X/Y轴数据
 			column(
 				4,
 				wellPanel(
 					style = "height:1100px",
-					h2("S2: Select item for X", align = "center"),
-					# 调用下载模块UI
-					download_feat_UI(ns("download_x_axis"), button_name="Query data(x-axis)"),
-		            br(),
-					download_feat_UI(ns("download_y_axis"), button_name="Query data(y-axis)"), 
+					h2("S2: Get data", align = "center"),
+					# X
+					download_feat_UI(ns("download_x_axis"), 
+						button_name="Query data(x-axis)",id_option = pcawg_id_option),
+		            br(),br(),
+		            # Y
+					download_feat_UI(ns("download_y_axis"), 
+						button_name="Query data(y-axis)",id_option = pcawg_id_option)
+
 				)
 			),
 			# 分析/绘图/下载
@@ -69,7 +69,6 @@ ui.modules_pancan_cor_o2m = function(id) {
 				wellPanel(
 					h2("S4: Analyze", align = "center"),
 					style = "height:1100px",
-					
 					shinyWidgets::actionBttn(
 						ns("step3_plot_bar"), "Go/Update barplot",
 				        style = "gradient",
@@ -122,22 +121,21 @@ ui.modules_pancan_cor_o2m = function(id) {
 			)
 		)
 	)
+
 }
 
 
-server.modules_pancan_cor_o2m = function(input, output, session) {
+
+server.modules_pcawg_cor_o2m = function(input, output, session) {
 	ns <- session$ns
-
-
-
 	# 记录选择癌症
-	cancer_choose <- reactiveValues(name = "ACC", phe_primary="",
-		filter_phe_id=query_tcga_group(cancer = "BRCA", return_all = T))
+	cancer_choose <- reactiveValues(name = "BLCA-US", phe_primary="",
+		filter_phe_id=query_tcga_group(cohort = "PCAWG", cancer = "BLCA-US", return_all = T))
 	observe({
 		cancer_choose$name = input$choose_cancers
-		cancer_choose$phe_primary <- query_tcga_group(cancer = cancer_choose$name, return_all = T)
+		cancer_choose$phe_primary <- query_tcga_group(cohort = "PCAWG",
+			cancer = cancer_choose$name, return_all = T)
 	})
-	
 
 	# 自定义上传metadata数据
 	custom_meta = callModule(custom_meta_Server, "custom_meta2cor")
@@ -147,29 +145,28 @@ server.modules_pancan_cor_o2m = function(input, output, session) {
 
 
 	## 过滤样本
-	# exact filter module
-	filter_phe_id = callModule(filter_samples_Server, "filter_samples2cor",
-					   cancers=reactive(cancer_choose$name),
-					   custom_metadata=reactive(custom_meta()),
-					   opt_pancan = reactive(opt_pancan()))
 	# quick filter widget
 	observe({
-		code_types_valid = code_types[names(code_types) %in% 
-							unique(cancer_choose$phe_primary$Code)]
+		code_types_valid = unique(cancer_choose$phe_primary$Type)
 		updatePickerInput(
 			session,
 			"filter_by_code",
-			choices = unlist(code_types_valid,use.names = F),
-			selected =  unlist(code_types_valid,use.names = F)
+			choices = code_types_valid,
+			selected =  code_types_valid
 		)
 	})
+	# exact filter module
+	filter_phe_id = callModule(filter_samples_Server, "filter_samples2cor",
+					   cohort = "PCAWG",id_option = pcawg_id_option,
+					   cancers=reactive(cancer_choose$name),
+					   custom_metadata=reactive(custom_meta()),
+					   opt_pancan = reactive(opt_pancan()))
 
 	# 综合上述二者
 	observe({
 		# quick filter
-		choose_codes = names(code_types)[unlist(code_types) %in% input$filter_by_code]
 		filter_phe_id2 = cancer_choose$phe_primary %>%
-			dplyr::filter(Code %in% choose_codes) %>%
+			dplyr::filter(Type %in% input$filter_by_code) %>%
 			dplyr::pull("Sample")
 
 		# exact filter
@@ -184,16 +181,18 @@ server.modules_pancan_cor_o2m = function(input, output, session) {
 		})
 	})
 
-
-	## x-axis data
+	## x-axis panel
 	x_axis_data = callModule(download_feat_Server, "download_x_axis", 
+							 cohort = "PCAWG",id_option=pcawg_id_option,
 							 samples=reactive(cancer_choose$filter_phe_id),
 							 custom_metadata=reactive(custom_meta()),
 						     opt_pancan = reactive(opt_pancan()),
 						     check_numeric=TRUE
 							 )
-	## y-axis data
+
+	## y-axis panel
 	y_axis_data = callModule(download_feat_Server, "download_y_axis", 
+							 cohort = "PCAWG",id_option=pcawg_id_option,
 							 samples=reactive(cancer_choose$filter_phe_id),
 							 custom_metadata=reactive(custom_meta()),
 						     opt_pancan = reactive(opt_pancan()),
@@ -207,6 +206,7 @@ server.modules_pancan_cor_o2m = function(input, output, session) {
 		y_axis_data = y_axis_data()
 		colnames(y_axis_data)[c(1:3,5)] = paste0("y_",colnames(y_axis_data)[c(1:3,5)])
 
+		# inner_join取交集本身可以避免行为0的项目数据
 		data = dplyr::inner_join(x_axis_data, y_axis_data) %>%
 			dplyr::select(cancer, sample, everything())
 		data
@@ -295,5 +295,6 @@ server.modules_pancan_cor_o2m = function(input, output, session) {
 			write.csv(p_cor, file, row.names = FALSE)
 		}
 	)
-}
 
+
+}

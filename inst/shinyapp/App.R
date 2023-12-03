@@ -214,7 +214,7 @@ id_referrence = load_data("pancan_identifier_help")
 # # [1] "id_molecule"    "id_tumor_index" "id_TIL"         "id_PW"
 
 
-id_option = list(
+tcga_id_option = list(
   "Molecular profile" = list(
      `mRNA Expression` = list(all = pancan_identifiers$gene, default = "TP53"),
      `Transcript Expression` = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
@@ -245,13 +245,77 @@ id_option = list(
      `KEGG` = list(all = sort(PW_meta$Name[PW_meta$Type=="KEGG"]), default = "CELL_CYCLE"),
      `IOBR` = list(all = sort(PW_meta$Name[PW_meta$Type=="IOBR"]), default = "Biotin_Metabolism")
   ),
-  "Other metadata" = list(
+  "Phenotype data" = list(
      `Clinical Phenotype` = list(all = colnames(clinical_phe)[4:9], default = "Code")
      ,
      `Custom metadata` = list(all = NULL, default = NULL)
   )
 )
-id_category = lapply(id_option, names)
+# tcga_id_category = lapply(tcga_id_option, names)
+
+
+
+
+pcawg_id_referrence = load_data("pcawg_identifier")
+pcawg_id_option = tcga_id_option
+pcawg_id_option$`Molecular profile` = list(
+     `mRNA Expression` = list(all = pcawg_id_referrence$id_gene$Level3, default = "TP53"),
+     `Promoter Activity` = list(all = pcawg_id_referrence$id_pro$Level3, default = "prmtr.1"),
+     `Gene Fusion` = list(all = pcawg_id_referrence$id_fusion$Level3, default = "SAMD11"),
+     `miRNA Expression` = list(all = pcawg_id_referrence$id_mi$Level3, default = "hsa-let-7a-2-3p"),
+     `APOBEC Mutagenesis` = list(all = pcawg_id_referrence$id_maf$Level3, default = "A3A_or_A3B")
+  )
+pcawg_id_option$`Tumor index` = list(
+     `Tumor Purity` = list(all = c("purity", "ploidy", "purity_conf_mad", "wgd_status", "wgd_uncertain"), 
+                          default = "purity")
+  )
+pcawg_id_option$`Phenotype data` = list(
+     `Clinical Phenotype` = list(all = c("Age", "Gender","Type"), 
+                          default = "Age")
+  )
+pcawg_items = sort(unique(pcawg_info_fine$Project)) #30
+pcawg_TIL = load_data("pcawg_TIL")
+pcawg_PW = load_data("pcawg_PW")
+pcawg_index_list = list(
+  tcga_purity = pcawg_purity %>%
+    dplyr::filter(icgc_specimen_id %in% pcawg_info_fine$Sample) %>%
+    dplyr::rename(sample=icgc_specimen_id)
+  )
+
+
+
+
+
+ccle_id_referrence = load_data("ccle_identifier")
+ccle_id_option = tcga_id_option
+ccle_id_option$`Molecular profile` = list(
+     `mRNA Expression` = list(all = ccle_id_referrence$id_gene$Level3, default = "TP53"),
+     `Protein Expression` = list(all = ccle_id_referrence$id_pro$Level3, default = "14-3-3_beta"),
+     `Copy Number Variation` = list(all = ccle_id_referrence$id_cnv$Level3, default = "TP53"),
+     `Mutation status` = list(all = ccle_id_referrence$id_mut$Level3, default = "TP53")
+  )
+
+
+ccle_id_option$`Tumor index` = list(
+     `Tumor Purity` = list(all = c("Purity", "Ploidy", "Genome Doublings", "Lineage"), 
+                          default = "Purity")
+  )
+ccle_id_option$`Immune Infiltration` = list(NULL)
+ccle_id_option$`Pathway activity` = list(NULL)
+
+ccle_id_option$`Phenotype data` = list(
+     `Clinical Phenotype` = list(all = c("Gender","Histology","Type"), 
+                          default = "Gender")
+  )
+
+ccle_index_list = list(
+  tcga_purity = ccle_absolute %>%
+    dplyr::rename("sample"="Cell Line") %>%
+    dplyr::filter(sample %in% ccle_info_fine$Sample)
+  )
+
+
+
 
 
 
@@ -394,6 +458,34 @@ ui <- tagList(
               top: calc(50% - 50px);;
               left: calc(50% - 400px);;
             }")
+    ),
+    tags$style(
+      '[data-value = "Sole Analysis for Single Cancer"] {
+        width: 400px;
+       background-color: #bdbdbd;
+      }
+       [data-value = "Sole Analysis for Multiple Cancers"] {
+        width: 400px;
+       background-color: #525252;
+      }
+       [data-value = "Batch Analysis for Single Cancer"] {
+        width: 400px;
+       background-color: #525252;
+      }
+       [data-value = "Sole Analysis for Cell Lines"] {
+        width: 400px;
+       background-color: #bdbdbd;
+      }
+       [data-value = "Batch Analysis for Cell Lines"] {
+        width: 400px;
+       background-color: #525252;
+      }
+      .tab-pane {
+        background-color: transparent;
+        width: 100%;
+        }
+      .nav-tabs {font-size: 20px}   
+      '
     )
   ),
   shinyjs::useShinyjs(),

@@ -14,7 +14,8 @@ filter_samples_UI = function(id, button_name="Enter"){
 
 
 
-filter_samples_Server = function(input, output, session, cancers=NULL, custom_metadata=NULL, opt_pancan=NULL){
+filter_samples_Server = function(input, output, session, cohort="TOIL", id_option=tcga_id_option,
+								 cancers=NULL, custom_metadata=NULL, opt_pancan=NULL){
 	ns <- session$ns
 
 	observeEvent(input$filter_phe, {
@@ -66,10 +67,10 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 											choices = names(id_option[["Pathway activity"]]),
 											selected = "HALLMARK")
 									),
-									tabPanel("Other metadata",
+									tabPanel("Phenotype data",
 										selectInput(
-											ns("other_metadata"), "Data subtype:",
-											choices = names(id_option[["Other metadata"]]),
+											ns("phenotype_data"), "Data subtype:",
+											choices = names(id_option[["Phenotype data"]]),
 											selected = "Clinical Phenotype")
 									)
 								)
@@ -106,9 +107,9 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 					              choices = NULL,
 					              options = list(create = FALSE, maxOptions = 5))
 							),
-							tabPanel("Other metadata",
+							tabPanel("Phenotype data",
 					            selectizeInput(
-					              inputId = ns("other_metadata_id"),
+					              inputId = ns("phenotype_data_id"),
 					              label = "Identifier:",
 					              choices = NULL,
 					              options = list(create = FALSE, maxOptions = 5))
@@ -243,20 +244,20 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 		      server = TRUE
 		    )
 		})
-		observeEvent(input$other_metadata, {
-			other_metadata_choices <- reactive({
-			    id_tmp = id_option[["Other metadata"]]
+		observeEvent(input$phenotype_data, {
+			phenotype_data_choices <- reactive({
+			    id_tmp = id_option[["Phenotype data"]]
 				if(!is.null(custom_metadata)){
 					id_tmp[["Custom metadata"]]$all = sort(colnames(custom_metadata()[-1]))
 					id_tmp[["Custom metadata"]]$default = sort(colnames(custom_metadata()[-1]))[1]
 				}
-				id_tmp[[input$other_metadata]]
+				id_tmp[[input$phenotype_data]]
 			})
 			updateSelectizeInput(
 			  session,
-			  "other_metadata_id",
-			  choices = other_metadata_choices()$all,
-			  selected = other_metadata_choices()$default,
+			  "phenotype_data_id",
+			  choices = phenotype_data_choices()$all,
+			  selected = phenotype_data_choices()$default,
 			  server = TRUE
 			)
 		})
@@ -311,98 +312,62 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 	add_phes_dat = eventReactive(input$button_phe_add, {
 
 		x_tmp = lapply(seq(add_phes$name), function(i){
-			tmp_data_type = str_split(add_phes$name[[i]], "--")[[1]][1]
-			tmp_data_sub = str_split(add_phes$name[[i]], "--")[[1]][2]
-			tmp_data_target = str_split(add_phes$name[[i]], "--")[[1]][3]
+			tmp_data_type = str_split(add_phes$name[[i]], "--")[[1]][1]   # Level-1
+			tmp_data_sub = str_split(add_phes$name[[i]], "--")[[1]][2]    # Level-2
+			tmp_data_target = str_split(add_phes$name[[i]], "--")[[1]][3] # Level-3
 
-			if(tmp_data_type == "Molecular profile"){
-				# 自定义数据集参数
-				if(is.null(opt_pancan)){
-					opt_pancan = list(
-						  toil_mRNA = list(),
-						  toil_transcript = list(),
-						  toil_protein = list(),
-						  toil_mutation = list(),
-						  toil_cnv = list(use_thresholded_data = TRUE),
-						  toil_methylation = list(type = "450K", aggr = "NA", rule_out = NULL),
-						  toil_miRNA = list()
-					)
-				} else {
-					opt_pancan = opt_pancan()
-				}
-				x_genomic_profile = switch(tmp_data_sub,
-					`mRNA Expression` = "mRNA",
-					`Transcript Expression` = "transcript",
-					`DNA Methylation` = "methylation",
-					`Protein Expression` = "protein",
-					`miRNA Expression` = "miRNA",
-					`Mutation status` = "mutation",
-					`Copy Number Variation` = "cnv"
-				)
-				x_data <- query_pancan_value(tmp_data_target, 
-										   data_type = x_genomic_profile,
-										   opt_pancan = opt_pancan)
-				if (is.list(x_data)) x_data <- x_data[[1]]
-				x_data <- data.frame(sample = names(x_data), value = as.numeric(x_data))
-
-			} else if (tmp_data_type == "Tumor index"){
-				x_tumor_index = switch(tmp_data_sub,
-				    `Tumor Purity` = "tcga_purity",
-				    `Tumor Stemness` = "tcga_stemness",
-				    `Tumor Mutation Burden` = "tcga_tmb",
-				    `Microsatellite Instability` = "tcga_msi",
-				    `Genome Instability` = "tcga_genome_instability"
-				)
-				x_data = tumor_index_list[[x_tumor_index]][,c("sample", tmp_data_target)]
-				colnames(x_data)[2] = "value"
-				x_data = x_data %>% dplyr::filter(!is.na(value))
-
-			} else if (tmp_data_type == "Immune Infiltration"){
-				x_immune_infiltration = tmp_data_sub
-				x_data = tcga_TIL[,c("cell_type",
-								paste0(tmp_data_target,"_",tmp_data_sub))]
-				colnames(x_data) = c("sample","value")
-				x_data = x_data %>% dplyr::filter(!is.na(value))
-			} else if (tmp_data_type == "Pathway activity"){
-				x_pathway_activity = tmp_data_sub
-				x_data = tcga_PW[,paste0(x_pathway_activity,"_",tmp_data_target),drop=FALSE]
-				colnames(x_data) = "value"
-				x_data = x_data %>% as.data.frame() %>%
-					tibble::rownames_to_column("sample") %>%
-					dplyr::filter(!is.na(value))		
-			} else if (tmp_data_type == "Custom metadata"){
-				x_data = custom_metadata()[,c("Sample", tmp_data_target)]
-				colnames(x_data) = c("sample","value")
-				x_data = x_data %>% as.data.frame() %>%
-					dplyr::filter(!is.na(value))		
+			if(is.null(opt_pancan)){
+				opt_pancan = .opt_pancan
+			} else {
+				opt_pancan = opt_pancan()
 			}
+			
+			if(cohort=="TOIL"){
+				clinical_phe = tcga_clinical_fine
+				x_data = UCSCXenaShiny:::batch_download(tmp_data_type, tmp_data_sub, tmp_data_target, cohort,
+							   tumor_index_list, tcga_TIL, tcga_PW, clinical_phe,
+							   opt_pancan,custom_metadata())
+			} else if(cohort=="PCAWG"){
+				clinical_phe = pcawg_info_fine
+				x_data = UCSCXenaShiny:::batch_download(tmp_data_type, tmp_data_sub, tmp_data_target, cohort,
+							   pcawg_index_list, pcawg_TIL, pcawg_PW, clinical_phe,
+							   opt_pancan,custom_metadata())
+			} else if(cohort=="CCLE"){
+				clinical_phe = ccle_info_fine
+				x_data = UCSCXenaShiny:::batch_download(tmp_data_type, tmp_data_sub, tmp_data_target, cohort,
+							   ccle_index_list, NULL, NULL, clinical_phe,
+							   opt_pancan,custom_metadata())
+			}
+
+			# x_data = x_data[,c("sample","value")]
+			# 以clinical_phe作为最终的背景人群参考
+			x_data = clinical_phe[,"Sample"] %>% 
+			  dplyr::rename(sample=Sample) %>% 
+			  dplyr::mutate(value=x_data$value[match(sample, x_data$sample)]) 
+
 			colnames(x_data)[2] = add_phes$label[[i]]
-			x_data = dplyr::left_join(
-				dplyr::distinct(load_data("tcga_clinical")[,c("sample","type")]),x_data) %>%
-				dplyr::select(!type) %>%
+			x_data %>%
 				tibble::column_to_rownames("sample")
-			x_data
-
 		}) %>% do.call(cbind, .)
-
 		x_tmp %>% tibble::rownames_to_column("sample")
 	})
-
 
 	## step2观察表型
 	output$filter_phe_01_by.ui = renderUI({
 		selectInput(ns("filter_phe_01_by"), NULL,
-			choices = colnames(add_phes$phe_primary)[-1:-2], selected = "Code"
+			choices = colnames(add_phes$phe_primary)[-1:-2], selected = "Gender"
 		)
 	})
 	# 初始表型/添加表型
 	observe({
 		if(add_phes$click==0){
 			add_phes$phe_primary = query_tcga_group(
+				cohort = cohort,
 				cancer = add_phes$cancers, 
 				return_all = T)
 		} else {
 			add_phes$phe_primary = query_tcga_group(
+				cohort = cohort,
 				cancer = add_phes$cancers, custom = add_phes_dat(),
 				return_all = T)
 		}
@@ -410,7 +375,7 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 	# 观察当前表型的分布
 	output$filter_phe_01_out = renderPrint({
 
-		filter_phe_01_out_tmp = as.data.frame(add_phes$phe_primary[,input$filter_phe_01_by])
+		filter_phe_01_out_tmp = as.data.frame(add_phes$phe_primary[,input$filter_phe_01_by,drop=FALSE])
 
     	if(is.null(input$filter_phe_01_by)) return(NULL)
 
@@ -449,7 +414,7 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
     		# item2(id) -- threshold(label)
     		id_condi_item2 = paste0("item2_",i)
     		choices_condi_item2 = unique(add_phes$phe_primary[,
-    			ifelse(is.null(input[[id_condi_item1]]),"Code",input[[id_condi_item1]]),drop=T])
+    			ifelse(is.null(input[[id_condi_item1]]),"Gender",input[[id_condi_item1]]),drop=T])
     		label_condi_item2 = paste0("Thres-",i)
 
     		# item3(id) -- direction(label)
@@ -462,7 +427,7 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
     		label_condi_item3 = paste0("Direc-",i)
 
     		# 添加新筛选器，不重置旧数据
-			new_phe <- "Code"
+			new_phe <- "Gender"
 			if (id_condi_item1 %in% names(input)) {
 				new_phe <- input[[id_condi_item1]]
 			}
@@ -571,10 +536,10 @@ filter_samples_Server = function(input, output, session, cancers=NULL, custom_me
 	# 获取筛选后的样本ID
 	observe({
 		if(add_phes$click==0){
-			add_phes$filter_phe_id = query_tcga_group(cancer = add_phes$cancers,
+			add_phes$filter_phe_id = query_tcga_group(cohort = cohort,cancer = add_phes$cancers,
 				filter_by = filter_by_phe(),)[["data"]]$Sample
 		} else {
-			add_phes$filter_phe_id = query_tcga_group(cancer = add_phes$cancers,
+			add_phes$filter_phe_id = query_tcga_group(cohort = cohort,cancer = add_phes$cancers,
 				custom = add_phes_dat(), filter_by = filter_by_phe())[["data"]]$Sample
 		}
 		output$filter_phe_02_out = renderText({
