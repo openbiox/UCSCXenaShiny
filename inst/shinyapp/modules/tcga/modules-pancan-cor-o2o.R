@@ -186,10 +186,10 @@ server.modules_pancan_cor_o2o = function(input, output, session) {
 
 	## x-axis panel
 	x_axis_data = callModule(download_feat_Server, "download_x_axis", 
-							 # cancers=reactive(cancer_choose$name),
 							 samples=reactive(cancer_choose$filter_phe_id),
 							 custom_metadata=reactive(custom_meta()),
-						     opt_pancan = reactive(opt_pancan())
+						     opt_pancan = reactive(opt_pancan()),
+						     check_numeric=TRUE
 							 )
 
 	## y-axis panel
@@ -197,7 +197,8 @@ server.modules_pancan_cor_o2o = function(input, output, session) {
 							 # cancers=reactive(cancer_choose$name),
 							 samples=reactive(cancer_choose$filter_phe_id),
 							 custom_metadata=reactive(custom_meta()),
-						     opt_pancan = reactive(opt_pancan())
+						     opt_pancan = reactive(opt_pancan()),
+						     check_numeric=TRUE
 							 )
 
 	# 合并分析

@@ -1,4 +1,4 @@
-ui.modules_pancan_comp_o2m = function(id) {
+ui.modules_pcawg_comp_o2m = function(id) {
 	ns = NS(id)
 	fluidPage(
 		fluidRow(
@@ -8,22 +8,17 @@ ui.modules_pancan_comp_o2m = function(id) {
 				wellPanel(
 					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
+					h4("1. Choose projects"),
 
-					h4("1. Choose cancer(s)"),
 					pickerInput(
-						ns("choose_cancers"), NULL,
-						choices = sort(tcga_cancer_choices),
+						ns("choose_cancers"),NULL,
+						choices = pcawg_items,
 						multiple = TRUE,
-						selected = sort(tcga_cancer_choices),
+						selected = pcawg_items,
 						options = list(`actions-box` = TRUE)
 					),
-
-				    br(),br(),
-
-					h4("2. Filter samples[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Choose samples for personalized need", 
-					                   content = "choose_samples"),
+					br(),br(),
+					h4("2. Filter samples[opt]"),
 					h5("Quick filter:"),
 					pickerInput(
 						ns("filter_by_code"), NULL,
@@ -31,7 +26,7 @@ ui.modules_pancan_comp_o2m = function(id) {
 						multiple = TRUE, options = list(`actions-box` = TRUE)
 					),
 					h5("Exact filter:"),
-					filter_samples_UI(ns("filter_samples2comp")),
+					filter_samples_UI(ns("filter_samples2cor")),
 					br(),
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),br(),
@@ -41,14 +36,15 @@ ui.modules_pancan_comp_o2m = function(id) {
 					                   title = "Upload sample info", 
 					                   content = "custom_metadata"),
 					shinyFeedback::useShinyFeedback(),
-					custom_meta_UI(ns("custom_meta2comp")),
+					custom_meta_UI(ns("custom_meta2cor")),
 					br(),br(),
 
 					h4("4. Modify datasets[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Set molecular profile origin", 
 					                   content = "data_origin"),
-					mol_origin_UI(ns("mol_origin2comp"))
+
+					mol_origin_UI(ns("mol_origin2cor"))
 				)
 			),
 			# 分组设置
@@ -58,10 +54,10 @@ ui.modules_pancan_comp_o2m = function(id) {
 					style = "height:1100px",
 					h2("S2: Get data", align = "center"),
 					# 调用分组模块UI
-					group_samples_UI(ns("group_samples2comp")),  
+					group_samples_UI(ns("group_samples2comp"),id_option = pcawg_id_option),  
 					# 下载待比较数据
-					download_feat_UI(ns("download_y_axis"), button_name="Query variable to compare")
-
+					download_feat_UI(ns("download_y_axis"), 
+						button_name="Query variable to compare", id_option = pcawg_id_option),
 				)
 			),
 			# 分析/绘图/下载
@@ -128,47 +124,47 @@ ui.modules_pancan_comp_o2m = function(id) {
 }
 
 
-server.modules_pancan_comp_o2m = function(input, output, session) {
+server.modules_pcawg_comp_o2m = function(input, output, session) {
 	ns <- session$ns
-
 	# 记录选择癌症
-	cancer_choose <- reactiveValues(name = "BRCA", 
-		phe_primary=query_tcga_group(cancer = "BRCA", return_all = T),
-		filter_phe_id=NULL, single_cancer_ok = TRUE)
+	cancer_choose <- reactiveValues(name = "BLCA-US", phe_primary="",
+		filter_phe_id=query_tcga_group(cohort = "PCAWG", cancer = "BLCA-US", return_all = T))
 	observe({
 		cancer_choose$name = input$choose_cancers
-		cancer_choose$phe_primary <- query_tcga_group(cancer = cancer_choose$name, return_all = T)
+		cancer_choose$phe_primary <- query_tcga_group(cohort = "PCAWG",
+			cancer = cancer_choose$name, return_all = T)
 	})
 
 	# 自定义上传metadata数据
-	custom_meta = callModule(custom_meta_Server, "custom_meta2comp")
+	custom_meta = callModule(custom_meta_Server, "custom_meta2cor")
 
 	# 数据源设置
-	opt_pancan = callModule(mol_origin_Server, "mol_origin2comp")
+	opt_pancan = callModule(mol_origin_Server, "mol_origin2cor")
+
 
 	## 过滤样本
-	# exact filter module
-	filter_phe_id = callModule(filter_samples_Server, "filter_samples2comp",
-					   cancers=reactive(cancer_choose$name),
-					   custom_metadata=reactive(custom_meta()),
-					   opt_pancan = reactive(opt_pancan()))
 	# quick filter widget
 	observe({
-		code_types_valid = code_types[names(code_types) %in% 
-							unique(cancer_choose$phe_primary$Code)]
+		code_types_valid = unique(cancer_choose$phe_primary$Type)
 		updatePickerInput(
 			session,
 			"filter_by_code",
-			choices = unlist(code_types_valid,use.names = F),
-			selected =  unlist(code_types_valid,use.names = F)
+			choices = code_types_valid,
+			selected =  code_types_valid
 		)
 	})
+	# exact filter module
+	filter_phe_id = callModule(filter_samples_Server, "filter_samples2cor",
+					   cohort = "PCAWG",id_option = pcawg_id_option,
+					   cancers=reactive(cancer_choose$name),
+					   custom_metadata=reactive(custom_meta()),
+					   opt_pancan = reactive(opt_pancan()))
+
 	# 综合上述二者
 	observe({
 		# quick filter
-		choose_codes = names(code_types)[unlist(code_types) %in% input$filter_by_code]
 		filter_phe_id2 = cancer_choose$phe_primary %>%
-			dplyr::filter(Code %in% choose_codes) %>%
+			dplyr::filter(Type %in% input$filter_by_code) %>%
 			dplyr::pull("Sample")
 
 		# exact filter
@@ -183,24 +179,32 @@ server.modules_pancan_comp_o2m = function(input, output, session) {
 		})
 	})
 
-
 	# 设置分组
 	group_final = callModule(group_samples_Server, "group_samples2comp",
+					       cohort = "PCAWG", id_option = pcawg_id_option,
 						   cancers=reactive(cancer_choose$name),
 						   samples=reactive(cancer_choose$filter_phe_id),
 						   custom_metadata=reactive(custom_meta()),
 						   opt_pancan = reactive(opt_pancan())
 						   )
 
-
 	# 下载待比较数据
 	y_axis_data = callModule(download_feat_Server, "download_y_axis", 
+							 cohort = "PCAWG", id_option = pcawg_id_option,
 							 samples=reactive(cancer_choose$filter_phe_id),
 							 custom_metadata=reactive(custom_meta()),
 						     opt_pancan = reactive(opt_pancan()),
 						     check_numeric=TRUE
 							 )
-
+	# barplot逻辑：先批量计算相关性，再绘图
+	merge_data_line = eventReactive(input$step3_plot_line, {
+		group_data = group_final()[,c(1,3,4)]
+		colnames(group_data) = c("sample","group","phenotype")
+		y_axis_data = y_axis_data()
+		data = dplyr::inner_join(y_axis_data, group_data) %>%
+			dplyr::select(cancer, sample, value, group, everything())
+		data
+	})
 	# barplot逻辑：先批量计算相关性，再绘图
 	merge_data_line = eventReactive(input$step3_plot_line, {
 		group_data = group_final()[,c(1,3,4)]

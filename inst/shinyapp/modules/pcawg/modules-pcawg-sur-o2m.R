@@ -1,4 +1,4 @@
-ui.modules_pancan_sur_o2m = function(id) {
+ui.modules_pcawg_sur_o2m = function(id) {
 	ns = NS(id)
 	fluidPage(
 		fluidRow(
@@ -8,21 +8,17 @@ ui.modules_pancan_sur_o2m = function(id) {
 				wellPanel(
 					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
+					h4("1. Choose projects"),
 
-					h4("1. Choose cancer(s)"),
 					pickerInput(
-						ns("choose_cancers"), NULL,
-						choices = sort(tcga_cancer_choices),
+						ns("choose_cancers"),NULL,
+						choices = pcawg_items,
 						multiple = TRUE,
-						selected = sort(tcga_cancer_choices),
+						selected = pcawg_items,
 						options = list(`actions-box` = TRUE)
 					),
-				    br(),br(),
-
-					h4("2. Filter samples[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Choose samples for personalized need", 
-					                   content = "choose_samples"),
+					br(),br(),
+					h4("2. Filter samples[opt]"),
 					h5("Quick filter:"),
 					pickerInput(
 						ns("filter_by_code"), NULL,
@@ -30,7 +26,7 @@ ui.modules_pancan_sur_o2m = function(id) {
 						multiple = TRUE, options = list(`actions-box` = TRUE)
 					),
 					h5("Exact filter:"),
-					filter_samples_UI(ns("filter_samples2sur")),
+					filter_samples_UI(ns("filter_samples2cor")),
 					br(),
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),br(),
@@ -40,14 +36,15 @@ ui.modules_pancan_sur_o2m = function(id) {
 					                   title = "Upload sample info", 
 					                   content = "custom_metadata"),
 					shinyFeedback::useShinyFeedback(),
-					custom_meta_UI(ns("custom_meta2sur")),
+					custom_meta_UI(ns("custom_meta2cor")),
 					br(),br(),
 
 					h4("4. Modify datasets[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Set molecular profile origin", 
 					                   content = "data_origin"),
-					mol_origin_UI(ns("mol_origin2sur"))
+
+					mol_origin_UI(ns("mol_origin2cor"))
 				)
 			),
 			# 选择生存资料
@@ -56,15 +53,6 @@ ui.modules_pancan_sur_o2m = function(id) {
 				wellPanel(
 					style = "height:1100px",
 					h2("S2: Get data", align = "center"),
-
-				    shinyWidgets::prettyRadioButtons(
-				        inputId = ns("endpoint_type"), label = "Endpoint type:",
-				        choiceValues = c("OS", "DSS", "DFI", "PFI"),
-				        choiceNames = c("OS (Overall Survial)", "DSS (Disease-Specific Survival)", 
-				        				"DFI (Disease-Free Interval)", "PFI (Progression-Free Interval)"),
-				        selected = "OS"
-				    ),
-				    br(),br(),
 				    group_samples_UI(ns("group_samples2sur")) 
 				)
 			),
@@ -134,54 +122,58 @@ ui.modules_pancan_sur_o2m = function(id) {
 				    )
 				)
 			)
+
 		)
+
 	)
+
 }
 
 
-server.modules_pancan_sur_o2m = function(input, output, session) {
+server.modules_pcawg_sur_o2m = function(input, output, session) {
 	ns <- session$ns
 
 	# 记录选择癌症
-	cancer_choose <- reactiveValues(name = "BRCA", filter_phe_id=NULL,
-		phe_primary=query_tcga_group(cancer = "BRCA", return_all = T))
+	cancer_choose <- reactiveValues(name = "BLCA-US", phe_primary="",
+		filter_phe_id=query_tcga_group(cohort = "PCAWG", cancer = "BLCA-US", return_all = T))
 	observe({
 		cancer_choose$name = input$choose_cancers
-		cancer_choose$phe_primary <- query_tcga_group(cancer = cancer_choose$name, return_all = T)
+		cancer_choose$phe_primary <- query_tcga_group(cohort = "PCAWG",
+			cancer = cancer_choose$name, return_all = T)
 	})
 
 	# 自定义上传metadata数据
-	custom_meta = callModule(custom_meta_Server, "custom_meta2sur")
+	custom_meta = callModule(custom_meta_Server, "custom_meta2cor")
 
 	# 数据源设置
-	opt_pancan = callModule(mol_origin_Server, "mol_origin2sur")
-
+	opt_pancan = callModule(mol_origin_Server, "mol_origin2cor")
 
 
 	## 过滤样本
-	# exact filter module
-	filter_phe_id = callModule(filter_samples_Server, "filter_samples2sur",
-					   cancers=reactive(cancer_choose$name),
-					   custom_metadata=reactive(custom_meta()),
-					   opt_pancan = reactive(opt_pancan()))
 	# quick filter widget
 	observe({
-		code_types_valid = code_types[names(code_types) %in% 
-							unique(cancer_choose$phe_primary$Code)]
+		code_types_valid = unique(cancer_choose$phe_primary$Type)
 		updatePickerInput(
 			session,
 			"filter_by_code",
-			choices = unlist(code_types_valid,use.names = F),
-			selected =  unlist(code_types_valid,use.names = F)
+			choices = code_types_valid,
+			selected =  code_types_valid
 		)
 	})
+	# exact filter module
+	filter_phe_id = callModule(filter_samples_Server, "filter_samples2cor",
+					   cohort = "PCAWG",id_option = pcawg_id_option,
+					   cancers=reactive(cancer_choose$name),
+					   custom_metadata=reactive(custom_meta()),
+					   opt_pancan = reactive(opt_pancan()))
+
 	# 综合上述二者
 	observe({
 		# quick filter
-		choose_codes = names(code_types)[unlist(code_types) %in% input$filter_by_code]
 		filter_phe_id2 = cancer_choose$phe_primary %>%
-			dplyr::filter(Code %in% choose_codes) %>%
+			dplyr::filter(Type %in% input$filter_by_code) %>%
 			dplyr::pull("Sample")
+
 		# exact filter
 		if(is.null(filter_phe_id())){
 			cancer_choose$filter_phe_id = filter_phe_id2
@@ -193,34 +185,24 @@ server.modules_pancan_sur_o2m = function(input, output, session) {
 			cat(paste0("Tip: ", length(cancer_choose$filter_phe_id), " samples are retained"))
 		})
 	})
-
-
 	# 生存资料
 	sur_dat_v1 = reactive({
-		sur_dat_raw = load_data("tcga_surv") 
-		cli_dat_raw = load_data("tcga_clinical") 
-		sur_dat_sub = sur_dat_raw %>%
-			dplyr::filter(sample %in% cancer_choose$filter_phe_id) %>%
-			dplyr::select("sample",contains(input$endpoint_type)) %>%
-			dplyr::mutate(cancer = cli_dat_raw$type[match(sample,cli_dat_raw$sample)],.before = 1) %>%
-			na.omit()
-		colnames(sur_dat_sub)[3:4] = c("status","time")
+		sur_dat_raw = pcawg_info[,c("dcc_project_code","icgc_specimen_id","OS","OS.time")]
+		colnames(sur_dat_raw) = c("cancer","sample","status","time")
+		sur_dat_sub = sur_dat_raw %>% 
+		  dplyr::distinct()  %>% na.omit() %>% 
+		  dplyr::filter(sample %in% cancer_choose$filter_phe_id)
 		sur_dat_sub
 	})
 
-
-
-
-
 	# 设置分组
 	group_final = callModule(group_samples_Server, "group_samples2sur",
+						   cohort = "PCAWG", id_option = pcawg_id_option,
 						   cancers=reactive(cancer_choose$name),
-						   # samples=reactive(cancer_choose$filter_phe_sur_id),
 						   samples=reactive(sur_dat_v1()$sample),
 						   custom_metadata=reactive(custom_meta()),
 						   opt_pancan = reactive(opt_pancan())
 						   )
-
 	# 合并分组与生存
 	sur_res_multi = reactiveValues(sur_dat = NULL, cutoff=NULL, sur_res = NULL)	
 
@@ -232,8 +214,6 @@ server.modules_pancan_sur_o2m = function(input, output, session) {
 				apply(table(dat$Cancer,dat$group),1,function(x) {min(x)>=2})])
 		dat
 	})
-
-
 
 	# 根据选项，动态更新绘图参数
 	output$multi_params.ui = renderUI(
@@ -280,6 +260,10 @@ server.modules_pancan_sur_o2m = function(input, output, session) {
 			sur_res_multi$sur_res = lapply(sort(unique(sur_res_multi$sur_dat$Cancer)), function(x){
 			  sur_dat_sub = subset(sur_res_multi$sur_dat, Cancer==x)
 			  
+
+			  #如果只有一个有效分组
+			  if(length(unique(sur_dat_sub$Group))==1) return(NULL)
+
 			  surv_diff <- survdiff(Surv(time, status) ~ Group, data = sur_dat_sub)
 			  pval = 1 - pchisq(surv_diff$chisq, length(surv_diff$n) - 1)
 			  
@@ -321,7 +305,7 @@ server.modules_pancan_sur_o2m = function(input, output, session) {
 			                              paste0("High risk(", Group[1],")"))) %>% 
 			  dplyr::distinct(Cancer, p.value, Risk) %>% as.data.frame() %>% 
 			  dplyr::mutate(Cancer = factor(Cancer, levels = rev(sort(Cancer))))
-			print(head(pval_df))
+			# print(head(pval_df))
 			fill_cols = c(input$multi_log_color1, input$multi_log_color2)
 			names(fill_cols) = c(
 				paste0("Low risk(Group=",levels(sur_res_multi$sur_dat$Group)[1], ")"),
@@ -378,6 +362,8 @@ server.modules_pancan_sur_o2m = function(input, output, session) {
 			fill_cols = c(input$multi_cox_color)
 			names(fill_cols) = c(
 				paste0("Group",levels(sur_res_multi$sur_dat$Group)[2]))
+			print(head(sur_res,20))
+			sur_res = sur_res %>% dplyr::filter(!is.na(coef))
 			p1 = sur_res %>%
 			  dplyr::rename(`p.value`=`Pr(>|z|)`, `HR` = `exp(coef)`) %>% 
 			  dplyr::select(Cancer, Group, HR, p.value) %>% 
@@ -419,7 +405,6 @@ server.modules_pancan_sur_o2m = function(input, output, session) {
 		p
 	})
 
-	# output$sur_plot_one = renderPlot({sur_plot_one()})
 	output$sur_plot_multi = renderPlot({sur_plot_multi()})
 
 
@@ -463,3 +448,5 @@ server.modules_pancan_sur_o2m = function(input, output, session) {
 		}
 	)
 }
+
+

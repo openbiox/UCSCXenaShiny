@@ -1,4 +1,4 @@
-ui.modules_pancan_comp_o2o = function(id) {
+ui.modules_pcawg_comp_o2o = function(id) {
 	ns = NS(id)
 	fluidPage(
 		fluidRow(
@@ -8,19 +8,13 @@ ui.modules_pancan_comp_o2o = function(id) {
 				wellPanel(
 					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
-
-					h4("1. Choose cancer"),
+					h4("1. Choose project"),
 
 					pickerInput(
-						ns("choose_cancer"), NULL,
-						choices = sort(tcga_cancer_choices)),
-
-				    br(),br(),
-
-					h4("2. Filter samples[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Choose samples for personalized need", 
-					                   content = "choose_samples"),
+						ns("choose_cancer"),NULL,
+						choices = pcawg_items),
+					br(),br(),
+					h4("2. Filter samples[opt]"),
 					h5("Quick filter:"),
 					pickerInput(
 						ns("filter_by_code"), NULL,
@@ -45,6 +39,7 @@ ui.modules_pancan_comp_o2o = function(id) {
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Set molecular profile origin", 
 					                   content = "data_origin"),
+
 					mol_origin_UI(ns("mol_origin2comp"))
 				)
 			),
@@ -55,11 +50,11 @@ ui.modules_pancan_comp_o2o = function(id) {
 					style = "height:1100px",
 					h2("S2: Get data", align = "center"),
 					# 调用分组模块UI
-					group_samples_UI(ns("group_samples2comp")),
+					group_samples_UI(ns("group_samples2comp"),id_option = pcawg_id_option),
 
 					# 下载待比较数据
-					download_feat_UI(ns("download_y_axis"), button_name="Query variable to compare"),
-
+					download_feat_UI(ns("download_y_axis"), 
+						button_name="Query variable to compare",id_option = pcawg_id_option)
 				)
 			),
 			# 分析/绘图/下载
@@ -130,16 +125,15 @@ ui.modules_pancan_comp_o2o = function(id) {
 }
 
 
-server.modules_pancan_comp_o2o = function(input, output, session) {
+server.modules_pcawg_comp_o2o = function(input, output, session) {
 	ns <- session$ns
-
 	# 记录选择癌症
-	cancer_choose <- reactiveValues(name = "BRCA", 
-		phe_primary=query_tcga_group(cancer = "BRCA", return_all = T),
-		filter_phe_id=NULL, single_cancer_ok = TRUE, multi_cancer_ok=FALSE)
+	cancer_choose <- reactiveValues(name = "BLCA-US", phe_primary="",
+		filter_phe_id=query_tcga_group(cohort = "PCAWG", cancer = "BLCA-US", return_all = T))
 	observe({
 		cancer_choose$name = input$choose_cancer
-		cancer_choose$phe_primary <- query_tcga_group(cancer = cancer_choose$name, return_all = T)
+		cancer_choose$phe_primary <- query_tcga_group(cohort = "PCAWG",
+			cancer = cancer_choose$name, return_all = T)
 	})
 
 	# 自定义上传metadata数据
@@ -148,29 +142,30 @@ server.modules_pancan_comp_o2o = function(input, output, session) {
 	# 数据源设置
 	opt_pancan = callModule(mol_origin_Server, "mol_origin2comp")
 
+
 	## 过滤样本
-	# exact filter module
-	filter_phe_id = callModule(filter_samples_Server, "filter_samples2comp",
-					   cancers=reactive(cancer_choose$name),
-					   custom_metadata=reactive(custom_meta()),
-					   opt_pancan = reactive(opt_pancan()))
 	# quick filter widget
 	observe({
-		code_types_valid = code_types[names(code_types) %in% 
-							unique(cancer_choose$phe_primary$Code)]
+		code_types_valid = unique(cancer_choose$phe_primary$Type)
 		updatePickerInput(
 			session,
 			"filter_by_code",
-			choices = unlist(code_types_valid,use.names = F),
-			selected =  unlist(code_types_valid,use.names = F)
+			choices = code_types_valid,
+			selected =  code_types_valid
 		)
 	})
+	# exact filter module
+	filter_phe_id = callModule(filter_samples_Server, "filter_samples2comp",
+					   cohort = "PCAWG",id_option = pcawg_id_option,
+					   cancers=reactive(cancer_choose$name),
+					   custom_metadata=reactive(custom_meta()),
+					   opt_pancan = reactive(opt_pancan()))
+
 	# 综合上述二者
 	observe({
 		# quick filter
-		choose_codes = names(code_types)[unlist(code_types) %in% input$filter_by_code]
 		filter_phe_id2 = cancer_choose$phe_primary %>%
-			dplyr::filter(Code %in% choose_codes) %>%
+			dplyr::filter(Type %in% input$filter_by_code) %>%
 			dplyr::pull("Sample")
 
 		# exact filter
@@ -185,9 +180,9 @@ server.modules_pancan_comp_o2o = function(input, output, session) {
 		})
 	})
 
-
 	# 设置分组
 	group_final = callModule(group_samples_Server, "group_samples2comp",
+						   cohort = "PCAWG", id_option = pcawg_id_option,
 						   cancers=reactive(cancer_choose$name),
 						   samples=reactive(cancer_choose$filter_phe_id),
 						   custom_metadata=reactive(custom_meta()),
@@ -196,12 +191,12 @@ server.modules_pancan_comp_o2o = function(input, output, session) {
 
 	# 下载待比较数据
 	y_axis_data = callModule(download_feat_Server, "download_y_axis", 
+						     cohort = "PCAWG", id_option = pcawg_id_option,
 							 samples=reactive(cancer_choose$filter_phe_id),
 							 custom_metadata=reactive(custom_meta()),
 						     opt_pancan = reactive(opt_pancan()),
 						     check_numeric=TRUE
 							 )
-
 
 	# 合并分析
 	# boxviolin逻辑：先绘图，再提取相关性结果
@@ -222,10 +217,10 @@ server.modules_pancan_comp_o2o = function(input, output, session) {
 
 
 	comp_plot_box = eventReactive(input$step3_plot_box, {
-		# shiny::validate(
-		# 	need(try(nrow(merge_data_box())>0), 
-		# 		"Please inspect whether to set groups or download variable data in S2 or S3 step."),
-		# )
+		shiny::validate(
+			need(try(nrow(merge_data_box())>0), 
+				"Please inspect whether to set groups or download variable data in S2 or S3 step."),
+		)
 		merge_data_box = merge_data_box()
 
 		if(!cancer_choose$single_cancer_ok){
@@ -300,4 +295,6 @@ server.modules_pancan_comp_o2o = function(input, output, session) {
 			write.csv(p_comp, file, row.names = FALSE)
 		}
 	)
+
+
 }

@@ -23,7 +23,7 @@
 \usage{
 get_ccle_cn_value(identifier)
 
-get_ccle_gene_value(identifier)
+get_ccle_gene_value(identifier, norm = c("rpkm", "nc"))
 
 get_ccle_protein_value(identifier)
 
@@ -38,9 +38,9 @@ get_pancan_value(
   ...
 )
 
-get_pancan_gene_value(identifier)
+get_pancan_gene_value(identifier, norm = c("tpm", "fpkm", "nc"))
 
-get_pancan_transcript_value(identifier)
+get_pancan_transcript_value(identifier, norm = c("tpm", "fpkm", "isopct"))
 
 get_pancan_protein_value(identifier)
 
@@ -77,6 +77,8 @@ get_pcawg_APOBEC_mutagenesis_value(
 \arguments{
 \item{identifier}{a length-1 character representing a gene symbol, ensembl gene id, or probe id.
 Gene symbol is highly recommended.}
+
+\item{norm}{normalization method}
 
 \item{subtype}{a length-1 chracter representing a regular expression for matching
 \code{DataSubtype} column of \link[UCSCXenaTools:XenaData]{UCSCXenaTools::XenaData}.}

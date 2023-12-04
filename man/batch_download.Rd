@@ -8,11 +8,12 @@ batch_download(
   L1,
   L2,
   L3,
+  cohort = c("TOIL", "PCAWG", "CCLE"),
   tumor_index_list,
   tcga_TIL,
   tcga_PW,
   clinical_phe,
-  opt_pancan,
+  opt_pancan = NULL,
   custom_metadata = NULL
 )
 }
@@ -22,6 +23,8 @@ batch_download(
 \item{L2}{level 2  sub datatype}
 
 \item{L3}{level 3  identifier}
+
+\item{cohort}{one cohort of c("TOIL","PCAWG","CCLE")}
 
 \item{tumor_index_list}{Tumor index data. See shiny App.R file}
 

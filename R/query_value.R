@@ -54,7 +54,7 @@ query_molecule_value <- function(dataset, molecule, host = NULL) {
 
 .opt_pancan = list(
   # Toil
-  toil_mRNA = list(),
+  toil_mRNA = list(norm = "tpm"),
   toil_transcript = list(),
   toil_protein = list(),
   toil_mutation = list(),
@@ -68,7 +68,7 @@ query_molecule_value <- function(dataset, molecule, host = NULL) {
   pcawg_promoter = list(type = "relative"),
   pcawg_APOBEC = list(),
   # CCLE
-  ccle_mRNA = list(),
+  ccle_mRNA = list(norm = "rpkm"),
   ccle_protein = list(),
   ccle_mutation = list(),
   ccle_cnv = list()

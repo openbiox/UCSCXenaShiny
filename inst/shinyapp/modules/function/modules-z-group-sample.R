@@ -1,4 +1,4 @@
-group_samples_UI = function(id, button_name="Filter by multi-conditions"){
+group_samples_UI = function(id, button_name="Filter by multi-conditions",id_option = tcga_id_option){
   ns = NS(id)
   tagList(
     # h4("1. Select one condition"),
@@ -18,7 +18,7 @@ group_samples_UI = function(id, button_name="Filter by multi-conditions"){
         selectInput(
           ns("data_L1"), "Data type:",
           choices = names(id_option),
-          selected = "Other metadata"
+          selected = "Phenotype data"
         )
       ),
       column(
@@ -50,10 +50,10 @@ group_samples_UI = function(id, button_name="Filter by multi-conditions"){
               choices = names(id_option[["Pathway activity"]]),
               selected = "HALLMARK")
           ),
-          tabPanel("Other metadata",
+          tabPanel("Phenotype data",
             selectInput(
-              ns("other_metadata"), "Data subtype:",
-              choices = names(id_option[["Other metadata"]]),
+              ns("phenotype_data"), "Data subtype:",
+              choices = names(id_option[["Phenotype data"]]),
               selected = "Clinical Phenotye")
           )
         )
@@ -88,9 +88,9 @@ group_samples_UI = function(id, button_name="Filter by multi-conditions"){
                  label = "Identifier:",
                  choices = NULL)	
       ),
-      tabPanel("Other metadata",
+      tabPanel("Phenotype data",
                selectizeInput(
-                 inputId = ns("other_metadata_id"),
+                 inputId = ns("phenotype_data_id"),
                  label = "Identifier:",
                  choices = NULL)  
       )
@@ -117,13 +117,15 @@ group_samples_UI = function(id, button_name="Filter by multi-conditions"){
 		uiOutput(ns("set_group1.ui")),
 		uiOutput(ns("set_group2.ui")),
 
-    verbatimTextOutput(ns("merge_out_tip"))
+    verbatimTextOutput(ns("merge_out_tip")),
+    # verbatimTextOutput(ns("tmp123"))
     
   )
 }
 
 
-group_samples_Server = function(input, output, session, cancers=NULL, samples=NULL, custom_metadata=NULL, opt_pancan=NULL){
+group_samples_Server = function(input, output, session, cohort = "TOIL", id_option = tcga_id_option,
+                                cancers=NULL, samples=NULL, custom_metadata=NULL, opt_pancan=NULL){
   ns <- session$ns
   observe({
     updateTabsetPanel(inputId = "data_L2_tab", selected = input$data_L1)
@@ -146,13 +148,13 @@ group_samples_Server = function(input, output, session, cancers=NULL, samples=NU
     id_option[["Pathway activity"]][[input$pathway_activity]]
   })
 
-  other_metadata_choices <- reactive({
-      id_tmp = id_option[["Other metadata"]]
+  phenotype_data_choices <- reactive({
+      id_tmp = id_option[["Phenotype data"]]
     if(!is.null(custom_metadata)){
       id_tmp[["Custom metadata"]]$all = sort(colnames(custom_metadata()[-1]))
       id_tmp[["Custom metadata"]]$default = sort(colnames(custom_metadata()[-1]))[1]
     }
-    id_tmp[[input$other_metadata]]
+    id_tmp[[input$phenotype_data]]
   })
 
   observe({
@@ -186,9 +188,9 @@ group_samples_Server = function(input, output, session, cancers=NULL, samples=NU
     )
     updateSelectizeInput(
       session,
-      "other_metadata_id",
-      choices = other_metadata_choices()$all,
-      selected = other_metadata_choices()$default,
+      "phenotype_data_id",
+      choices = phenotype_data_choices()$all,
+      selected = phenotype_data_choices()$default,
       server = TRUE
     )
   })
@@ -200,33 +202,39 @@ group_samples_Server = function(input, output, session, cancers=NULL, samples=NU
         `Tumor index` = input$tumor_index,
         `Immune Infiltration` = input$immune_infiltration,
         `Pathway activity` = input$pathway_activity,
-        `Other metadata` = input$other_metadata
+        `Phenotype data` = input$phenotype_data
     )
     L3_x = switch(input$data_L1,
         `Molecular profile` = input$genomic_profile_id,
         `Tumor index` = input$tumor_index_id,
         `Immune Infiltration` = input$immune_infiltration_id,
         `Pathway activity` = input$pathway_activity_id,
-        `Other metadata` = input$other_metadata_id
+        `Phenotype data` = input$phenotype_data_id
     )
+    id_category = lapply(id_option, names)
     L1_x = names(id_category)[sapply(id_category, function(x){any(x %in% L2_x)})]
     if(is.null(opt_pancan)){
-      opt_pancan = list(
-          toil_mRNA = list(),
-          toil_transcript = list(),
-          toil_protein = list(),
-          toil_mutation = list(),
-          toil_cnv = list(use_thresholded_data = TRUE),
-          toil_methylation = list(type = "450K", aggr = "NA", rule_out = NULL),
-          toil_miRNA = list()
-      )
+      opt_pancan = .opt_pancan
     } else {
       opt_pancan = opt_pancan()
     }
     ## 利用内部自定义下载函数获取数据
-    x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x,
-             tumor_index_list, tcga_TIL, tcga_PW, clinical_phe,
-             opt_pancan,custom_metadata())
+    if(cohort=="TOIL"){
+      clinical_phe = tcga_clinical_fine
+      x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, cohort,
+               tumor_index_list, tcga_TIL, tcga_PW, clinical_phe,
+               opt_pancan,custom_metadata())
+    } else if(cohort=="PCAWG"){
+      clinical_phe = pcawg_info_fine
+      x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, cohort,
+               pcawg_index_list, pcawg_TIL, pcawg_PW, clinical_phe,
+               opt_pancan,custom_metadata())
+    } else if (cohort=="CCLE"){
+          clinical_phe = ccle_info_fine
+          x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, cohort,
+                   ccle_index_list, NULL, NULL, ccle_info_fine,
+                   opt_pancan,custom_metadata())
+    }
     if(!is.null(samples)){
       if(!is.null(samples())){
         x_data = x_data %>%
@@ -234,7 +242,7 @@ group_samples_Server = function(input, output, session, cancers=NULL, samples=NU
       }
     }
     x_data$level1 = L1_x
-    x_data$cancer = clinical_phe$Cancer[match(x_data$sample, clinical_phe$Sample)]
+    x_data$cancer = clinical_phe[,2,drop=T][match(x_data$sample, clinical_phe$Sample)]
     x_data = x_data[,c("id","level1","level2","sample","value","cancer")] %>%
       dplyr::arrange(cancer, sample)
     x_data
@@ -348,7 +356,8 @@ group_samples_Server = function(input, output, session, cancers=NULL, samples=NU
 
 
   merge_out = eventReactive(input$group_range,{
-    merge_tmp = query_tcga_group(cancer=cancers(), 
+    merge_tmp = query_tcga_group(cohort = cohort,
+                                 cancer=cancers(), 
                                  custom=condi_data()[,c("sample","value")],
                                  group="value", filter_id = samples(),
                                  merge_by = merge_by(),
@@ -356,7 +365,7 @@ group_samples_Server = function(input, output, session, cancers=NULL, samples=NU
     merge_tmp
 
     merge_tmp$phenotype = unique(condi_data()$id)
-    colnames(merge_tmp)[4] = "group"
+    colnames(merge_tmp)[3] = "group"
 
     if(input$reverse_level){
       group_levels = c(input$group2_name, input$group1_name)
@@ -383,10 +392,14 @@ group_samples_Server = function(input, output, session, cancers=NULL, samples=NU
     })
   })
 
+
+  # output$tmp123 = renderPrint({head(merge_out())})
+
   # 检查是否有效分组
   # 主要针对多癌症分组情况
   merge_out_check = reactive({
     valid_cancers = merge_out() %>%
+      dplyr::mutate(group = as.character(group)) %>%
       dplyr::distinct(Cancer, group) %>%
       dplyr::count(Cancer) %>%
       dplyr::filter(n==2) %>% dplyr::pull("Cancer")

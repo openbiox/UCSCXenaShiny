@@ -1,4 +1,4 @@
-multi_upload_UI = function(id, button_name = "Query data(x-axis)"){
+multi_upload_UI = function(id, button_name = "Query data(x-axis)",id_option = tcga_id_option){
 	ns = NS(id)
 	tagList(
 		shinyWidgets::actionBttn(
@@ -11,7 +11,6 @@ multi_upload_UI = function(id, button_name = "Query data(x-axis)"){
 		),
 
 		# 选择major/minor type
-
 	    fluidRow(
 	    	column(
 	    		6,
@@ -50,18 +49,16 @@ multi_upload_UI = function(id, button_name = "Query data(x-axis)"){
 							choices = names(id_option[["Pathway activity"]]),
 							selected = "HALLMARK")
 					),
-					tabPanel("Other metadata",
+					tabPanel("Phenotype data",
 						selectInput(
-							ns("other_metadata"), "Data subtype:",
-							choices = names(id_option[["Other metadata"]]),
+							ns("phenotype_data"), "Data subtype:",
+							choices = names(id_option[["Phenotype data"]]),
 							selected = "Clinical Phenotye")
 					)
 				)
 	    	)
 	    ),
 
-		# br(),br(),
-		# selectInput(ns("L2_x"), "Choose data type", id_category),
 		prettyRadioButtons(ns("L3_x_type"),"Choose multi-ids by",
 			choices = c("Selection","All","File"), selected = "Selection", inline=TRUE) %>% 
 				helper(type = "markdown", sie = "m", fade = TRUE,
@@ -100,9 +97,9 @@ multi_upload_UI = function(id, button_name = "Query data(x-axis)"){
 			              choices = NULL, multiple = TRUE,
 			              options = list(create = FALSE, maxOptions = 10))
 					),
-					tabPanel("Other metadata",
+					tabPanel("Phenotype data",
 			            selectizeInput(
-			              inputId = ns("other_metadata_id"),
+			              inputId = ns("phenotype_data_id"),
 			              label = NULL,
 			              choices = NULL, multiple = TRUE,
 			              options = list(create = FALSE, maxOptions = 10))
@@ -119,16 +116,18 @@ multi_upload_UI = function(id, button_name = "Query data(x-axis)"){
 				)
 			)
 		),
-		# br(),
 		verbatimTextOutput(ns("L3s_x_tip")),
-		# # br(),
 		uiOutput(ns("L3s_x_data.ui"))
 	)
 }
 
 
-multi_upload_Server = function(input, output, session, samples=NULL, custom_metadata=NULL, opt_pancan=NULL, table.ui=TRUE){
+multi_upload_Server = function(input, output, session, cohort = "TOIL", id_option = tcga_id_option,
+							   samples=NULL,custom_metadata=NULL, opt_pancan=NULL, table.ui=TRUE){
 	ns <- session$ns
+
+	id_category = lapply(id_option, names)
+	
 	observe({
 	  updateTabsetPanel(inputId = "data_L2_tab", selected = input$data_L1)
 	  updateTabsetPanel(inputId = "data_L3_tab", selected = input$data_L1)
@@ -151,13 +150,13 @@ multi_upload_Server = function(input, output, session, samples=NULL, custom_meta
 	  id_option[["Pathway activity"]][[input$pathway_activity]]
 	})
 
-	other_metadata_choices <- reactive({
-	    id_tmp = id_option[["Other metadata"]]
+	phenotype_data_choices <- reactive({
+	    id_tmp = id_option[["Phenotype data"]]
 		if(!is.null(custom_metadata)){
 			id_tmp[["Custom metadata"]]$all = sort(colnames(custom_metadata()[-1]))
 			id_tmp[["Custom metadata"]]$default = sort(colnames(custom_metadata()[-1]))[1]
 		}
-		id_tmp[[input$other_metadata]]
+		id_tmp[[input$phenotype_data]]
 	})
 
 
@@ -192,9 +191,9 @@ multi_upload_Server = function(input, output, session, samples=NULL, custom_meta
 	  )
 	  updateSelectizeInput(
 	    session,
-	    "other_metadata_id",
-	    choices = other_metadata_choices()$all,
-	    selected = other_metadata_choices()$default,
+	    "phenotype_data_id",
+	    choices = phenotype_data_choices()$all,
+	    selected = phenotype_data_choices()$default,
 	    server = TRUE
 	  )
 	})
@@ -206,10 +205,9 @@ multi_upload_Server = function(input, output, session, samples=NULL, custom_meta
 	    `Tumor index` = input$tumor_index,
 	    `Immune Infiltration` = input$immune_infiltration,
 	    `Pathway activity` = input$pathway_activity,
-	    `Other metadata` = input$other_metadata
+	    `Phenotype data` = input$phenotype_data
 	  )
 	})
-
 
 	output$tab_All = renderUI({
 		if(L2_x() %in% id_category[["Molecular profile"]]){
@@ -217,8 +215,6 @@ multi_upload_Server = function(input, output, session, samples=NULL, custom_meta
 				choices = PW_meta$Name, selected = "ANGIOGENESIS")
 		}
 	})
-
-
 
 	output$dw_L3_x = downloadHandler(
 		filename = function(){
@@ -249,7 +245,7 @@ multi_upload_Server = function(input, output, session, samples=NULL, custom_meta
 				    `Tumor index` = input$tumor_index_id,
 				    `Immune Infiltration` = input$immune_infiltration_id,
 				    `Pathway activity` = input$pathway_activity_id,
-				    `Other metadata` = input$other_metadata_id
+				    `Phenotype data` = input$phenotype_data_id
 				  )
 		} else if (input$L3_x_type=="File"){
 			file = input$upload_sp_info
@@ -292,51 +288,72 @@ multi_upload_Server = function(input, output, session, samples=NULL, custom_meta
 				L3_x = L3s_x()[i]
 
 				if(is.null(opt_pancan)){
-					opt_pancan = list(
-						  toil_mRNA = list(),
-						  toil_transcript = list(),
-						  toil_protein = list(),
-						  toil_mutation = list(),
-						  toil_cnv = list(use_thresholded_data = TRUE),
-						  toil_methylation = list(type = "450K", aggr = "NA", rule_out = NULL),
-						  toil_miRNA = list()
-					)
+					opt_pancan = .opt_pancan
 				} else {
 					opt_pancan = opt_pancan()
 				}
-				x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x(), L3_x,
-							   tumor_index_list, tcga_TIL, tcga_PW, clinical_phe,
-							   opt_pancan,custom_metadata())
+
+				if(cohort=="TOIL"){
+					clinical_phe = tcga_clinical_fine
+					x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x(), L3_x, cohort,
+								   tumor_index_list, tcga_TIL, tcga_PW, tcga_clinical_fine,
+								   opt_pancan,custom_metadata())
+				} else if(cohort=="PCAWG"){
+					clinical_phe = pcawg_info_fine
+					x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x(), L3_x, cohort,
+								   pcawg_index_list, pcawg_TIL, pcawg_PW, pcawg_info_fine,
+								   opt_pancan,custom_metadata())
+				} else if (cohort=="CCLE"){
+					clinical_phe = ccle_info_fine
+					x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x(), L3_x, cohort,
+								   ccle_index_list, NULL, NULL, ccle_info_fine,
+								   opt_pancan,custom_metadata())
+				}
 				x_data = x_data %>%
 					dplyr::filter(sample %in% samples()) %>%
 				    dplyr::select(id, sample, value)
+				# 默认批量下载的应为数值型变量，若不是则剔除
+				if(class(x_data$value)=="character"){  
+					return(NULL)
+				} else {
+					return(x_data)
+				}
 			}) %>% do.call(rbind, .)
 			x_data_merge =  x_data_merge %>%
 				dplyr::arrange(id,sample)
 		})
 	})
 
-	output$L3s_x_data.ui = renderUI({
-		if(table.ui){
-			L3s_x_data_ = L3s_x_data()[,c("id","sample","value")]
-			if(class(L3s_x_data_[,"value"])=="numeric"){
-				L3s_x_data_[,"value"] = round(L3s_x_data_[,"value"], digits = 3)
+	observeEvent(input$inspect_data_x,{
+		output$L3s_x_data.ui = renderUI({
+			shiny::validate(
+				need(try(nrow(L3s_x_data())>0), 
+					"No sample data were available. Please inspect operations in Preset step."),
+			)
+			if(table.ui){
+				L3s_x_data_ = L3s_x_data()[,c("id","sample","value")]
+				if(class(L3s_x_data_[,"value"])=="numeric"){
+					L3s_x_data_[,"value"] = round(L3s_x_data_[,"value"], digits = 3)
+				}
+				output$L3s_x_data = renderDataTable({
+					datatable(L3s_x_data_,
+						# class = "nowrap row-border",
+						options = list(pageLength = 3, 
+							columnDefs = list(list(className = 'dt-center', targets="_all")))
+					)
+				})
+				dataTableOutput(ns("L3s_x_data"))
+			} else {
+				output$L3s_x_data = renderPrint({
+					ids_num = length(unique(L3s_x_data()$id))
+					cat(paste0("Tip: ", ids_num, " ids are prepared."))
+				})
+				verbatimTextOutput(ns("L3s_x_data"))
 			}
-			output$L3s_x_data = renderDataTable({
-				datatable(L3s_x_data_,
-					# class = "nowrap row-border",
-					options = list(pageLength = 3, 
-						columnDefs = list(list(className = 'dt-center', targets="_all")))
-				)
-			})
-			dataTableOutput(ns("L3s_x_data"))
-		} else {
-			output$L3s_x_data = renderPrint({
-				ids_num = length(unique(L3s_x_data()$id))
-				cat(paste0("Tip: ", ids_num, " ids are prepared."))
-			})
-			verbatimTextOutput(ns("L3s_x_data"))
-		}
+		})
+
 	})
+
+
 	return(L3s_x_data)
 }

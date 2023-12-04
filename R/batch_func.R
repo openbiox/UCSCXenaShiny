@@ -9,10 +9,12 @@
 #' @param opt_pancan      molecular datasets parameters
 #' @param custom_metadata user customized metadata
 #' @param clinical_phe    common TCGA patient clinical phenotype 
+#' @param cohort          one cohort of c("TOIL","PCAWG","CCLE")
 #'
-batch_download = function(L1, L2, L3,
+batch_download = function(L1, L2, L3, cohort = c("TOIL","PCAWG","CCLE"),
                           tumor_index_list, tcga_TIL, tcga_PW, clinical_phe,
-                          opt_pancan, custom_metadata=NULL){
+                          opt_pancan=NULL, custom_metadata=NULL){
+  cohort = tolower(match.arg(cohort))
   if(L1 == "Molecular profile"){
     # L2 = "mRNA Expression"
     # L3 = "TP53"
@@ -23,16 +25,37 @@ batch_download = function(L1, L2, L3,
                                `Protein Expression` = "protein",
                                `miRNA Expression` = "miRNA",
                                `Mutation status` = "mutation",
-                               `Copy Number Variation` = "cnv"
+                               `Copy Number Variation` = "cnv",
+
+                               # `mRNA Expression` = "mRNA",
+                               `Promoter Activity` = "promoter",
+                               `Gene Fusion` = "fusion",
+                               # `miRNA Expression` = 'miRNA',
+                               `APOBEC Mutagenesis` = "APOBEC"
     )
+    if(is.null(opt_pancan)) {opt_pancan = .opt_pancan}
     x_data <- query_pancan_value(L3, 
                                  data_type = x_genomic_profile,
+                                 database = cohort,
                                  opt_pancan = opt_pancan
     )
-    if (is.list(x_data)) x_data <- x_data[[1]]
-    x_data <- data.frame(id = L3,
-                         sample = names(x_data), value = as.numeric(x_data),
-                         level2 = L2)
+    if(cohort == "ccle" & L2 == "Mutation status"){
+      x_data = x_data[,c("sampleID","genes")]
+      x_data = x_data %>% 
+        dplyr::select("sampleID", "genes") %>% 
+        dplyr::mutate(genes = ifelse(is.na(.data$genes),0,1)) %>% 
+        dplyr::arrange(.data$sampleID ,desc(.data$genes)) %>% 
+        dplyr::distinct(.data$sampleID, .keep_all = T) %>% 
+        dplyr::mutate(id = L3,.before = 1) %>%
+        dplyr::rename("sample"="sampleID", "value"="genes") %>% 
+        dplyr::mutate(level2="Mutation status")
+    } else {
+      if (is.list(x_data)) x_data <- x_data[[1]]
+      x_data <- data.frame(id = L3,
+                           sample = names(x_data), value = as.numeric(x_data),
+                           level2 = L2) 
+    }
+
   } else if (L1 == "Tumor index"){
     # L2 = "Tumor Purity"
     # L3 = L3_candi$id_tumor_index$tcga_purity$Level3[1]
@@ -69,7 +92,7 @@ batch_download = function(L1, L2, L3,
       dplyr::mutate(id = L3, .before = 1) %>%
       dplyr::mutate(level2 = L2) %>%
       dplyr::filter(!is.na(.data$value))	
-  } else if (L1 == "Other metadata"){
+  } else if (L1 == "Phenotype data"){
     if(L2 =="Clinical Phenotype"){
         x_data = clinical_phe[,c("Sample", L3)]
     } else {
