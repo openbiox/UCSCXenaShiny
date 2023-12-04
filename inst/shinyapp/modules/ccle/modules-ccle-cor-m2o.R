@@ -1,0 +1,231 @@
+ui.modules_ccle_cor_m2o = function(id) {
+	ns = NS(id)
+	fluidPage(
+		fluidRow(
+			# 初始设置
+			column(
+				3,
+				wellPanel(
+					style = "height:1100px",
+					h2("S1: Preset", align = "center"),
+					h4("1. Choose sites"),
+
+					pickerInput(
+						ns("choose_cancer"),NULL,
+						choices = sort(unique(ccle_info_fine$Site_Primary)),
+						multiple = TRUE,
+						selected = sort(unique(ccle_info_fine$Site_Primary)),
+						options = list(`actions-box` = TRUE)
+					),
+					br(),br(),
+					h4("2. Filter samples[opt]"),
+					h5("Exact filter:"),
+					filter_samples_UI(ns("filter_samples2cor")),
+					br(),
+					verbatimTextOutput(ns("filter_phe_id_info")),
+					br(),br(),
+
+					h4("3. Upload metadata[opt]") %>% 
+						helper(type = "markdown", size = "m", fade = TRUE, 
+					                   title = "Upload sample info", 
+					                   content = "custom_metadata"),
+					shinyFeedback::useShinyFeedback(),
+					custom_meta_UI(ns("custom_meta2cor")),
+					br(),br(),
+
+					h4("4. Modify datasets[opt]") %>% 
+						helper(type = "markdown", size = "m", fade = TRUE, 
+					                   title = "Set molecular profile origin", 
+					                   content = "data_origin"),
+
+					mol_origin_UI(ns("mol_origin2cor"))
+				)
+			),
+			column(
+				4,
+				wellPanel(
+					style = "height:1100px",
+					h2("S2: Get data", align = "center"),
+					# 批量数据下载
+					multi_upload_UI(ns("multi_upload2cor"),
+						button_name = "Query batch data(x-axis)", id_option = ccle_id_option),
+					br(),br(),
+
+					# 单项数据下载
+					download_feat_UI(ns("download_y_axis"), 
+						button_name="Query data(y-axis)",id_option = ccle_id_option)
+				)
+			),
+			column(
+				5,
+				wellPanel(
+					style = "height:1100px",
+					h2("S3: Batch analyze", align = "center"),
+					shinyWidgets::actionBttn(
+						ns("cal_batch_cor"), "Start calculation",
+				        style = "gradient",
+				        icon = icon("search"),
+				        color = "primary",
+				        block = TRUE,
+				        size = "sm"
+					),
+					br(),br(),
+					h4("1. Set method"),
+					selectInput(ns("cor_method"), NULL,choices = c("pearson", "spearman")),
+
+					br(),br(),
+					fluidRow(
+						column(10, offset = 1,
+							   div(uiOutput(ns("cor_stat_tb.ui")),style = "height:600px"),
+							   )
+					),
+					uiOutput(ns("cor_stat_dw.ui"))
+				)
+			)
+		)
+	)
+}
+
+
+
+server.modules_ccle_cor_m2o = function(input, output, session) {
+	ns <- session$ns
+
+	# 记录选择癌症
+	cancer_choose <- reactiveValues(name = "lung", phe_primary="",
+		filter_phe_id=query_tcga_group(cohort = "CCLE", cancer = "lung", return_all = T))
+	observe({
+		cancer_choose$name = input$choose_cancer
+		cancer_choose$phe_primary <- query_tcga_group(cohort = "CCLE",
+			cancer = cancer_choose$name, return_all = T)
+	})
+
+	# 自定义上传metadata数据
+	custom_meta = callModule(custom_meta_Server, "custom_meta2cor")
+
+	# 数据源设置
+	opt_pancan = callModule(mol_origin_Server, "mol_origin2cor")
+
+	## 过滤样本
+	# exact filter module
+	filter_phe_id = callModule(filter_samples_Server, "filter_samples2cor",
+					   cohort = "CCLE",id_option = ccle_id_option,
+					   cancers=reactive(cancer_choose$name),
+					   custom_metadata=reactive(custom_meta()),
+					   opt_pancan = reactive(opt_pancan()))
+	observe({
+		# exact filter
+		if(is.null(filter_phe_id())){
+			cancer_choose$filter_phe_id = cancer_choose$phe_primary$Sample
+		} else {
+			cancer_choose$filter_phe_id = filter_phe_id()
+		}
+
+		output$filter_phe_id_info = renderPrint({
+			cat(paste0("Tip: ", length(cancer_choose$filter_phe_id), " samples are retained"))
+		})
+	})
+
+
+
+	# 批量下载数据
+	L3s_x_data =  callModule(multi_upload_Server, "multi_upload2cor", 
+							 cohort = "CCLE",id_option=ccle_id_option,
+							 samples=reactive(cancer_choose$filter_phe_id),
+							 custom_metadata=reactive(custom_meta()),
+						     opt_pancan = reactive(opt_pancan())
+							 )
+	L3s_x = reactive({
+		unique(L3s_x_data()$id)
+	})
+
+	output$tmp123 = renderPrint({head(L3s_x_data())})
+	output$tmp456 = renderPrint({head(L3_y_data())})
+
+
+	L3_y_data = callModule(download_feat_Server, "download_y_axis", 
+							 cohort = "CCLE",id_option=ccle_id_option,
+							 samples=reactive(cancer_choose$filter_phe_id),
+							 custom_metadata=reactive(custom_meta()),
+						     opt_pancan = reactive(opt_pancan()),
+						     check_numeric=TRUE
+							 )
+	# 相关性分析
+	cor_stat = eventReactive(input$cal_batch_cor,{
+		x_datas = L3s_x_data()[,c("id","sample","value")]
+		colnames(x_datas)[c(1,3)] = paste0("x_",colnames(x_datas)[c(1,3)])
+		y_data = L3_y_data()[,c("id","sample","value")]
+		colnames(y_data)[c(1,3)] = paste0("y_",colnames(y_data)[c(1,3)])
+
+		withProgress(message = "Your analyzation has been submitted. Please wait for a while.",{
+			cor_stat = lapply(seq(L3s_x()), function(i) {
+			    incProgress(1 / length(L3s_x()), detail = paste0("(Finished ",i,"/",length(L3s_x()),")"))
+				
+				L3_x = L3s_x()[i]
+				xy_data = x_datas %>%
+					dplyr::filter(x_id == L3_x) %>%
+					dplyr::inner_join(y_data) %>% as.data.frame()
+				if(nrow(na.omit(xy_data))==0){return(c(NaN, NaN))}
+			    cor_obj = cor.test(xy_data[,"x_value"],xy_data[,"y_value"],
+			                       method = input$cor_method)
+			   	return(c(cor_obj$p.value, cor_obj$estimate))
+			}) %>% do.call(rbind, .) %>% as.data.frame()
+			colnames(cor_stat) = c("p.value","R")
+			cor_stat2 = cor_stat %>% 
+			  dplyr::select(R, p.value) %>% 
+			  dplyr::mutate(id.x = L3s_x(), .before = 1) %>% 
+			  dplyr::mutate(id.y = input$L3_y, .before = 2) %>%
+			  dplyr::arrange(p.value)
+			cor_stat2
+		})
+	})
+
+	output$cor_stat_tb.ui = renderUI({
+		output$cor_stat_tb = renderDataTable({
+			cor_stat_ = cor_stat()
+			cor_stat_$p.value = format(cor_stat_$p.value, scientific=T, digits = 3)
+			dt = datatable(cor_stat_,
+				# class = "nowrap row-border",
+				options = list(pageLength = 10, 
+					columnDefs = list(
+						list(className = 'dt-center', targets="_all"),
+						list(orderable=TRUE, targets = 0)))
+			) %>%
+				formatRound(columns = c("R"), digits = 3)
+			dt$x$data[[1]] <- as.numeric(dt$x$data[[1]]) 
+			dt
+		}) 
+	dataTableOutput(ns("cor_stat_tb"))
+	})
+
+
+	output$cor_stat_dw.ui = renderUI({
+		fluidRow(
+			column(6,downloadButton(ns("cor_batch_raw"), "Raw data(.csv)")),
+			column(6,downloadButton(ns("cor_batch_res"), "Analyzed data(.csv)"))
+		)
+	})
+	output$cor_batch_raw = downloadHandler(
+		filename = function(){
+			paste0("Batch_correlation_rawdata_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
+		},
+		content = function(file){
+			x_datas = L3s_x_data() %>%
+				dplyr::mutate(axis = "X")
+			y_data = L3_y_data() %>%
+				dplyr::select(id,sample,value) %>%
+				dplyr::mutate(axis = "Y")
+			xy_data = rbind(x_datas, y_data)
+			write.csv(xy_data, file, row.names = FALSE)
+		}
+	)
+	output$cor_batch_res = downloadHandler(
+		filename = function(){
+			paste0("Batch_correlation_result_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
+		},
+		content = function(file){
+			cor_stat_ = cor_stat()
+			write.csv(cor_stat_, file, row.names = FALSE)
+		}
+	)
+}

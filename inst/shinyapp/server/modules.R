@@ -19,3 +19,47 @@ callModule(server.modules_pcawg_sur_plot, "modules_pcawg_sur_plot")
 callModule(server.modules_dim_dist, "modules_dim_dist")
 callModule(server.modules_pw_cor, "modules_pw_cor")
 callModule(server.modules_pancan_mut, "modules_pancan_mut")
+
+# TCGA pancan
+callModule(server.modules_pancan_cor_o2o, "modules_pancan_cor_o2o")
+callModule(server.modules_pancan_cor_o2m, "modules_pancan_cor_o2m")
+callModule(server.modules_pancan_cor_m2o, "modules_pancan_cor_m2o")
+
+callModule(server.modules_pancan_comp_o2o, "modules_pancan_comp_o2o")
+callModule(server.modules_pancan_comp_o2m, "modules_pancan_comp_o2m")
+callModule(server.modules_pancan_comp_m2o, "modules_pancan_comp_m2o")
+
+callModule(server.modules_pancan_sur_o2o, "modules_pancan_sur_o2o")
+callModule(server.modules_pancan_sur_o2m, "modules_pancan_sur_o2m")
+callModule(server.modules_pancan_sur_m2o, "modules_pancan_sur_m2o")
+
+
+# PCAWG 
+callModule(server.modules_pcawg_cor_o2o, "modules_pcawg_cor_o2o")
+callModule(server.modules_pcawg_cor_o2m, "modules_pcawg_cor_o2m")
+callModule(server.modules_pcawg_cor_m2o, "modules_pcawg_cor_m2o")
+
+callModule(server.modules_pcawg_comp_o2o, "modules_pcawg_comp_o2o")
+callModule(server.modules_pcawg_comp_o2m, "modules_pcawg_comp_o2m")
+callModule(server.modules_pcawg_comp_m2o, "modules_pcawg_comp_m2o")
+
+callModule(server.modules_pcawg_sur_o2o, "modules_pcawg_sur_o2o")
+callModule(server.modules_pcawg_sur_o2m, "modules_pcawg_sur_o2m")
+callModule(server.modules_pcawg_sur_m2o, "modules_pcawg_sur_m2o")
+
+
+# CCLE
+
+callModule(server.modules_ccle_cor_o2o, "modules_ccle_cor_o2o")
+callModule(server.modules_ccle_cor_m2o, "modules_ccle_cor_m2o")
+
+callModule(server.modules_ccle_comp_o2o, "modules_ccle_comp_o2o")
+callModule(server.modules_ccle_comp_m2o, "modules_ccle_comp_m2o")
+
+
+
+
+
+
+# identifier help
+callModule(server.modules_id_reference, "modules_id_reference")

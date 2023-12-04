@@ -21,6 +21,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Shensuo Li \email{lishensuo@163.com}
   \item Yi Xiong \email{neuroxiong@openbiox.com} (\href{https://orcid.org/0000-0002-4370-9824}{ORCID})
   \item Longfei Zhao \email{longfei8533@126.com} (\href{https://orcid.org/0000-0002-6277-0137}{ORCID})
   \item Kai Gu \email{gukai1212@163.com} (\href{https://orcid.org/0000-0002-0177-0774}{ORCID})

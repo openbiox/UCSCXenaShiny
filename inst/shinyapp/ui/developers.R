@@ -13,6 +13,23 @@ ui.page_developers <- function() {
               tags$div(
                 class = "card-body",
                 tags$img(
+                  src = "https://avatars3.githubusercontent.com/u/80585985?s=400&v=4.png",
+                  class = "img-circle",
+                  alt = "logo", style = "width: 30% ; margin: 0 auto "
+                ),
+                tags$h4(class = "card-title", "Shensuo Li"),
+                tags$p(class = "card-text", "Developer of XenaShiny v2")
+              ),
+              tags$div(
+                class = "card-footer",
+                tags$a(href = "https://github.com/lishensuo", class = "card-link", "See Profile")
+              )
+            ),
+            tags$div(
+              class = "card bg-info",
+              tags$div(
+                class = "card-body",
+                tags$img(
                   src = "https://avatars3.githubusercontent.com/u/25057508?s=400&v=4.png",
                   class = "img-circle",
                   alt = "logo", style = "width: 30% ; margin: 0 auto "

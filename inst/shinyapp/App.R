@@ -71,6 +71,7 @@ pacman::p_load(
   dplyr,
   ggplot2,
   cowplot,
+  patchwork,
   ggpubr,
   plotly,
   UCSCXenaTools,
@@ -81,7 +82,9 @@ pacman::p_load(
   shinyWidgets,
   shinyalert,
   shinyFiles,
+  shinyFeedback,
   shinythemes,
+  shinyhelper,
   survival,
   survminer,
   ezcox,
@@ -152,18 +155,8 @@ phenotype_datasets <- UCSCXenaTools::XenaData %>%
   dplyr::filter(Type == "clinicalMatrix") %>%
   dplyr::pull(XenaDatasets)
 
-tumor_index_list = list(
-  tcga_purity = load_data("tcga_purity"),
-  tcga_stemness = load_data("tcga_stemness"),
-  tcga_tmb = load_data("tcga_tmb"),
-  tcga_msi = load_data("tcga_MSI"),
-  tcga_genome_instability = load_data("tcga_genome_instability")
-)
-colnames(tumor_index_list$tcga_tmb)[3] = "sample"
-tumor_index_list$tcga_msi = tcga_gtex %>%
-  dplyr::mutate(Barcode = stringr::str_sub(sample, 1, 12)) %>%
-  dplyr::select(Barcode, sample) %>%
-  dplyr::inner_join(tumor_index_list$tcga_msi)
+
+
 
 
 
@@ -177,14 +170,31 @@ themes_list <- list(
   "minimal_grid" = cowplot::theme_minimal_grid()
 )
 
+
+
+## 肿瘤指标
+tumor_index_list = list(
+  tcga_purity = load_data("tcga_purity"),
+  tcga_stemness = load_data("tcga_stemness"),
+  tcga_tmb = load_data("tcga_tmb"),
+  tcga_msi = load_data("tcga_MSI"),
+  tcga_genome_instability = load_data("tcga_genome_instability")
+)
+colnames(tumor_index_list$tcga_tmb)[3] = "sample"
+tumor_index_list$tcga_msi = tcga_gtex %>%
+  dplyr::mutate(Barcode = stringr::str_sub(sample, 1, 12)) %>%
+  dplyr::select(Barcode, sample) %>%
+  dplyr::inner_join(tumor_index_list$tcga_msi, by = "Barcode")
+
+## 免疫浸润
 tcga_TIL = load_data("tcga_TIL")
 TIL_signatures <- colnames(tcga_TIL)[-1]
 TIL_meta = strsplit(TIL_signatures, "_") %>% 
   do.call(rbind, .) %>% as.data.frame() %>% 
   dplyr::rename("method"="V2", "celltype"="V1")
 
+## 通路打分
 tcga_PW = load_data("tcga_PW")
-# PW_signatures <- load_data("toil_sig_score")$meta$sig_name
 PW_meta <- load_data("tcga_PW_meta")
 PW_meta <- PW_meta %>% 
   dplyr::arrange(Name) %>%
@@ -194,6 +204,131 @@ PW_meta <- PW_meta %>%
   }), .before = 5) %>% 
   dplyr::mutate(display = paste0(Name, " (", size, ")"), .before = 6)
 
+
+## 临床表型
+clinical_phe = query_tcga_group(return_all = T) %>% as.data.frame()
+
+# Help → ID reference
+id_referrence = load_data("pancan_identifier_help")
+# names(id_merge)
+# # [1] "id_molecule"    "id_tumor_index" "id_TIL"         "id_PW"
+
+
+tcga_id_option = list(
+  "Molecular profile" = list(
+     `mRNA Expression` = list(all = pancan_identifiers$gene, default = "TP53"),
+     `Transcript Expression` = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
+     `DNA Methylation` = list(all = pancan_identifiers$gene, default = "TP53"),
+     `Protein Expression` = list(all = pancan_identifiers$protein, default = "P53"),
+     `miRNA Expression` = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+     `Mutation status` = list(all = pancan_identifiers$gene, default = "TP53"),
+     `Copy Number Variation` = list(all = pancan_identifiers$gene, default = "TP53")
+  ),
+  "Tumor index" = list(
+     `Tumor Purity` = list(all = colnames(tumor_index_list$tcga_purity)[3:7], default = "ESTIMATE"),
+     `Tumor Stemness` = list(all = colnames(tumor_index_list$tcga_stemness)[2:6], default = "RNAss"),
+     `Tumor Mutation Burden` = list(all = colnames(tumor_index_list$tcga_tmb)[4:5], default = "Non_silent_per_Mb"),
+     `Microsatellite Instability` = list(all = colnames(tumor_index_list$tcga_msi)[3:21], default = "Total_nb_MSI_events"),
+     `Genome Instability` = list(all = colnames(tumor_index_list$tcga_genome_instability)[2:6], default = "ploidy")
+  ),
+  "Immune Infiltration" = list(
+     `CIBERSORT` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="CIBERSORT"]), default = "Monocyte"),
+     `CIBERSORT-ABS` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="CIBERSORT-ABS"]), default = "Monocyte"),
+     `EPIC` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="EPIC"]), default = "Macrophage"),
+     `MCPCOUNTER` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="MCPCOUNTER"]), default = "Monocyte"),
+     `QUANTISEQ` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="QUANTISEQ"]), default = "Monocyte"),
+     `TIMER` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="TIMER"]), default = "Macrophage"),
+     `XCELL` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="XCELL"]), default = "Monocyte")
+  ),
+  "Pathway activity" = list(
+     `HALLMARK` = list(all = sort(PW_meta$Name[PW_meta$Type=="HALLMARK"]), default = "APOPTOSIS"),
+     `KEGG` = list(all = sort(PW_meta$Name[PW_meta$Type=="KEGG"]), default = "CELL_CYCLE"),
+     `IOBR` = list(all = sort(PW_meta$Name[PW_meta$Type=="IOBR"]), default = "Biotin_Metabolism")
+  ),
+  "Phenotype data" = list(
+     `Clinical Phenotype` = list(all = colnames(clinical_phe)[4:9], default = "Code")
+     ,
+     `Custom metadata` = list(all = NULL, default = NULL)
+  )
+)
+# tcga_id_category = lapply(tcga_id_option, names)
+
+
+
+
+pcawg_id_referrence = load_data("pcawg_identifier")
+pcawg_id_option = tcga_id_option
+pcawg_id_option$`Molecular profile` = list(
+     `mRNA Expression` = list(all = pcawg_id_referrence$id_gene$Level3, default = "TP53"),
+     `Promoter Activity` = list(all = pcawg_id_referrence$id_pro$Level3, default = "prmtr.1"),
+     `Gene Fusion` = list(all = pcawg_id_referrence$id_fusion$Level3, default = "SAMD11"),
+     `miRNA Expression` = list(all = pcawg_id_referrence$id_mi$Level3, default = "hsa-let-7a-2-3p"),
+     `APOBEC Mutagenesis` = list(all = pcawg_id_referrence$id_maf$Level3, default = "A3A_or_A3B")
+  )
+pcawg_id_option$`Tumor index` = list(
+     `Tumor Purity` = list(all = c("purity", "ploidy", "purity_conf_mad", "wgd_status", "wgd_uncertain"), 
+                          default = "purity")
+  )
+pcawg_id_option$`Phenotype data` = list(
+     `Clinical Phenotype` = list(all = c("Age", "Gender","Type"), 
+                          default = "Age")
+  )
+pcawg_items = sort(unique(pcawg_info_fine$Project)) #30
+pcawg_TIL = load_data("pcawg_TIL")
+pcawg_PW = load_data("pcawg_PW")
+pcawg_index_list = list(
+  tcga_purity = pcawg_purity %>%
+    dplyr::filter(icgc_specimen_id %in% pcawg_info_fine$Sample) %>%
+    dplyr::rename(sample=icgc_specimen_id)
+  )
+
+
+
+
+
+ccle_id_referrence = load_data("ccle_identifier")
+ccle_id_option = tcga_id_option
+ccle_id_option$`Molecular profile` = list(
+     `mRNA Expression` = list(all = ccle_id_referrence$id_gene$Level3, default = "TP53"),
+     `Protein Expression` = list(all = ccle_id_referrence$id_pro$Level3, default = "14-3-3_beta"),
+     `Copy Number Variation` = list(all = ccle_id_referrence$id_cnv$Level3, default = "TP53"),
+     `Mutation status` = list(all = ccle_id_referrence$id_mut$Level3, default = "TP53")
+  )
+
+
+ccle_id_option$`Tumor index` = list(
+     `Tumor Purity` = list(all = c("Purity", "Ploidy", "Genome Doublings", "Lineage"), 
+                          default = "Purity")
+  )
+ccle_id_option$`Immune Infiltration` = list(NULL)
+ccle_id_option$`Pathway activity` = list(NULL)
+
+ccle_id_option$`Phenotype data` = list(
+     `Clinical Phenotype` = list(all = c("Gender","Histology","Type"), 
+                          default = "Gender")
+  )
+
+ccle_index_list = list(
+  tcga_purity = ccle_absolute %>%
+    dplyr::rename("sample"="Cell Line") %>%
+    dplyr::filter(sample %in% ccle_info_fine$Sample)
+  )
+
+
+
+
+
+
+
+
+
+code_types = list("NT"= "NT (normal tissue)",
+          "TP"= "TP (primary tumor)",
+          "TR"= "TR (recurrent tumor)",
+          "TB"= "TB (blood derived tumor)",
+          "TAP"="TAP (additional primary)",
+          "TM"= "TM (metastatic tumor)",
+          "TAM"="TAM (additional metastatic)")
 
 
 # CCLE tissues for drug analysis
@@ -235,13 +370,13 @@ mycolor <- c(RColorBrewer::brewer.pal(12, "Paired"))
 
 # Put modules here --------------------------------------------------------
 modules_path <- system.file("shinyapp", "modules", package = "UCSCXenaShiny", mustWork = TRUE)
-modules_file <- dir(modules_path, pattern = "\\.R$", full.names = TRUE)
+modules_file <- dir(modules_path, pattern = "\\.R$", full.names = TRUE, recursive = TRUE)
 sapply(modules_file, function(x, y) source(x, local = y), y = environment())
 
 
 # Put page UIs here -----------------------------------------------------
 pages_path <- system.file("shinyapp", "ui", package = "UCSCXenaShiny", mustWork = TRUE)
-pages_file <- dir(pages_path, pattern = "\\.R$", full.names = TRUE)
+pages_file <- dir(pages_path, pattern = "\\.R$", full.names = TRUE, recursive = TRUE)
 sapply(pages_file, function(x, y) source(x, local = y), y = environment())
 
 
@@ -323,22 +458,54 @@ ui <- tagList(
               top: calc(50% - 50px);;
               left: calc(50% - 400px);;
             }")
+    ),
+    tags$style(
+      '[data-value = "Sole Analysis for Single Cancer"] {
+        width: 400px;
+       background-color: #bdbdbd;
+      }
+       [data-value = "Sole Analysis for Multiple Cancers"] {
+        width: 400px;
+       background-color: #525252;
+      }
+       [data-value = "Batch Analysis for Single Cancer"] {
+        width: 400px;
+       background-color: #525252;
+      }
+       [data-value = "Sole Analysis for Cell Lines"] {
+        width: 400px;
+       background-color: #bdbdbd;
+      }
+       [data-value = "Batch Analysis for Cell Lines"] {
+        width: 400px;
+       background-color: #525252;
+      }
+      .tab-pane {
+        background-color: transparent;
+        width: 100%;
+        }
+      .nav-tabs {font-size: 20px}   
+      '
     )
   ),
   shinyjs::useShinyjs(),
-  use_waiter(),
-  waiter_on_busy(html = spin_3k(), color = transparent(0.7)),
+  autoWaiter(html = spin_loader(), color = transparent(0.5)), # change style https://shiny.john-coene.com/waiter/
   navbarPage(
     id = "navbar",
     title = div(
       img(src = "xena_shiny-logo_white.png", height = 49.6, style = "margin:-20px -15px -15px -15px")
     ),
+    windowTitle = "UCSCXenaShiny",
     # inst/shinyapp/ui
     ui.page_home(),
     ui.page_repository(),
     ui.page_general_analysis(),
-    ui.page_pancan(),
-    ui.page_global(),
+    ui.page_pancan_tcga(),
+    ui.page_pancan_pcawg(),
+    ui.page_pancan_ccle(),
+    ui.page_pancan_quick(),
+    ui.page_download(),
+    #ui.page_global(),
     ui.page_help(),
     ui.page_developers(),
     footer = ui.footer(),
@@ -360,8 +527,11 @@ server <- function(input, output, session) {
   source(server_file("home.R"), local = TRUE)
   source(server_file("repository.R"), local = TRUE)
   source(server_file("modules.R"), local = TRUE)
-  source(server_file("global.R"), local = TRUE)
+  #source(server_file("global.R"), local = TRUE)
   source(server_file("general-analysis.R"), local = TRUE)
+  # observe_helpers()
+  observe_helpers(help_dir ="helper")
+
 }
 
 # Run web app -------------------------------------------------------------
