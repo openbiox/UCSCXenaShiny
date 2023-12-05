@@ -1,6 +1,22 @@
 # UCSCXenaShiny 2.0.0
 
-### BUG FIXES
+### New Features
+
+- `vis_dim_dist()` function and corresponding shiny module.
+
+### Enhancements
+
+- Supported getting more flexible methylation value.
+
+```r
+UCSCXenaShiny::get_pancan_methylation_value(
+  "RCAN2",
+  rule_out = c("cg21115430", "cg19452802"), 
+  aggr = "Q75"
+)
+```
+
+### Bug Fixes
 
 - Merge data with unequal size in pan-cancer data query with a gene signature (#283), the fix also enhance the
 sample names match.
@@ -9,21 +25,6 @@ Test code:
 
 ```r
 vis_gene_tmb_cor("`ZFAT-AS1` + `SNORD116-1` + SPATA31D1", data_type = "methylation")
-```
-
-# UCSCXenaShiny 1.1.12
-
-This is a version created for implementing new features by Shensuo Li (@lishensuo).
-
-- added `vis_dim_dist()` funtion and corresponding shiny module.
-- supported get more flexible methylation value.
-
-```r
-UCSCXenaShiny::get_pancan_methylation_value(
-  "RCAN2",
-  rule_out = c("cg21115430", "cg19452802"), 
-  aggr = "Q75"
-)
 ```
 
 # UCSCXenaShiny 1.1.11
