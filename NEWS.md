@@ -1,3 +1,16 @@
+# UCSCXenaShiny 2.0.0
+
+### BUG FIXES
+
+- Merge data with unequal size in pan-cancer data query with a gene signature (#283), the fix also enhance the
+sample names match.
+
+Test code:
+
+```r
+vis_gene_tmb_cor("`ZFAT-AS1` + `SNORD116-1` + SPATA31D1", data_type = "methylation")
+```
+
 # UCSCXenaShiny 1.1.12
 
 This is a version created for implementing new features by Shensuo Li (@lishensuo).

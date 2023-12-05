@@ -172,7 +172,7 @@ query_pancan_value <- function(molecule,
         if (is.null(unit)) {
           df <- as.data.frame(values %>% purrr::set_names(ids))
         } else {
-          df <- as.data.frame(purrr::map(values, ~ .[[1]]) %>% purrr::set_names(ids))
+          df <- purrr::reduce(purrr::map(values, ~ as.data.frame(.[[1]])), mbind) %>% magrittr::set_colnames(ids)
         }
         colnames(df) <- ids
         sig_values <- eval(fm, envir = df)
