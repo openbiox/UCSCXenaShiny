@@ -56,3 +56,8 @@ get_zenodo_dir <- function() {
 rm_cache_dir <- function() {
   unlink(get_cache_dir(), recursive = TRUE)
 }
+
+# https://stackoverflow.com/questions/6029743/merge-or-combine-by-rownames
+mbind <- function(...) {
+  Reduce( function(x,y){cbind(x,y[match(row.names(x),row.names(y)),])}, list(...) )
+}
