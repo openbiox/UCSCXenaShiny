@@ -13,7 +13,8 @@ vis_gene_cor(
   purity_adj = TRUE,
   alpha = 0.5,
   color = "#000000",
-  filter_tumor = TRUE
+  filter_tumor = TRUE,
+  opt_pancan = .opt_pancan
 )
 }
 \arguments{
@@ -36,6 +37,8 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 \item{color}{dot color.}
 
 \item{filter_tumor}{whether use tumor sample only, default \code{TRUE}}
+
+\item{opt_pancan}{specify one dataset for some molercular profiles}
 }
 \description{
 Visualize Gene-Gene Correlation in TCGA

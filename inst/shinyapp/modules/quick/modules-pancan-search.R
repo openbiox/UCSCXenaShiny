@@ -9,6 +9,12 @@ fluidRow(column(3,
               choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "miRNA Expression"),
               animation = "jelly"
             ),
+            actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
+            conditionalPanel(
+              ns = ns,
+              condition = "input.toggleBtn % 2 == 1",
+              mol_origin_UI(ns("mol_origin2quick"))
+            ),
             selectizeInput(
               inputId = ns("Pancan_search"),
               label = "Input a gene or formula (as signature)",
@@ -109,6 +115,8 @@ server.modules_pancan_dist <- function(input, output, session) {
     )
   })
 
+  opt_pancan = callModule(mol_origin_Server, "mol_origin2quick")
+
   colors <- reactive({
     c(input$tumor_col, input$normal_col)
   })
@@ -131,6 +139,7 @@ server.modules_pancan_dist <- function(input, output, session) {
         TCGA.only = input$pdist_dataset,
         include.Tumor.only = input$pdist_tumor_only,
         values = colors(),
+        opt_pancan = opt_pancan()
       ) + plot_theme() + ggplot2::theme(
         axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5),
         axis.text.y = element_text(size = 15)

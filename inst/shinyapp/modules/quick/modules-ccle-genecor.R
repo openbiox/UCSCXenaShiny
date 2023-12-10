@@ -62,6 +62,12 @@ ui.modules_ccle_genecor <- function(id) {
             content = "Enter a gene symbol to show its distribution, e.g. TP53",
             placement = "right", options = list(container = "body")
           ),
+          actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
+          conditionalPanel(
+            ns = ns,
+            condition = "input.toggleBtn % 2 == 1",
+            mol_origin_UI(ns("mol_origin2quick"))
+          ),
           selectInput(
             inputId = ns("cor_method"),
             label = "Select Correlation method",
@@ -173,6 +179,8 @@ server.modules_ccle_genecor <- function(input, output, session) {
     )
   })
 
+  opt_pancan = callModule(mol_origin_Server, "mol_origin2quick")
+
   observe({
     updateSelectizeInput(
       session,
@@ -197,7 +205,8 @@ server.modules_ccle_genecor <- function(input, output, session) {
         color = input$color,
         alpha = input$alpha,
         SitePrimary = input$SitePrimary,
-        use_all = as.logical(input$use_all)
+        use_all = as.logical(input$use_all),
+        opt_pancan = opt_pancan()
       )
     }
     p <- p + theme_classic(base_size = 20) +

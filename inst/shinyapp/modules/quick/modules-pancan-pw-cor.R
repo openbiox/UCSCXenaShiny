@@ -7,10 +7,16 @@ ui.modules_pw_cor = function(id){
 				wellPanel(
 		            shinyWidgets::prettyRadioButtons(
 		              inputId = ns("profile"), label = "Select a genomic profile:",
-		              choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2"),
+		              choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv"),
 		              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
 		              animation = "jelly"
 		            ),
+			        actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
+			        conditionalPanel(
+			          ns = ns,
+			          condition = "input.toggleBtn % 2 == 1",
+			          mol_origin_UI(ns("mol_origin2quick"))
+			        ),
 		            selectizeInput(
 		              inputId = ns("Pancan_search"),
 		              label = "Input a gene or formula (as signature)",
@@ -112,7 +118,7 @@ server.modules_pw_cor = function(input, output, session){
 	    protein = list(all = pancan_identifiers$protein, default = "P53"),
 	    transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
 	    miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-	    cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
+	    cnv = list(all = pancan_identifiers$gene, default = "TP53"),
 	    list(all = "NONE", default = "NONE")
 	  )
 	})
@@ -125,6 +131,10 @@ server.modules_pw_cor = function(input, output, session){
 	    server = TRUE
 	  )
 	})
+
+  	opt_pancan = callModule(mol_origin_Server, "mol_origin2quick")
+
+
 	observeEvent(input$Mode, {
 	  updateTabsetPanel(inputId = "mode_params", selected = input$Mode)
 	}) 
@@ -140,11 +150,11 @@ server.modules_pw_cor = function(input, output, session){
 	plot_func <- eventReactive(input$plot_bttn, {
 		p = switch(input$Mode,
 			one_many=vis_gene_pw_cor(Gene=input$Pancan_search,data_type=input$profile,Cancer=input$Cancer1,
-									 cor_cutoff = list(r=input$cor_coef1, p=input$cor_pval1),cor_method = input$cor_method1),
+									 cor_cutoff = list(r=input$cor_coef1, p=input$cor_pval1),cor_method = input$cor_method1,opt_pancan=opt_pancan()),
 			one_one=vis_gene_pw_cor(Gene=input$Pancan_search,data_type=input$profile,Cancer=input$Cancer2,
-									pw_name=input$pw_name2,cor_method = input$cor_method2),
+									pw_name=input$pw_name2,cor_method = input$cor_method2,opt_pancan=opt_pancan()),
 			many_one=vis_gene_pw_cor(Gene=input$Pancan_search,data_type=input$profile,Cancer=input$Cancer3,
-									pw_name=input$pw_name3,cor_method = input$cor_method3)
+									pw_name=input$pw_name3,cor_method = input$cor_method3,opt_pancan=opt_pancan())
 		)
 	  return(p)
 	})
@@ -152,11 +162,11 @@ server.modules_pw_cor = function(input, output, session){
 	data_func <- eventReactive(input$plot_bttn, {
 		p_dat = switch(input$Mode,
 			one_many=vis_gene_pw_cor(Gene=input$Pancan_search,data_type=input$profile,Cancer=input$Cancer1,
-									 cor_cutoff = list(r=input$cor_coef1, p=input$cor_pval1),cor_method = input$cor_method1, plot=FALSE),
+									 cor_cutoff = list(r=input$cor_coef1, p=input$cor_pval1),cor_method = input$cor_method1, plot=FALSE,opt_pancan=opt_pancan()),
 			one_one=vis_gene_pw_cor(Gene=input$Pancan_search,data_type=input$profile,Cancer=input$Cancer2,
-									pw_name=input$pw_name2,cor_method = input$cor_method2, plot=FALSE),
+									pw_name=input$pw_name2,cor_method = input$cor_method2, plot=FALSE,opt_pancan=opt_pancan()),
 			many_one=vis_gene_pw_cor(Gene=input$Pancan_search,data_type=input$profile,Cancer=input$Cancer3,
-									pw_name=input$pw_name3,cor_method = input$cor_method3, plot=FALSE)
+									pw_name=input$pw_name3,cor_method = input$cor_method3, plot=FALSE,opt_pancan=opt_pancan())
 		)
 	  return(p_dat)
 	})

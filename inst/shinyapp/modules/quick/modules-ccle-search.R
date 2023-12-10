@@ -11,6 +11,12 @@ ui.modules_ccle_dist <- function(id) {
             choiceNames = c("mRNA Expression", "Protein Expression", "Copy Number Variation"),
             animation = "jelly"
           ),
+          actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
+          conditionalPanel(
+            ns = ns,
+            condition = "input.toggleBtn % 2 == 1",
+            mol_origin_UI(ns("mol_origin2quick"))
+          ),
           selectizeInput(
             inputId = ns("ccle_search"),
             label = NULL,
@@ -100,6 +106,8 @@ server.modules_ccle_dist <- function(input, output, session) {
     )
   })
 
+  opt_pancan = callModule(mol_origin_Server, "mol_origin2quick")
+
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("gene_ccle_dist"), html = waiter::spin_hexdots(), color = "white")
 
@@ -107,7 +115,8 @@ server.modules_ccle_dist <- function(input, output, session) {
     if (nchar(input$ccle_search) >= 1) {
       p <- vis_ccle_tpm(
         Gene = input$ccle_search,
-        data_type = input$profile
+        data_type = input$profile,
+        opt_pancan = opt_pancan()
       )
     }
     return(p)

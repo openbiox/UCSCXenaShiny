@@ -169,15 +169,18 @@ try_query_value <- function(host, dataset,
 get_pancan_gene_value <- function(identifier, norm = c("tpm","fpkm","nc")) {
   host <- "toilHub"
   
-  norm = match.arg(norm)
-  dataset = switch(norm, 
+  norm <- match.arg(norm)
+  dataset <- switch(norm, 
                    "tpm"="TcgaTargetGtex_rsem_gene_tpm",
                    "fpkm"="TcgaTargetGtex_rsem_gene_fpkm",
                    "nc"="TcgaTargetGtex_RSEM_Hugo_norm_count")
   # dataset <- "TcgaTargetGtex_rsem_gene_tpm"
 
   expression <- get_data(dataset, identifier, host)
-  unit <- "log2(tpm+0.001)"
+  unit <- switch(norm,
+                  "tpm"="log2(tpm+0.001)",
+                  "fpkm"="log2(fpkm+0.001)",
+                  "nc" = "log2(norm_count+1)")
   report_dataset_info(dataset)
   res <- list(expression = expression, unit = unit)
   res
@@ -211,7 +214,10 @@ get_pancan_transcript_value <- function(identifier, norm = c("tpm", "fpkm", "iso
   if (is.na(identifier)) identifier <- id # roll back
 
   expression <- get_data(dataset, identifier, host)
-  unit <- "log2(tpm+0.001)"
+  unit <- switch(norm,
+                 "tpm"="log2(tpm+0.001)",
+                 "fpkm"="log2(fpkm+0.001)",
+                 "isopct" = "IsoPct")
   report_dataset_info(dataset)
   res <- list(expression = expression, unit = unit)
   res
@@ -295,17 +301,26 @@ get_pancan_mutation_status <- function(identifier) {
   return(data)
 }
 
-#' @param use_thresholded_data if `TRUE` (default), use GISTIC2-thresholded value.
+#' @param gistic2 if `TRUE` (default), use GISTIC2 data.
+#' @param use_thresholded_data if `TRUE`, use GISTIC2-thresholded value.
 #' @describeIn get_pancan_value Fetch gene copy number value from pan-cancer dataset processed by GISTIC 2.0
 #' @export
-get_pancan_cn_value <- function(identifier, use_thresholded_data = TRUE) {
-  host <- "tcgaHub"
-  if (use_thresholded_data) {
+get_pancan_cn_value <- function(identifier, gistic2 = TRUE, use_thresholded_data = FALSE) {
+  
+  
+  
+  if (gistic2 & use_thresholded_data) {
+    host <- "tcgaHub"
     dataset <- "TCGA.PANCAN.sampleMap/Gistic2_CopyNumber_Gistic2_all_thresholded.by_genes"
     unit <- "-2,-1,0,1,2: 2 copy del,1 copy del,no change,amplification,high-amplification"
-  } else {
+  } else if (gistic2 & !use_thresholded_data) {
+    host <- "tcgaHub"
     dataset <- "TCGA.PANCAN.sampleMap/Gistic2_CopyNumber_Gistic2_all_data_by_genes"
     unit <- "Gistic2 copy number"
+  } else if (!gistic2){
+    host  <-  "pancanAtlasHub"
+    dataset <- "broad.mit.edu_PANCAN_Genome_Wide_SNP_6_whitelisted.gene.xena"
+    unit <- "log(tumor/normal)"
   }
 
   data <- get_data(dataset, identifier, host)

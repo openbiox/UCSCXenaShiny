@@ -8,25 +8,27 @@ ui.modules_pcawg_sur_plot <- function(id) {
           inputId = ns("dataset"), label = "Choose a dataset:",
           choices = unique(pcawg_info$dcc_project_code)
         ),
-        shinyWidgets::prettyRadioButtons( 
-          inputId = ns("profile"), label = "Select a genomic profile:", 
-          choiceValues = c("mRNA", "miRNA_TMM", "miRNA_UQ",  
-                           "promoter_raw",
-                           "promoter_outlier", 
-                           "fusion",
-                           "APOBEC"
-          ), 
-          choiceNames = c("mRNA Expression", 
-                          "miRNA Expression (TMM)",  
-                          "miRNA Expression (UQ)", 
-                          "Raw Promoter Activity",
-                          "Promoter Outlier", 
-                          "Gene Fusion",
-                          "APOBEC mutagenesis"
-          ), 
-          animation = "jelly" 
+        shinyWidgets::prettyRadioButtons(
+          inputId = ns("profile"), label = "Select a genomic profile:",
+          choiceValues = c(
+            "mRNA", "miRNA",
+            "promoter", "fusion", "APOBEC"
+          ),
+          choiceNames = c(
+            "mRNA Expression", "miRNA Expression",
+            "Promoter Activity", "Gene Fusion",
+            "APOBEC mutagenesis"
+          ),
+          animation = "jelly"
         ),
-        
+
+        actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
+        conditionalPanel(
+          ns = ns,
+          condition = "input.toggleBtn % 2 == 1",
+          mol_origin_UI(ns("mol_origin2quick"))
+        ),
+
         selectizeInput(
           inputId = ns("item_input"),
           label = "Item:",
@@ -48,6 +50,7 @@ ui.modules_pcawg_sur_plot <- function(id) {
         h4("NOTEs:"),
         h5("The default option <Auto> will return the best p value, if you do not want to do so please choose <Custom>."),
       )),
+
       shinyjs::hidden(
         column(3, id = ns("parameter"), wellPanel(
           sliderInput(
@@ -62,28 +65,11 @@ ui.modules_pcawg_sur_plot <- function(id) {
             animation = "jelly",
             inline = TRUE
           ),
-          conditionalPanel(
-            condition = "input.profile == 'mRNA' | input.profile == 'miRNA_TMM' | input.profile == 'miRNA_UQ'| input.profile =='APOBEC'| input.profile =='promoter_raw'",
-            ns = ns,
-            shinyWidgets::prettyRadioButtons(
-              inputId = ns("cutoff_mode"),
-              label = "Cutoff mode",
-              choices = c("Auto", "Custom"),
-              inline = TRUE,
-              icon = icon("check"),
-              animation = "jelly"
-            ),
-            conditionalPanel(
-              condition = "input.cutoff_mode == 'Custom'", ns = ns,
-              sliderInput(
-                inputId = ns("cutpoint"), label = "Cutoff (%)",
-                min = 25, max = 75, value = c(50, 50)
-              ),
-              textOutput(ns("cutoff1")),
-              textOutput(ns("cutoff2")),
-              hr()
-            )
-          ),
+
+
+          uiOutput(ns("parameter_sub1")),
+          uiOutput(ns("parameter_sub2")),
+
           selectInput(ns("color_palette"), "Color palette:",
                       choices = c("npg", "aaas", "lancet", "jco", "ucscgb", "uchicago", "simpsons", "rickandmorty", "custom"),
                       selected = "aaas"
@@ -148,26 +134,24 @@ ui.modules_pcawg_sur_plot <- function(id) {
 server.modules_pcawg_sur_plot <- function(input, output, session) {
   ns <- session$ns
   # Global monitoring
-  profile_choices <- reactive({ 
-    switch(input$profile, 
-           mRNA = list(all = pancan_identifiers$gene, default = "TP53"), 
-           miRNA_TMM = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"), 
-           miRNA_UQ = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"), 
-           promoter_raw = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
-           promoter_outlier = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"), 
-           fusion = list(all = pancan_identifiers$gene, default = "DPM1"), 
-           APOBEC = list(all = c( 
-             "tCa_MutLoad_MinEstimate", "APOBECtCa_enrich", 
-             "A3A_or_A3B", "APOBEC_tCa_enrich_quartile", "APOBECrtCa_enrich", 
-             "APOBECytCa_enrich", "APOBECytCa_enrich-APOBECrtCa_enrich", 
-             "BH_Fisher_p-value_tCa", "ntca+tgan", "rtCa_to_G+rtCa_to_T", 
-             "rtca+tgay", "tCa_to_G+tCa_to_T", 
-             "ytCa_rtCa_BH_Fisher_p-value", "ytCa_rtCa_Fisher_p-value", "ytCa_to_G+ytCa_to_T", 
-             "ytca+tgar" 
-           ), default = "APOBECtCa_enrich"), 
-           list(all = "NONE", default = "NONE") 
-    ) 
-  }) 
+  profile_choices <- reactive({
+    switch(input$profile,
+      mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
+      miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+      promoter = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
+      fusion = list(all = pancan_identifiers$gene, default = "DPM1"),
+      APOBEC = list(all = c(
+        "tCa_MutLoad_MinEstimate", "APOBECtCa_enrich",
+        "A3A_or_A3B", "APOBEC_tCa_enrich_quartile", "APOBECrtCa_enrich",
+        "APOBECytCa_enrich", "APOBECytCa_enrich-APOBECrtCa_enrich",
+        "BH_Fisher_p-value_tCa", "ntca+tgan", "rtCa_to_G+rtCa_to_T",
+        "rtca+tgay", "tCa_to_G+tCa_to_T",
+        "ytCa_rtCa_BH_Fisher_p-value", "ytCa_rtCa_Fisher_p-value", "ytCa_to_G+ytCa_to_T",
+        "ytca+tgar"
+      ), default = "APOBECtCa_enrich"),
+      list(all = "NONE", default = "NONE")
+    )
+  })
   
   observe({
     updateSelectizeInput(
@@ -178,6 +162,9 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
       server = TRUE
     )
   })
+
+  opt_pancan = callModule(mol_origin_Server, "mol_origin2quick")
+
   observe({
     if (is.null(input$sex)) {
       sendSweetAlert(
@@ -209,18 +196,41 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
       shinyjs::show("parameter")
     }
   })
+
+  output$parameter_sub1 = renderUI(
+    if((input$profile %in% c("mRNA","miRNA","APOBEC"))  | 
+        (input$profile %in% "promoter" & opt_pancan()$pcawg_promoter$type=="raw") ){
+      shinyWidgets::prettyRadioButtons(
+        inputId = ns("cutoff_mode"),
+        label = "Cutoff mode",
+        choices = c("Auto", "Custom"),
+        selected = c("Auto"),
+        inline = TRUE,
+        icon = icon("check"),
+        animation = "jelly"
+      )
+    }
+  )
+
+  output$parameter_sub2 = renderUI(
+    if(!is.null(input$cutoff_mode)){
+      if(input$cutoff_mode == 'Custom'){
+          tagList(
+            sliderInput(
+              inputId = ns("cutpoint"), label = "Cutoff (%)",
+              min = 25, max = 75, value = c(50, 50)
+            ),
+            textOutput(ns("cutoff1")),
+            textOutput(ns("cutoff2")),
+            hr()
+          )
+      }
+    }
+  )
   
   # block
   sur_dat_pre <- eventReactive(input$submit_bt, {
-    val <- switch(input$profile,
-                  mRNA = get_pcawg_gene_value(input$item_input),
-                  miRNA_TMM = get_pcawg_miRNA_value(input$item_input, norm_method = "TMM") ,
-                  miRNA_UQ = get_pcawg_miRNA_value(input$item_input, norm_method = "UQ") ,
-                  fusion = get_pcawg_fusion_value(input$item_input) ,
-                  promoter_raw = get_pcawg_promoter_value(input$item_input, type = "raw"),
-                  promoter_outlier = get_pcawg_promoter_value(input$item_input, type = "outlier"),
-                  APOBEC = get_pcawg_APOBEC_mutagenesis_value(input$item_input)
-    )
+    val <- query_pancan_value(input$item_input, input$profile, database = "pcawg", opt_pancan=opt_pancan())
     val <- val$data
     val <- na.omit(val)
     

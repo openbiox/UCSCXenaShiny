@@ -46,7 +46,7 @@ get_pancan_protein_value(identifier)
 
 get_pancan_mutation_status(identifier)
 
-get_pancan_cn_value(identifier, use_thresholded_data = TRUE)
+get_pancan_cn_value(identifier, gistic2 = TRUE, use_thresholded_data = FALSE)
 
 get_pancan_methylation_value(
   identifier,
@@ -92,7 +92,9 @@ Gene symbol is highly recommended.}
 
 \item{...}{other parameters.}
 
-\item{use_thresholded_data}{if \code{TRUE} (default), use GISTIC2-thresholded value.}
+\item{gistic2}{if \code{TRUE} (default), use GISTIC2 data.}
+
+\item{use_thresholded_data}{if \code{TRUE}, use GISTIC2-thresholded value.}
 
 \item{type}{methylation type, one of "450K" and "27K".
 for function \code{get_pcawg_promoter_value}, it can be one of

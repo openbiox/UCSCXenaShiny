@@ -10,7 +10,12 @@ ui.modules_dim_dist = function(id){
 						choices = c("mRNA Expression", "Transcript Expression", "DNA Methylation", 
 									"Protein Expression", "miRNA Expression", "Copy Number Variation"),
 						selected = "mRNA Expression"),
-
+			        actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
+			        conditionalPanel(
+			          ns = ns,
+			          condition = "input.toggleBtn % 2 == 1",
+			          mol_origin_UI(ns("mol_origin2quick"))
+			        ),
 		            shinyWidgets::prettyRadioButtons(
 		              inputId = ns("input_ways"), label = "Input the molecule ids (>=3) by ?",
 		              choiceValues = c("Select", "Pathway", "File"),
@@ -188,7 +193,7 @@ server.modules_dim_dist = function(input, output, session){
 	    `Protein Expression` = "protein",
 	    `Transcript Expression` = "transcript",
 	    `miRNA Expression` = "miRNA",
-	    `Copy Number Variation` = "cnv_gistic2",
+	    `Copy Number Variation` = "cnv",
 	    list(all = "NONE", default = "NONE")
 	  )
 	})
@@ -200,10 +205,12 @@ server.modules_dim_dist = function(input, output, session){
 	    protein = list(all = pancan_identifiers$protein, default = c("P53", "GATA3", "PTEN")),
 	    transcript = list(all = load_data("transcript_identifier"), default = c("ENST00000269305","ENST00000311936","ENST00000371953")),
 	    miRNA = list(all = pancan_identifiers$miRNA, default = c("hsa-miR-522-3p","hsa-miR-1271-5p","hsa-miR-518e-3p")),
-	    cnv_gistic2 = list(all = pancan_identifiers$gene,default = c("TP53", "KRAS", "PTEN")),
+	    cnv = list(all = pancan_identifiers$gene,default = c("TP53", "KRAS", "PTEN")),
 	    list(all = "NONE", default = "NONE")
 	  )
 	})
+
+	opt_pancan = callModule(mol_origin_Server, "mol_origin2quick")
 
 	observe({
 	  updateSelectizeInput(
@@ -495,10 +502,11 @@ server.modules_dim_dist = function(input, output, session){
 			ids=ids(),
 			data_type=profile(), 
 			cancer =input$choose_cancer,
-			custom = group_final()[,-2:-3],
+			custom = group_final()[,-2],
 			group  = input$choose_group,
-			group_levels = levels(group_final()[,4,drop=T]),
-			return.data = TRUE
+			group_levels = levels(group_final()[,3,drop=T]),
+			return.data = TRUE,
+			opt_pancan = opt_pancan()
 		)
 	})
 
@@ -524,12 +532,13 @@ server.modules_dim_dist = function(input, output, session){
 		ids=ids(),
 		data_type=profile(), 
 		cancer =input$choose_cancer,
-		custom = group_final()[,-2:-3],
+		custom = group_final()[,-2],
 		group  = input$choose_group,
-		group_levels = levels(group_final()[,4,drop=T]),
+		group_levels = levels(group_final()[,3,drop=T]),
 	  	DR_method = input$method,
 	  	palette=input$palette,
-	  	add_margin=if (input$margin == "NONE") NULL else input$margin
+	  	add_margin=if (input$margin == "NONE") NULL else input$margin,
+	  	opt_pancan = opt_pancan()
 	  )
 	  return(p)
 	})

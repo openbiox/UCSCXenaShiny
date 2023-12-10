@@ -13,7 +13,8 @@ vis_pcawg_dist(
   Method = c("wilcox.test", "t.test"),
   values = c("#DF2020", "#DDDF21"),
   draw_quantiles = c(0.25, 0.5, 0.75),
-  trim = TRUE
+  trim = TRUE,
+  opt_pancan = .opt_pancan
 )
 }
 \arguments{
@@ -23,8 +24,7 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 \item{Mode}{"Boxplot" or "Violinplot" to represent data}
 
 \item{data_type}{choose gene profile type,
-including "mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
-"cnv_gistic2", "methylation", "miRNA".}
+including "mRNA", "transcript", "protein", "mutation", "cnv", "methylation", "miRNA".}
 
 \item{Show.P.value}{\code{TRUE} or \code{FALSE} whether to count P value}
 
@@ -37,6 +37,8 @@ including "mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
 \item{draw_quantiles}{draw quantiles for violinplot}
 
 \item{trim}{whether trim the violin}
+
+\item{opt_pancan}{specify one dataset for some molercular profiles}
 }
 \value{
 a \code{ggplot} object

@@ -7,9 +7,15 @@ ui.modules_pancan_unicox <- function(id) {
             wellPanel(
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2"),
+              choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv"),
               choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
               animation = "jelly"
+            ),
+            actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
+            conditionalPanel(
+              ns = ns,
+              condition = "input.toggleBtn % 2 == 1",
+              mol_origin_UI(ns("mol_origin2quick"))
             ),
             selectizeInput(
               inputId = ns("Pancan_search"),
@@ -89,7 +95,7 @@ server.modules_pancan_unicox <- function(input, output, session) {
       protein = list(all = pancan_identifiers$protein, default = "P53"),
       transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
       miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-      cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
+      cnv = list(all = pancan_identifiers$gene, default = "TP53"),
       list(all = "NONE", default = "NONE")
     )
   })
@@ -103,6 +109,9 @@ server.modules_pancan_unicox <- function(input, output, session) {
       server = TRUE
     )
   })
+
+  opt_pancan = callModule(mol_origin_Server, "mol_origin2quick")
+
 
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("unicox_gene_tree"), html = waiter::spin_hexdots(), color = "white")
@@ -126,7 +135,8 @@ server.modules_pancan_unicox <- function(input, output, session) {
         measure = input$measure,
         threshold = input$threshold,
         data_type = input$profile,
-        values = colors()
+        values = colors(),
+        opt_pancan = opt_pancan()
       )
       pdata <- p$data %>% 
         as.data.frame() %>%

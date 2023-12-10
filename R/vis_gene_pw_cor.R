@@ -2,13 +2,14 @@
 #' @param Gene 	a molecular identifier (e.g., "TP53") or a formula
 #' specifying genomic signature ("TP53 + 2 * KRAS - 1.3 * PTEN").
 #' @param data_type choose gene profile type, including
-#' "mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2), "cnv_gistic2", "methylation", "miRNA".
+#' "mRNA", "transcript", "protein", "mutation", "cnv", "methylation", "miRNA".
 #' @param pw_name the queried Pathway name, see the supported pathway from 'load("toil_sig_score")'default is NULL
 #' @param Cancer  select cancer cohort(s)
 #' @param cor_method select correlation coefficient (pearson/spearman)
 #' @param cor_cutoff a list with 2 elements names 'r' and 'p' to define significant correlations
 #' @param plot output the plot directly (default) or raw data.frame
-#'
+#' @param opt_pancan specify one dataset for some molercular profiles
+
 #' @return a `ggplot` object or  dataframe
 #' @examples
 #' \dontrun{
@@ -32,7 +33,7 @@
 vis_gene_pw_cor <- function(Gene = "TP53", data_type = "mRNA",
                             pw_name = NULL, Cancer = "ACC",
                             cor_method = "pearson", cor_cutoff = list(r = 0.3, p = 0.01),
-                            plot = TRUE) {
+                            plot = TRUE, opt_pancan = .opt_pancan) {
   ## mode1**gene -- one cancer -- many pathways: bar plot(default)
   ## mode2**gene -- many cancers -- one pathway: lollipop plot
   ## mode3**gene -- one cancer -- one pathway: point plot
@@ -58,7 +59,7 @@ vis_gene_pw_cor <- function(Gene = "TP53", data_type = "mRNA",
   }
 
   # gene expression
-  t1 <- query_pancan_value(Gene, data_type = data_type)
+  t1 <- query_pancan_value(Gene, data_type = data_type, opt_pancan = opt_pancan)
   if (is.null(t1[[1]])) {
     warning("No data available", immediate. = TRUE)
     return(NULL)
@@ -68,8 +69,6 @@ vis_gene_pw_cor <- function(Gene = "TP53", data_type = "mRNA",
     message("All NAs returned, return NULL instead.")
     return(NULL)
   }
-  if (data_type == "cnv") data_type <- "GISTIC2 thresholded CNV"
-  if (data_type == "cnv_gistic2") data_type <- "CNV"
 
   message(paste0("Get data value for ", Gene))
   s <- data.frame(sample = names(t1), values = t1)

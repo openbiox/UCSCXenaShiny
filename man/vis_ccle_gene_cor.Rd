@@ -16,7 +16,8 @@ vis_ccle_gene_cor(
   SitePrimary = "prostate",
   use_all = FALSE,
   alpha = 0.5,
-  color = "#000000"
+  color = "#000000",
+  opt_pancan = .opt_pancan
 )
 }
 \arguments{
@@ -45,6 +46,8 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 \item{alpha}{dot alpha.}
 
 \item{color}{dot color.}
+
+\item{opt_pancan}{specify one dataset for some molercular profiles}
 }
 \value{
 a \code{ggplot} object

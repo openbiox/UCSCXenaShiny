@@ -6,9 +6,15 @@ ui.modules_pancan_anatomy <- function(id) {
         wellPanel(
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2", "cnv"),
-              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation", "Copy Number Variation (thresholded)"),
+              choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv"),
+              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
               animation = "jelly"
+            ),
+            actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
+            conditionalPanel(
+              ns = ns,
+              condition = "input.toggleBtn % 2 == 1",
+              mol_origin_UI(ns("mol_origin2quick"))
             ),
             selectizeInput(
               inputId = ns("Pancan_search"),
@@ -22,6 +28,7 @@ ui.modules_pancan_anatomy <- function(id) {
                 plugins = list("restore_on_backspace")
               )
             ),
+
         shinyBS::bsPopover(ns("Pancan_search"),
           title = "Tips",
           content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
@@ -67,9 +74,9 @@ ui.modules_pancan_anatomy <- function(id) {
         plotOutput(ns("pancan_anatomy"), height = "500px",width = "650px"),
         hr(),
         h5("NOTEs:"),
-        p("1. GISTIC2 thresholded copy number -2,-1,0,1,2, representing homozygous deletion,single copy deletion,diploid normal copy,low-level copy number amplification,or high-level copy number amplification"),
-        tags$br(),
-        p("2. ",tags$a(href = "https://pancanatlas.xenahubs.net/", "Genomic profile data source")),
+        # p("1. GISTIC2 thresholded copy number -2,-1,0,1,2, representing homozygous deletion,single copy deletion,diploid normal copy,low-level copy number amplification,or high-level copy number amplification"),
+        # tags$br(),
+        p("1. ",tags$a(href = "https://pancanatlas.xenahubs.net/", "Genomic profile data source")),
         DT::DTOutput(outputId = ns("tbl")),
         shinyjs::hidden(
           wellPanel(
@@ -93,7 +100,6 @@ server.modules_pancan_anatomy <- function(input, output, session) {
       protein = list(all = pancan_identifiers$protein, default = "P53"),
       transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
       miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-      cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
       cnv = list(all = pancan_identifiers$gene, default = "TP53"),
       list(all = "NONE", default = "NONE")
     )
@@ -109,6 +115,9 @@ server.modules_pancan_anatomy <- function(input, output, session) {
     )
   })
 
+  opt_pancan = callModule(mol_origin_Server, "mol_origin2quick")
+
+
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("pancan_anatomy"), html = waiter::spin_hexdots(), color = "white")
 
@@ -117,7 +126,8 @@ server.modules_pancan_anatomy <- function(input, output, session) {
       out <- vis_pancan_anatomy(
         Gene = input$Pancan_search,
         Gender = input$Gender,
-        data_type = input$profile
+        data_type = input$profile,
+        opt_pancan = opt_pancan()
       )
       return(out)
     }

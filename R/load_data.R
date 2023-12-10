@@ -58,7 +58,10 @@ load_data <- function(name) {
     "tcga_gtex", "tcga_purity",
     "tcga_subtypes", "tcga_surv", "TCGA.organ",
     "toil_info",
-    "pcawg_info", "pcawg_purity"
+    "pcawg_info", "pcawg_purity",
+    "tcga_clinical_fine",
+    "pcawg_info_fine",
+    "ccle_info_fine"
   )
   if (name %in% available_datasets) {
     # The data is builtin

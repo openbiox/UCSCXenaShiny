@@ -67,8 +67,10 @@ mol_origin_UI = function(id, button_name="Multi-conditions filters"){
 				verbatimTextOutput(ns("cpgs_sle_text"))
 			),
 			tabPanel("TOIL-Copy Number Variation",
-				selectInput(ns("toil_L2_7_cnv_1"),"(1)Thresholded data",
-					choices = c(TRUE, FALSE), selected = TRUE)
+				selectInput(ns("toil_L2_7_cnv_1"),"(1)GISTIC2 data",
+					choices = c(TRUE, FALSE), selected = TRUE),
+				selectInput(ns("toil_L2_7_cnv_2"),"(2)Thresholded data",
+					choices = c(TRUE, FALSE), selected = FALSE)				
 			),
 			tabPanel("PCAWG-miRNA Expression",
 		    shinyWidgets::prettyRadioButtons(
@@ -195,7 +197,8 @@ mol_origin_Server = function(input, output, session, cancers=NULL, custom_metada
 			toil_transcript = list(norm = input$toil_trans_norm),
 			toil_protein = list(),
 			toil_mutation = list(),
-			toil_cnv = list(use_thresholded_data = ifelse(is.null(input$toil_L2_7_cnv_1),TRUE,as.logical(input$toil_L2_7_cnv_1))),
+			toil_cnv = list(gistic2 = ifelse(is.null(input$toil_L2_7_cnv_1),TRUE,as.logical(input$toil_L2_7_cnv_1)),
+											use_thresholded_data = ifelse(is.null(input$toil_L2_7_cnv_2),TRUE,as.logical(input$toil_L2_7_cnv_2))),
 			toil_methylation = list(type = ifelse(is.null(input$toil_L2_3_methy_1),"450K",input$toil_L2_3_methy_1), 
 									aggr = ifelse(is.null(input$toil_L2_3_methy_2),"NA",input$toil_L2_3_methy_2),
 									rule_out = setdiff(candi_cpg()$CpG, cpg_ids_retain())),

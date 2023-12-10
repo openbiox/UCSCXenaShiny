@@ -53,7 +53,7 @@ vis_pcawg_dist <- function(Gene = "TP53",
                            Show.P.label = TRUE, Method = c("wilcox.test", "t.test"),
                            values = c("#DF2020", "#DDDF21"),
                            draw_quantiles = c(0.25, 0.5, 0.75),
-                           trim = TRUE) {
+                           trim = TRUE, opt_pancan = .opt_pancan) {
   Mode <- match.arg(Mode)
   Method <- match.arg(Method)
 
@@ -67,7 +67,10 @@ vis_pcawg_dist <- function(Gene = "TP53",
 
   pcawg_info <- load_data("pcawg_info")
 
-  t1 <- query_pcawg_pancan_value(Gene, data_type)
+  # t1 <- query_pcawg_pancan_value(Gene, data_type)
+  t1 <- query_pancan_value(Gene, data_type, database = "pcawg", opt_pancan=opt_pancan)
+
+
   unit <- switch(data_type,
     cnv = NULL,
     mutation = NULL,
@@ -211,7 +214,7 @@ vis_pcawg_dist <- function(Gene = "TP53",
 #' @inheritParams vis_toil_TvsN
 #' @param measure a survival measure, e.g. "OS".
 #' @param threshold a expression cutoff, `0.5` for median.
-#' @param data_type choose gene profile type, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"
+#' @param data_type choose gene profile type, including "mRNA","transcript","methylation","miRNA","protein","cnv"
 #' @return a `ggplot` object
 #' @examples
 #' \dontrun{
@@ -220,10 +223,13 @@ vis_pcawg_dist <- function(Gene = "TP53",
 #' @export
 
 
-vis_pcawg_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", threshold = 0.5, values = c("grey", "#E31A1C", "#377DB8")) {
+vis_pcawg_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", 
+  threshold = 0.5, values = c("grey", "#E31A1C", "#377DB8"), opt_pancan = .opt_pancan) {
   pcawg_info <- load_data("pcawg_info")
 
-  t1 <- query_pcawg_pancan_value(Gene, data_type)
+  # t1 <- query_pcawg_pancan_value(Gene, data_type)
+  t1 <- query_pancan_value(Gene, data_type, database = "pcawg", opt_pancan=opt_pancan)
+
   unit <- switch(data_type,
     cnv = NULL,
     mutation = NULL,
@@ -336,7 +342,8 @@ vis_pcawg_gene_cor <- function(Gene1 = "CSF1R",
                                dcc_project_code_choose = "BLCA-US",
                                use_all = FALSE,
                                filter_tumor = TRUE,
-                               alpha = 0.5, color = "#000000") {
+                               alpha = 0.5, color = "#000000",
+                               opt_pancan = .opt_pancan) {
   if (!requireNamespace("cowplot")) {
     install.packages("cowplot")
   }
@@ -344,7 +351,11 @@ vis_pcawg_gene_cor <- function(Gene1 = "CSF1R",
   pcawg_info <- load_data("pcawg_info")
   pcawg_purity <- load_data("pcawg_purity")
 
-  t1 <- query_pcawg_pancan_value(Gene1, data_type1)
+  # t1 <- query_pcawg_pancan_value(Gene1, data_type1)
+  t1 <- query_pancan_value(Gene1, data_type1, database = "pcawg", opt_pancan=opt_pancan)
+
+
+
   unit1 <- switch(data_type1,
     cnv = NULL,
     mutation = NULL,
@@ -364,7 +375,9 @@ vis_pcawg_gene_cor <- function(Gene1 = "CSF1R",
     tibble::rownames_to_column(var = "icgc_specimen_id") %>%
     dplyr::inner_join(pcawg_info, by = c("icgc_specimen_id"))
 
-  t3 <- query_pcawg_pancan_value(Gene2, data_type2)
+  # t3 <- query_pcawg_pancan_value(Gene2, data_type2)
+  t3 <- query_pancan_value(Gene2, data_type2, database = "pcawg", opt_pancan=opt_pancan)
+
   unit2 <- switch(data_type2,
     cnv = NULL,
     mutation = NULL,
