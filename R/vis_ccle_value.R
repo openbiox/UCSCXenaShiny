@@ -4,9 +4,10 @@
 #' genomic signature (`"TP53 + 2 * KRAS - 1.3 * PTEN"`).
 #' @param data_type support genomic profile for CCLE, currently "mRNA", "protein","cnv" are supported
 #' @param use_log if `TRUE`, log values.
+#' @param opt_pancan specify one dataset for some molercular profiles
 #' @return a `ggplot` object
 #' @export
-vis_ccle_tpm <- function(Gene = "TP53", data_type = "mRNA", use_log = FALSE) {
+vis_ccle_tpm <- function(Gene = "TP53", data_type = "mRNA", use_log = FALSE, opt_pancan = .opt_pancan) {
   if (!requireNamespace("cowplot")) {
     install.packages("cowplot")
   }
@@ -16,7 +17,7 @@ vis_ccle_tpm <- function(Gene = "TP53", data_type = "mRNA", use_log = FALSE) {
   if (!data_type %in% c("mRNA", "protein", "cnv")) {
     stop("data_type ", data_type, " does not support in this function!")
   }
-  t1 <- query_pancan_value(Gene, data_type = data_type, database = "ccle")
+  t1 <- query_pancan_value(Gene, data_type = data_type, database = "ccle", opt_pancan = opt_pancan)
   unit <- switch(data_type,
     cnv = NULL,
     mutation = NULL,
@@ -29,7 +30,7 @@ vis_ccle_tpm <- function(Gene = "TP53", data_type = "mRNA", use_log = FALSE) {
     return(NULL)
   }
 
-  if (use_log) t1 <- log2(t1 + 1)
+  # if (use_log) t1 <- log2(t1 + 1)
 
   t2 <- t1 %>%
     as.data.frame() %>%
@@ -78,7 +79,8 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
                               use_regline = TRUE,
                               SitePrimary = "prostate",
                               use_all = FALSE,
-                              alpha = 0.5, color = "#000000") {
+                              alpha = 0.5, color = "#000000",
+                              opt_pancan = .opt_pancan) {
   if (!requireNamespace("cowplot")) {
     install.packages("cowplot")
   }
@@ -91,7 +93,7 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
     stop("data_type ", data_type2, " does not support in this function!")
   }
 
-  t1 <- query_pancan_value(Gene1, data_type = data_type1, database = "ccle")
+  t1 <- query_pancan_value(Gene1, data_type = data_type1, database = "ccle", opt_pancan = opt_pancan)
   unit1 <- switch(data_type1,
     cnv = NULL,
     mutation = NULL,
@@ -103,7 +105,7 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
     message("All NAs returned, return NULL instead.")
     return(NULL)
   }
-  if (use_log_x) t1 <- log2(t1 + 1)
+  # if (use_log_x) t1 <- log2(t1 + 1)
 
   t2 <- t1 %>%
     as.data.frame() %>%
@@ -111,7 +113,7 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
     tibble::rownames_to_column(var = "cell") %>%
     dplyr::inner_join(ccle_info, by = c("cell" = "CCLE_name"))
 
-  t3 <- query_pancan_value(Gene2, data_type = data_type2, database = "ccle")
+  t3 <- query_pancan_value(Gene2, data_type = data_type2, database = "ccle", opt_pancan = opt_pancan)
   unit2 <- switch(data_type2,
     cnv = NULL,
     mutation = NULL,
@@ -126,7 +128,7 @@ vis_ccle_gene_cor <- function(Gene1 = "CSF1R",
     message("All NAs returned, return NULL instead.")
     return(NULL)
   }
-  if (use_log_y) t3 <- log2(t3 + 1)
+  # if (use_log_y) t3 <- log2(t3 + 1)
 
   t4 <- t3 %>%
     as.data.frame() %>%

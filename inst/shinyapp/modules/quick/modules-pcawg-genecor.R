@@ -8,17 +8,12 @@ ui.modules_pcawg_gene_cor <- function(id) {
           shinyWidgets::prettyRadioButtons(
             inputId = ns("profile1"), label = "Select a genomic profile:",
             choiceValues = c(
-              "mRNA", "miRNA_TMM", "miRNA_UQ",
-              "promoter_raw", "promoter_relative", "promoter_outlier",
-              "fusion", "APOBEC"
+              "mRNA", "miRNA",
+              "promoter", "fusion", "APOBEC"
             ),
             choiceNames = c(
-              "mRNA Expression", "miRNA Expression (TMM)",
-              "miRNA Expression (UQ)",
-              "Raw Promoter Activity",
-              "Relative Promoter Activity",
-              "Promoter Outlier",
-              "Gene Fusion",
+              "mRNA Expression", "miRNA Expression",
+              "Promoter Activity", "Gene Fusion",
               "APOBEC mutagenesis"
             ),
             animation = "jelly"
@@ -38,17 +33,12 @@ ui.modules_pcawg_gene_cor <- function(id) {
           shinyWidgets::prettyRadioButtons(
             inputId = ns("profile2"), label = "Select a genomic profile:",
             choiceValues = c(
-              "mRNA", "miRNA_TMM", "miRNA_UQ",
-              "promoter_raw", "promoter_relative", "promoter_outlier",
-              "fusion", "APOBEC"
+              "mRNA", "miRNA",
+              "promoter", "fusion", "APOBEC"
             ),
             choiceNames = c(
-              "mRNA Expression", "miRNA Expression (TMM)",
-              "miRNA Expression (UQ)",
-              "Raw Promoter Activity",
-              "Relative Promoter Activity",
-              "Promoter Outlier",
-              "Gene Fusion",
+              "mRNA Expression", "miRNA Expression",
+              "Promoter Activity", "Gene Fusion",
               "APOBEC mutagenesis"
             ),
             animation = "jelly"
@@ -64,6 +54,12 @@ ui.modules_pcawg_gene_cor <- function(id) {
               placeholder = "Enter a gene symbol, e.g. JAK3",
               plugins = list("restore_on_backspace")
             )
+          ),
+          actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
+          conditionalPanel(
+            ns = ns,
+            condition = "input.toggleBtn % 2 == 1",
+            mol_origin_UI(ns("mol_origin2quick"))
           ))),
       column(
         3,
@@ -155,11 +151,8 @@ server.modules_pcawg_gene_cor <- function(input, output, session) {
   profile_choices1 <- reactive({
     switch(input$profile1,
       mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
-      miRNA_TMM = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-      miRNA_UQ = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-      promoter_raw = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
-      promoter_relative = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
-      promoter_outlier = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
+      miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+      promoter = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
       fusion = list(all = pancan_identifiers$gene, default = "DPM1"),
       APOBEC = list(all = c(
         "tCa_MutLoad_MinEstimate", "APOBECtCa_enrich",
@@ -187,11 +180,8 @@ server.modules_pcawg_gene_cor <- function(input, output, session) {
   profile_choices2 <- reactive({
     switch(input$profile2,
       mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
-      miRNA_TMM = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-      miRNA_UQ = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-      promoter_raw = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
-      promoter_relative = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
-      promoter_outlier = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
+      miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+      promoter = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
       fusion = list(all = pancan_identifiers$gene, default = "DPM1"),
       APOBEC = list(all = c(
         "tCa_MutLoad_MinEstimate", "APOBECtCa_enrich",
@@ -216,7 +206,7 @@ server.modules_pcawg_gene_cor <- function(input, output, session) {
     )
   })
 
-
+  opt_pancan = callModule(mol_origin_Server, "mol_origin2quick")
 
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("gene_cor"), html = waiter::spin_hexdots(), color = "white")
@@ -235,7 +225,8 @@ server.modules_pcawg_gene_cor <- function(input, output, session) {
         color = input$color,
         alpha = input$alpha,
         filter_tumor = input$filter_tumor,
-        use_all = as.logical(input$use_all)
+        use_all = as.logical(input$use_all),
+        opt_pancan = opt_pancan()
       )
     }
     p <- p + theme_classic(base_size = 20) +

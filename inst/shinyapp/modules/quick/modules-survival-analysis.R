@@ -14,6 +14,12 @@ ui.modules_sur_plot <- function(id) {
           choiceNames = c("mRNA Expression", "Transcript Expression", "miRNA Expression", "Mutations", "Copy Number Variation", "DNA Methylation", "Protein Expression"),
           animation = "jelly"
         ),
+        actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
+        conditionalPanel(
+          ns = ns,
+          condition = "input.toggleBtn % 2 == 1",
+          mol_origin_UI(ns("mol_origin2quick"))
+        ),
         shinyBS::bsPopover(ns("item_input"),
           title = "Tips",
           content = "e.g., Gene symbol: TP53; transcript: ENST00000000233; miRNA ID: hsa-miR-128-3p;",
@@ -227,6 +233,10 @@ server.modules_sur_plot <- function(input, output, session) {
     }
   })
 
+
+  opt_pancan = callModule(mol_origin_Server, "mol_origin2quick")
+
+
   # Action monitoring
   observeEvent(input$submit_bt, {
     if (input$profile == "gene" & input$item_input == "") {
@@ -257,7 +267,8 @@ server.modules_sur_plot <- function(input, output, session) {
     } else {
       tcga_surv_get(
         TCGA_cohort = input$dataset, item = input$item_input,
-        profile = input$profile, TCGA_cli_data = TCGA_cli_merged
+        profile = input$profile, TCGA_cli_data = TCGA_cli_merged,
+        opt_pancan = opt_pancan()
       )
     }
   }, )

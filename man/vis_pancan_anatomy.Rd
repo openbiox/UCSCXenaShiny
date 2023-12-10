@@ -8,7 +8,8 @@ vis_pancan_anatomy(
   Gene = "TP53",
   Gender = c("Female", "Male"),
   data_type = "mRNA",
-  option = "D"
+  option = "D",
+  opt_pancan = .opt_pancan
 )
 }
 \arguments{
@@ -17,7 +18,7 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 
 \item{Gender}{a string, "Female" (default) or "Male".}
 
-\item{data_type}{choose gene profile type, including "mRNA","transcript","methylation","miRNA","protein","cnv_gistic2"}
+\item{data_type}{choose gene profile type, including "mRNA","transcript","methylation","miRNA","protein","cnv"}
 
 \item{option}{A character string indicating the color map option to use.
 Eight options are available:
@@ -31,6 +32,8 @@ Eight options are available:
  \item "mako" (or "G")
  \item "turbo" (or "H")
 }}
+
+\item{opt_pancan}{specify one dataset for some molercular profiles}
 }
 \value{
 a \code{ggplot} object

@@ -12,6 +12,7 @@ vis_dim_dist(
   palette = "Set1",
   add_margin = NULL,
   group_levels = NULL,
+  opt_pancan = .opt_pancan,
   ...
 )
 }
@@ -29,6 +30,8 @@ vis_dim_dist(
 \item{add_margin}{the marginal plot (NULL, "density", "boxplot")}
 
 \item{group_levels}{group levels setting}
+
+\item{opt_pancan}{specify one dataset for some molercular profiles}
 
 \item{...}{parameters refer to query_tcga_group() function}
 }

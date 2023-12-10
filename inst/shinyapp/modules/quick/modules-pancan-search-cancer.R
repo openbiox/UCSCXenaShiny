@@ -5,9 +5,15 @@ ui.modules_cancer_dist <- function(id) {
                     wellPanel(
         shinyWidgets::prettyRadioButtons(
           inputId = ns("profile"), label = "Select a genomic profile:",
-          choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2"),
+          choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv"),
           choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
           animation = "jelly"
+        ),
+        actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
+        conditionalPanel(
+          ns = ns,
+          condition = "input.toggleBtn % 2 == 1",
+          mol_origin_UI(ns("mol_origin2quick"))
         ),
         selectizeInput(
           inputId = ns("Pancan_search"),
@@ -118,6 +124,8 @@ server.modules_cancer_dist <- function(input, output, session) {
     )
   })
 
+  opt_pancan = callModule(mol_origin_Server, "mol_origin2quick")
+
   colors <- reactive({
     c(input$tumor_col, input$normal_col)
   })
@@ -135,7 +143,8 @@ server.modules_cancer_dist <- function(input, output, session) {
         Show.P.label = input$pdist_show_p_label,
         TCGA.only = input$pdist_dataset,
         values = colors(),
-        data_type = input$profile
+        data_type = input$profile,
+        opt_pancan = opt_pancan()
       )
     }
     return(p)
@@ -181,7 +190,6 @@ server.modules_cancer_dist <- function(input, output, session) {
       shinyjs::hide(id = "save_csv")
     }
   })
-
 
   output$tbl <- renderDT(
     plot_func()$data,

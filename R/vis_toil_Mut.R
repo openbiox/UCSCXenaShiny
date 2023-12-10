@@ -14,7 +14,8 @@
 #' @param draw_quantiles draw quantiles for violinplot
 #' @param trim whether to trim the violin
 #' @param plot Whether to return the plot or replace it with a p-value table
-#'
+#' @param opt_pancan specify one dataset for some molercular profiles
+
 #' @return a `ggplot` object or a tibble data.frame
 
 #'
@@ -32,7 +33,7 @@ vis_toil_Mut <- function(mut_Gene = "TP53", Gene = NULL, data_type = NULL,
                          Method = c("wilcox.test", "t.test"),
                          values = c("#DF2020", "#DDDF21"),
                          draw_quantiles = c(0.25, 0.5, 0.75),
-                         trim = TRUE, plot = TRUE) {
+                         trim = TRUE, plot = TRUE, opt_pancan=.opt_pancan) {
   Mode <- match.arg(Mode)
   Method <- match.arg(Method)
 
@@ -55,7 +56,7 @@ vis_toil_Mut <- function(mut_Gene = "TP53", Gene = NULL, data_type = NULL,
   if (!data_type %in% c("mRNA", "miRNA", "transcript", "methylation")) {
     stop("data_type ", data_type, " does not support in this function!")
   }
-  exp_dat_raw <- query_pancan_value(Gene, data_type = data_type)
+  exp_dat_raw <- query_pancan_value(Gene, data_type = data_type, opt_pancan = opt_pancan)
   if (all(is.na(exp_dat_raw$expression))) {
     stop("For the gene(", Gene, ") profile, all NAs returned.")
   }

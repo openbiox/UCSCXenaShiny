@@ -10,7 +10,8 @@ vis_gene_TIL_cor(
   data_type = "mRNA",
   sig = c("B cell_TIMER", "T cell CD4+_TIMER", "T cell CD8+_TIMER", "Neutrophil_TIMER",
     "Macrophage_TIMER", "Myeloid dendritic cell_TIMER"),
-  Plot = "TRUE"
+  Plot = "TRUE",
+  opt_pancan = .opt_pancan
 )
 }
 \arguments{
@@ -20,12 +21,13 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 \item{cor_method}{correlation method}
 
 \item{data_type}{choose gene profile type,
-including "mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2),
-"cnv_gistic2", "methylation", "miRNA".}
+including "mRNA", "transcript", "protein", "mutation", "cnv", "methylation", "miRNA".}
 
 \item{sig}{Immune Signature, default: result from TIMER}
 
 \item{Plot}{output the plot directly, default 'TRUE'}
+
+\item{opt_pancan}{specify one dataset for some molercular profiles}
 }
 \description{
 Heatmap for Correlation between Gene and Tumor Immune Infiltration (TIL)

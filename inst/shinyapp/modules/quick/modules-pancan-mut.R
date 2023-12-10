@@ -39,6 +39,12 @@ ui.modules_pancan_mut = function(id){
 	              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "miRNA Expression"),
 	              animation = "jelly"
 	            ),
+		        actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
+		        conditionalPanel(
+		          ns = ns,
+		          condition = "input.toggleBtn % 2 == 1",
+		          mol_origin_UI(ns("mol_origin2quick"))
+		        ),
 	            selectizeInput(
 	              inputId = ns("Pancan_search"),
 	              label = "Input affected gene or formula (as signature)",
@@ -147,6 +153,10 @@ server.modules_pancan_mut = function(input, output, session){
 	    server = TRUE
 	  )
 	})
+
+	opt_pancan = callModule(mol_origin_Server, "mol_origin2quick")
+
+
 	colors <- reactive({
 	  c(input$mut_col, input$wild_col)
 	})
@@ -162,12 +172,12 @@ server.modules_pancan_mut = function(input, output, session){
 			`Pan-cancer`=vis_toil_Mut(mut_Gene = input$mut_Gene, Gene = input$Pancan_search,
 				data_type=input$profile, size_cutoff=input$size_cutoff, Mode =ifelse(input$pdist_mode,"Violinplot", "Boxplot"),
 				Show.P.value = input$pdist_show_p_value, Show.P.label = input$pdist_show_p_label,
-				values = colors()
+				values = colors(), opt_pancan = opt_pancan()
 				),
 			`Single-cancer`=vis_toil_Mut_cancer(mut_Gene = input$mut_Gene, Gene = input$Pancan_search,
 				data_type=input$profile, size_cutoff=input$size_cutoff, Mode =ifelse(input$pdist_mode,"Violinplot", "Dotplot"),
 				Show.P.value = input$pdist_show_p_value, Show.P.label = input$pdist_show_p_label,
-				values = colors(), Cancer=input$Cancer
+				values = colors(), Cancer=input$Cancer, opt_pancan = opt_pancan()
 				)
 		)
 	  return(p)
@@ -178,12 +188,12 @@ server.modules_pancan_mut = function(input, output, session){
 			`Pan-cancer`=vis_toil_Mut(mut_Gene = input$mut_Gene, Gene = input$Pancan_search,
 				data_type=input$profile, size_cutoff=input$size_cutoff, Mode =ifelse(input$pdist_mode,"Violinplot", "Boxplot"),
 				Show.P.value = input$pdist_show_p_value, Show.P.label = input$pdist_show_p_label,
-				values = colors(), plot = FALSE
+				values = colors(), plot = FALSE, opt_pancan = opt_pancan()
 				),
 			`Single-cancer`=vis_toil_Mut_cancer(mut_Gene = input$mut_Gene, Gene = input$Pancan_search,
 				data_type=input$profile, size_cutoff=input$size_cutoff, Mode =ifelse(input$pdist_mode,"Violinplot", "Boxplot"),
 				Show.P.value = input$pdist_show_p_value, Show.P.label = input$pdist_show_p_label,
-				values = colors(), Cancer=input$Cancer, plot = FALSE
+				values = colors(), Cancer=input$Cancer, plot = FALSE, opt_pancan = opt_pancan()
 				)
 		)
 	  return(p_dat)

@@ -26,7 +26,6 @@ batch_download = function(L1, L2, L3, cohort = c("TOIL","PCAWG","CCLE"),
                                `miRNA Expression` = "miRNA",
                                `Mutation status` = "mutation",
                                `Copy Number Variation` = "cnv",
-
                                # `mRNA Expression` = "mRNA",
                                `Promoter Activity` = "promoter",
                                `Gene Fusion` = "fusion",

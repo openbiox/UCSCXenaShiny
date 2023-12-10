@@ -4,7 +4,12 @@
 \alias{vis_ccle_tpm}
 \title{Visualize CCLE Gene Expression}
 \usage{
-vis_ccle_tpm(Gene = "TP53", data_type = "mRNA", use_log = FALSE)
+vis_ccle_tpm(
+  Gene = "TP53",
+  data_type = "mRNA",
+  use_log = FALSE,
+  opt_pancan = .opt_pancan
+)
 }
 \arguments{
 \item{Gene}{a molecular identifier (e.g., "TP53") or a formula specifying
@@ -13,6 +18,8 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 \item{data_type}{support genomic profile for CCLE, currently "mRNA", "protein","cnv" are supported}
 
 \item{use_log}{if \code{TRUE}, log values.}
+
+\item{opt_pancan}{specify one dataset for some molercular profiles}
 }
 \value{
 a \code{ggplot} object

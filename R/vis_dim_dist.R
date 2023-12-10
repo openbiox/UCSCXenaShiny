@@ -8,7 +8,8 @@
 #' @param add_margin the marginal plot (NULL, "density", "boxplot")
 #' @param ... parameters refer to query_tcga_group() function
 #' @param group_levels group levels setting
-#'
+#' @param opt_pancan specify one dataset for some molercular profiles
+
 #' @return a ggplot object or rawdata list
 #' @export
 #'
@@ -47,6 +48,7 @@ vis_dim_dist <- function(ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
                           DR_method = c("PCA", "UMAP", "tSNE"),
                           palette = "Set1", add_margin = NULL,
                           group_levels = NULL, 
+                          opt_pancan = .opt_pancan,
                           ...) {
   # Mode <- match.arg(Mode)
   DR_method <- match.arg(DR_method)
@@ -57,7 +59,7 @@ vis_dim_dist <- function(ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
   
   exp_raw <- purrr::map(ids, function(x) {
     # x = ids[1]
-    data <- query_pancan_value(x, data_type = data_type)
+    data <- query_pancan_value(x, data_type = data_type, opt_pancan=opt_pancan)
     data <- data[[1]]
     data <- dplyr::tibble(sample = names(data), y = as.numeric(data))
     colnames(data)[2] <- x

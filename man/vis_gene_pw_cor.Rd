@@ -11,7 +11,8 @@ vis_gene_pw_cor(
   Cancer = "ACC",
   cor_method = "pearson",
   cor_cutoff = list(r = 0.3, p = 0.01),
-  plot = TRUE
+  plot = TRUE,
+  opt_pancan = .opt_pancan
 )
 }
 \arguments{
@@ -19,7 +20,7 @@ vis_gene_pw_cor(
 specifying genomic signature ("TP53 + 2 * KRAS - 1.3 * PTEN").}
 
 \item{data_type}{choose gene profile type, including
-"mRNA", "transcript", "protein", "mutation", "cnv" (-2, -1, 0, 1, 2), "cnv_gistic2", "methylation", "miRNA".}
+"mRNA", "transcript", "protein", "mutation", "cnv", "methylation", "miRNA".}
 
 \item{pw_name}{the queried Pathway name, see the supported pathway from 'load("toil_sig_score")'default is NULL}
 
@@ -30,6 +31,8 @@ specifying genomic signature ("TP53 + 2 * KRAS - 1.3 * PTEN").}
 \item{cor_cutoff}{a list with 2 elements names 'r' and 'p' to define significant correlations}
 
 \item{plot}{output the plot directly (default) or raw data.frame}
+
+\item{opt_pancan}{specify one dataset for some molercular profiles}
 }
 \value{
 a \code{ggplot} object or  dataframe

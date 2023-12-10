@@ -7,7 +7,7 @@ ui.modules_pancan_gene_cor <- function(id) {
         wellPanel(
           shinyWidgets::prettyRadioButtons(
             inputId = ns("profile1"), label = "Select a genomic profile:",
-            choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2"),
+            choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv"),
             choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
             animation = "jelly"
           ),
@@ -25,7 +25,7 @@ ui.modules_pancan_gene_cor <- function(id) {
           ),
           shinyWidgets::prettyRadioButtons(
             inputId = ns("profile2"), label = "Select a genomic profile:",
-            choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv_gistic2"),
+            choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv"),
             choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
             animation = "jelly"
           ),
@@ -40,7 +40,15 @@ ui.modules_pancan_gene_cor <- function(id) {
               placeholder = "Enter a gene symbol, e.g. JAK3",
               plugins = list("restore_on_backspace")
             )
-          ))),
+          ),
+          actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
+          conditionalPanel(
+            ns = ns,
+            condition = "input.toggleBtn % 2 == 1",
+            mol_origin_UI(ns("mol_origin2quick"))
+          ),
+
+          )),
       column(
         3,
         wellPanel(
@@ -135,7 +143,7 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
       protein = list(all = pancan_identifiers$protein, default = "P53"),
       transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
       miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-      cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
+      cnv = list(all = pancan_identifiers$gene, default = "TP53"),
       list(all = "NONE", default = "NONE")
     )
   })
@@ -157,7 +165,7 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
       protein = list(all = pancan_identifiers$protein, default = "P53"),
       transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
       miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-      cnv_gistic2 = list(all = pancan_identifiers$gene, default = "TP53"),
+      cnv = list(all = pancan_identifiers$gene, default = "TP53"),
       list(all = "NONE", default = "NONE")
     )
   })
@@ -172,6 +180,7 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
     )
   })
 
+  opt_pancan = callModule(mol_origin_Server, "mol_origin2quick")
 
 
   # Show waiter for plot
@@ -190,7 +199,8 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
         use_regline = input$use_regline,
         color = input$color,
         alpha = input$alpha,
-        use_all = as.logical(input$use_all)
+        use_all = as.logical(input$use_all),
+        opt_pancan = opt_pancan()
       )
     }
     p <- p + theme_classic(base_size = 20) +

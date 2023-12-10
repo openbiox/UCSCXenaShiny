@@ -40,7 +40,12 @@ get_ccle_gene_value <- function(identifier, norm = c("rpkm","nc")) {
     save_data(expression, identifier, dataset, host)
   }
 
-  unit <- "RPKM"
+  if(norm=="rpkm"){
+    unit <- "RPKM"
+  } else {
+    unit <- "log2(count+1)"
+  }
+  
   report_dataset_info(dataset)
   res <- list(expression = expression, unit = unit)
   res

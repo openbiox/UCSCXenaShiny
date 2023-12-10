@@ -16,7 +16,8 @@ vis_toil_Mut(
   values = c("#DF2020", "#DDDF21"),
   draw_quantiles = c(0.25, 0.5, 0.75),
   trim = TRUE,
-  plot = TRUE
+  plot = TRUE,
+  opt_pancan = .opt_pancan
 )
 }
 \arguments{
@@ -45,6 +46,8 @@ including "mRNA", "transcript", "methylation", "miRNA".}
 \item{trim}{whether to trim the violin}
 
 \item{plot}{Whether to return the plot or replace it with a p-value table}
+
+\item{opt_pancan}{specify one dataset for some molercular profiles}
 }
 \value{
 a \code{ggplot} object or a tibble data.frame
