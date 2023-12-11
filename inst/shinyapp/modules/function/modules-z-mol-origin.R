@@ -152,54 +152,58 @@ mol_origin_Server = function(input, output, session, cancers=NULL, custom_metada
 				dplyr::filter(Level3 %in% input$toil_L2_3_methy_3_gene)
 	})
 
-	observe({
-		cpg_ids = candi_cpg() %>% 
-			dplyr::filter(chromStart >= input$chr_min) %>% 
-			dplyr::filter(chromEnd  <= input$chr_max) %>% 
-			dplyr::pull(CpG)
-    updateSelectizeInput(
-      session,
-      "toil_L2_3_methy_3_cpg",
-      choices = cpg_ids,
-      selected = NULL,
-      server = TRUE
-    )
-	})
+	observeEvent(candi_cpg(), {
+		if (is.data.frame(candi_cpg()) && nrow(candi_cpg()) > 0) {
+		  print("data detected")
+		  cpg_ids = candi_cpg() %>% 
+		    dplyr::filter(chromStart >= input$chr_min) %>% 
+		    dplyr::filter(chromEnd  <= input$chr_max) %>% 
+		    dplyr::pull(CpG)
+		  
+		  updateSelectizeInput(
+		    session,
+		    "toil_L2_3_methy_3_cpg",
+		    choices = cpg_ids,
+		    selected = NULL,
+		    server = TRUE
+		  )
+		  
 
-	observe({
-		if(nrow(candi_cpg())>0){
-			updateNumericInput(
-				session,
-				"chr_min",
-				label = paste("Min coord ","(",unique(candi_cpg()$chrom),")"),
-				value = min(candi_cpg()$chromStart)
-			)
-			updateNumericInput(
-				session,
-				"chr_max",
-				label = paste("Max coord ","(",unique(candi_cpg()$chrom),")"),
-				value = max(candi_cpg()$chromEnd)
-			)
+	    updateNumericInput(
+	      session,
+	      "chr_min",
+	      label = paste("Min coord ","(",unique(candi_cpg()$chrom),")"),
+	      value = min(candi_cpg()$chromStart)
+	    )
+	    updateNumericInput(
+	      session,
+	      "chr_max",
+	      label = paste("Max coord ","(",unique(candi_cpg()$chrom),")"),
+	      value = max(candi_cpg()$chromEnd)
+	    )
+		  
 		}
 	})
 
 	cpg_ids_retain = reactive({
-		shiny::validate(
-			need(try(input$chr_min>=min(candi_cpg()$chromStart)), 
-				paste0("Min coord cannot be less than ",min(candi_cpg()$chromStart),".")),
-			need(try(input$chr_max<=max(candi_cpg()$chromEnd)), 
-				paste0("Max coord cannot be greater than ",max(candi_cpg()$chromEnd),"."))
-		)
-		cpg_ids = candi_cpg() %>% 
-			dplyr::filter(chromStart >= input$chr_min) %>% 
-			dplyr::filter(chromEnd  <= input$chr_max) %>% 
-			dplyr::pull(CpG)
-		if(is.null(input$toil_L2_3_methy_3_cpg)){
-			cpg_ids_retain = cpg_ids
-		} else {
-			cpg_ids_retain = input$toil_L2_3_methy_3_cpg
-		}
-		cpg_ids_retain
+		if (is.data.frame(candi_cpg()) && nrow(candi_cpg()) > 0) {
+		  shiny::validate(
+		    need(try(input$chr_min>=min(candi_cpg()$chromStart)), 
+		         paste0("Min coord cannot be less than ",min(candi_cpg()$chromStart),".")),
+		    need(try(input$chr_max<=max(candi_cpg()$chromEnd)), 
+		         paste0("Max coord cannot be greater than ",max(candi_cpg()$chromEnd),"."))
+		  )
+		  cpg_ids = candi_cpg() %>% 
+		    dplyr::filter(chromStart >= input$chr_min) %>% 
+		    dplyr::filter(chromEnd  <= input$chr_max) %>% 
+		    dplyr::pull(CpG)
+		  if(is.null(input$toil_L2_3_methy_3_cpg)){
+		    cpg_ids_retain = cpg_ids
+		  } else {
+		    cpg_ids_retain = input$toil_L2_3_methy_3_cpg
+		  }
+		  cpg_ids_retain
+		} else NULL
 	})
 	# 提示包含多少个CpG位点
 	output$cpgs_sle_text = renderPrint({

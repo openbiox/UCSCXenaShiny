@@ -12,7 +12,11 @@ ui.modules_pancan_radar <- function(id) {
             animation = "jelly"
           ),
           actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
-          uiOutput(ns("quickFilter")),
+          conditionalPanel(
+            ns = ns,
+            condition = "input.toggleBtn % 2 == 1",
+            uiOutput(ns("quickFilter"))
+          ),
           selectizeInput(
             inputId = ns("Pancan_search"),
             label = "Input a gene or formula (as signature)",
@@ -117,11 +121,7 @@ server.modules_pancan_radar <- function(input, output, session) {
   })
 
   output$quickFilter = renderUI({
-    conditionalPanel(
-      ns = ns,
-      condition = "input.toggleBtn % 2 == 1",
-      mol_origin_UI(ns("mol_origin2quick"), profile = input$profile, source = "toil")
-    )
+    mol_origin_UI(ns("mol_origin2quick"), profile = input$profile, source = "toil")
   })
   opt_pancan = callModule(mol_origin_Server, "mol_origin2quick")
 
