@@ -1,14 +1,34 @@
-mol_origin_UI = function(id, button_name="Multi-conditions filters"){
-	ns = NS(id)
+mol_origin_UI = function(id, button_name="Multi-conditions filters", profile = NULL, source = NULL){
+  ns = NS(id)
+  
+  if (!is.null(profile) & !is.null(source)) {
+    if (source == "toil") {
+      choices = switch(profile,
+                       mRNA = "TOIL-mRNA Expression",
+                       transcript = "TOIL-Transcript Expression",
+                       methylation = "TOIL-DNA Methylation",
+                       cnv = "TOIL-Copy Number Variation")
+    } else if (source == "pcawg") {
+      choices = switch(profile,
+                       miRNA = "PCAWG-miRNA Expression",
+                       promoter = "PCAWG-Promoter Activity")
+    } else if (source == "ccle") {
+      choices = switch(profile,
+                       mRNA = "CCLE-mRNA Expression")
+    }
+  } else {
+    choices = c("TOIL-mRNA Expression","TOIL-Transcript Expression",
+                "TOIL-DNA Methylation","TOIL-Copy Number Variation",
+                "PCAWG-miRNA Expression","PCAWG-Promoter Activity",
+                "CCLE-mRNA Expression")
+  }
+  selected = choices[1]
+  
 	tagList(
 		selectInput(
 			ns("data_origin"),NULL,
-			choices = c("TOIL-mRNA Expression","TOIL-Transcript Expression",
-									"TOIL-DNA Methylation","TOIL-Copy Number Variation",
-									"PCAWG-miRNA Expression","PCAWG-Promoter Activity",
-									"CCLE-mRNA Expression"
-									),
-			selected = "TOIL-mRNA Expression"
+			choices = choices,
+			selected = selected
 		),
 		tabsetPanel(id = ns("data_origin_type"),
 			type = "hidden",
