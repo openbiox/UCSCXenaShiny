@@ -1,21 +1,21 @@
-ui.modules_pancan_unicox <- function(id) {
+ui.modules_pancan_immune <- function(id) {
   ns <- NS(id)
   fluidPage(
-        fluidRow(
-          column(
-            3,
-            wellPanel(
+    fluidRow(
+      column(3,
+             wellPanel(
+            div(actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
+                style = "margin-bottom: 5px;"),
+            conditionalPanel(
+              ns = ns,
+              condition = "input.toggleBtn % 2 == 1",
+              mol_origin_UI(ns("mol_origin2quick"), database = "toil")
+            ),
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile"), label = "Select a genomic profile:",
               choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv"),
               choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
               animation = "jelly"
-            ),
-            actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
-            conditionalPanel(
-              ns = ns,
-              condition = "input.toggleBtn % 2 == 1",
-              mol_origin_UI(ns("mol_origin2quick"))
             ),
             selectizeInput(
               inputId = ns("Pancan_search"),
@@ -28,12 +28,19 @@ ui.modules_pancan_unicox <- function(id) {
                 placeholder = "Enter a gene symbol, e.g. TP53",
                 plugins = list("restore_on_backspace")
               )
-            ),
-        selectInput(inputId = ns("measure"), label = "Select Measure for plot", choices = c("OS", "PFI", "DSS", "DFI"), selected = "OS"),
-        selectInput(inputId = ns("threshold"), label = "Select Threshold for plot", choices = c(0.25, 0.5), selected = 0.5),
-        colourpicker::colourInput(inputId = ns("first_col"), "First color", "#6A6F68"),
-        colourpicker::colourInput(inputId = ns("second_col"), "Second color", "#E31A1C"),
-        colourpicker::colourInput(inputId = ns("third_col"), "Third color", "#377DB8"),
+          ),
+        selectInput(
+          inputId = ns("immune_sig"), "Select the immune signature source", selected = "Cibersort",
+          choices = c("Yasin", "Wolf", "Attractors", "ICR", "c7atoms", "Bindea", "Cibersort")
+        ),
+        selectInput(
+          inputId = ns("cor_method"),
+          label = "Select Correlation method",
+          choices = c("spearman", "pearson"),
+          selected = "spearman"
+        ),
+        numericInput(inputId = ns("height"), label = "Height", value = 8),
+        numericInput(inputId = ns("width"), label = "Width", value = 12),
         tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
         shinyWidgets::actionBttn(
           inputId = ns("search_bttn"),
@@ -45,8 +52,6 @@ ui.modules_pancan_unicox <- function(id) {
           size = "sm"
         )),
         wellPanel(
-        numericInput(inputId = ns("height"), label = "Height", value = 8),
-        numericInput(inputId = ns("width"), label = "Width", value = 6),
         prettyRadioButtons(
           inputId = ns("device"),
           label = "Choose plot format",
@@ -63,15 +68,15 @@ ui.modules_pancan_unicox <- function(id) {
           color = "default",
           block = TRUE,
           size = "sm"
-        ))
+        )),
       ),
       column(9,
-        plotOutput(ns("unicox_gene_tree"), height = "500px",width= "350px"),
+        plotOutput(ns("hm_gene_immune_cor"), height = "500px"),
         hr(),
         h5("NOTEs:"),
-        p("1. We define gene in certain cancer type as risky (log(Hazard Ratio) > 0) or protective (log(Hazard Ratio) < 0) or NS (No statistical significance, P value > 0.05)"),
-        p("2. We divide patients into different groups for comparison according to gene expression, you could choose the threshold for grouping (0.5 by default)"),
-        p("3. ", tags$a(href = "https://pancanatlas.xenahubs.net/", "Genomic profile data source")),
+        tags$a(href = "https://pancanatlas.xenahubs.net/", "Genomic profile data source"),
+        tags$br(),
+        tags$a(href = "https://gdc.cancer.gov/about-data/publications/panimmune/", "Immune signature data source"),
         DT::DTOutput(outputId = ns("tbl")),
         shinyjs::hidden(
           wellPanel(
@@ -84,9 +89,9 @@ ui.modules_pancan_unicox <- function(id) {
   )
 }
 
-
-server.modules_pancan_unicox <- function(input, output, session) {
+server.modules_pancan_immune <- function(input, output, session) {
   ns <- session$ns
+
 
   profile_choices <- reactive({
     switch(input$profile,
@@ -110,52 +115,38 @@ server.modules_pancan_unicox <- function(input, output, session) {
     )
   })
 
-  opt_pancan = callModule(mol_origin_Server, "mol_origin2quick")
+  opt_pancan = callModule(mol_origin_Server, "mol_origin2quick", database = "toil")
 
 
   # Show waiter for plot
-  w <- waiter::Waiter$new(id = ns("unicox_gene_tree"), html = waiter::spin_hexdots(), color = "white")
-
-  colors <- reactive({
-    c(input$first_col, input$second_col, input$third_col)
-  })
-
-  observeEvent(input$search_bttn, {
-    if (nchar(input$Pancan_search) >= 1) {
-      shinyjs::show(id = "save_csv")
-    } else {
-      shinyjs::hide(id = "save_csv")
-    }
-  })
+  w <- waiter::Waiter$new(id = ns("hm_gene_immune_cor"), html = waiter::spin_hexdots(), color = "white")
 
   plot_func <- eventReactive(input$search_bttn, {
     if (nchar(input$Pancan_search) >= 1) {
-      p <- vis_unicox_tree(
+      p <- vis_gene_immune_cor(
         Gene = input$Pancan_search,
-        measure = input$measure,
-        threshold = input$threshold,
+        Immune_sig_type = input$immune_sig,
+        cor_method = input$cor_method,
         data_type = input$profile,
-        values = colors(),
         opt_pancan = opt_pancan()
       )
-      pdata <- p$data %>% 
-        as.data.frame() %>%
-        dplyr::select(cancer, measure, n_contrast, n_ref, beta, HR_log, lower_95_log, upper_95_log, Type, p.value)
-      return(list(plot = p, data = pdata))
     }
+    return(p)
   })
 
-  output$unicox_gene_tree <- renderPlot({
+
+  output$hm_gene_immune_cor <- renderPlot({
     w$show() # Waiter add-ins
-    plot_func()$plot
+    plot_func()
   })
+
 
   output$download <- downloadHandler(
     filename = function() {
-      paste0(input$Pancan_search, "_", input$profile, "_", input$measure, "_pancan_unicox.", input$device)
+      paste0(input$Pancan_search, "_", input$profile, "_pancan_immune.", input$device)
     },
     content = function(file) {
-      p <- plot_func()$plot
+      p <- plot_func()
       if (input$device == "pdf") {
         pdf(file, width = input$width, height = input$height)
         print(p)
@@ -168,15 +159,26 @@ server.modules_pancan_unicox <- function(input, output, session) {
     }
   )
 
+  ## return data
+  observeEvent(input$search_bttn, {
+    if (nchar(input$Pancan_search) >= 1) {
+      shinyjs::show(id = "save_csv")
+    } else {
+      shinyjs::hide(id = "save_csv")
+    }
+  })
+
 
   output$tbl <- renderDT(
     plot_func()$data,
     options = list(lengthChange = FALSE)
   )
 
+
+  ## downloadTable
   output$downloadTable <- downloadHandler(
     filename = function() {
-      paste0(input$Pancan_search, "_", input$profile, "_", input$measure, "_pancan_unicox.csv")
+      paste0(input$Pancan_search, "_", input$profile, "_pancan_immune.csv")
     },
     content = function(file) {
       write.csv(plot_func()$data, file, row.names = FALSE)

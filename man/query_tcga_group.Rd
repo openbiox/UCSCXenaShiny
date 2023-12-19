@@ -5,7 +5,7 @@
 \title{Group TCGA samples by build-in or custom phenotype and support filtering or merging operations}
 \usage{
 query_tcga_group(
-  cohort = c("TOIL", "PCAWG", "CCLE"),
+  database = c("toil", "pcawg", "ccle"),
   cancer = NULL,
   custom = NULL,
   group = "Gender",
@@ -17,7 +17,7 @@ query_tcga_group(
 )
 }
 \arguments{
-\item{cohort}{one cohort of c("TOIL","PCAWG","CCLE")}
+\item{database}{one of c("toil","pcawg","ccle")}
 
 \item{cancer}{select cancer cohort(s)}
 

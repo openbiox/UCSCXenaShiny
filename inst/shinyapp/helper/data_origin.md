@@ -1,33 +1,20 @@
-Here, you can change the default data origin for **molecular profile** data type.
-
-Up to now, we support DNA methylation and CNV data adjustment:
-
-
-<br>
-### 1. mRNA Expression
-You can choose one of three normalization methods for mRNA expression data.
+1. Before selecting molecules and starting analysis, you can change the default datasets for **molecular profile** data type.
 
 <br>
 
-### 2. Transcript Expression
-
-You can choose one of three normalization methods for transcript expression data.
+2. Available datasets for all data types of one database (toil, pcawg, ccle) are showed. Noteworthily, you can also check the active hub and dataset given the links for better understanding. 
 
 <br>
 
+3. For DNA Methylation of toil database,  more detailed operations are supported to select interesting CpG sites for one gene.
 
 
-#### 3. DNA methylation
 
-- You can firstly choose the 450K or 27K array;
 
-- Then,  steps (2)~(4) are used to specify custom CpG sites for one gene and how to calculate the overall value.
 
-<br>
 
-#### 7. Copy Number Variation
 
-You can set whether to use thresholded (integer) data.
+
 
 
 

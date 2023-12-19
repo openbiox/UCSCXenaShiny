@@ -9,15 +9,20 @@ ui.modules_pancan_comp_o2o = function(id) {
 					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
 
-					h4("1. Choose cancer"),
+					h4("1. Modify datasets[opt]") %>% 
+						helper(type = "markdown", size = "m", fade = TRUE, 
+					                   title = "Set molecular profile origin", 
+					                   content = "data_origin"),
+					mol_origin_UI(ns("mol_origin2comp"), database = "toil"),
 
+					h4("2. Choose cancer"),
 					pickerInput(
 						ns("choose_cancer"), NULL,
 						choices = sort(tcga_cancer_choices)),
 
-				    br(),br(),
+				    br(),
 
-					h4("2. Filter samples[opt]") %>% 
+					h4("3. Filter samples[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Choose samples for personalized need", 
 					                   content = "choose_samples"),
@@ -31,21 +36,21 @@ ui.modules_pancan_comp_o2o = function(id) {
 					filter_samples_UI(ns("filter_samples2comp")),
 					br(),
 					verbatimTextOutput(ns("filter_phe_id_info")),
-					br(),br(),
+					br(),
 
-					h4("3. Upload metadata[opt]") %>% 
+					h4("4. Upload metadata[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Upload sample info", 
 					                   content = "custom_metadata"),
 					shinyFeedback::useShinyFeedback(),
 					custom_meta_UI(ns("custom_meta2comp")),
-					br(),br(),
-
-					h4("4. Modify datasets[opt]") %>% 
+					br(),
+					
+					h4("5. Add signature[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Set molecular profile origin", 
-					                   content = "data_origin"),
-					mol_origin_UI(ns("mol_origin2comp"))
+					                   title = "Add molecular signature", 
+					                   content = "add_signature"),
+					add_signature_UI(ns("add_signature2comp")),
 				)
 			),
 			# 分组设置
@@ -55,10 +60,10 @@ ui.modules_pancan_comp_o2o = function(id) {
 					style = "height:1100px",
 					h2("S2: Get data", align = "center"),
 					# 调用分组模块UI
-					group_samples_UI(ns("group_samples2comp")),
+					group_samples_UI(ns("group_samples2comp"), database = "toil"),
 
 					# 下载待比较数据
-					download_feat_UI(ns("download_y_axis"), button_name="Query variable to compare"),
+					download_feat_UI(ns("download_y_axis"), button_name="Query variable to compare", database = "toil"),
 
 				)
 			),
@@ -77,7 +82,6 @@ ui.modules_pancan_comp_o2o = function(id) {
 				        block = TRUE,
 				        size = "sm"
 					),
-
 
 					br(),
 					selectInput(ns("comp_method"), "Comparison metohd",choices = c("t-test", "wilcoxon")),
@@ -135,24 +139,40 @@ server.modules_pancan_comp_o2o = function(input, output, session) {
 
 	# 记录选择癌症
 	cancer_choose <- reactiveValues(name = "BRCA", 
-		phe_primary=query_tcga_group(cancer = "BRCA", return_all = T),
+		phe_primary=query_tcga_group(database = "toil",cancer = "BRCA", return_all = T),
 		filter_phe_id=NULL, single_cancer_ok = TRUE, multi_cancer_ok=FALSE)
 	observe({
 		cancer_choose$name = input$choose_cancer
-		cancer_choose$phe_primary <- query_tcga_group(cancer = cancer_choose$name, return_all = T)
+		cancer_choose$phe_primary <- query_tcga_group(database = "toil",cancer = cancer_choose$name, return_all = T)
 	})
 
 	# 自定义上传metadata数据
-	custom_meta = callModule(custom_meta_Server, "custom_meta2comp")
+	custom_meta = callModule(custom_meta_Server, "custom_meta2comp", database = "toil")
+	# signature
+	sig_dat = callModule(add_signature_Server, "add_signature2comp", database = "toil")
+
+	custom_meta_sig = reactive({
+		if(is.null(custom_meta())){
+			return(sig_dat())
+		} else {
+			if(is.null(sig_dat())){
+				return(custom_meta())
+			} else {
+				custom_meta_sig = dplyr::inner_join(custom_meta(),sig_dat())
+				return(custom_meta_sig)
+			}
+		}
+	})
 
 	# 数据源设置
-	opt_pancan = callModule(mol_origin_Server, "mol_origin2comp")
+	opt_pancan = callModule(mol_origin_Server, "mol_origin2comp", database = "toil")
 
 	## 过滤样本
 	# exact filter module
 	filter_phe_id = callModule(filter_samples_Server, "filter_samples2comp",
+					   database = "toil",
 					   cancers=reactive(cancer_choose$name),
-					   custom_metadata=reactive(custom_meta()),
+					   custom_metadata=reactive(custom_meta_sig()),
 					   opt_pancan = reactive(opt_pancan()))
 	# quick filter widget
 	observe({
@@ -188,16 +208,18 @@ server.modules_pancan_comp_o2o = function(input, output, session) {
 
 	# 设置分组
 	group_final = callModule(group_samples_Server, "group_samples2comp",
+					   	   database = "toil",
 						   cancers=reactive(cancer_choose$name),
 						   samples=reactive(cancer_choose$filter_phe_id),
-						   custom_metadata=reactive(custom_meta()),
+						   custom_metadata=reactive(custom_meta_sig()),
 						   opt_pancan = reactive(opt_pancan())
 						   )
 
 	# 下载待比较数据
 	y_axis_data = callModule(download_feat_Server, "download_y_axis", 
+							 database = "toil",
 							 samples=reactive(cancer_choose$filter_phe_id),
-							 custom_metadata=reactive(custom_meta()),
+							 custom_metadata=reactive(custom_meta_sig()),
 						     opt_pancan = reactive(opt_pancan()),
 						     check_numeric=TRUE
 							 )

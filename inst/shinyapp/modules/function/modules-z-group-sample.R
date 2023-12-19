@@ -1,5 +1,10 @@
-group_samples_UI = function(id, button_name="Filter by multi-conditions",id_option = tcga_id_option){
+group_samples_UI = function(id, button_name="Filter by multi-conditions", database = "toil"){
   ns = NS(id)
+  id_option = switch(database, 
+      "toil"=tcga_id_option,
+      "pcawg"=pcawg_id_option,
+      "ccle"=ccle_id_option)
+
   tagList(
     # h4("1. Select one condition"),
 
@@ -124,9 +129,16 @@ group_samples_UI = function(id, button_name="Filter by multi-conditions",id_opti
 }
 
 
-group_samples_Server = function(input, output, session, cohort = "TOIL", id_option = tcga_id_option,
+group_samples_Server = function(input, output, session, database = "toil", 
                                 cancers=NULL, samples=NULL, custom_metadata=NULL, opt_pancan=NULL){
   ns <- session$ns
+
+  id_option = switch(database, 
+      "toil"=tcga_id_option,
+      "pcawg"=pcawg_id_option,
+      "ccle"=ccle_id_option)
+  id_category = lapply(id_option, names)
+
   observe({
     updateTabsetPanel(inputId = "data_L2_tab", selected = input$data_L1)
     updateTabsetPanel(inputId = "data_L3_tab", selected = input$data_L1)
@@ -211,7 +223,6 @@ group_samples_Server = function(input, output, session, cohort = "TOIL", id_opti
         `Pathway activity` = input$pathway_activity_id,
         `Phenotype data` = input$phenotype_data_id
     )
-    id_category = lapply(id_option, names)
     L1_x = names(id_category)[sapply(id_category, function(x){any(x %in% L2_x)})]
     if(is.null(opt_pancan)){
       opt_pancan = .opt_pancan
@@ -219,19 +230,19 @@ group_samples_Server = function(input, output, session, cohort = "TOIL", id_opti
       opt_pancan = opt_pancan()
     }
     ## 利用内部自定义下载函数获取数据
-    if(cohort=="TOIL"){
+    if(database=="toil"){
       clinical_phe = tcga_clinical_fine
-      x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, cohort,
+      x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, database,
                tumor_index_list, tcga_TIL, tcga_PW, clinical_phe,
                opt_pancan,custom_metadata())
-    } else if(cohort=="PCAWG"){
+    } else if(database=="pcawg"){
       clinical_phe = pcawg_info_fine
-      x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, cohort,
+      x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, database,
                pcawg_index_list, pcawg_TIL, pcawg_PW, clinical_phe,
                opt_pancan,custom_metadata())
-    } else if (cohort=="CCLE"){
+    } else if (database=="ccle"){
           clinical_phe = ccle_info_fine
-          x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, cohort,
+          x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, database,
                    ccle_index_list, NULL, NULL, ccle_info_fine,
                    opt_pancan,custom_metadata())
     }
@@ -356,7 +367,7 @@ group_samples_Server = function(input, output, session, cohort = "TOIL", id_opti
 
 
   merge_out = eventReactive(input$group_range,{
-    merge_tmp = query_tcga_group(cohort = cohort,
+    merge_tmp = query_tcga_group(database = database,
                                  cancer=cancers(), 
                                  custom=condi_data()[,c("sample","value")],
                                  group="value", filter_id = samples(),

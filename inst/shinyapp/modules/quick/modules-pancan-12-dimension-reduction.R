@@ -5,17 +5,18 @@ ui.modules_dim_dist = function(id){
 			column(
 				3,
 				wellPanel(
+		            div(actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
+		                style = "margin-bottom: 5px;"),
+		            conditionalPanel(
+		              ns = ns,
+		              condition = "input.toggleBtn % 2 == 1",
+		              mol_origin_UI(ns("mol_origin2quick"), database = "toil")
+		            ),
 					selectInput(
 						ns("profile"), "Select a genomic profile:",
 						choices = c("mRNA Expression", "Transcript Expression", "DNA Methylation", 
 									"Protein Expression", "miRNA Expression", "Copy Number Variation"),
 						selected = "mRNA Expression"),
-			        actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
-			        conditionalPanel(
-			          ns = ns,
-			          condition = "input.toggleBtn % 2 == 1",
-			          mol_origin_UI(ns("mol_origin2quick"))
-			        ),
 		            shinyWidgets::prettyRadioButtons(
 		              inputId = ns("input_ways"), label = "Input the molecule ids (>=3) by ?",
 		              choiceValues = c("Select", "Pathway", "File"),
@@ -210,7 +211,7 @@ server.modules_dim_dist = function(input, output, session){
 	  )
 	})
 
-	opt_pancan = callModule(mol_origin_Server, "mol_origin2quick")
+	opt_pancan = callModule(mol_origin_Server, "mol_origin2quick", database = "toil")
 
 	observe({
 	  updateSelectizeInput(

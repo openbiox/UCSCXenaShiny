@@ -4,6 +4,13 @@ ui.modules_pcawg_sur_plot <- function(id) {
   fluidPage(
     fluidRow(
       column(3, wellPanel(
+        div(actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
+            style = "margin-bottom: 5px;"),
+        conditionalPanel(
+          ns = ns,
+          condition = "input.toggleBtn % 2 == 1",
+          mol_origin_UI(ns("mol_origin2quick"), database = "pcawg")
+        ),
         selectInput(
           inputId = ns("dataset"), label = "Choose a dataset:",
           choices = unique(pcawg_info$dcc_project_code)
@@ -21,14 +28,6 @@ ui.modules_pcawg_sur_plot <- function(id) {
           ),
           animation = "jelly"
         ),
-
-        actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
-        conditionalPanel(
-          ns = ns,
-          condition = "input.toggleBtn % 2 == 1",
-          mol_origin_UI(ns("mol_origin2quick"))
-        ),
-
         selectizeInput(
           inputId = ns("item_input"),
           label = "Item:",
@@ -163,7 +162,7 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
     )
   })
 
-  opt_pancan = callModule(mol_origin_Server, "mol_origin2quick")
+  opt_pancan = callModule(mol_origin_Server, "mol_origin2quick", database = "pcawg")
 
   observe({
     if (is.null(input$sex)) {

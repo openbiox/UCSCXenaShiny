@@ -8,8 +8,13 @@ ui.modules_ccle_comp_m2o = function(id) {
 				wellPanel(
 					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
-					h4("1. Choose sites"),
+					h4("1. Modify datasets[opt]") %>% 
+						helper(type = "markdown", size = "m", fade = TRUE, 
+					                   title = "Set molecular profile origin", 
+					                   content = "data_origin"),
+					mol_origin_UI(ns("mol_origin2comp"), database = "ccle"),
 
+					h4("2. Choose sites"),
 					pickerInput(
 						ns("choose_cancer"),NULL,
 						choices = sort(unique(ccle_info_fine$Site_Primary)),
@@ -17,28 +22,28 @@ ui.modules_ccle_comp_m2o = function(id) {
 						selected = sort(unique(ccle_info_fine$Site_Primary)),
 						options = list(`actions-box` = TRUE)
 					),
-					br(),br(),
-					h4("2. Filter samples[opt]"),
+					br(),
+
+					h4("3. Filter samples[opt]"),
 					h5("Exact filter:"),
-					filter_samples_UI(ns("filter_samples2cor")),
+					filter_samples_UI(ns("filter_samples2comp")),
 					br(),
 					verbatimTextOutput(ns("filter_phe_id_info")),
-					br(),br(),
+					br(),
 
-					h4("3. Upload metadata[opt]") %>% 
+					h4("4. Upload metadata[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Upload sample info", 
 					                   content = "custom_metadata"),
 					shinyFeedback::useShinyFeedback(),
-					custom_meta_UI(ns("custom_meta2cor")),
-					br(),br(),
+					custom_meta_UI(ns("custom_meta2comp")),
+					br(),
 
-					h4("4. Modify datasets[opt]") %>% 
+					h4("5. Add signature[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Set molecular profile origin", 
-					                   content = "data_origin"),
-
-					mol_origin_UI(ns("mol_origin2cor"))
+					                   title = "Add molecular signature", 
+					                   content = "add_signature"),
+					add_signature_UI(ns("add_signature2comp")),
 				)
 			),
 			# 分组设置
@@ -48,10 +53,10 @@ ui.modules_ccle_comp_m2o = function(id) {
 					style = "height:1100px",
 					h2("S2: Get data", align = "center"),
 					# 调用分组模块UI
-					group_samples_UI(ns("group_samples2comp"),id_option = ccle_id_option),
+					group_samples_UI(ns("group_samples2comp"),database = "ccle"),
 					# 批量数据下载
 					multi_upload_UI(ns("multi_upload2comp"),
-						button_name="Query variables to compare",id_option = ccle_id_option),
+						button_name="Query variables to compare",database = "ccle"),
 				)
 			),
 			column(
@@ -94,25 +99,39 @@ server.modules_ccle_comp_m2o = function(input, output, session) {
 	ns <- session$ns
 	# 记录选择癌症
 	cancer_choose <- reactiveValues(name = "lung", phe_primary="",
-		filter_phe_id=query_tcga_group(cohort = "CCLE", cancer = "lung", return_all = T))
+		filter_phe_id=query_tcga_group(database = "ccle", cancer = "lung", return_all = T))
 	observe({
 		cancer_choose$name = input$choose_cancer
-		cancer_choose$phe_primary <- query_tcga_group(cohort = "CCLE",
+		cancer_choose$phe_primary <- query_tcga_group(database = "ccle",
 			cancer = cancer_choose$name, return_all = T)
 	})
 
-	# 自定义上传metadata数据
-	custom_meta = callModule(custom_meta_Server, "custom_meta2cor")
-
 	# 数据源设置
-	opt_pancan = callModule(mol_origin_Server, "mol_origin2cor")
+	opt_pancan = callModule(mol_origin_Server, "mol_origin2comp", database = "ccle")
+
+	# 自定义上传metadata数据
+	custom_meta = callModule(custom_meta_Server, "custom_meta2comp", database = "ccle")
+	# signature
+	sig_dat = callModule(add_signature_Server, "add_signature2comp", database = "pcawg")
+	custom_meta_sig = reactive({
+		if(is.null(custom_meta())){
+			return(sig_dat())
+		} else {
+			if(is.null(sig_dat())){
+				return(custom_meta())
+			} else {
+				custom_meta_sig = dplyr::inner_join(custom_meta(),sig_dat())
+				return(custom_meta_sig)
+			}
+		}
+	})
 
 	## 过滤样本
 	# exact filter module
-	filter_phe_id = callModule(filter_samples_Server, "filter_samples2cor",
-					   cohort = "CCLE",id_option = ccle_id_option,
+	filter_phe_id = callModule(filter_samples_Server, "filter_samples2comp",
+					   database = "ccle",
 					   cancers=reactive(cancer_choose$name),
-					   custom_metadata=reactive(custom_meta()),
+					   custom_metadata=reactive(custom_meta_sig()),
 					   opt_pancan = reactive(opt_pancan()))
 	observe({
 		# exact filter
@@ -128,17 +147,17 @@ server.modules_ccle_comp_m2o = function(input, output, session) {
 	})
 	# 设置分组
 	group_final = callModule(group_samples_Server, "group_samples2comp",
-						   cohort = "CCLE",id_option = ccle_id_option,
+						   database = "ccle",
 						   cancers=reactive(cancer_choose$name),
 						   samples=reactive(cancer_choose$filter_phe_id),
-						   custom_metadata=reactive(custom_meta()),
+						   custom_metadata=reactive(custom_meta_sig()),
 						   opt_pancan = reactive(opt_pancan())
 						   )
 	# 批量下载数据
 	L3s_x_data =  callModule(multi_upload_Server, "multi_upload2comp", 
-							 cohort = "CCLE",id_option = ccle_id_option,
+							 database = "ccle",
 							 samples=reactive(cancer_choose$filter_phe_id),
-							 custom_metadata=reactive(custom_meta()),
+							 custom_metadata=reactive(custom_meta_sig()),
 						     opt_pancan = reactive(opt_pancan()),
 						     table.ui = FALSE
 							 )

@@ -10,7 +10,7 @@ custom_meta_UI = function(id, button_name="Multi-conditions filters"){
 
 
 
-custom_meta_Server = function(input, output, session){
+custom_meta_Server = function(input, output, session, database = "toil"){
 	ns <- session$ns
 	custom_meta = reactive({
 		file = input$upload_sp_info
@@ -28,7 +28,7 @@ custom_meta_Server = function(input, output, session){
 			"example_sample_info.csv"
 		},
 		content = function(file){
-			sp_info = query_tcga_group()$data[,"Sample"]
+			sp_info = query_tcga_group(database = database)$data[,"Sample"]
 			set.seed(42)
 			scores = matrix(rnorm(nrow(sp_info)*5,mean = 1, sd = 1), ncol = 5) %>% as.data.frame()
 			colnames(scores) = paste0("TF",1:5)

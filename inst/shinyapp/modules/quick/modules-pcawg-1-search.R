@@ -5,6 +5,13 @@ ui.modules_pcawg_dist <- function(id) {
       column(
         3,
         wellPanel(
+          div(actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
+              style = "margin-bottom: 5px;"),
+          conditionalPanel(
+            ns = ns,
+            condition = "input.toggleBtn % 2 == 1",
+            mol_origin_UI(ns("mol_origin2quick"), database = "pcawg")
+          ),
           shinyWidgets::prettyRadioButtons(
             inputId = ns("profile"), label = "Select a genomic profile:",
             choiceValues = c(
@@ -17,12 +24,6 @@ ui.modules_pcawg_dist <- function(id) {
               "APOBEC mutagenesis"
             ),
             animation = "jelly"
-          ),
-          actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
-          conditionalPanel(
-            ns = ns,
-            condition = "input.toggleBtn % 2 == 1",
-            mol_origin_UI(ns("mol_origin2quick"))
           ),
           selectizeInput(
             inputId = ns("Pancan_search"),
@@ -142,7 +143,7 @@ server.modules_pcawg_dist <- function(input, output, session) {
     themes_list[[input$theme]]
   })
 
-  opt_pancan = callModule(mol_origin_Server, "mol_origin2quick")
+  opt_pancan = callModule(mol_origin_Server, "mol_origin2quick", database = "pcawg")
 
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("gene_pancan_dist"), html = waiter::spin_hexdots(), color = "black")

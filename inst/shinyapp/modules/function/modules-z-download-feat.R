@@ -1,5 +1,11 @@
-download_feat_UI = function(id, button_name="Query data",id_option = tcga_id_option){
+download_feat_UI = function(id, button_name="Query data", database = "toil"){
 	ns = NS(id)
+
+	id_option = switch(database, 
+			"toil"=tcga_id_option,
+			"pcawg"=pcawg_id_option,
+			"ccle"=ccle_id_option)
+
 	tagList(
 		shinyWidgets::actionBttn(
 			ns("query_data"), button_name,
@@ -101,9 +107,16 @@ download_feat_UI = function(id, button_name="Query data",id_option = tcga_id_opt
 
 
 
-download_feat_Server = function(input, output, session, cohort = "TOIL",id_option=tcga_id_option,
+download_feat_Server = function(input, output, session, database = "toil",#id_option=tcga_id_option,
 								samples=NULL, custom_metadata=NULL, opt_pancan=NULL, check_numeric=FALSE){
 	ns <- session$ns
+
+	id_option = switch(database, 
+			"toil"=tcga_id_option,
+			"pcawg"=pcawg_id_option,
+			"ccle"=ccle_id_option)
+	id_category = lapply(id_option, names)
+
 	observe({
 	  updateTabsetPanel(inputId = "data_L2_tab", selected = input$data_L1)
 	  updateTabsetPanel(inputId = "data_L3_tab", selected = input$data_L1)
@@ -190,7 +203,6 @@ download_feat_Server = function(input, output, session, cohort = "TOIL",id_optio
 		    `Pathway activity` = input$pathway_activity_id,
 		    `Phenotype data` = input$phenotype_data_id
 		)
-		id_category = lapply(id_option, names)
 		L1_x = names(id_category)[sapply(id_category, function(x){any(x %in% L2_x)})]
 		if(is.null(opt_pancan)){
 			# opt_pancan = list(
@@ -212,19 +224,19 @@ download_feat_Server = function(input, output, session, cohort = "TOIL",id_optio
 			opt_pancan = opt_pancan()
 		}
 		## 利用内部自定义下载函数获取数据
-		if(cohort=="TOIL"){
+		if(database=="toil"){
 			clinical_phe = tcga_clinical_fine
-			x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, cohort,
+			x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, database,
 						   tumor_index_list, tcga_TIL, tcga_PW, tcga_clinical_fine,
 						   opt_pancan,custom_metadata())
-		} else if(cohort=="PCAWG"){
+		} else if(database=="pcawg"){
 			clinical_phe = pcawg_info_fine
-			x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, cohort,
+			x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, database,
 						   pcawg_index_list, pcawg_TIL, pcawg_PW, pcawg_info_fine,
 						   opt_pancan,custom_metadata())
-		} else if (cohort=="CCLE"){
+		} else if (database=="ccle"){
 			clinical_phe = ccle_info_fine
-			x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, cohort,
+			x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, database,
 						   ccle_index_list, NULL, NULL, ccle_info_fine,
 						   opt_pancan,custom_metadata())
 		}
@@ -245,16 +257,16 @@ download_feat_Server = function(input, output, session, cohort = "TOIL",id_optio
 	observeEvent(input$query_data,{
 		output$x_axis_data_table = renderUI({
 			output$x_tmp_table = renderDataTable({
-				shiny::validate(
-					need(try(nrow(download_data())>0), 
-						"No sample data were available. Please inspect operations in Preset step."),
-				)
-				if(check_numeric){
-					shiny::validate(
-						need(try(class(download_data()$value)!="character"), 
-							"Please select a numeric variable."),
-					)	
-				}
+				# shiny::validate(
+				# 	need(try(nrow(download_data())>0), 
+				# 		"No sample data were available. Please inspect operations in Preset step."),
+				# )
+				# if(check_numeric){
+				# 	shiny::validate(
+				# 		need(try(class(download_data()$value)!="character"), 
+				# 			"Please select a numeric variable."),
+				# 	)	
+				# }
 				x_axis_data_ = download_data()[,c("sample","value","cancer")]
 
 				if(class(x_axis_data_[,"value"])=="numeric"){

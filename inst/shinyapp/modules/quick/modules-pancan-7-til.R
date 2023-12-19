@@ -5,17 +5,18 @@ ui.modules_pancan_til <- function(id) {
           column(
             3,
             wellPanel(
+            div(actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
+                style = "margin-bottom: 5px;"),
+            conditionalPanel(
+              ns = ns,
+              condition = "input.toggleBtn % 2 == 1",
+              mol_origin_UI(ns("mol_origin2quick"), database = "toil")
+            ),
             shinyWidgets::prettyRadioButtons(
               inputId = ns("profile"), label = "Select a genomic profile:",
               choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv"),
               choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
               animation = "jelly"
-            ),
-            actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
-            conditionalPanel(
-              ns = ns,
-              condition = "input.toggleBtn % 2 == 1",
-              mol_origin_UI(ns("mol_origin2quick"))
             ),
             selectizeInput(
               inputId = ns("Pancan_search"),
@@ -126,7 +127,7 @@ server.modules_pancan_til <- function(input, output, session) {
     )
   })
 
-  opt_pancan = callModule(mol_origin_Server, "mol_origin2quick")
+  opt_pancan = callModule(mol_origin_Server, "mol_origin2quick", database = "toil")
 
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("hm_gene_immune_cor"), html = waiter::spin_hexdots(), color = "white")

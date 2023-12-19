@@ -8,7 +8,7 @@ batch_download(
   L1,
   L2,
   L3,
-  cohort = c("TOIL", "PCAWG", "CCLE"),
+  database = c("toil", "pcawg", "ccle"),
   tumor_index_list,
   tcga_TIL,
   tcga_PW,
@@ -24,7 +24,7 @@ batch_download(
 
 \item{L3}{level 3  identifier}
 
-\item{cohort}{one cohort of c("TOIL","PCAWG","CCLE")}
+\item{database}{one of c("toil","pcawg","ccle")}
 
 \item{tumor_index_list}{Tumor index data. See shiny App.R file}
 
