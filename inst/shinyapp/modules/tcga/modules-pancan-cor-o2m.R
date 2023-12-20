@@ -8,7 +8,14 @@ ui.modules_pancan_cor_o2m = function(id) {
 				wellPanel(
 					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
-					h4("1. Choose cancers"),
+
+					h4("1. Modify datasets[opt]") %>% 
+						helper(type = "markdown", size = "m", fade = TRUE, 
+					                   title = "Set molecular profile origin", 
+					                   content = "data_origin"),
+					mol_origin_UI(ns("mol_origin2cor"), database = "toil"),
+
+					h4("2. Choose cancers"),
 					pickerInput(
 						ns("choose_cancers"), NULL,
 						choices = sort(tcga_cancer_choices),
@@ -17,9 +24,9 @@ ui.modules_pancan_cor_o2m = function(id) {
 						options = list(`actions-box` = TRUE)
 					),
 
-				    br(),br(),
+				    br(),
 
-					h4("2. Filter samples[opt]") %>% 
+					h4("3. Filter samples[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Choose samples for personalized need", 
 					                   content = "choose_samples"),
@@ -33,22 +40,21 @@ ui.modules_pancan_cor_o2m = function(id) {
 					filter_samples_UI(ns("filter_samples2cor")),
 					br(),
 					verbatimTextOutput(ns("filter_phe_id_info")),
-					br(),br(),
+					br(),
 
-					h4("3. Upload metadata[opt]") %>% 
+					h4("4. Upload metadata[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Upload sample info", 
 					                   content = "custom_metadata"),
 					shinyFeedback::useShinyFeedback(),
 					custom_meta_UI(ns("custom_meta2cor")),
-					br(),br(),
+					br(),
 
-					h4("4. Modify datasets[opt]") %>% 
+					h4("5. Add signature[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Set molecular profile origin", 
-					                   content = "data_origin"),
-
-					mol_origin_UI(ns("mol_origin2cor"))
+					                   title = "Add molecular signature", 
+					                   content = "add_signature"),
+					add_signature_UI(ns("add_signature2cor")),
 				)
 			),
 			# 下载X轴数据
@@ -58,9 +64,9 @@ ui.modules_pancan_cor_o2m = function(id) {
 					style = "height:1100px",
 					h2("S2: Select item for X", align = "center"),
 					# 调用下载模块UI
-					download_feat_UI(ns("download_x_axis"), button_name="Query data(x-axis)"),
+					download_feat_UI(ns("download_x_axis"), button_name="Query data(x-axis)", database = "toil"),
 		            br(),
-					download_feat_UI(ns("download_y_axis"), button_name="Query data(y-axis)"), 
+					download_feat_UI(ns("download_y_axis"), button_name="Query data(y-axis)", database = "toil"), 
 				)
 			),
 			# 分析/绘图/下载
@@ -132,25 +138,41 @@ server.modules_pancan_cor_o2m = function(input, output, session) {
 
 	# 记录选择癌症
 	cancer_choose <- reactiveValues(name = "ACC", phe_primary="",
-		filter_phe_id=query_tcga_group(cancer = "BRCA", return_all = T))
+		filter_phe_id=query_tcga_group(database = "toil", cancer = "BRCA", return_all = T))
 	observe({
 		cancer_choose$name = input$choose_cancers
-		cancer_choose$phe_primary <- query_tcga_group(cancer = cancer_choose$name, return_all = T)
+		cancer_choose$phe_primary <- query_tcga_group(database = "toil", cancer = cancer_choose$name, return_all = T)
 	})
 	
 
 	# 自定义上传metadata数据
-	custom_meta = callModule(custom_meta_Server, "custom_meta2cor")
+	custom_meta = callModule(custom_meta_Server, "custom_meta2cor", database = "toil")
 
 	# 数据源设置
-	opt_pancan = callModule(mol_origin_Server, "mol_origin2cor")
+	opt_pancan = callModule(mol_origin_Server, "mol_origin2cor", database = "toil")
+	# signature
+	sig_dat = callModule(add_signature_Server, "add_signature2cor", database = "toil")
+
+	custom_meta_sig = reactive({
+		if(is.null(custom_meta())){
+			return(sig_dat())
+		} else {
+			if(is.null(sig_dat())){
+				return(custom_meta())
+			} else {
+				custom_meta_sig = dplyr::inner_join(custom_meta(),sig_dat())
+				return(custom_meta_sig)
+			}
+		}
+	})
 
 
 	## 过滤样本
 	# exact filter module
 	filter_phe_id = callModule(filter_samples_Server, "filter_samples2cor",
+					   database = "toil",
 					   cancers=reactive(cancer_choose$name),
-					   custom_metadata=reactive(custom_meta()),
+					   custom_metadata=reactive(custom_meta_sig()),
 					   opt_pancan = reactive(opt_pancan()))
 	# quick filter widget
 	observe({
@@ -187,15 +209,17 @@ server.modules_pancan_cor_o2m = function(input, output, session) {
 
 	## x-axis data
 	x_axis_data = callModule(download_feat_Server, "download_x_axis", 
+							 database = "toil",
 							 samples=reactive(cancer_choose$filter_phe_id),
-							 custom_metadata=reactive(custom_meta()),
+							 custom_metadata=reactive(custom_meta_sig()),
 						     opt_pancan = reactive(opt_pancan()),
 						     check_numeric=TRUE
 							 )
 	## y-axis data
 	y_axis_data = callModule(download_feat_Server, "download_y_axis", 
+							 database = "toil",
 							 samples=reactive(cancer_choose$filter_phe_id),
-							 custom_metadata=reactive(custom_meta()),
+							 custom_metadata=reactive(custom_meta_sig()),
 						     opt_pancan = reactive(opt_pancan()),
 						     check_numeric=TRUE
 							 )

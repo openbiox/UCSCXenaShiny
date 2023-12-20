@@ -8,8 +8,14 @@ ui.modules_pcawg_sur_o2m = function(id) {
 				wellPanel(
 					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
-					h4("1. Choose projects"),
 
+					h4("1. Modify datasets[opt]") %>% 
+						helper(type = "markdown", size = "m", fade = TRUE, 
+					                   title = "Set molecular profile origin", 
+					                   content = "data_origin"),
+					mol_origin_UI(ns("mol_origin2sur"), database = "pcawg"),
+
+					h4("2. Choose projects"),
 					pickerInput(
 						ns("choose_cancers"),NULL,
 						choices = pcawg_items,
@@ -17,8 +23,9 @@ ui.modules_pcawg_sur_o2m = function(id) {
 						selected = pcawg_items,
 						options = list(`actions-box` = TRUE)
 					),
-					br(),br(),
-					h4("2. Filter samples[opt]"),
+					br(),
+
+					h4("3. Filter samples[opt]"),
 					h5("Quick filter:"),
 					pickerInput(
 						ns("filter_by_code"), NULL,
@@ -26,25 +33,24 @@ ui.modules_pcawg_sur_o2m = function(id) {
 						multiple = TRUE, options = list(`actions-box` = TRUE)
 					),
 					h5("Exact filter:"),
-					filter_samples_UI(ns("filter_samples2cor")),
+					filter_samples_UI(ns("filter_samples2sur")),
 					br(),
 					verbatimTextOutput(ns("filter_phe_id_info")),
-					br(),br(),
+					br(),
 
-					h4("3. Upload metadata[opt]") %>% 
+					h4("4. Upload metadata[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Upload sample info", 
 					                   content = "custom_metadata"),
 					shinyFeedback::useShinyFeedback(),
-					custom_meta_UI(ns("custom_meta2cor")),
-					br(),br(),
+					custom_meta_UI(ns("custom_meta2sur")),
+					br(),
 
-					h4("4. Modify datasets[opt]") %>% 
+					h4("5. Add signature[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Set molecular profile origin", 
-					                   content = "data_origin"),
-
-					mol_origin_UI(ns("mol_origin2cor"))
+					                   title = "Add molecular signature", 
+					                   content = "add_signature"),
+					add_signature_UI(ns("add_signature2sur"))
 				)
 			),
 			# 选择生存资料
@@ -53,7 +59,7 @@ ui.modules_pcawg_sur_o2m = function(id) {
 				wellPanel(
 					style = "height:1100px",
 					h2("S2: Get data", align = "center"),
-				    group_samples_UI(ns("group_samples2sur")) 
+				    group_samples_UI(ns("group_samples2sur"),database = "pcawg") 
 				)
 			),
 			# 分析/可视化/下载
@@ -135,18 +141,33 @@ server.modules_pcawg_sur_o2m = function(input, output, session) {
 
 	# 记录选择癌症
 	cancer_choose <- reactiveValues(name = "BLCA-US", phe_primary="",
-		filter_phe_id=query_tcga_group(cohort = "PCAWG", cancer = "BLCA-US", return_all = T))
+		filter_phe_id=query_tcga_group(database = "pcawg", cancer = "BLCA-US", return_all = T))
 	observe({
 		cancer_choose$name = input$choose_cancers
-		cancer_choose$phe_primary <- query_tcga_group(cohort = "PCAWG",
+		cancer_choose$phe_primary <- query_tcga_group(database = "pcawg",
 			cancer = cancer_choose$name, return_all = T)
 	})
 
-	# 自定义上传metadata数据
-	custom_meta = callModule(custom_meta_Server, "custom_meta2cor")
 
 	# 数据源设置
-	opt_pancan = callModule(mol_origin_Server, "mol_origin2cor")
+	opt_pancan = callModule(mol_origin_Server, "mol_origin2sur", database = "pcawg")
+
+	# 自定义上传metadata数据
+	custom_meta = callModule(custom_meta_Server, "custom_meta2sur", database = "pcawg")
+	# signature
+	sig_dat = callModule(add_signature_Server, "add_signature2sur", database = "pcawg")
+	custom_meta_sig = reactive({
+		if(is.null(custom_meta())){
+			return(sig_dat())
+		} else {
+			if(is.null(sig_dat())){
+				return(custom_meta())
+			} else {
+				custom_meta_sig = dplyr::inner_join(custom_meta(),sig_dat())
+				return(custom_meta_sig)
+			}
+		}
+	})
 
 
 	## 过滤样本
@@ -161,10 +182,10 @@ server.modules_pcawg_sur_o2m = function(input, output, session) {
 		)
 	})
 	# exact filter module
-	filter_phe_id = callModule(filter_samples_Server, "filter_samples2cor",
-					   cohort = "PCAWG",id_option = pcawg_id_option,
+	filter_phe_id = callModule(filter_samples_Server, "filter_samples2sur",
+					   database = "pcawg",
 					   cancers=reactive(cancer_choose$name),
-					   custom_metadata=reactive(custom_meta()),
+					   custom_metadata=reactive(custom_meta_sig()),
 					   opt_pancan = reactive(opt_pancan()))
 
 	# 综合上述二者
@@ -197,10 +218,10 @@ server.modules_pcawg_sur_o2m = function(input, output, session) {
 
 	# 设置分组
 	group_final = callModule(group_samples_Server, "group_samples2sur",
-						   cohort = "PCAWG", id_option = pcawg_id_option,
+						   database = "pcawg", 
 						   cancers=reactive(cancer_choose$name),
 						   samples=reactive(sur_dat_v1()$sample),
-						   custom_metadata=reactive(custom_meta()),
+						   custom_metadata=reactive(custom_meta_sig()),
 						   opt_pancan = reactive(opt_pancan())
 						   )
 	# 合并分组与生存

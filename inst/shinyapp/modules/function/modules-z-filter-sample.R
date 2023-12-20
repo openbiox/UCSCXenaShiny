@@ -14,9 +14,16 @@ filter_samples_UI = function(id, button_name="Enter"){
 
 
 
-filter_samples_Server = function(input, output, session, cohort="TOIL", id_option=tcga_id_option,
+filter_samples_Server = function(input, output, session, database="toil", #id_option=tcga_id_option,
 								 cancers=NULL, custom_metadata=NULL, opt_pancan=NULL){
 	ns <- session$ns
+
+	id_option = reactive({
+		switch(database, 
+			"toil"=tcga_id_option,
+			"pcawg"=pcawg_id_option,
+			"ccle"=ccle_id_option)
+	})
 
 	observeEvent(input$filter_phe, {
 		# message("filter samples by one/multiple phenotype(s)")
@@ -34,7 +41,7 @@ filter_samples_Server = function(input, output, session, cohort="TOIL", id_optio
 					    		6,
 							    selectInput(
 							    	ns("data_L1"), label = "Data type:",
-							    	choices = names(id_option),
+							    	choices = names(id_option()),
 							    	selected = "Molecular profile"
 							    )
 					    	),
@@ -46,31 +53,31 @@ filter_samples_Server = function(input, output, session, cohort="TOIL", id_optio
 									tabPanel("Molecular profile", 
 										selectInput(
 											ns("genomic_profile"), "Data subtype:",
-											choices = names(id_option[["Molecular profile"]]),
+											choices = names(id_option()[["Molecular profile"]]),
 											selected = "mRNA Expression")
 									),
 									tabPanel("Tumor index",
 										selectInput(
 											ns("tumor_index"), "Data subtype:",
-											choices = names(id_option[["Tumor index"]]),
+											choices = names(id_option()[["Tumor index"]]),
 											selected = "Tumor Purity")
 									),
 									tabPanel("Immune Infiltration",
 										selectInput(
 											ns("immune_infiltration"), "Data subtype:",
-											choices = names(id_option[["Immune Infiltration"]]),
+											choices = names(id_option()[["Immune Infiltration"]]),
 											selected = "CIBERSORT")
 									),
 									tabPanel("Pathway activity",
 										selectInput(
 											ns("pathway_activity"), "Data subtype:",
-											choices = names(id_option[["Pathway activity"]]),
+											choices = names(id_option()[["Pathway activity"]]),
 											selected = "HALLMARK")
 									),
 									tabPanel("Phenotype data",
 										selectInput(
 											ns("phenotype_data"), "Data subtype:",
-											choices = names(id_option[["Phenotype data"]]),
+											choices = names(id_option()[["Phenotype data"]]),
 											selected = "Clinical Phenotype")
 									)
 								)
@@ -161,7 +168,6 @@ filter_samples_Server = function(input, output, session, cohort="TOIL", id_optio
 					    	column(5, h5("Phenotype(s):")),
 					    	column(5, h5("Direction(s):")),
 					    	column(2, h5("Threshold(s):"))
-
 					    ),
 					    uiOutput(ns("multi_condi.ui")),
 					    verbatimTextOutput(ns("filter_by_phe_prompt")),
@@ -198,7 +204,7 @@ filter_samples_Server = function(input, output, session, cohort="TOIL", id_optio
 		
 		observeEvent(input$genomic_profile, {
 			genomic_profile_choices <- reactive({
-			  id_option[["Molecular profile"]][[input$genomic_profile]]
+			  id_option()[["Molecular profile"]][[input$genomic_profile]]
 			})
 		    updateSelectizeInput(
 		      session,
@@ -210,7 +216,7 @@ filter_samples_Server = function(input, output, session, cohort="TOIL", id_optio
 		})
 		observeEvent(input$tumor_index, {
 			tumor_index_choices <- reactive({
-			  id_option[["Tumor index"]][[input$tumor_index]]
+			  id_option()[["Tumor index"]][[input$tumor_index]]
 			})
 		    updateSelectizeInput(
 		      session,
@@ -222,7 +228,7 @@ filter_samples_Server = function(input, output, session, cohort="TOIL", id_optio
 		})
 		observeEvent(input$immune_infiltration, {
 			immune_infiltration_choices <- reactive({
-			  id_option[["Immune Infiltration"]][[input$immune_infiltration]]
+			  id_option()[["Immune Infiltration"]][[input$immune_infiltration]]
 			})
 		    updateSelectizeInput(
 		      session,
@@ -234,7 +240,7 @@ filter_samples_Server = function(input, output, session, cohort="TOIL", id_optio
 		})
 		observeEvent(input$pathway_activity, {
 			pathway_activity_choices <- reactive({
-			  id_option[["Pathway activity"]][[input$pathway_activity]]
+			  id_option()[["Pathway activity"]][[input$pathway_activity]]
 			})
 		    updateSelectizeInput(
 		      session,
@@ -246,7 +252,7 @@ filter_samples_Server = function(input, output, session, cohort="TOIL", id_optio
 		})
 		observeEvent(input$phenotype_data, {
 			phenotype_data_choices <- reactive({
-			    id_tmp = id_option[["Phenotype data"]]
+			    id_tmp = id_option()[["Phenotype data"]]
 				if(!is.null(custom_metadata)){
 					id_tmp[["Custom metadata"]]$all = sort(colnames(custom_metadata()[-1]))
 					id_tmp[["Custom metadata"]]$default = sort(colnames(custom_metadata()[-1]))[1]
@@ -322,19 +328,19 @@ filter_samples_Server = function(input, output, session, cohort="TOIL", id_optio
 				opt_pancan = opt_pancan()
 			}
 			
-			if(cohort=="TOIL"){
+			if(database=="toil"){
 				clinical_phe = tcga_clinical_fine
-				x_data = UCSCXenaShiny:::batch_download(tmp_data_type, tmp_data_sub, tmp_data_target, cohort,
+				x_data = UCSCXenaShiny:::batch_download(tmp_data_type, tmp_data_sub, tmp_data_target, database,
 							   tumor_index_list, tcga_TIL, tcga_PW, clinical_phe,
 							   opt_pancan,custom_metadata())
-			} else if(cohort=="PCAWG"){
+			} else if(database=="pcawg"){
 				clinical_phe = pcawg_info_fine
-				x_data = UCSCXenaShiny:::batch_download(tmp_data_type, tmp_data_sub, tmp_data_target, cohort,
+				x_data = UCSCXenaShiny:::batch_download(tmp_data_type, tmp_data_sub, tmp_data_target, database,
 							   pcawg_index_list, pcawg_TIL, pcawg_PW, clinical_phe,
 							   opt_pancan,custom_metadata())
-			} else if(cohort=="CCLE"){
+			} else if(database=="ccle"){
 				clinical_phe = ccle_info_fine
-				x_data = UCSCXenaShiny:::batch_download(tmp_data_type, tmp_data_sub, tmp_data_target, cohort,
+				x_data = UCSCXenaShiny:::batch_download(tmp_data_type, tmp_data_sub, tmp_data_target, database,
 							   ccle_index_list, NULL, NULL, clinical_phe,
 							   opt_pancan,custom_metadata())
 			}
@@ -362,12 +368,12 @@ filter_samples_Server = function(input, output, session, cohort="TOIL", id_optio
 	observe({
 		if(add_phes$click==0){
 			add_phes$phe_primary = query_tcga_group(
-				cohort = cohort,
+				database = database,
 				cancer = add_phes$cancers, 
 				return_all = T)
 		} else {
 			add_phes$phe_primary = query_tcga_group(
-				cohort = cohort,
+				database = database,
 				cancer = add_phes$cancers, custom = add_phes_dat(),
 				return_all = T)
 		}
@@ -465,8 +471,8 @@ filter_samples_Server = function(input, output, session, cohort="TOIL", id_optio
 				)
 			)
 
-	    	phe_Input <- selectInput(id_condi_item1, label_condi_item1, 
-	    							 c("Option 1", "Option 2", "Option 3"), selected=new_phe)
+	    	# phe_Input <- selectInput(id_condi_item1, label_condi_item1, 
+	    	# 						 c("Option 1", "Option 2", "Option 3"), selected=new_phe)
 
 			inputTagList <<- tagAppendChild(inputTagList,       
 			                              	dynamic_input)
@@ -536,10 +542,10 @@ filter_samples_Server = function(input, output, session, cohort="TOIL", id_optio
 	# 获取筛选后的样本ID
 	observe({
 		if(add_phes$click==0){
-			add_phes$filter_phe_id = query_tcga_group(cohort = cohort,cancer = add_phes$cancers,
+			add_phes$filter_phe_id = query_tcga_group(database = database,cancer = add_phes$cancers,
 				filter_by = filter_by_phe(),)[["data"]]$Sample
 		} else {
-			add_phes$filter_phe_id = query_tcga_group(cohort = cohort,cancer = add_phes$cancers,
+			add_phes$filter_phe_id = query_tcga_group(database = database,cancer = add_phes$cancers,
 				custom = add_phes_dat(), filter_by = filter_by_phe())[["data"]]$Sample
 		}
 		output$filter_phe_02_out = renderText({

@@ -8,8 +8,13 @@ ui.modules_pancan_sur_o2m = function(id) {
 				wellPanel(
 					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
+					h4("1. Modify datasets[opt]") %>% 
+						helper(type = "markdown", size = "m", fade = TRUE, 
+					                   title = "Set molecular profile origin", 
+					                   content = "data_origin"),
+					mol_origin_UI(ns("mol_origin2sur"), database = "toil"),
 
-					h4("1. Choose cancer(s)"),
+					h4("2. Choose cancer(s)"),
 					pickerInput(
 						ns("choose_cancers"), NULL,
 						choices = sort(tcga_cancer_choices),
@@ -17,9 +22,9 @@ ui.modules_pancan_sur_o2m = function(id) {
 						selected = sort(tcga_cancer_choices),
 						options = list(`actions-box` = TRUE)
 					),
-				    br(),br(),
+				    br(),
 
-					h4("2. Filter samples[opt]") %>% 
+					h4("3. Filter samples[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Choose samples for personalized need", 
 					                   content = "choose_samples"),
@@ -35,19 +40,19 @@ ui.modules_pancan_sur_o2m = function(id) {
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),br(),
 
-					h4("3. Upload metadata[opt]") %>% 
+					h4("4. Upload metadata[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Upload sample info", 
 					                   content = "custom_metadata"),
 					shinyFeedback::useShinyFeedback(),
 					custom_meta_UI(ns("custom_meta2sur")),
-					br(),br(),
+					br(),
 
-					h4("4. Modify datasets[opt]") %>% 
+					h4("5. Add signature[opt]") %>% 
 						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Set molecular profile origin", 
-					                   content = "data_origin"),
-					mol_origin_UI(ns("mol_origin2sur"))
+					                   title = "Add molecular signature", 
+					                   content = "add_signature"),
+					add_signature_UI(ns("add_signature2sur")),
 				)
 			),
 			# 选择生存资料
@@ -65,7 +70,7 @@ ui.modules_pancan_sur_o2m = function(id) {
 				        selected = "OS"
 				    ),
 				    br(),br(),
-				    group_samples_UI(ns("group_samples2sur")) 
+				    group_samples_UI(ns("group_samples2sur"), database = "toil") 
 				)
 			),
 			# 分析/可视化/下载
@@ -144,25 +149,40 @@ server.modules_pancan_sur_o2m = function(input, output, session) {
 
 	# 记录选择癌症
 	cancer_choose <- reactiveValues(name = "BRCA", filter_phe_id=NULL,
-		phe_primary=query_tcga_group(cancer = "BRCA", return_all = T))
+		phe_primary=query_tcga_group(database = "toil",cancer = "BRCA", return_all = T))
 	observe({
 		cancer_choose$name = input$choose_cancers
-		cancer_choose$phe_primary <- query_tcga_group(cancer = cancer_choose$name, return_all = T)
+		cancer_choose$phe_primary <- query_tcga_group(database = "toil",cancer = cancer_choose$name, return_all = T)
 	})
 
 	# 自定义上传metadata数据
-	custom_meta = callModule(custom_meta_Server, "custom_meta2sur")
+	custom_meta = callModule(custom_meta_Server, "custom_meta2sur",database = "toil")
+	# signature
+	sig_dat = callModule(add_signature_Server, "add_signature2sur",database = "toil")
+
+	custom_meta_sig = reactive({
+		if(is.null(custom_meta())){
+			return(sig_dat())
+		} else {
+			if(is.null(sig_dat())){
+				return(custom_meta())
+			} else {
+				custom_meta_sig = dplyr::inner_join(custom_meta(),sig_dat())
+				return(custom_meta_sig)
+			}
+		}
+	})
 
 	# 数据源设置
-	opt_pancan = callModule(mol_origin_Server, "mol_origin2sur")
-
+	opt_pancan = callModule(mol_origin_Server, "mol_origin2sur", database = "toil")
 
 
 	## 过滤样本
 	# exact filter module
 	filter_phe_id = callModule(filter_samples_Server, "filter_samples2sur",
+					   database = "toil",
 					   cancers=reactive(cancer_choose$name),
-					   custom_metadata=reactive(custom_meta()),
+					   custom_metadata=reactive(custom_meta_sig()),
 					   opt_pancan = reactive(opt_pancan()))
 	# quick filter widget
 	observe({
@@ -209,15 +229,12 @@ server.modules_pancan_sur_o2m = function(input, output, session) {
 	})
 
 
-
-
-
 	# 设置分组
 	group_final = callModule(group_samples_Server, "group_samples2sur",
+					   	   database = "toil",
 						   cancers=reactive(cancer_choose$name),
-						   # samples=reactive(cancer_choose$filter_phe_sur_id),
 						   samples=reactive(sur_dat_v1()$sample),
-						   custom_metadata=reactive(custom_meta()),
+						   custom_metadata=reactive(custom_meta_sig()),
 						   opt_pancan = reactive(opt_pancan())
 						   )
 

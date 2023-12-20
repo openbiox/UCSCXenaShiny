@@ -8,7 +8,7 @@
 #' @param return_all return the all phenotype data
 #' @param filter_id directly filter samples by provided sample ids
 #' @param merge_quantile  whether to merge numerical variable by percentiles 
-#' @param cohort one cohort of c("TOIL","PCAWG","CCLE")
+#' @param database one of c("toil","pcawg","ccle")
 #'
 #' @return a list object with grouping samples and statistics
 #' @export
@@ -64,7 +64,7 @@
 #'                  )
 #' )
 #' }
-query_tcga_group = function(cohort = c("TOIL","PCAWG","CCLE"),
+query_tcga_group = function(database = c("toil","pcawg","ccle"),
                          cancer=NULL, 
                          custom = NULL,
                          group = "Gender",
@@ -75,14 +75,14 @@ query_tcga_group = function(cohort = c("TOIL","PCAWG","CCLE"),
                          return_all = FALSE
                          ){
   # step1: load build-in data
-  cohort <- match.arg(cohort)
+  database <- match.arg(database)
   # data("tcga_clinical_fine")
   # data("pcawg_info_fine")
   # data("ccle_info_fine")
-  meta_data = switch(cohort,
-                     "TOIL" = UCSCXenaShiny::tcga_clinical_fine,
-                     "PCAWG"= UCSCXenaShiny::pcawg_info_fine,
-                     "CCLE" = UCSCXenaShiny::ccle_info_fine)
+  meta_data = switch(database,
+                     "toil" = UCSCXenaShiny::tcga_clinical_fine,
+                     "pcawg"= UCSCXenaShiny::pcawg_info_fine,
+                     "ccle" = UCSCXenaShiny::ccle_info_fine)
   colnames(meta_data)[1:2] = c("Sample","Cancer") # CCLE:c("CCLE_name","Primary_Site)
 
   

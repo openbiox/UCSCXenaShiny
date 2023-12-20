@@ -1,5 +1,11 @@
-multi_upload_UI = function(id, button_name = "Query data(x-axis)",id_option = tcga_id_option){
+multi_upload_UI = function(id, button_name = "Query data(x-axis)", database = "toil"){
 	ns = NS(id)
+
+	id_option = switch(database, 
+			"toil"=tcga_id_option,
+			"pcawg"=pcawg_id_option,
+			"ccle"=ccle_id_option)
+
 	tagList(
 		shinyWidgets::actionBttn(
 			ns("inspect_data_x"), button_name,
@@ -122,10 +128,14 @@ multi_upload_UI = function(id, button_name = "Query data(x-axis)",id_option = tc
 }
 
 
-multi_upload_Server = function(input, output, session, cohort = "TOIL", id_option = tcga_id_option,
+multi_upload_Server = function(input, output, session, database = "toil", #id_option = tcga_id_option,
 							   samples=NULL,custom_metadata=NULL, opt_pancan=NULL, table.ui=TRUE){
 	ns <- session$ns
 
+	id_option = switch(database, 
+			"toil"=tcga_id_option,
+			"pcawg"=pcawg_id_option,
+			"ccle"=ccle_id_option)
 	id_category = lapply(id_option, names)
 	
 	observe({
@@ -293,19 +303,19 @@ multi_upload_Server = function(input, output, session, cohort = "TOIL", id_optio
 					opt_pancan = opt_pancan()
 				}
 
-				if(cohort=="TOIL"){
+				if(database=="toil"){
 					clinical_phe = tcga_clinical_fine
-					x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x(), L3_x, cohort,
+					x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x(), L3_x, database,
 								   tumor_index_list, tcga_TIL, tcga_PW, tcga_clinical_fine,
 								   opt_pancan,custom_metadata())
-				} else if(cohort=="PCAWG"){
+				} else if(database=="pcawg"){
 					clinical_phe = pcawg_info_fine
-					x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x(), L3_x, cohort,
+					x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x(), L3_x, database,
 								   pcawg_index_list, pcawg_TIL, pcawg_PW, pcawg_info_fine,
 								   opt_pancan,custom_metadata())
-				} else if (cohort=="CCLE"){
+				} else if (database=="ccle"){
 					clinical_phe = ccle_info_fine
-					x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x(), L3_x, cohort,
+					x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x(), L3_x, database,
 								   ccle_index_list, NULL, NULL, ccle_info_fine,
 								   opt_pancan,custom_metadata())
 				}

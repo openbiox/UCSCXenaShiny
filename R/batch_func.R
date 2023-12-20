@@ -9,12 +9,12 @@
 #' @param opt_pancan      molecular datasets parameters
 #' @param custom_metadata user customized metadata
 #' @param clinical_phe    common TCGA patient clinical phenotype 
-#' @param cohort          one cohort of c("TOIL","PCAWG","CCLE")
+#' @param database          one of c("toil","pcawg","ccle")
 #'
-batch_download = function(L1, L2, L3, cohort = c("TOIL","PCAWG","CCLE"),
+batch_download = function(L1, L2, L3, database = c("toil","pcawg","ccle"),
                           tumor_index_list, tcga_TIL, tcga_PW, clinical_phe,
                           opt_pancan=NULL, custom_metadata=NULL){
-  cohort = tolower(match.arg(cohort))
+  database = match.arg(database)
   if(L1 == "Molecular profile"){
     # L2 = "mRNA Expression"
     # L3 = "TP53"
@@ -35,10 +35,10 @@ batch_download = function(L1, L2, L3, cohort = c("TOIL","PCAWG","CCLE"),
     if(is.null(opt_pancan)) {opt_pancan = .opt_pancan}
     x_data <- query_pancan_value(L3, 
                                  data_type = x_genomic_profile,
-                                 database = cohort,
+                                 database = database,
                                  opt_pancan = opt_pancan
     )
-    if(cohort == "ccle" & L2 == "Mutation status"){
+    if(database == "ccle" & L2 == "Mutation status"){
       x_data = x_data[,c("sampleID","genes")]
       x_data = x_data %>% 
         dplyr::select("sampleID", "genes") %>% 
