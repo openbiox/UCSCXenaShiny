@@ -35,7 +35,7 @@ ui.modules_pancan_sur_o2m = function(id) {
 						multiple = TRUE, options = list(`actions-box` = TRUE)
 					),
 					h5("Exact filter:"),
-					filter_samples_UI(ns("filter_samples2sur")),
+					filter_samples_UI(ns("filter_samples2sur"), database = "toil"),
 					br(),
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),br(),
@@ -52,7 +52,7 @@ ui.modules_pancan_sur_o2m = function(id) {
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Add molecular signature", 
 					                   content = "add_signature"),
-					add_signature_UI(ns("add_signature2sur")),
+					add_signature_UI(ns("add_signature2sur"), database = "toil"),
 				)
 			),
 			# 选择生存资料
@@ -220,9 +220,9 @@ server.modules_pancan_sur_o2m = function(input, output, session) {
 		sur_dat_raw = load_data("tcga_surv") 
 		cli_dat_raw = load_data("tcga_clinical") 
 		sur_dat_sub = sur_dat_raw %>%
-			dplyr::filter(sample %in% cancer_choose$filter_phe_id) %>%
-			dplyr::select("sample",contains(input$endpoint_type)) %>%
-			dplyr::mutate(cancer = cli_dat_raw$type[match(sample,cli_dat_raw$sample)],.before = 1) %>%
+			dplyr::filter(Sample %in% cancer_choose$filter_phe_id) %>%
+			dplyr::select("Sample",contains(input$endpoint_type)) %>%
+			dplyr::mutate(cancer = cli_dat_raw$type[match(Sample,cli_dat_raw$Sample)],.before = 1) %>%
 			na.omit()
 		colnames(sur_dat_sub)[3:4] = c("status","time")
 		sur_dat_sub
@@ -233,7 +233,7 @@ server.modules_pancan_sur_o2m = function(input, output, session) {
 	group_final = callModule(group_samples_Server, "group_samples2sur",
 					   	   database = "toil",
 						   cancers=reactive(cancer_choose$name),
-						   samples=reactive(sur_dat_v1()$sample),
+						   samples=reactive(sur_dat_v1()$Sample),
 						   custom_metadata=reactive(custom_meta_sig()),
 						   opt_pancan = reactive(opt_pancan())
 						   )
@@ -242,7 +242,7 @@ server.modules_pancan_sur_o2m = function(input, output, session) {
 	sur_res_multi = reactiveValues(sur_dat = NULL, cutoff=NULL, sur_res = NULL)	
 
 	group_sur_final = reactive({
-		dat = dplyr::inner_join(group_final(),sur_dat_v1()[,-1],by=c("Sample"="sample"))
+		dat = dplyr::inner_join(group_final(),sur_dat_v1()[,-1],by=c("Sample"="Sample"))
 		## 验证是否只有一组分组的癌症
 		dat = dat %>%
 			dplyr::filter(Cancer %in% sort(unique(dat$Cancer))[

@@ -21,7 +21,7 @@
 
 <br>
 
-> Note: For molecular profile, up to 100 ids are allowed to selected or uploaded.
+> Note: For molecular profile, up to 100 ids are allowed to selected or uploaded. For tumor index, only tumor related samples are provided.
 
 
 

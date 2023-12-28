@@ -29,7 +29,7 @@ ui.modules_pcawg_sur_m2o = function(id) {
 						multiple = TRUE, options = list(`actions-box` = TRUE)
 					),
 					h5("Exact filter:"),
-					filter_samples_UI(ns("filter_samples2sur")),
+					filter_samples_UI(ns("filter_samples2sur"), database = "pcawg"),
 					br(),
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),
@@ -46,7 +46,7 @@ ui.modules_pcawg_sur_m2o = function(id) {
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Add molecular signature", 
 					                   content = "add_signature"),
-					add_signature_UI(ns("add_signature2sur"))
+					add_signature_UI(ns("add_signature2sur"), database = "pcawg")
 				)
 			),	
 			column(
@@ -198,7 +198,7 @@ server.modules_pcawg_sur_m2o = function(input, output, session) {
 
 	L3s_x_data_sur = reactive({
 		sur_dat_raw = pcawg_info[,c("icgc_specimen_id","OS","OS.time")]
-		colnames(sur_dat_raw) = c("sample","status","time")
+		colnames(sur_dat_raw) = c("Sample","status","time")
 		sur_dat_sub = sur_dat_raw %>%  dplyr::distinct() %>% na.omit()
 
 		x_data_merge = L3s_x_data() %>%

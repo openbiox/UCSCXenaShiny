@@ -29,7 +29,7 @@ ui.modules_pcawg_cor_o2o = function(id) {
 						multiple = TRUE, options = list(`actions-box` = TRUE)
 					),
 					h5("Exact filter:"),
-					filter_samples_UI(ns("filter_samples2cor")),
+					filter_samples_UI(ns("filter_samples2cor"), database = "pcawg"),
 					br(),
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),
@@ -46,7 +46,7 @@ ui.modules_pcawg_cor_o2o = function(id) {
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Add molecular signature", 
 					                   content = "add_signature"),
-					add_signature_UI(ns("add_signature2cor")),
+					add_signature_UI(ns("add_signature2cor"), database = "pcawg"),
 				)
 			),
 			# 下载X/Y轴数据
@@ -224,7 +224,7 @@ server.modules_pcawg_cor_o2o = function(input, output, session) {
 		colnames(y_axis_data)[c(1:3,5)] = paste0("y_",colnames(y_axis_data)[c(1:3,5)])
 
 		data = dplyr::inner_join(x_axis_data, y_axis_data) %>%
-			dplyr::select(cancer, sample, everything())
+			dplyr::select(cancer, Sample, everything())
 		data
 	})
 

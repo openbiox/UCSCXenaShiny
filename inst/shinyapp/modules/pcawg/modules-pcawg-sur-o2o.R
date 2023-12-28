@@ -30,7 +30,7 @@ ui.modules_pcawg_sur_o2o = function(id) {
 						multiple = TRUE, options = list(`actions-box` = TRUE)
 					),
 					h5("Exact filter:"),
-					filter_samples_UI(ns("filter_samples2sur")),
+					filter_samples_UI(ns("filter_samples2sur"), database = "pcawg"),
 					br(),
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),
@@ -47,7 +47,7 @@ ui.modules_pcawg_sur_o2o = function(id) {
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Add molecular signature", 
 					                   content = "add_signature"),
-					add_signature_UI(ns("add_signature2sur"))
+					add_signature_UI(ns("add_signature2sur"), database = "pcawg")
 				)
 			),	
 			column(
@@ -202,23 +202,23 @@ server.modules_pcawg_sur_o2o = function(input, output, session) {
 	# 生存资料
 	sur_dat_v1 = reactive({
 		sur_dat_raw = pcawg_info[,c("dcc_project_code","icgc_specimen_id","OS","OS.time")]
-		colnames(sur_dat_raw) = c("cancer","sample","status","time")
+		colnames(sur_dat_raw) = c("cancer","Sample","status","time")
 		sur_dat_sub = sur_dat_raw %>% 
 		  dplyr::distinct()  %>% na.omit() %>% 
-		  dplyr::filter(sample %in% cancer_choose$filter_phe_id)
+		  dplyr::filter(Sample %in% cancer_choose$filter_phe_id)
 		sur_dat_sub
 	})
 	# 设置分组
 	group_final = callModule(group_samples_Server, "group_samples2sur",
 						   database = "pcawg", 
 						   cancers=reactive(cancer_choose$name),
-						   samples=reactive(sur_dat_v1()$sample),
+						   samples=reactive(sur_dat_v1()$Sample),
 						   custom_metadata=reactive(custom_meta_sig()),
 						   opt_pancan = reactive(opt_pancan())
 						   )
 	sur_res_one = reactiveValues(sur_dat = NULL, cutoff=NULL, sur_res = NULL)
 	group_sur_final = reactive({
-		dat = dplyr::inner_join(group_final(),sur_dat_v1()[,-1],by=c("Sample"="sample"))
+		dat = dplyr::inner_join(group_final(),sur_dat_v1()[,-1],by=c("Sample"="Sample"))
 		## 验证是否只有一组分组的癌症
 		dat = dat %>%
 			dplyr::filter(Cancer %in% sort(unique(dat$Cancer))[

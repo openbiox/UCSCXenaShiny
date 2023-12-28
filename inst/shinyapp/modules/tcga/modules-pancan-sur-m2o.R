@@ -31,7 +31,7 @@ ui.modules_pancan_sur_m2o = function(id) {
 						multiple = TRUE, options = list(`actions-box` = TRUE)
 					),
 					h5("Exact filter:"),
-					filter_samples_UI(ns("filter_samples2sur")),
+					filter_samples_UI(ns("filter_samples2sur"), database = "toil"),
 					br(),
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),
@@ -48,7 +48,7 @@ ui.modules_pancan_sur_m2o = function(id) {
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Add molecular signature", 
 					                   content = "add_signature"),
-					add_signature_UI(ns("add_signature2sur")),
+					add_signature_UI(ns("add_signature2sur"), database = "toil"),
 				)
 			),
 			column(
@@ -209,7 +209,7 @@ server.modules_pancan_sur_m2o = function(input, output, session) {
 
 	L3s_x_data_sur = reactive({
 		sur_dat_raw = load_data("tcga_surv") %>%
-			dplyr::select("sample",contains(input$endpoint_type)) %>%
+			dplyr::select("Sample",contains(input$endpoint_type)) %>%
 			na.omit()
 		colnames(sur_dat_raw)[2:3] = c("status","time")
 		x_data_merge = L3s_x_data() %>%

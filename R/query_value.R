@@ -64,7 +64,7 @@ query_molecule_value <- function(dataset, molecule, host = NULL) {
   # PCAWG
   pcawg_mRNA = list(),
   pcawg_fusion = list(),
-  pcawg_miRNA = list(norm_method = "TMM"),
+  pcawg_miRNA = list(norm = "TMM"),
   pcawg_promoter = list(type = "relative"),
   pcawg_APOBEC = list(),
   # CCLE

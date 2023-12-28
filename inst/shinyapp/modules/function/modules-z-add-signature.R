@@ -1,27 +1,5 @@
-add_signature_UI = function(id){
+add_signature_UI = function(id, database = "toil"){
 	ns = NS(id)
-
-	tagList(
-		shinyWidgets::actionBttn(
-			ns("sig_edit"), "Enter",
-	        style = "gradient",
-	        icon = icon("arrows-to-dot"),
-	        color = "primary",
-	        block = TRUE,
-	        size = "sm"
-		)
-	)
-}
-
-
-add_signature_Server = function(input, output, session, database = "toil") {
-	ns <- session$ns
-
-	id_option = switch(database, 
-			"toil"=tcga_id_option,
-			"pcawg"=pcawg_id_option,
-			"ccle"=ccle_id_option)
-
 
 	if (!is.null(database)) {
 	  if (database == "toil") {
@@ -36,118 +14,138 @@ add_signature_Server = function(input, output, session, database = "toil") {
 	  }
 	}
 	selected = choices[1]
+	tagList(
+		dropMenu(
+			shinyWidgets::actionBttn(
+				ns("sig_edit"), "Edit",
+		        style = "gradient",
+		        icon = icon("arrows-to-dot"),
+		        color = "primary",
+		        block = TRUE,
+		        size = "sm"
+			),
+			div(h5("Set your custom signature:"),style="width:800px;"),
 
-	observeEvent(input$sig_edit, {
-		showModal(
-			modalDialog(
-				title = "Add molecular signature",
-				footer = modalButton("Done!"),
-				size = "l",
-				fluidPage(
-					wellPanel(
-						fluidRow(
-							column(
-								6,
-								h5("(1) Signature Name"),
-								textInput(ns("sig_name"), NULL, value="Signature_X")
-							)
-						),
-						fluidRow(
-							column(
-								6,
-								h5("(2) Signature Type"),
-								selectInput(ns("data_origin"),NULL,
-									choices = choices, selected = selected)
-							)
-						),
-						fluidRow(column(6,h5("(3) Signature molecules"))),
-						fluidRow(
-							column(
-								3,
-							    actionBttn(
-							      inputId = ns("add_bt"),
-							      label = "Select&Add molecule",
-							      color = "primary",
-							      style = "bordered", size = "sm",
-							      block = F
-							    )
-							),
-							column(
-								3,
-								selectizeInput(ns("add_mol"), NULL, NULL, 
-									options = list(create = TRUE, maxOptions = 10))
-							)
-						),
-						fluidRow(
-							column(
-								8,
-								div(style = "border-top: 1px solid #000; margin-top: 0px; margin-bottom: 0px;"),
-							)
-						),
-					    fluidRow(
-					    	column(3, h5("")),
-					    	column(2, h5("Direction:")),
-					    	column(2, h5("Absolute Coef:")),
-					    	column(1, h5("Check:")),
-					    ),
-						fluidRow(
-							column(
-								8,
-								div(style = "border-top: 1px dashed #000; margin-top: 0px; margin-bottom: 5px;"),
-							)
-						),
-					    uiOutput(ns("multi_condi.ui")),
-						fluidRow(
-							column(
-								8,
-								div(style = "border-top: 1px solid #000; margin-top: 0px; margin-bottom: 5px;"),
-							)
-						),
-						uiOutput(ns("del_reset_bt.ui")),
-					    br(),
-						verbatimTextOutput(ns("print_fm")),
-						br(),
+			wellPanel(
+				style = "background: #f7f7f7",
+				fluidRow(column(6,
+					h5("(1) Signature Name"),
+					textInput(ns("sig_name"), NULL, value="Signature_X"),
+				)),
+				fluidRow(column(6,
+					h5("(2) Signature Type"),
+					selectInput(ns("data_origin"),NULL,
+						choices = choices, selected = selected),
+				)),
+			),
 
-						fluidRow(column(6,h5("(4) Signature data"))),
-
+			wellPanel(
+				style = "background: #f7f7f7",
+				h5("(3) Signature molecules"),
+				fluidRow(
+					column(
+						4,
 					    actionBttn(
-					      inputId = ns("query_bt"),
-					      label = "Query data",
+					      inputId = ns("add_bt"),
+					      label = "Select&Add molecule",
 					      color = "primary",
 					      style = "bordered", size = "sm",
 					      block = F
-					    ),
-    					materialSwitch(ns("add_custom"), "Whether add to Custom metadata?",
-    						value = FALSE, inline = TRUE),
-
-					    dataTableOutput(ns("sig_dat_table")),
-				        shinyjs::hidden(
-				          wellPanel(
-				            id = ns("save_csv"),
-				            downloadButton(ns("downloadTable"), "Save as csv")
-				          )
-				        )
+					    )
+					),
+					column(
+						4,
+						selectizeInput(ns("add_mol"), NULL, NULL, 
+							options = list(create = TRUE, maxOptions = 10))
 					)
-				)
-			)
+				),
+				fluidRow(column(8,
+					div(style = "border-top: 1px solid #000; margin-top: 0px; margin-bottom: 0px;"),
+				)),
+			    fluidRow(
+			    	column(3, h5("")),
+			    	column(2, h5("Direction:")),
+			    	column(2, h5("Absolute Coef:")),
+			    	column(1, h5("Check:")),
+			    ),
+				fluidRow(column(8,
+					div(style = "border-top: 1px dashed #000; margin-top: 0px; margin-bottom: 5px;"),
+				)),
+			    uiOutput(ns("multi_condi.ui")),
+				fluidRow(column(8,
+					div(style = "border-top: 1px solid #000; margin-top: 0px; margin-bottom: 0px;"),
+				)),
+				uiOutput(ns("del_reset_bt.ui")),
+			    br(),
+				verbatimTextOutput(ns("print_fm")),
+				br(),
+			),
 
+			wellPanel(
+				style = "background: #f7f7f7",
+				fluidRow(column(6,h5("(4) Signature data"))),
+			    actionBttn(
+			      inputId = ns("query_bt"),
+			      label = "Query data",
+			      color = "primary",
+			      style = "bordered", size = "sm",
+			      block = F
+			    ),
+			    actionBttn(
+			      inputId = ns("add_custom"),
+			      label = "Add/Update metadata",
+			      color = "primary",
+			      style = "bordered", size = "sm",
+			      block = F
+			    ),  
+			    verbatimTextOutput(ns("sig_dat2custom_tips")),
+
+
+			    dataTableOutput(ns("sig_dat_table")),
+		        shinyjs::hidden(
+		          wellPanel(
+		            id = ns("save_csv"),
+		            downloadButton(ns("downloadTable"), "Save as csv")
+		          )
+		        ),
+
+			),
+
+
+
+
+			placement = "right-end",
+			maxWidth = "1000px"
 		)
-		observeEvent(input$data_origin, {
-			genomic_profile_choices <- reactive({
-			  genomic_profile = ifelse(is.null(input$data_origin),"mRNA Expression",input$data_origin)
 
-			  id_option[["Molecular profile"]][[genomic_profile]]
-			})
-		    updateSelectizeInput(
-		      session,
-		      "add_mol",
-		      choices = genomic_profile_choices()$all,
-		      selected = genomic_profile_choices()$default,
-		      server = TRUE
-		    )
+	)
+}
+
+
+
+add_signature_Server = function(input, output, session, database = "toil"){
+	ns <- session$ns
+
+
+	id_option = switch(database, 
+			"toil"=tcga_id_option,
+			"pcawg"=pcawg_id_option,
+			"ccle"=ccle_id_option)
+
+	observeEvent(input$data_origin, {
+		genomic_profile_choices <- reactive({
+		  genomic_profile = ifelse(is.null(input$data_origin),"mRNA Expression",input$data_origin)
+
+		  id_option[["Molecular profile"]][[genomic_profile]]
 		})
+	    updateSelectizeInput(
+	      session,
+	      "add_mol",
+	      choices = genomic_profile_choices()$all,
+	      selected = genomic_profile_choices()$default,
+	      server = TRUE
+	    )
 	})
-
 	dynamic_condi = reactiveValues(mols = NULL, add = 0, del = 0, sum = 0, check = NULL)
 
 	observeEvent(input$add_bt, {
@@ -232,7 +230,6 @@ add_signature_Server = function(input, output, session, database = "toil") {
     	inputTagList
 	})
 
-
 	output$del_reset_bt.ui = renderUI({
 		if(length(dynamic_condi$mols)>0){
 			tagList(
@@ -274,8 +271,9 @@ add_signature_Server = function(input, output, session, database = "toil") {
 	})
 
 	sig_dat = eventReactive(input$query_bt,{
-		fm = str_split(formula(), " = ")[[1]][2]
-		data_type = switch(input$data_origin,
+		# isolate() 仅点击query/add按钮时才更新signature name/type等
+		fm = str_split(isolate(formula()), " = ")[[1]][2]
+		data_type = switch(isolate(input$data_origin),
                `mRNA Expression` = "mRNA",
                `Transcript Expression` = "transcript",
                `DNA Methylation` = "methylation",
@@ -292,7 +290,7 @@ add_signature_Server = function(input, output, session, database = "toil") {
 		dat = query_pancan_value(fm, data_type = data_type, database = database)
 		dat = data.frame(dat[[1]]) %>% 
 		  tibble::rownames_to_column("Sample")
-		colnames(dat)[2] = str_split(formula(), " = ")[[1]][1]
+		colnames(dat)[2] = str_split(isolate(formula()), " = ")[[1]][1]
 		dat
 	})
 
@@ -319,12 +317,20 @@ add_signature_Server = function(input, output, session, database = "toil") {
 	)
 
 	sig_dat2custom = reactive({
-		add_custom = ifelse(is.null(input$add_custom),FALSE,input$add_custom)
-		if(add_custom){
-			sig_dat()
-		} else {
+		if(input$add_custom==0){
 			NULL
+		} else {
+			sig_dat()
 		}
 	})
+
+	sig_dat2custom_tips = eventReactive(input$add_custom,{
+		ts = timestamp()
+		paste0("Your latest quried signature has been added to the costum metadata.\n",ts)
+	})
+	output$sig_dat2custom_tips = renderPrint({
+		cat(sig_dat2custom_tips())
+	})
+
 	return(sig_dat2custom)
 }
