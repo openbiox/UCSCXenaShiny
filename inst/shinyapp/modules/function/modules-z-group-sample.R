@@ -231,31 +231,36 @@ group_samples_Server = function(input, output, session, database = "toil",
     }
     ## 利用内部自定义下载函数获取数据
     if(database=="toil"){
-      clinical_phe = tcga_clinical_fine
-      x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, database,
-               tumor_index_list, tcga_TIL, tcga_PW, clinical_phe,
+      clinical_phe = tcga_phenotype_value[["Clinical Phenotype"]]
+      x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
+               tcga_index_value, tcga_immune_value, tcga_pathway_value, 
+               clinical_phe,
                opt_pancan,custom_metadata())
     } else if(database=="pcawg"){
-      clinical_phe = pcawg_info_fine
-      x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, database,
-               pcawg_index_list, pcawg_TIL, pcawg_PW, clinical_phe,
+      clinical_phe = pcawg_phenotype_value[["Clinical Phenotype"]]
+      x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
+               # pcawg_index_list, pcawg_TIL, pcawg_PW, pcawg_info_fine,
+               pcawg_index_value, pcawg_immune_value, pcawg_pathway_value,
+               clinical_phe,
                opt_pancan,custom_metadata())
     } else if (database=="ccle"){
-          clinical_phe = ccle_info_fine
-          x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, database,
-                   ccle_index_list, NULL, NULL, ccle_info_fine,
-                   opt_pancan,custom_metadata())
+      clinical_phe = ccle_phenotype_value[["Clinical Phenotype"]]
+      x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
+               # ccle_index_list, NULL, NULL, ccle_info_fine,
+               ccle_index_value, NULL, NULL, 
+               clinical_phe,
+               opt_pancan,custom_metadata())
     }
     if(!is.null(samples)){
       if(!is.null(samples())){
         x_data = x_data %>%
-          dplyr::filter(sample %in% samples())
+          dplyr::filter(Sample %in% samples())
       }
     }
     x_data$level1 = L1_x
-    x_data$cancer = clinical_phe[,2,drop=T][match(x_data$sample, clinical_phe$Sample)]
-    x_data = x_data[,c("id","level1","level2","sample","value","cancer")] %>%
-      dplyr::arrange(cancer, sample)
+    x_data$cancer = clinical_phe[,2,drop=T][match(x_data$Sample, clinical_phe$Sample)]
+    x_data = x_data[,c("id","level1","level2","Sample","value","cancer")] %>%
+      dplyr::arrange(cancer, Sample)
     x_data
   })
   # output$condi_dist = renderPrint({head(condi_data())})
@@ -369,7 +374,7 @@ group_samples_Server = function(input, output, session, database = "toil",
   merge_out = eventReactive(input$group_range,{
     merge_tmp = query_tcga_group(database = database,
                                  cancer=cancers(), 
-                                 custom=condi_data()[,c("sample","value")],
+                                 custom=condi_data()[,c("Sample","value")],
                                  group="value", filter_id = samples(),
                                  merge_by = merge_by(),
                                  merge_quantile = input$set_quantile)[['data']]
@@ -385,7 +390,7 @@ group_samples_Server = function(input, output, session, database = "toil",
     }
     merge_tmp[,"group"] = factor(merge_tmp[,"group",drop=TRUE], levels = group_levels)  
     #分组前数据
-    merge_tmp$origin = condi_data()$value[match(merge_tmp$Sample, condi_data()$sample)]
+    merge_tmp$origin = condi_data()$value[match(merge_tmp$Sample, condi_data()$Sample)]
 
     merge_tmp
   })

@@ -173,8 +173,8 @@ mol_origin_Server = function(input, output, session, database = "toil"){
 				toil_L2_3_methy_1 = input$toil_L2_3_methy_1
 			}
 			candi_cpg = switch(toil_L2_3_methy_1,
-				`450K` = id_referrence$id_molecule$id_M450,
-				`27K` = id_referrence$id_molecule$id_M27K
+				`450K` = tcga_id_referrence$id_molecule$id_M450,
+				`27K` = tcga_id_referrence$id_molecule$id_M27K
 			) %>%
 				dplyr::filter(Level3 %in% input$toil_L2_3_methy_3_gene)
 	})
@@ -246,7 +246,7 @@ mol_origin_Server = function(input, output, session, database = "toil"){
 									aggr = ifelse(is.null(input$toil_L2_3_methy_2),"NA",input$toil_L2_3_methy_2),
 									rule_out = setdiff(candi_cpg()$CpG, cpg_ids_retain()))
 		} else if (database=="pcawg"){
-		  opt_pancan$pcawg_miRNA = list(norm_method = input$pcawg_mi_norm)
+		  opt_pancan$pcawg_miRNA = list(norm = input$pcawg_mi_norm)
 		  opt_pancan$pcawg_promoter = list(type = input$pcawg_pro_type)
 		} else if (database=="ccle"){
 		  opt_pancan$ccle_mRNA = list(norm = input$ccle_gene_norm)

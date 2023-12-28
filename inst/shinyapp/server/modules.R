@@ -26,7 +26,7 @@ callModule(server.modules_pcawg_sur_plot, "modules_pcawg_sur_plot")
 
 
 
-# TCGA pancan
+# # TCGA pancan
 callModule(server.modules_pancan_cor_o2o, "modules_pancan_cor_o2o")
 callModule(server.modules_pancan_cor_o2m, "modules_pancan_cor_o2m")
 callModule(server.modules_pancan_cor_m2o, "modules_pancan_cor_m2o")
@@ -54,7 +54,7 @@ callModule(server.modules_pcawg_sur_o2m, "modules_pcawg_sur_o2m")
 callModule(server.modules_pcawg_sur_m2o, "modules_pcawg_sur_m2o")
 
 
-# CCLE
+# # CCLE
 
 callModule(server.modules_ccle_cor_o2o, "modules_ccle_cor_o2o")
 callModule(server.modules_ccle_cor_m2o, "modules_ccle_cor_m2o")
@@ -65,5 +65,9 @@ callModule(server.modules_ccle_comp_m2o, "modules_ccle_comp_m2o")
 
 
 
-# identifier help
+# # identifier help
 callModule(server.modules_id_reference, "modules_id_reference")
+
+# # download data
+callModule(server.modules_download_pancan, "modules_download_pancan")
+callModule(server.modules_download_dataset, "modules_download_dataset")

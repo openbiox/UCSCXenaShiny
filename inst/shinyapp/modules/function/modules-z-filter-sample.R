@@ -1,16 +1,189 @@
-filter_samples_UI = function(id, button_name="Enter"){
+filter_samples_UI = function(id, database="toil"){
 	ns = NS(id)
+
+	id_option =switch(database, 
+			"toil"=tcga_id_option,
+			"pcawg"=pcawg_id_option,
+			"ccle"=ccle_id_option)
+
+
 	tagList(
-		shinyWidgets::actionBttn(
-			ns("filter_phe"), button_name,
-	        style = "gradient",
-	        icon = icon("filter"),
-	        color = "primary",
-	        block = TRUE,
-	        size = "sm"
+		dropMenu(
+			shinyWidgets::actionBttn(
+				ns("filter_phe"), "Enter",
+		        style = "gradient",
+		        icon = icon("filter"),
+		        color = "primary",
+		        block = TRUE,
+		        size = "sm"
+			),
+			div(h5("Filter samples by one/multiple phenotype(s):"),style="width:800px;"),
+	        wellPanel(
+	        	style = "background: #f7f7f7",
+		        h4("1. Add phenotypes (Optional)"),
+
+			    fluidRow(
+			    	column(
+			    		6,
+					    selectInput(
+					    	ns("data_L1"), label = "Data type:",
+					    	choices = names(id_option),
+					    	selected = "Molecular profile"
+					    )
+			    	),
+			    	column(
+			    		6,
+					    tabsetPanel(
+						    id = ns("data_L2_tab"),
+						    type = "hidden",
+							tabPanel("Molecular profile", 
+								selectInput(
+									ns("genomic_profile"), "Data subtype:",
+									choices = names(id_option[["Molecular profile"]]),
+									selected = "mRNA Expression")
+							),
+							tabPanel("Tumor index",
+								selectInput(
+									ns("tumor_index"), "Data subtype:",
+									choices = names(id_option[["Tumor index"]]),
+									selected = "Tumor Purity")
+							),
+							tabPanel("Immune Infiltration",
+								selectInput(
+									ns("immune_infiltration"), "Data subtype:",
+									choices = names(id_option[["Immune Infiltration"]]),
+									selected = "CIBERSORT")
+							),
+							tabPanel("Pathway activity",
+								selectInput(
+									ns("pathway_activity"), "Data subtype:",
+									choices = names(id_option[["Pathway activity"]]),
+									selected = "HALLMARK")
+							),
+							tabPanel("Phenotype data",
+								selectInput(
+									ns("phenotype_data"), "Data subtype:",
+									choices = names(id_option[["Phenotype data"]]),
+									selected = "Clinical Phenotype")
+							)
+						)
+			    	)
+			    ),
+			    tabsetPanel(
+				    id = ns("data_L3_tab"),
+				    type = "hidden",
+					tabPanel("Molecular profile",
+			            selectizeInput(
+			              inputId = ns("genomic_profile_id"),
+			              label = "Identifier:",
+			              choices = NULL,
+			              options = list(create = TRUE, maxOptions = 5))
+					),
+					tabPanel("Tumor index",
+			            selectizeInput(
+			              inputId = ns("tumor_index_id"),
+			              label = "Identifier:",
+			              choices = NULL,
+			              options = list(create = FALSE, maxOptions = 5))
+					),
+					tabPanel("Immune Infiltration",
+			            selectizeInput(
+			              inputId = ns("immune_infiltration_id"),
+			              label = "Identifier:",
+			              choices = NULL,
+			              options = list(create = FALSE, maxOptions = 5))
+					),
+					tabPanel("Pathway activity",
+			            selectizeInput(
+			              inputId = ns("pathway_activity_id"),
+			              label = "Identifier:",
+			              choices = NULL,
+			              options = list(create = FALSE, maxOptions = 5))
+					),
+					tabPanel("Phenotype data",
+			            selectizeInput(
+			              inputId = ns("phenotype_data_id"),
+			              label = "Identifier:",
+			              choices = NULL,
+			              options = list(create = FALSE, maxOptions = 5))
+					)
+				),
+			    fluidRow(
+				    actionBttn(
+				      inputId = ns("button_phe_add"),
+				      label = "Add",
+				      color = "primary",
+				      style = "bordered", size = "sm",
+				      block = F
+				    ),
+				    actionBttn(
+				      inputId = ns("button_phe_add_reset"),
+				      label = "Reset",
+				      color = "primary",
+				      style = "bordered", size = "sm",
+				      block = F
+				    )       
+			    ),
+			    verbatimTextOutput(ns("add_info"))
+	        ),
+	        wellPanel(
+	        	style = "background: #f7f7f7",
+	        	h4("2. Observe distribution"),
+				uiOutput(ns("filter_phe_01_by.ui")),
+				verbatimTextOutput(ns("filter_phe_01_out"))
+			),
+		    wellPanel(
+		    	style = "background: #f7f7f7",
+			    h4("3. Set conditions"),
+			    fluidRow(
+				    actionBttn(
+				      inputId = ns("add_condi"),
+				      label = "Add filter",
+				      color = "primary",
+				      style = "bordered", size = "sm",
+				      block = F
+				    ),
+				    actionBttn(
+				      inputId = ns("del_condi"),
+				      label = "Del filter",
+				      color = "primary",
+				      style = "bordered", size = "sm",
+				      block = F
+				    )
+			    ),
+			    fluidRow(
+			    	column(5, h5("Phenotype(s):")),
+			    	column(5, h5("Direction(s):")),
+			    	column(2, h5("Threshold(s):"))
+			    ),
+			    uiOutput(ns("multi_condi.ui")),
+			    verbatimTextOutput(ns("filter_by_phe_prompt")),
+			    fluidRow(
+				    actionBttn(
+				      inputId = ns("button_phe_filter"),
+				      label = "Run",
+				      color = "primary",
+				      style = "bordered", size = "sm",
+				      block = F
+				    ),
+				    actionBttn(
+				      inputId = ns("button_phe_filter_reset"),
+				      label = "Reset",
+				      color = "primary",
+				      style = "bordered", size = "sm",
+				      block = F
+				    )  
+
+			    ),
+
+				textOutput(ns("filter_phe_02_out")),
+			),
+			placement = "right-end",
+			maxWidth = "1000px"
 		)
 	)
 }
+
 
 
 
@@ -18,255 +191,80 @@ filter_samples_Server = function(input, output, session, database="toil", #id_op
 								 cancers=NULL, custom_metadata=NULL, opt_pancan=NULL){
 	ns <- session$ns
 
-	id_option = reactive({
-		switch(database, 
+	id_option =switch(database, 
 			"toil"=tcga_id_option,
 			"pcawg"=pcawg_id_option,
 			"ccle"=ccle_id_option)
+
+	observe({
+	  updateTabsetPanel(inputId = "data_L2_tab", selected = input$data_L1)
+  	  updateTabsetPanel(inputId = "data_L3_tab", selected = input$data_L1)
+	}) 
+
+	observeEvent(input$genomic_profile, {
+		genomic_profile_choices <- reactive({
+		  id_option[["Molecular profile"]][[input$genomic_profile]]
+		})
+	    updateSelectizeInput(
+	      session,
+	      "genomic_profile_id",
+	      choices = genomic_profile_choices()$all,
+	      selected = genomic_profile_choices()$default,
+	      server = TRUE
+	    )
 	})
-
-	observeEvent(input$filter_phe, {
-		# message("filter samples by one/multiple phenotype(s)")
-		showModal(
-			modalDialog(
-				title = "Filter samples by one/multiple phenotype(s)",
-				footer = modalButton("Done!"),
-				size = "l",
-				fluidPage(
-			        wellPanel(
-				        h4("1. Add phenotypes (Optional)"),
-
-					    fluidRow(
-					    	column(
-					    		6,
-							    selectInput(
-							    	ns("data_L1"), label = "Data type:",
-							    	choices = names(id_option()),
-							    	selected = "Molecular profile"
-							    )
-					    	),
-					    	column(
-					    		6,
-							    tabsetPanel(
-								    id = ns("data_L2_tab"),
-								    type = "hidden",
-									tabPanel("Molecular profile", 
-										selectInput(
-											ns("genomic_profile"), "Data subtype:",
-											choices = names(id_option()[["Molecular profile"]]),
-											selected = "mRNA Expression")
-									),
-									tabPanel("Tumor index",
-										selectInput(
-											ns("tumor_index"), "Data subtype:",
-											choices = names(id_option()[["Tumor index"]]),
-											selected = "Tumor Purity")
-									),
-									tabPanel("Immune Infiltration",
-										selectInput(
-											ns("immune_infiltration"), "Data subtype:",
-											choices = names(id_option()[["Immune Infiltration"]]),
-											selected = "CIBERSORT")
-									),
-									tabPanel("Pathway activity",
-										selectInput(
-											ns("pathway_activity"), "Data subtype:",
-											choices = names(id_option()[["Pathway activity"]]),
-											selected = "HALLMARK")
-									),
-									tabPanel("Phenotype data",
-										selectInput(
-											ns("phenotype_data"), "Data subtype:",
-											choices = names(id_option()[["Phenotype data"]]),
-											selected = "Clinical Phenotype")
-									)
-								)
-					    	)
-					    ),
-					    tabsetPanel(
-						    id = ns("data_L3_tab"),
-						    type = "hidden",
-							tabPanel("Molecular profile",
-					            selectizeInput(
-					              inputId = ns("genomic_profile_id"),
-					              label = "Identifier:",
-					              choices = NULL,
-					              options = list(create = TRUE, maxOptions = 5))
-							),
-							tabPanel("Tumor index",
-					            selectizeInput(
-					              inputId = ns("tumor_index_id"),
-					              label = "Identifier:",
-					              choices = NULL,
-					              options = list(create = FALSE, maxOptions = 5))
-							),
-							tabPanel("Immune Infiltration",
-					            selectizeInput(
-					              inputId = ns("immune_infiltration_id"),
-					              label = "Identifier:",
-					              choices = NULL,
-					              options = list(create = FALSE, maxOptions = 5))
-							),
-							tabPanel("Pathway activity",
-					            selectizeInput(
-					              inputId = ns("pathway_activity_id"),
-					              label = "Identifier:",
-					              choices = NULL,
-					              options = list(create = FALSE, maxOptions = 5))
-							),
-							tabPanel("Phenotype data",
-					            selectizeInput(
-					              inputId = ns("phenotype_data_id"),
-					              label = "Identifier:",
-					              choices = NULL,
-					              options = list(create = FALSE, maxOptions = 5))
-							)
-						),
-					    fluidRow(
-						    actionBttn(
-						      inputId = ns("button_phe_add"),
-						      label = "Add",
-						      color = "primary",
-						      style = "bordered", size = "sm",
-						      block = F
-						    ),
-						    actionBttn(
-						      inputId = ns("button_phe_add_reset"),
-						      label = "Reset",
-						      color = "primary",
-						      style = "bordered", size = "sm",
-						      block = F
-						    )       
-					    ),
-					    verbatimTextOutput(ns("add_info"))
-			        ),
-			        wellPanel(
-			        	h4("2. Observe distribution"),
-						uiOutput(ns("filter_phe_01_by.ui")),
-						verbatimTextOutput(ns("filter_phe_01_out"))
-					),
-				    wellPanel(
-					    h4("3. Set conditions"),
-					    
-					    fluidRow(
-						    actionBttn(
-						      inputId = ns("add_condi"),
-						      label = "Add filter",
-						      color = "primary",
-						      style = "bordered", size = "sm",
-						      block = F
-						    ),
-						    actionBttn(
-						      inputId = ns("del_condi"),
-						      label = "Del filter",
-						      color = "primary",
-						      style = "bordered", size = "sm",
-						      block = F
-						    )
-					    ),
-					    fluidRow(
-					    	column(5, h5("Phenotype(s):")),
-					    	column(5, h5("Direction(s):")),
-					    	column(2, h5("Threshold(s):"))
-					    ),
-					    uiOutput(ns("multi_condi.ui")),
-					    verbatimTextOutput(ns("filter_by_phe_prompt")),
-					    fluidRow(
-						    actionBttn(
-						      inputId = ns("button_phe_filter"),
-						      label = "Run",
-						      color = "primary",
-						      style = "bordered", size = "sm",
-						      block = F
-						    ),
-						    actionBttn(
-						      inputId = ns("button_phe_filter_reset"),
-						      label = "Reset",
-						      color = "primary",
-						      style = "bordered", size = "sm",
-						      block = F
-						    )  
-
-					    ),
-
-						textOutput(ns("filter_phe_02_out")),
-						
-					)
-
-		        )
-		    )
+	observeEvent(input$tumor_index, {
+		tumor_index_choices <- reactive({
+		  id_option[["Tumor index"]][[input$tumor_index]]
+		})
+	    updateSelectizeInput(
+	      session,
+	      "tumor_index_id",
+	      choices = tumor_index_choices()$all,
+	      selected = tumor_index_choices()$default,
+	      server = TRUE
+	    )
+	})
+	observeEvent(input$immune_infiltration, {
+		immune_infiltration_choices <- reactive({
+		  id_option[["Immune Infiltration"]][[input$immune_infiltration]]
+		})
+	    updateSelectizeInput(
+	      session,
+	      "immune_infiltration_id",
+	      choices = immune_infiltration_choices()$all,
+	      selected = immune_infiltration_choices()$default,
+	      server = TRUE
+	    )
+	})
+	observeEvent(input$pathway_activity, {
+		pathway_activity_choices <- reactive({
+		  id_option[["Pathway activity"]][[input$pathway_activity]]
+		})
+	    updateSelectizeInput(
+	      session,
+	      "pathway_activity_id",
+	      choices = pathway_activity_choices()$all,
+	      selected = pathway_activity_choices()$default,
+	      server = TRUE
+	    )
+	})
+	observeEvent(input$phenotype_data, {
+		phenotype_data_choices <- reactive({
+		    id_tmp = id_option[["Phenotype data"]]
+			if(!is.null(custom_metadata)){
+				id_tmp[["Custom metadata"]]$all = sort(colnames(custom_metadata()[-1]))
+				id_tmp[["Custom metadata"]]$default = sort(colnames(custom_metadata()[-1]))[1]
+			}
+			id_tmp[[input$phenotype_data]]
+		})
+		updateSelectizeInput(
+		  session,
+		  "phenotype_data_id",
+		  choices = phenotype_data_choices()$all,
+		  selected = phenotype_data_choices()$default,
+		  server = TRUE
 		)
-		# 更新分子的三级选择菜单
-		observe({
-		  updateTabsetPanel(inputId = "data_L2_tab", selected = input$data_L1)
-	  	  updateTabsetPanel(inputId = "data_L3_tab", selected = input$data_L1)
-		}) 
-		
-		observeEvent(input$genomic_profile, {
-			genomic_profile_choices <- reactive({
-			  id_option()[["Molecular profile"]][[input$genomic_profile]]
-			})
-		    updateSelectizeInput(
-		      session,
-		      "genomic_profile_id",
-		      choices = genomic_profile_choices()$all,
-		      selected = genomic_profile_choices()$default,
-		      server = TRUE
-		    )
-		})
-		observeEvent(input$tumor_index, {
-			tumor_index_choices <- reactive({
-			  id_option()[["Tumor index"]][[input$tumor_index]]
-			})
-		    updateSelectizeInput(
-		      session,
-		      "tumor_index_id",
-		      choices = tumor_index_choices()$all,
-		      selected = tumor_index_choices()$default,
-		      server = TRUE
-		    )
-		})
-		observeEvent(input$immune_infiltration, {
-			immune_infiltration_choices <- reactive({
-			  id_option()[["Immune Infiltration"]][[input$immune_infiltration]]
-			})
-		    updateSelectizeInput(
-		      session,
-		      "immune_infiltration_id",
-		      choices = immune_infiltration_choices()$all,
-		      selected = immune_infiltration_choices()$default,
-		      server = TRUE
-		    )
-		})
-		observeEvent(input$pathway_activity, {
-			pathway_activity_choices <- reactive({
-			  id_option()[["Pathway activity"]][[input$pathway_activity]]
-			})
-		    updateSelectizeInput(
-		      session,
-		      "pathway_activity_id",
-		      choices = pathway_activity_choices()$all,
-		      selected = pathway_activity_choices()$default,
-		      server = TRUE
-		    )
-		})
-		observeEvent(input$phenotype_data, {
-			phenotype_data_choices <- reactive({
-			    id_tmp = id_option()[["Phenotype data"]]
-				if(!is.null(custom_metadata)){
-					id_tmp[["Custom metadata"]]$all = sort(colnames(custom_metadata()[-1]))
-					id_tmp[["Custom metadata"]]$default = sort(colnames(custom_metadata()[-1]))[1]
-				}
-				id_tmp[[input$phenotype_data]]
-			})
-			updateSelectizeInput(
-			  session,
-			  "phenotype_data_id",
-			  choices = phenotype_data_choices()$all,
-			  selected = phenotype_data_choices()$default,
-			  server = TRUE
-			)
-		})
 	})
 
 	add_level2 = reactive({
@@ -318,9 +316,9 @@ filter_samples_Server = function(input, output, session, database="toil", #id_op
 	add_phes_dat = eventReactive(input$button_phe_add, {
 
 		x_tmp = lapply(seq(add_phes$name), function(i){
-			tmp_data_type = str_split(add_phes$name[[i]], "--")[[1]][1]   # Level-1
-			tmp_data_sub = str_split(add_phes$name[[i]], "--")[[1]][2]    # Level-2
-			tmp_data_target = str_split(add_phes$name[[i]], "--")[[1]][3] # Level-3
+			L1_x = str_split(add_phes$name[[i]], "--")[[1]][1]   # Level-1
+			L2_x = str_split(add_phes$name[[i]], "--")[[1]][2]    # Level-2
+			L3_x = str_split(add_phes$name[[i]], "--")[[1]][3] # Level-3
 
 			if(is.null(opt_pancan)){
 				opt_pancan = .opt_pancan
@@ -329,22 +327,26 @@ filter_samples_Server = function(input, output, session, database="toil", #id_op
 			}
 			
 			if(database=="toil"){
-				clinical_phe = tcga_clinical_fine
-				x_data = UCSCXenaShiny:::batch_download(tmp_data_type, tmp_data_sub, tmp_data_target, database,
-							   tumor_index_list, tcga_TIL, tcga_PW, clinical_phe,
+				clinical_phe = tcga_phenotype_value[["Clinical Phenotype"]]
+				x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
+							   tcga_index_value, tcga_immune_value, tcga_pathway_value, 
+							   clinical_phe,
 							   opt_pancan,custom_metadata())
 			} else if(database=="pcawg"){
-				clinical_phe = pcawg_info_fine
-				x_data = UCSCXenaShiny:::batch_download(tmp_data_type, tmp_data_sub, tmp_data_target, database,
-							   pcawg_index_list, pcawg_TIL, pcawg_PW, clinical_phe,
+				clinical_phe = pcawg_phenotype_value[["Clinical Phenotype"]]
+				x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
+							   # pcawg_index_list, pcawg_TIL, pcawg_PW, pcawg_info_fine,
+							   pcawg_index_value, pcawg_immune_value, pcawg_pathway_value,
+							   clinical_phe,
 							   opt_pancan,custom_metadata())
-			} else if(database=="ccle"){
-				clinical_phe = ccle_info_fine
-				x_data = UCSCXenaShiny:::batch_download(tmp_data_type, tmp_data_sub, tmp_data_target, database,
-							   ccle_index_list, NULL, NULL, clinical_phe,
+			} else if (database=="ccle"){
+				clinical_phe = ccle_phenotype_value[["Clinical Phenotype"]]
+				x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
+							   # ccle_index_list, NULL, NULL, ccle_info_fine,
+							   ccle_index_value, NULL, NULL, 
+							   clinical_phe,
 							   opt_pancan,custom_metadata())
 			}
-
 			# x_data = x_data[,c("sample","value")]
 			# 以clinical_phe作为最终的背景人群参考
 			x_data = clinical_phe[,"Sample"] %>% 
@@ -556,7 +558,7 @@ filter_samples_Server = function(input, output, session, database="toil", #id_op
 			}		
 		})
 	})
-	return(reactive(add_phes$filter_phe_id))
 
+	return(reactive(add_phes$filter_phe_id))
 
 }

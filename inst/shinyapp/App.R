@@ -156,10 +156,6 @@ phenotype_datasets <- UCSCXenaTools::XenaData %>%
   dplyr::pull(XenaDatasets)
 
 
-
-
-
-
 themes_list <- list(
   "cowplot" = cowplot::theme_cowplot(),
   "Light" = theme_light(),
@@ -171,30 +167,7 @@ themes_list <- list(
 )
 
 
-
-## 肿瘤指标
-tumor_index_list = list(
-  tcga_purity = load_data("tcga_purity"),
-  tcga_stemness = load_data("tcga_stemness"),
-  tcga_tmb = load_data("tcga_tmb"),
-  tcga_msi = load_data("tcga_MSI"),
-  tcga_genome_instability = load_data("tcga_genome_instability")
-)
-colnames(tumor_index_list$tcga_tmb)[3] = "sample"
-tumor_index_list$tcga_msi = tcga_gtex %>%
-  dplyr::mutate(Barcode = stringr::str_sub(sample, 1, 12)) %>%
-  dplyr::select(Barcode, sample) %>%
-  dplyr::inner_join(tumor_index_list$tcga_msi, by = "Barcode")
-
-## 免疫浸润
-tcga_TIL = load_data("tcga_TIL")
-TIL_signatures <- colnames(tcga_TIL)[-1]
-TIL_meta = strsplit(TIL_signatures, "_") %>% 
-  do.call(rbind, .) %>% as.data.frame() %>% 
-  dplyr::rename("method"="V2", "celltype"="V1")
-
-## 通路打分
-tcga_PW = load_data("tcga_PW")
+## 通路基因
 PW_meta <- load_data("tcga_PW_meta")
 PW_meta <- PW_meta %>% 
   dplyr::arrange(Name) %>%
@@ -205,120 +178,39 @@ PW_meta <- PW_meta %>%
   dplyr::mutate(display = paste0(Name, " (", size, ")"), .before = 6)
 
 
-## 临床表型
-clinical_phe = query_tcga_group(return_all = T) %>% as.data.frame()
+## TCGA/PCAWG/CCLE value & id for general analysis
+general_value_id = query_general_id()
+# id
+tcga_id_option = general_value_id[["id"]][[1]]
+pcawg_id_option = general_value_id[["id"]][[2]]
+ccle_id_option = general_value_id[["id"]][[3]]
+# value
+tcga_value_option = general_value_id[["value"]][[1]]
+tcga_index_value = tcga_value_option[["Tumor index"]]
+tcga_immune_value = tcga_value_option[["Immune Infiltration"]]
+tcga_pathway_value = tcga_value_option[["Pathway activity"]]
+tcga_phenotype_value = tcga_value_option[["Phenotype data"]]
+
+pcawg_value_option = general_value_id[["value"]][[2]]
+pcawg_index_value = pcawg_value_option[["Tumor index"]]
+pcawg_immune_value = pcawg_value_option[["Immune Infiltration"]]
+pcawg_pathway_value = pcawg_value_option[["Pathway activity"]]
+pcawg_phenotype_value = pcawg_value_option[["Phenotype data"]]
+
+ccle_value_option = general_value_id[["value"]][[3]]
+ccle_index_value = ccle_value_option[["Tumor index"]]
+ccle_phenotype_value = ccle_value_option[["Phenotype data"]]
+
+TIL_signatures = lapply(tcga_id_option$`Immune Infiltration`, function(x) {
+  x$all
+}) %>% reshape2::melt() %>% 
+  dplyr::mutate(x = paste0(value,"_",L1)) %>%
+  dplyr::pull(x)
 
 # Help → ID reference
-id_referrence = load_data("pancan_identifier_help")
-# names(id_merge)
-# # [1] "id_molecule"    "id_tumor_index" "id_TIL"         "id_PW"
-
-
-tcga_id_option = list(
-  "Molecular profile" = list(
-     `mRNA Expression` = list(all = pancan_identifiers$gene, default = "TP53"),
-     `Transcript Expression` = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
-     `DNA Methylation` = list(all = pancan_identifiers$gene, default = "TP53"),
-     `Protein Expression` = list(all = pancan_identifiers$protein, default = "P53"),
-     `miRNA Expression` = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-     `Mutation status` = list(all = pancan_identifiers$gene, default = "TP53"),
-     `Copy Number Variation` = list(all = pancan_identifiers$gene, default = "TP53")
-  ),
-  "Tumor index" = list(
-     `Tumor Purity` = list(all = colnames(tumor_index_list$tcga_purity)[3:7], default = "ESTIMATE"),
-     `Tumor Stemness` = list(all = colnames(tumor_index_list$tcga_stemness)[2:6], default = "RNAss"),
-     `Tumor Mutation Burden` = list(all = colnames(tumor_index_list$tcga_tmb)[4:5], default = "Non_silent_per_Mb"),
-     `Microsatellite Instability` = list(all = colnames(tumor_index_list$tcga_msi)[3:21], default = "Total_nb_MSI_events"),
-     `Genome Instability` = list(all = colnames(tumor_index_list$tcga_genome_instability)[2:6], default = "ploidy")
-  ),
-  "Immune Infiltration" = list(
-     `CIBERSORT` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="CIBERSORT"]), default = "Monocyte"),
-     `CIBERSORT-ABS` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="CIBERSORT-ABS"]), default = "Monocyte"),
-     `EPIC` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="EPIC"]), default = "Macrophage"),
-     `MCPCOUNTER` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="MCPCOUNTER"]), default = "Monocyte"),
-     `QUANTISEQ` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="QUANTISEQ"]), default = "Monocyte"),
-     `TIMER` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="TIMER"]), default = "Macrophage"),
-     `XCELL` = list(all = sort(TIL_meta$celltype[TIL_meta$method=="XCELL"]), default = "Monocyte")
-  ),
-  "Pathway activity" = list(
-     `HALLMARK` = list(all = sort(PW_meta$Name[PW_meta$Type=="HALLMARK"]), default = "APOPTOSIS"),
-     `KEGG` = list(all = sort(PW_meta$Name[PW_meta$Type=="KEGG"]), default = "CELL_CYCLE"),
-     `IOBR` = list(all = sort(PW_meta$Name[PW_meta$Type=="IOBR"]), default = "Biotin_Metabolism")
-  ),
-  "Phenotype data" = list(
-     `Clinical Phenotype` = list(all = colnames(clinical_phe)[4:9], default = "Code")
-     ,
-     `Custom metadata` = list(all = NULL, default = NULL)
-  )
-)
-# tcga_id_category = lapply(tcga_id_option, names)
-
-
-
-
+tcga_id_referrence = load_data("pancan_identifier_help")
 pcawg_id_referrence = load_data("pcawg_identifier")
-pcawg_id_option = tcga_id_option
-pcawg_id_option$`Molecular profile` = list(
-     `mRNA Expression` = list(all = pcawg_id_referrence$id_gene$Level3, default = "TP53"),
-     `Promoter Activity` = list(all = pcawg_id_referrence$id_pro$Level3, default = "prmtr.1"),
-     `Gene Fusion` = list(all = pcawg_id_referrence$id_fusion$Level3, default = "SAMD11"),
-     `miRNA Expression` = list(all = pcawg_id_referrence$id_mi$Level3, default = "hsa-let-7a-2-3p"),
-     `APOBEC Mutagenesis` = list(all = pcawg_id_referrence$id_maf$Level3, default = "A3A_or_A3B")
-  )
-pcawg_id_option$`Tumor index` = list(
-     `Tumor Purity` = list(all = c("purity", "ploidy", "purity_conf_mad", "wgd_status", "wgd_uncertain"), 
-                          default = "purity")
-  )
-pcawg_id_option$`Phenotype data` = list(
-     `Clinical Phenotype` = list(all = c("Age", "Gender","Type"), 
-                          default = "Age")
-  )
-pcawg_items = sort(unique(pcawg_info_fine$Project)) #30
-pcawg_TIL = load_data("pcawg_TIL")
-pcawg_PW = load_data("pcawg_PW")
-pcawg_index_list = list(
-  tcga_purity = pcawg_purity %>%
-    dplyr::filter(icgc_specimen_id %in% pcawg_info_fine$Sample) %>%
-    dplyr::rename(sample=icgc_specimen_id)
-  )
-
-
-
-
-
 ccle_id_referrence = load_data("ccle_identifier")
-ccle_id_option = tcga_id_option
-ccle_id_option$`Molecular profile` = list(
-     `mRNA Expression` = list(all = ccle_id_referrence$id_gene$Level3, default = "TP53"),
-     `Protein Expression` = list(all = ccle_id_referrence$id_pro$Level3, default = "14-3-3_beta"),
-     `Copy Number Variation` = list(all = ccle_id_referrence$id_cnv$Level3, default = "TP53"),
-     `Mutation status` = list(all = ccle_id_referrence$id_mut$Level3, default = "TP53")
-  )
-
-
-ccle_id_option$`Tumor index` = list(
-     `Tumor Purity` = list(all = c("Purity", "Ploidy", "Genome Doublings", "Lineage"), 
-                          default = "Purity")
-  )
-ccle_id_option$`Immune Infiltration` = list(NULL)
-ccle_id_option$`Pathway activity` = list(NULL)
-
-ccle_id_option$`Phenotype data` = list(
-     `Clinical Phenotype` = list(all = c("Gender","Histology","Type"), 
-                          default = "Gender")
-  )
-
-ccle_index_list = list(
-  tcga_purity = ccle_absolute %>%
-    dplyr::rename("sample"="Cell Line") %>%
-    dplyr::filter(sample %in% ccle_info_fine$Sample)
-  )
-
-
-
-
-
-
 
 
 
@@ -329,7 +221,6 @@ code_types = list("NT"= "NT (normal tissue)",
           "TAP"="TAP (additional primary)",
           "TM"= "TM (metastatic tumor)",
           "TAM"="TAM (additional metastatic)")
-
 
 # CCLE tissues for drug analysis
 # "ALL" means all tissues
@@ -355,6 +246,7 @@ Xena_summary <- dplyr::group_by(xena_table, Hub) %>%
   )
 
 # PCAWG project info
+pcawg_items = sort(unique(pcawg_info_fine$Project)) #30
 dcc_project_code_choices <- c(
   "BLCA-US", "BRCA-US", "OV-AU", "PAEN-AU", "PRAD-CA", "PRAD-US", "RECA-EU", "SKCM-US", "STAD-US",
   "THCA-US", "KIRP-US", "LIHC-US", "PRAD-UK", "LIRI-JP", "PBCA-DE", "CESC-US", "PACA-AU", "PACA-CA",
@@ -505,7 +397,7 @@ ui <- tagList(
     ui.page_pancan_ccle(),
     ui.page_pancan_quick(),
     ui.page_download(),
-    #ui.page_global(),
+    # ui.page_global(),
     ui.page_help(),
     ui.page_developers(),
     footer = ui.footer(),
@@ -527,15 +419,13 @@ server <- function(input, output, session) {
   source(server_file("home.R"), local = TRUE)
   source(server_file("repository.R"), local = TRUE)
   source(server_file("modules.R"), local = TRUE)
-  #source(server_file("global.R"), local = TRUE)
+  # source(server_file("global.R"), local = TRUE)
   source(server_file("general-analysis.R"), local = TRUE)
-  # observe_helpers()
   observe_helpers(help_dir ="helper")
 
 }
 
 # Run web app -------------------------------------------------------------
-
 shiny::shinyApp(
   ui = ui,
   server = server

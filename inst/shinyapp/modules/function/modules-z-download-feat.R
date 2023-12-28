@@ -110,7 +110,7 @@ download_feat_UI = function(id, button_name="Query data", database = "toil"){
 download_feat_Server = function(input, output, session, database = "toil",#id_option=tcga_id_option,
 								samples=NULL, custom_metadata=NULL, opt_pancan=NULL, check_numeric=FALSE){
 	ns <- session$ns
-
+	# id_option = tcga_id_option
 	id_option = switch(database, 
 			"toil"=tcga_id_option,
 			"pcawg"=pcawg_id_option,
@@ -205,56 +205,50 @@ download_feat_Server = function(input, output, session, database = "toil",#id_op
 		)
 		L1_x = names(id_category)[sapply(id_category, function(x){any(x %in% L2_x)})]
 		if(is.null(opt_pancan)){
-			# opt_pancan = list(
-			# 	  toil_mRNA = list(),
-			# 	  toil_transcript = list(),
-			# 	  toil_protein = list(),
-			# 	  toil_mutation = list(),
-			# 	  toil_cnv = list(use_thresholded_data = TRUE),
-			# 	  toil_methylation = list(type = "450K", aggr = "NA", rule_out = NULL),
-			# 	  toil_miRNA = list(),
-			# 	  pcawg_mRNA = list(),
-			# 	  pcawg_fusion = list(),
-			# 	  pcawg_miRNA = list(norm_method = "TMM"),
-			# 	  pcawg_promoter = list(type = "relative"),
-			# 	  pcawg_APOBEC = list()
-			# )
 			opt_pancan = .opt_pancan
 		} else {
 			opt_pancan = opt_pancan()
 		}
 		## 利用内部自定义下载函数获取数据
 		if(database=="toil"){
-			clinical_phe = tcga_clinical_fine
-			x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, database,
-						   tumor_index_list, tcga_TIL, tcga_PW, tcga_clinical_fine,
+			clinical_phe = tcga_phenotype_value[["Clinical Phenotype"]]
+			x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
+						   tcga_index_value, tcga_immune_value, tcga_pathway_value, 
+						   clinical_phe,
 						   opt_pancan,custom_metadata())
 		} else if(database=="pcawg"){
-			clinical_phe = pcawg_info_fine
-			x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, database,
-						   pcawg_index_list, pcawg_TIL, pcawg_PW, pcawg_info_fine,
+			clinical_phe = pcawg_phenotype_value[["Clinical Phenotype"]]
+			x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
+						   # pcawg_index_list, pcawg_TIL, pcawg_PW, pcawg_info_fine,
+						   pcawg_index_value, pcawg_immune_value, pcawg_pathway_value,
+						   clinical_phe,
 						   opt_pancan,custom_metadata())
 		} else if (database=="ccle"){
-			clinical_phe = ccle_info_fine
-			x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x, L3_x, database,
-						   ccle_index_list, NULL, NULL, ccle_info_fine,
+			clinical_phe = ccle_phenotype_value[["Clinical Phenotype"]]
+			x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
+						   # ccle_index_list, NULL, NULL, ccle_info_fine,
+						   ccle_index_value, NULL, NULL, 
+						   clinical_phe,
 						   opt_pancan,custom_metadata())
 		}
 		if(!is.null(samples)){
 			if(!is.null(samples())){
 				x_data = x_data %>%
-					dplyr::filter(sample %in% samples())
+					dplyr::filter(Sample %in% samples())
 			}
 		}
 		x_data$level1 = L1_x
 		## 这里PCAWG应该是Project，但为了统一起见，先都叫cancer，包括后面的ccle
-		x_data$cancer = clinical_phe[,2,drop=T][match(x_data$sample, clinical_phe$Sample)]
-		x_data = x_data[,c("id","level1","level2","sample","value","cancer")] %>%
-			dplyr::arrange(cancer,sample)
+		x_data$cancer = clinical_phe[,2,drop=T][match(x_data$Sample, clinical_phe$Sample)]
+		x_data = x_data[,c("id","level1","level2","Sample","value","cancer")] %>%
+			dplyr::arrange(cancer,Sample)
 		x_data
 	})
 
+	w <- waiter::Waiter$new(id = ns("x_axis_data_table"), html = waiter::spin_hexdots(), color = "black")
+
 	observeEvent(input$query_data,{
+		w$show()
 		output$x_axis_data_table = renderUI({
 			output$x_tmp_table = renderDataTable({
 				# shiny::validate(
@@ -267,7 +261,7 @@ download_feat_Server = function(input, output, session, database = "toil",#id_op
 				# 			"Please select a numeric variable."),
 				# 	)	
 				# }
-				x_axis_data_ = download_data()[,c("sample","value","cancer")]
+				x_axis_data_ = download_data()[,c("Sample","value","cancer")]
 
 				if(class(x_axis_data_[,"value"])=="numeric"){
 					x_axis_data_[,"value"] = round(x_axis_data_[,"value"], digits = 3)
@@ -276,7 +270,6 @@ download_feat_Server = function(input, output, session, database = "toil",#id_op
 					options = list(pageLength = 3,
 						columnDefs = list(list(className = 'dt-center', targets="_all")))
 				)
-				# download_data()
 			}) 
 			dataTableOutput(ns("x_tmp_table"))
 		})
@@ -308,7 +301,7 @@ download_feat_Server = function(input, output, session, database = "toil",#id_op
 }
 
 
-#     id            level1          level2          sample value cancer
+#     id            level1          level2          Sample value cancer
 # 1 TP53 Molecular profile mRNA Expression TCGA-3C-AAAU-01 5.445   BRCA
 # 2 TP53 Molecular profile mRNA Expression TCGA-3C-AALI-01 3.446   BRCA
 # 3 TP53 Molecular profile mRNA Expression TCGA-3C-AALJ-01 4.946   BRCA

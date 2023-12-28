@@ -63,7 +63,7 @@ get_pcawg_fusion_value(identifier)
 
 get_pcawg_promoter_value(identifier, type = c("raw", "relative", "outlier"))
 
-get_pcawg_miRNA_value(identifier, norm_method = c("TMM", "UQ"))
+get_pcawg_miRNA_value(identifier, norm = c("TMM", "UQ"))
 
 get_pcawg_APOBEC_mutagenesis_value(
   identifier = c("tCa_MutLoad_MinEstimate", "APOBECtCa_enrich", "A3A_or_A3B",
@@ -78,7 +78,7 @@ get_pcawg_APOBEC_mutagenesis_value(
 \item{identifier}{a length-1 character representing a gene symbol, ensembl gene id, or probe id.
 Gene symbol is highly recommended.}
 
-\item{norm}{normalization method}
+\item{norm}{the normalization method.}
 
 \item{subtype}{a length-1 chracter representing a regular expression for matching
 \code{DataSubtype} column of \link[UCSCXenaTools:XenaData]{UCSCXenaTools::XenaData}.}
@@ -106,8 +106,6 @@ for function \code{get_pcawg_promoter_value}, it can be one of
 in such case, a mean value is obtained for gene-level methylation.
 Allowed value is one of \code{c("NA", "mean", "Q0", "Q25", "Q50", "Q75", "Q100")}.
 Here, \code{Q50} is median.}
-
-\item{norm_method}{the normalization method.}
 }
 \value{
 a named vector or \code{list}.

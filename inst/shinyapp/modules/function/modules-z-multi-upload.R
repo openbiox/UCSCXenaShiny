@@ -276,7 +276,7 @@ multi_upload_Server = function(input, output, session, database = "toil", #id_op
 				c("mRNA Expression","DNA Methylation","Mutation status","Copy Number Variation")){
 				L3s_x = L3s_x[L3s_x %in% pw_genes]
 			} else if(L2_x() %in% c("Transcript Expression")){
-				L3s_x = L3s_x[L3s_x %in% id_referrence[[1]][[5]]$Level3[id_referrence[[1]][[5]]$Symbol %in% pw_genes]]
+				L3s_x = L3s_x[L3s_x %in% tcga_id_referrence[[1]][[5]]$Level3[tcga_id_referrence[[1]][[5]]$Symbol %in% pw_genes]]
 			}
 			if(L2_x()=="Custom metadata" & !is.null(custom_metadata)){
 				L3s_x = colnames(custom_metadata()[-1])
@@ -286,16 +286,18 @@ multi_upload_Server = function(input, output, session, database = "toil", #id_op
 	})
 	output$L3s_x_tip = renderPrint({
 		cat(paste0("Tip: ",length(L3s_x())," ids are selected.\n"))
+		# str(L3s_x())
 	})
 
 	L3s_x_data = eventReactive(input$inspect_data_x, {
 		L1_x = names(id_category)[sapply(id_category, function(x){any(x %in% L2_x())})]
-		withProgress(message = "Your provided ids are being inspected and prepared. Please wait for a while.",{
+		withProgress(message = "Please wait for a while.",{
 			x_data_merge = lapply(seq(L3s_x()), function(i){
 				# 进度提醒
 			    incProgress(1 / length(L3s_x()), detail = paste0("(Run ",i,"/",length(L3s_x()),")"))
 
 				L3_x = L3s_x()[i]
+				L2_x = L2_x()
 
 				if(is.null(opt_pancan)){
 					opt_pancan = .opt_pancan
@@ -304,24 +306,29 @@ multi_upload_Server = function(input, output, session, database = "toil", #id_op
 				}
 
 				if(database=="toil"){
-					clinical_phe = tcga_clinical_fine
-					x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x(), L3_x, database,
-								   tumor_index_list, tcga_TIL, tcga_PW, tcga_clinical_fine,
+					clinical_phe = tcga_phenotype_value[["Clinical Phenotype"]]
+					x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
+								   tcga_index_value, tcga_immune_value, tcga_pathway_value, 
+								   clinical_phe,
 								   opt_pancan,custom_metadata())
 				} else if(database=="pcawg"){
-					clinical_phe = pcawg_info_fine
-					x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x(), L3_x, database,
-								   pcawg_index_list, pcawg_TIL, pcawg_PW, pcawg_info_fine,
+					clinical_phe = pcawg_phenotype_value[["Clinical Phenotype"]]
+					x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
+								   # pcawg_index_list, pcawg_TIL, pcawg_PW, pcawg_info_fine,
+								   pcawg_index_value, pcawg_immune_value, pcawg_pathway_value,
+								   clinical_phe,
 								   opt_pancan,custom_metadata())
 				} else if (database=="ccle"){
-					clinical_phe = ccle_info_fine
-					x_data = UCSCXenaShiny:::batch_download(L1_x, L2_x(), L3_x, database,
-								   ccle_index_list, NULL, NULL, ccle_info_fine,
+					clinical_phe = ccle_phenotype_value[["Clinical Phenotype"]]
+					x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
+								   # ccle_index_list, NULL, NULL, ccle_info_fine,
+								   ccle_index_value, NULL, NULL, 
+								   clinical_phe,
 								   opt_pancan,custom_metadata())
 				}
 				x_data = x_data %>%
-					dplyr::filter(sample %in% samples()) %>%
-				    dplyr::select(id, sample, value)
+					dplyr::filter(Sample %in% samples()) %>%
+				    dplyr::select(id, Sample, value)
 				# 默认批量下载的应为数值型变量，若不是则剔除
 				if(class(x_data$value)=="character"){  
 					return(NULL)
@@ -330,7 +337,7 @@ multi_upload_Server = function(input, output, session, database = "toil", #id_op
 				}
 			}) %>% do.call(rbind, .)
 			x_data_merge =  x_data_merge %>%
-				dplyr::arrange(id,sample)
+				dplyr::arrange(id,Sample)
 		})
 	})
 
@@ -341,7 +348,7 @@ multi_upload_Server = function(input, output, session, database = "toil", #id_op
 					"No sample data were available. Please inspect operations in Preset step."),
 			)
 			if(table.ui){
-				L3s_x_data_ = L3s_x_data()[,c("id","sample","value")]
+				L3s_x_data_ = L3s_x_data()[,c("id","Sample","value")]
 				if(class(L3s_x_data_[,"value"])=="numeric"){
 					L3s_x_data_[,"value"] = round(L3s_x_data_[,"value"], digits = 3)
 				}

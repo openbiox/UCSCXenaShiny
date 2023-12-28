@@ -33,7 +33,7 @@ ui.modules_pancan_cor_o2o = function(id) {
 						multiple = TRUE, options = list(`actions-box` = TRUE)
 					),
 					h5("Exact filter:"),
-					filter_samples_UI(ns("filter_samples2cor")),
+					filter_samples_UI(ns("filter_samples2cor"), database = "toil"),
 					br(),
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),
@@ -50,7 +50,9 @@ ui.modules_pancan_cor_o2o = function(id) {
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Add molecular signature", 
 					                   content = "add_signature"),
-					add_signature_UI(ns("add_signature2cor"))
+					add_signature_UI(ns("add_signature2cor"), database = "toil"),
+					br(),
+
 				)
 			),
 			# 下载X/Y轴数据
@@ -146,9 +148,9 @@ server.modules_pancan_cor_o2o = function(input, output, session) {
 
 	# 自定义上传metadata数据
 	custom_meta = callModule(custom_meta_Server, "custom_meta2cor", database = "toil")
-	# signature
+	# # signature
 	sig_dat = callModule(add_signature_Server, "add_signature2cor", database = "toil")
-
+	# sig_dat = reactive({NULL})
 	custom_meta_sig = reactive({
 		if(is.null(custom_meta())){
 			return(sig_dat())
@@ -172,6 +174,8 @@ server.modules_pancan_cor_o2o = function(input, output, session) {
 					   cancers=reactive(cancer_choose$name),
 					   custom_metadata=reactive(custom_meta_sig()),
 					   opt_pancan = reactive(opt_pancan()))
+
+	# filter_phe_id = reactive({NULL})
 	# quick filter widget
 	observe({
 		code_types_valid = code_types[names(code_types) %in% 
@@ -232,7 +236,7 @@ server.modules_pancan_cor_o2o = function(input, output, session) {
 		colnames(y_axis_data)[c(1:3,5)] = paste0("y_",colnames(y_axis_data)[c(1:3,5)])
 
 		data = dplyr::inner_join(x_axis_data, y_axis_data) %>%
-			dplyr::select(cancer, sample, everything())
+			dplyr::select(cancer, Sample, everything())
 		data
 	})
 

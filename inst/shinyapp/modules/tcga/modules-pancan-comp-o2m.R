@@ -36,7 +36,7 @@ ui.modules_pancan_comp_o2m = function(id) {
 						multiple = TRUE, options = list(`actions-box` = TRUE)
 					),
 					h5("Exact filter:"),
-					filter_samples_UI(ns("filter_samples2comp")),
+					filter_samples_UI(ns("filter_samples2comp"), database = "toil"),
 					br(),
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),br(),
@@ -53,7 +53,7 @@ ui.modules_pancan_comp_o2m = function(id) {
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Add molecular signature", 
 					                   content = "add_signature"),
-					add_signature_UI(ns("add_signature2comp"))
+					add_signature_UI(ns("add_signature2comp"), database = "toil")
 
 				)
 			),
@@ -227,10 +227,10 @@ server.modules_pancan_comp_o2m = function(input, output, session) {
 	# barplot逻辑：先批量计算相关性，再绘图
 	merge_data_line = eventReactive(input$step3_plot_line, {
 		group_data = group_final()[,c(1,3,4)]
-		colnames(group_data) = c("sample","group","phenotype")
+		colnames(group_data) = c("Sample","group","phenotype")
 		y_axis_data = y_axis_data()
 		data = dplyr::inner_join(y_axis_data, group_data) %>%
-			dplyr::select(cancer, sample, value, group, everything())
+			dplyr::select(cancer, Sample, value, group, everything())
 		data
 	})
 

@@ -26,7 +26,7 @@ ui.modules_ccle_comp_m2o = function(id) {
 
 					h4("3. Filter samples[opt]"),
 					h5("Exact filter:"),
-					filter_samples_UI(ns("filter_samples2comp")),
+					filter_samples_UI(ns("filter_samples2comp"), database = "ccle"),
 					br(),
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),
@@ -43,7 +43,7 @@ ui.modules_ccle_comp_m2o = function(id) {
 						helper(type = "markdown", size = "m", fade = TRUE, 
 					                   title = "Add molecular signature", 
 					                   content = "add_signature"),
-					add_signature_UI(ns("add_signature2comp")),
+					add_signature_UI(ns("add_signature2comp"), database = "ccle"),
 				)
 			),
 			# 分组设置
@@ -179,12 +179,12 @@ server.modules_ccle_comp_m2o = function(input, output, session) {
 
 				y_data = L3s_x_data() %>%
 					dplyr::filter(id == L3_x) %>% 
-					dplyr::select(sample, value)
+					dplyr::select(Sample, value)
 
 				group_data = group_final()[,c(1,3,4)]
-				colnames(group_data) = c("sample","group","phenotype")
+				colnames(group_data) = c("Sample","group","phenotype")
 				data = dplyr::inner_join(y_data, group_data) %>%
-					dplyr::select(sample, value, group, everything()) %>% na.omit()
+					dplyr::select(Sample, value, group, everything()) %>% na.omit()
 				# 检查数据是否合理
 				if(nrow(data)==0 | sd(data$value)==0 | length(unique(data$group))==1) return(c(NaN, NaN, NaN))
 				
@@ -242,7 +242,7 @@ server.modules_ccle_comp_m2o = function(input, output, session) {
 		},
 		content = function(file){
 			group_data = group_final()[,c(1,3,4)]
-			colnames(group_data) = c("sample","group","phenotype")
+			colnames(group_data) = c("Sample","group","phenotype")
 
 			data = L3s_x_data() %>%
 				dplyr::inner_join(group_data) %>% na.omit()
