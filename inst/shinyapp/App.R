@@ -179,7 +179,7 @@ PW_meta <- PW_meta %>%
 
 
 ## TCGA/PCAWG/CCLE value & id for general analysis
-general_value_id = query_general_id()
+general_value_id = UCSCXenaShiny:::query_general_id()
 # id
 tcga_id_option = general_value_id[["id"]][[1]]
 pcawg_id_option = general_value_id[["id"]][[2]]

@@ -85,7 +85,7 @@ query_general_id = function(){
   pcawg_pathway_value = list(
     `HALLMARK` = pcawg_PW %>% dplyr::select('Sample', contains("HALLMARK")) %>% dplyr::rename_with(~gsub("HALLMARK_","",.x)),
     `KEGG` = pcawg_PW %>% dplyr::select('Sample', contains("KEGG")) %>% dplyr::rename_with(~gsub("KEGG_","",.x)),
-    `IOBR` = pcawg_PW %>% dplyr::select('Sample', contains("HALLMARK")) %>% dplyr::rename_with(~gsub("HALLMARK_","",.x))
+    `IOBR` = pcawg_PW %>% dplyr::select('Sample', contains("IOBR")) %>% dplyr::rename_with(~gsub("IOBR_","",.x))
   )
 
   pcawg_phenotype_value = list(
