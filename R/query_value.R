@@ -52,6 +52,8 @@ query_molecule_value <- function(dataset, molecule, host = NULL) {
 }
 
 
+#' A default setting for pan-cancer studies
+#' @export
 .opt_pancan = list(
   # Toil
   toil_mRNA = list(norm = "tpm"),
