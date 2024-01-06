@@ -43,7 +43,7 @@ query_general_id = function(){
   tcga_pathway_value = list(
     `HALLMARK` = tcga_PW %>% dplyr::select('Sample', contains("HALLMARK")) %>% dplyr::rename_with(~gsub("HALLMARK_","",.x)),
     `KEGG` = tcga_PW %>% dplyr::select('Sample', contains("KEGG")) %>% dplyr::rename_with(~gsub("KEGG_","",.x)),
-    `IOBR` = tcga_PW %>% dplyr::select('Sample', contains("HALLMARK")) %>% dplyr::rename_with(~gsub("HALLMARK_","",.x))
+    `IOBR` = tcga_PW %>% dplyr::select('Sample', contains("IOBR")) %>% dplyr::rename_with(~gsub("IOBR_","",.x))
   )
 
   ## tumor_phenotype (user upload custom metadata)
@@ -134,7 +134,9 @@ query_general_id = function(){
     `Tumor Purity` = list(all = colnames(tcga_index_value$`Tumor Purity`)[3:7], default = "ESTIMATE"),
     `Tumor Stemness` = list(all = colnames(tcga_index_value$`Tumor Stemness`)[2:6], default = "RNAss"),
     `Tumor Mutation Burden` = list(all = colnames(tcga_index_value$`Tumor Mutation Burden`)[4:5], default = "Non_silent_per_Mb"),
-    `Microsatellite Instability` = list(all = colnames(tcga_index_value$`Microsatellite Instability`)[3:21], default = "Total_nb_MSI_events"),
+    `Microsatellite Instability` = list(all = setdiff(colnames(tcga_index_value$`Microsatellite Instability`)[3:21],
+                                                      c("MSI_intronic","MSI_intronic_profiled","MSI_noncoding","MSI_noncoding_profiled")), 
+                                        default = "Total_nb_MSI_events"),
     `Genome Instability` = list(all = colnames(tcga_index_value$`Genome Instability`)[2:6], default = "ploidy")
   )
 
@@ -344,3 +346,258 @@ query_general_value = function(L1, L2, L3, database = c("toil","pcawg","ccle"),
   # 5 TP53         TCGA-G3-A3CH-11 2.382 mRNA Expression
   # 6 TP53         TCGA-B5-A5OE-01 5.765 mRNA Expression
 }
+
+
+
+
+
+
+
+
+
+#' Title quick molecule analysis and report generation
+#'
+#' @inheritParams query_pancan_value
+#' @param out_dir path to save analysis result and report, default is '.'
+#' @param out_report logical value wheather to generate html report
+#'
+#' @return a list.
+#' @export
+mol_quick_analysis = function(molecule, data_type, out_dir = ".", out_report = FALSE){
+  
+  if(dir.exists(out_dir)){
+    cat("Warning: The file path already exists. Existing file may be overwritten.\n")
+  } else {
+    dir.create(out_dir)
+  }
+
+  print("##### Step1: Query the moleluce value... #####")
+  mol_data = query_pancan_value(molecule, data_type=data_type,database="toil")
+  if(is.list(mol_data)) mol_data = mol_data[[1]]
+
+
+  print(paste0("=== ","Clinical phenotype"))
+  mol_data_df = suppressMessages(data.frame(id = molecule,
+                           value = mol_data) %>%
+    tibble::rownames_to_column("Sample") %>%
+    dplyr::inner_join(load_data("tcga_gtex"), by=c("Sample"="sample")))
+
+  print(paste0("---> ","Tumor&Normal"))
+  comp_TN = suppressMessages(mol_data_df %>%
+    dplyr::filter(!.data$tissue %in% c("MESO","UVM")) %>%
+    dplyr::group_by(.data$tissue) %>%
+    dplyr::summarise(wilcox_p = stats::wilcox.test(value  ~ type2)$p.value))
+  comp_TN = suppressMessages(mol_data_df %>%
+    dplyr::filter(!.data$tissue %in% c("MESO","UVM")) %>%
+    dplyr::group_by(.data$tissue, .data$type2) %>%
+    dplyr::summarise(value=mean(.data$value)) %>%
+    tidyr::pivot_wider(names_from = "type2", values_from = "value") %>%
+    dplyr::inner_join(comp_TN))
+
+  print(paste0("---> ","Age"))
+  mol_data_Age = suppressMessages(mol_data_df[,1:4] %>%
+    dplyr::inner_join(load_data("tcga_clinical_fine")[,c("Sample","Age")]) %>%
+    dplyr::filter(!is.na(.data$Age)) %>%
+    dplyr::mutate(Age = ifelse(.data$Age>=60,"Old","Young")))
+  valid_types = suppressMessages(mol_data_Age %>%
+    dplyr::group_by(.data$tissue) %>%
+    dplyr::count(.data$Age) %>% dplyr::count(.data$tissue) %>%
+    dplyr::filter(n==2) %>% dplyr::pull(.data$tissue))
+  mol_data_Age = mol_data_Age[mol_data_Age$tissue %in% valid_types,]
+  comp_Age = suppressMessages(mol_data_Age %>%
+    dplyr::group_by(.data$tissue) %>%
+    dplyr::summarise(wilcox_p = stats::wilcox.test(value  ~ Age)$p.value))
+  comp_Age = suppressMessages(mol_data_Age %>%
+    dplyr::group_by(.data$tissue, .data$Age) %>%
+    dplyr::summarise(value=mean(.data$value)) %>%
+    tidyr::pivot_wider(names_from = "Age", values_from = "value") %>%
+    dplyr::inner_join(comp_Age))
+
+  print(paste0("---> ","Gender"))
+  mol_data_Gender = suppressMessages(mol_data_df[,1:4] %>%
+    dplyr::inner_join(load_data("tcga_clinical_fine")[,c("Sample","Gender")]) %>%
+    dplyr::filter(!is.na(.data$Gender)))
+  valid_types = suppressMessages(mol_data_Gender %>%
+    dplyr::group_by(.data$tissue) %>%
+    dplyr::count(.data$Gender) %>% dplyr::count(.data$tissue) %>%
+    dplyr::filter(n==2) %>% dplyr::pull(.data$tissue))
+  mol_data_Gender = mol_data_Gender[mol_data_Gender$tissue %in% valid_types,]
+  comp_Gender = suppressMessages(mol_data_Gender %>%
+    dplyr::group_by(.data$tissue) %>%
+    dplyr::summarise(wilcox_p = stats::wilcox.test(value  ~ Gender)$p.value))
+  comp_Gender = suppressMessages(mol_data_Gender %>%
+    dplyr::group_by(.data$tissue, .data$Gender) %>%
+    dplyr::summarise(value=mean(.data$value)) %>%
+    tidyr::pivot_wider(names_from = "Gender", values_from = "value") %>%
+    dplyr::inner_join(comp_Gender))
+
+  print(paste0("---> ","Stage"))
+  mol_data_Stage = suppressMessages(mol_data_df[,1:4] %>%
+    dplyr::inner_join(load_data("tcga_clinical_fine")[,c("Sample","Stage_ajcc")]) %>%
+    dplyr::filter(!is.na(.data$Stage_ajcc)))
+  valid_types = suppressMessages(mol_data_Stage %>%
+    dplyr::group_by(.data$tissue) %>%
+    dplyr::count(.data$Stage_ajcc) %>% dplyr::count(.data$tissue) %>%
+    dplyr::filter(n>=2) %>% dplyr::pull(.data$tissue))
+  mol_data_Stage = mol_data_Stage[mol_data_Stage$tissue %in% valid_types,]
+  comp_Stage = suppressMessages(mol_data_Stage %>%
+    dplyr::group_by(.data$tissue) %>%
+    dplyr::summarise(aov_p = summary(stats::aov(value  ~ Stage_ajcc))[[1]][1,5]))
+  comp_Stage = suppressMessages(mol_data_Stage %>%
+    dplyr::group_by(.data$tissue, .data$Stage_ajcc) %>%
+    dplyr::summarise(value=mean(.data$value)) %>%
+    tidyr::pivot_wider(names_from = "Stage_ajcc", values_from = "value") %>%
+    dplyr::inner_join(comp_Stage))
+
+  phe_res = list(comp_TN = comp_TN %>%
+                   tidyr::pivot_longer(c('normal','tumor')) %>% dplyr::rename("P.value"="wilcox_p"),
+                 comp_Age = comp_Age %>%
+                   tidyr::pivot_longer(c('Old','Young')) %>% dplyr::rename("P.value"="wilcox_p"),
+                 comp_Gender = comp_Gender %>%
+                   tidyr::pivot_longer(c("FEMALE","MALE")) %>% dplyr::rename("P.value"="wilcox_p"),
+                 comp_Stage = comp_Stage %>%
+                   tidyr::pivot_longer(starts_with("Stage")) %>% dplyr::rename("P.value"="aov_p")) %>%
+    do.call(rbind, .) %>% as.data.frame()
+
+
+  tcga_clinical = load_data("tcga_clinical")
+  mol_data_df = data.frame(id = molecule,
+                           value = mol_data) %>%
+    tibble::rownames_to_column("Sample") %>%
+    dplyr::filter(.data$Sample %in% tcga_clinical$sample) %>%
+    dplyr::mutate(type = tcga_clinical$type[match(.data$Sample, tcga_clinical$sample)]) %>%
+    dplyr::filter(grepl("01$", .data$Sample)) %>% # -01 primary tumor
+    dplyr::arrange(.data$type, .data$Sample)
+
+  # 依据每种癌症的中位数进行分组
+  if(data_type == "mutation"){
+    mol_data_df = mol_data_df %>%
+      dplyr::mutate(group = ifelse(.data$value==1,"Mutate","Wild")) %>%
+      as.data.frame()
+  } else {
+    mol_data_df = mol_data_df %>%
+      dplyr::group_by(.data$type) %>%
+      dplyr::mutate(group = ifelse(.data$value>median(.data$value),"Higher","Lower")) %>%
+      as.data.frame()
+  }
+
+  general_value_id = query_general_id()
+  tcga_value_option = general_value_id[["value"]][[1]]
+  tcga_id_option = general_value_id[["id"]][[1]]
+
+  ## 相关性分析结果
+  print("##### Step2: Execute correlation analysis...  #####")
+  cor_res = lapply(c("Tumor index","Immune Infiltration","Pathway activity"),function(L1_type){
+    # L1_type = "Pathway activity"
+    print(paste0("=== ",L1_type))
+    tcga_id = tcga_id_option[[L1_type]]
+    tcga_value = tcga_value_option[[L1_type]]
+    L2_types = names(tcga_id)
+
+    cor_L1 = lapply(L2_types, function(L2_type){
+      # L2_type = L2_types[3]
+      print(paste0("---> ",L2_type))
+      L3_ids = tcga_id[[L2_type]]$all
+      value_df = tcga_value[[L2_type]] %>% as.data.frame()
+      L3_ids = L3_ids[sapply(L3_ids, function(id){class(value_df[,id])})!="character"]
+
+      value_df_long = value_df[,c("Sample",L3_ids)] %>%
+        tidyr::pivot_longer(-.data$Sample, names_to = "L3", values_to = "target")
+
+      data_merge = suppressMessages(dplyr::inner_join(mol_data_df, value_df_long) %>%
+                                      dplyr::filter(!is.na(.data$target)))
+
+      valid_L3 = data_merge %>%
+        dplyr::distinct(.data$group,.data$L3) %>%
+        dplyr::count(.data$L3) %>%
+        dplyr::filter(n==2) %>%
+        dplyr::pull(.data$L3)
+
+      data_merge = data_merge %>%
+        dplyr::filter(.data$L3 %in% valid_L3)
+
+      cor_L2 = suppressMessages(data_merge %>%
+                                  dplyr::group_by(.data$L3, .data$type) %>%
+                                  dplyr::summarise(
+                                    spearman_r = stats::cor.test(.data$value, .data$target, method = "spearman")$estimate,
+                                    spearman_p = stats::cor.test(.data$value, .data$target, method = "spearman")$p.value
+                                  ) %>%
+                                  dplyr::mutate(L1 = L1_type, .before = 1) %>%
+                                  dplyr::mutate(L2 = L2_type, .before = 2))
+      return(cor_L2)
+    }) %>% do.call(rbind, .)
+    cor_L1
+  }) %>% do.call(rbind, .)
+
+
+  ## 生存分析结果
+  print("##### Step4: Execute survival analysis...  #####")
+  sur_res = lapply(c("OS","DSS","DFI","PFI"),function(event){
+    # event = "OS"
+    # print(event)
+    print(paste0("=== ",event))
+    tcga_surv_sub = load_data("tcga_surv") %>%
+      dplyr::select(sample, contains(event)) %>%
+      na.omit()
+    colnames(tcga_surv_sub) = c("Sample","status","time")
+
+    data_merge = suppressMessages(dplyr::inner_join(mol_data_df, tcga_surv_sub))
+
+
+    sur_merge = lapply(unique(data_merge$type), function(type){
+      # type = "BRCA"
+      # print(type)
+      sur_dat = data_merge[data_merge$type==type,]
+      if(length(unique(sur_dat$group))==1) return(NA)
+      surv_diff <- survival::survdiff(survival::Surv(time, status) ~ group, data = sur_dat)
+      p.val = 1 - stats::pchisq(surv_diff$chisq, length(surv_diff$n) - 1)
+      hr = exp(survival::coxph(survival::Surv(time, status) ~ group, data = sur_dat)$coefficients)
+      c(p.val, hr)
+    }) %>% do.call(rbind, .) %>%
+      as.data.frame() %>%
+      dplyr::mutate(type = unique(data_merge$type), .before = 1) %>%
+      # tibble::rownames_to_column("type") %>%
+      dplyr::rename("logrank_p"="V1") %>%
+      dplyr::mutate(P.direction = ifelse(.data$groupLower<1,"Higher Risk", "Lower Risk")) %>%
+      dplyr::mutate("event" = event, .before = 1) %>%
+      dplyr::select(!.data$groupLower)
+    sur_merge
+  }) %>% do.call(rbind, .)
+
+
+  utils::write.csv(phe_res, row.names = FALSE,
+            file=file.path(out_dir, "molecule_clinical_result.csv"))
+  utils::write.csv(cor_res, row.names = FALSE,
+            file=file.path(out_dir, "molecule_correlation_result.csv"))
+  utils::write.csv(sur_res, row.names = FALSE,
+            file=file.path(out_dir, "molecule_survival_result.csv"))
+
+  # phe_res = read.csv(file.path(tempdir(),"molecule_clinical_result.csv"))
+  # sur_res = read.csv(file.path(tempdir(),"molecule_survival_result.csv"))
+  # cor_res = read.csv(file.path(tempdir(),"molecule_correlation_result.csv"))
+
+
+  
+  
+  if(out_report){
+    params = list("sur_res" = sur_res,
+                  "cor_res" = cor_res,
+                  "phe_res" = phe_res,
+                  "id_name" = molecule,
+                  "id_type" = data_type)
+    print("##### Step5: Render html report...  #####")
+    file.copy(from = system.file("rmd","report_template.Rmd", package = "UCSCXenaShiny"),
+              to = file.path(out_dir, "report_template.Rmd"), overwrite = TRUE)
+    rmarkdown::render(file.path(out_dir, "report_template.Rmd"), "html_document",
+                      file.path(out_dir, "report_result.html"),
+                      params = params,
+                      envir = new.env(parent = globalenv()))
+    file.remove(file.path(out_dir, "report_template.Rmd"))
+  }
+  print("All analysis is done!")
+  
+  return(list(sur_res=sur_res,cor_res=cor_res,phe_res=phe_res))
+}
+
+
+
