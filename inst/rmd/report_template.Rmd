@@ -1,0 +1,763 @@
+---
+title: "Exploratory Analysis Report of UCSCXenashiny v2.0 Molecule Profiling"
+subtitle: "UCSCXenashiny developer team"
+author: 
+  - name: "Shensuo Li"
+    email: lishensuo@163.com
+date: "`r Sys.Date()`"
+params:
+  sur_res: NA
+  cor_res: NA
+  phe_res: NA
+  id_name: NA
+  id_type: NA
+  
+output: 
+  html_document:
+    theme: journal
+    toc: yes
+    toc_float:
+      collapsed: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+cor_res = params$cor_res
+sur_res = params$sur_res
+phe_res = params$phe_res
+id_name = params$id_name
+id_type = params$id_type
+
+colnames(phe_res)[1] = "Cancer"
+phe_res = phe_res %>% 
+  dplyr::mutate(value = round(value, 3)) %>% 
+  dplyr::mutate(P.format = format(P.value, digits = 3, scientific=TRUE)) %>% 
+  dplyr::mutate(P.label = case_when(
+    P.value<0.001 ~ "***",
+    P.value<0.01 ~ "**",
+    P.value<0.05 ~ "*",
+    TRUE ~ " "
+  ))
+
+colnames(cor_res)[4:6] = c("Cancer", "R", "P.value")
+cor_res = cor_res %>%
+  dplyr::mutate(Cancer = factor(Cancer, levels = sort(unique(Cancer),decreasing = T))) %>% 
+  dplyr::mutate(R = round(R, 3)) %>% 
+  dplyr::mutate(P.format = format(P.value, digits = 3, scientific=TRUE)) %>% 
+  dplyr::mutate(P.label = case_when(
+    P.value<0.001 ~ "***",
+    P.value<0.01 ~ "**",
+    P.value<0.05 ~ "*",
+    TRUE ~ " "
+  ))
+
+colnames(sur_res)[1:3] = c("Event", "Cancer", "P.value")
+sur_res = sur_res %>% 
+  dplyr::mutate(P.format = format(P.value, digits = 3, scientific=TRUE)) 
+
+
+link_set = switch(id_type,
+                  "mRNA"="https://xenabrowser.net/datapages/?dataset=tcga_RSEM_gene_tpm&host=https://toil.xenahubs.net",
+                  "transcript"="https://xenabrowser.net/datapages/?dataset=tcga_rsem_isoform_tpm&host=https://toil.xenahubs.net",
+                  "protein"="https://xenabrowser.net/datapages/?dataset=TCGA-RPPA-pancan-clean.xena&host=https://pancanatlas.xenahubs.net",
+                  "mutation"="https://xenabrowser.net/datapages/?dataset=mc3.v0.2.8.PUBLIC.nonsilentGene.xena&host=https://pancanatlas.xenahubs.net",
+                  "cnv"="https://xenabrowser.net/datapages/?dataset=broad.mit.edu_PANCAN_Genome_Wide_SNP_6_whitelisted.gene.xena&host=https://pancanatlas.xenahubs.net",
+                  "methylation"="https://xenabrowser.net/datapages/?dataset=GDC-PANCAN.methylation450.tsv&host=https://gdc.xenahubs.net",
+                  "miRNA"="https://xenabrowser.net/datapages/?dataset=pancanMiRs_EBadjOnProtocolPlatformWithoutRepsWithUnCorrectMiRs_08_04_16.xena&host=https://pancanatlas.xenahubs.net"
+                  )
+
+```
+
+
+
+
+# Introduction
+This report is generated using the results obtained from the `UCSCXenaShiny::mol_quick_analysis` function. The analysis encompasses three distinct types: Correlation, Comparison, and Survival, each executed for `r id_type` ``r id_name`` sourced from the [dataset](`r link_set`) in UCSC Xena TOIL hub. [All TCGA projects](https://gdc.cancer.gov/resources-tcga-users/tcga-code-tables/tcga-study-abbreviations) are analyzed individually and some cancer projects may be missing due to few samples with valid data for some analysis. The notation for statistical significance analysis is as follows: * indicates a P-value less than 0.05, ** indicates a P-value less than 0.01, and *** indicates a P-value less than 0.001. 
+
+Please note that our [Shiny app](https://shiny.hiplot.cn/ucsc-xena-shiny/) offers more comprehensive exploration possibilities, including alternative datasets for the same molecule, alternative analysis methods, molecule-molecule analysis, personalized sample filtering and grouping, result visualization, and download options.
+
+
+# 1. Clinical phenotype analysis
+This part compares the distribution of `r id_type` ``r id_name`` in Normal group samples using across all TCGA projects. For mRNA and transcript data type, samples from GTEx project are also included in Normal groups.
+
+
+## 1.1 Normal tissues
+```{r, phe_0, echo=FALSE}
+normal_dat = phe_res %>% 
+  dplyr::filter(name=="normal")
+
+p = normal_dat %>%
+  dplyr::arrange(value) %>%
+  dplyr::mutate(Cancer = factor(Cancer, levels=Cancer)) %>%
+  ggplot(aes(x = value, y = Cancer, fill = Cancer)) +
+  geom_col() +
+  xlab("Molecule value in normal tissues") + ylab(NULL) +
+  theme_bw() +
+  theme(legend.position = "none")
+
+ggplotly(p)
+```
+
+
+
+
+
+## 1.2 Tumor&Normal 
+This part compares the distribution of `r id_type` ``r id_name`` between Tumor and Normal group samples using the Wilcoxon test across all TCGA projects. For mRNA and transcript data type, samples from GTEx project are also included in Normal groups.
+
+"Higher Exp." indicates higher value in Tumor groups, whereas "Lower Exp." indicates lower value in Tumor groups. The red vertical line indicates that P equals 0.05.
+
+
+```{r, phe_1, echo=FALSE}
+phe_res_TN = subset(phe_res, name %in% c("normal","tumor"))
+phe_res_TN$name = ifelse(phe_res_TN$name=="normal","Normal", "Tumor")
+phe_res_TN = phe_res_TN %>% 
+  tidyr::pivot_wider(names_from = "name", values_from = "value")
+colnames(phe_res_TN)[1] = "Cancer"
+
+phe_res_TN[,c(1,5,6,3,4)] %>%
+  dplyr::rename(P.value=P.format) %>%
+  dplyr::mutate(P.direction = ifelse(Tumor>Normal,"Higher Exp.","Lower Exp.")) %>% 
+  datatable(.,filter = 'top',
+            options = list(pageLength = 5,
+						columnDefs = list(list(className = 'dt-center', targets="_all"))))
+```
+
+<center>
+```{r, phe_1_plot, echo=FALSE, fig.height=4.5, fig.width=7}
+p = phe_res_TN %>% 
+  dplyr::mutate(P.direction = ifelse(Tumor>Normal,"Higher Exp.","Lower Exp.")) %>% 
+  dplyr::mutate(P.log = -log10(P.value)) %>%
+  dplyr::arrange(P.log) %>%
+  dplyr::mutate(Cancer = factor(Cancer, levels=Cancer)) %>%
+  ggplot(aes(x = P.log, y = Cancer, fill = P.direction, text = paste0("P.value: ", P.format))) +
+  geom_col() +
+  scale_fill_manual(values = c("Higher Exp."="#fc8d59","Lower Exp."="#99d594")) +
+  geom_vline(xintercept = -log10(0.05), 
+           # linetype="dashed", 
+           color="red", size=0.3) +
+  xlab("-log10(P.value)") + ylab(NULL) +
+  theme_bw()
+ggplotly(p)
+```
+</center>
+
+## 1.3 Age  
+This part compares the distribution of `r id_type` ``r id_name`` between Old and Young group samples using the Wilcoxon test across all TCGA projects. Samples aged 60 and above are categorized into the Old group, while those below 60 are grouped into the Young group.
+
+"Higher Exp." indicates higher value in Old groups, whereas "Lower Exp." indicates lower value in Old groups. The red vertical line indicates that P equals 0.05.
+
+```{r, phe_2, echo=FALSE}
+phe_res_Age = subset(phe_res, name %in% c('Old','Young'))
+phe_res_Age = phe_res_Age %>% 
+  tidyr::pivot_wider(names_from = "name", values_from = "value")
+colnames(phe_res_Age)[1] = "Cancer"
+
+phe_res_Age[,c(1,6,5,3,4)] %>%
+  dplyr::rename(P.value=P.format) %>%
+  dplyr::mutate(P.direction = ifelse(Old>Young,"Higher Exp.","Lower Exp.")) %>% 
+  datatable(.,filter = 'top',
+            options = list(pageLength = 5,
+						columnDefs = list(list(className = 'dt-center', targets="_all"))))
+```
+
+<center>
+```{r, phe_2_plot, echo=FALSE, fig.height=4.5, fig.width=7}
+p = phe_res_Age %>% 
+  dplyr::mutate(P.direction = ifelse(Old>Young,"Higher Exp.","Lower Exp.")) %>% 
+  dplyr::mutate(P.log = -log10(P.value)) %>%
+  dplyr::arrange(P.log) %>%
+  dplyr::mutate(Cancer = factor(Cancer, levels=Cancer)) %>%
+  ggplot(aes(x = P.log, y = Cancer, fill = P.direction, text = paste0("P.value: ", P.format))) +
+  geom_col() +
+  scale_fill_manual(values = c("Higher Exp."="#fc8d59","Lower Exp."="#99d594")) +
+  geom_vline(xintercept = -log10(0.05), 
+         # linetype="dashed", 
+         color="red", size=0.3) +
+  xlab("-log10(P.value)") + ylab(NULL) +
+  theme_bw()
+ggplotly(p)
+```
+</center>
+
+
+## 1.4 Gender 
+This part compares the distribution of `r id_type` ``r id_name`` between Male and Female group samples using the Wilcoxon test across all TCGA projects. 
+
+"Higher Exp." indicates higher value in Male groups, whereas "Lower Exp." indicates lower value in Male groups. The red vertical line indicates that P equals 0.05.
+
+```{r, phe_3, echo=FALSE}
+phe_res_Gender = subset(phe_res, name %in% c("FEMALE","MALE"))
+phe_res_Gender$name = ifelse(phe_res_Gender$name=="FEMALE","Female", "Male")
+phe_res_Gender = phe_res_Gender %>% 
+  tidyr::pivot_wider(names_from = "name", values_from = "value")
+
+phe_res_Gender[,c(1,5,6,3,4)] %>%
+  dplyr::rename(P.value=P.format) %>%
+  dplyr::mutate(P.direction = ifelse(Male>Female,"Higher Exp.","Lower Exp.")) %>% 
+  datatable(.,filter = 'top',
+            options = list(pageLength = 5,
+						columnDefs = list(list(className = 'dt-center', targets="_all"))))
+```
+
+<center>
+```{r, phe_3_plot, echo=FALSE, fig.height=4.5, fig.width=7}
+p = phe_res_Gender %>% 
+  dplyr::mutate(P.direction = ifelse(Male>Female,"Higher Exp.","Lower Exp.")) %>% 
+  dplyr::mutate(P.log = -log10(P.value)) %>%
+  dplyr::arrange(P.log) %>%
+  dplyr::mutate(Cancer = factor(Cancer, levels=Cancer)) %>%
+  ggplot(aes(x = P.log, y = Cancer, fill = P.direction, text = paste0("P.value: ", P.format))) +
+  geom_col() +
+  scale_fill_manual(values = c("Higher Exp."="#fc8d59","Lower Exp."="#99d594")) +
+  geom_vline(xintercept = -log10(0.05), 
+         # linetype="dashed", 
+         color="red", size=0.3) +
+  xlab("-log10(P.value)") + ylab(NULL) +
+  theme_bw()
+ggplotly(p)
+```
+</center>
+
+
+## 1.5 Stage  
+This part compares the distribution of `r id_type` ``r id_name`` among samples in different AJCC Stage using the ANOVA analysis across all TCGA projects.
+
+The red vertical line indicates that P equals 0.05.
+```{r, phe_4, echo=FALSE}
+phe_res_Stage = subset(phe_res, grepl("Stage",name))
+phe_res_Stage = phe_res_Stage %>% 
+  tidyr::pivot_wider(names_from = "name", values_from = "value")
+colnames(phe_res_Stage)[1] = "Cancer"
+
+phe_res_Stage[,c(1,5,6,7,8, 3,4)] %>%
+  dplyr::rename(P.value=P.format) %>%
+  datatable(.,filter = 'top',
+            options = list(pageLength = 5,
+						columnDefs = list(list(className = 'dt-center', targets="_all"))))
+```
+
+<center>
+```{r, phe_4_plot, echo=FALSE, fig.height=4.5, fig.width=7}
+p = phe_res_Stage %>% 
+  dplyr::mutate(P.log = -log10(P.value)) %>%
+  dplyr::arrange(P.log) %>%
+  dplyr::mutate(Cancer = factor(Cancer, levels=Cancer)) %>%
+  ggplot(aes(x = P.log, y = Cancer, text = paste0("P.value: ", P.format))) +
+  geom_col(fill = "#80b1d3") +
+  xlab("-log10(P.value)") + ylab(NULL) +
+  geom_vline(xintercept = -log10(0.05), 
+         # linetype="dashed", 
+         color="red", size=0.3) +
+  theme_bw()
+ggplotly(p)
+```
+</center>
+
+
+
+
+# 2. Survival analysis
+## 2.1 OS
+This part includes the log-rank test between higher and lower `r id_type` ``r id_name`` groups based on median value in primary tumor samples with valid Overall Survival (OS) data across all TCGA projects.
+
+"Higher risk" indicates higher risk in the group with elevated molecular expression, whereas "Lower risk" indicates lower risk in the group with elevated molecular expression. The red vertical line indicates that P equals 0.05.
+
+```{r sur_1, echo = FALSE}
+sur_res_sub = subset(sur_res, Event == "OS") %>%
+  tibble::remove_rownames()
+
+sur_res_sub[,c(1,2,5,4)] %>%
+  dplyr::rename(P.value=P.format) %>%
+  datatable(.,filter = 'top',
+           options = list(pageLength = 5,
+						columnDefs = list(list(className = 'dt-center', targets="_all"))))
+
+```
+
+<center>
+```{r, sur_1_plot, echo = FALSE, fig.width=6, fig.height=4.5}
+p = sur_res_sub %>% na.omit() %>% 
+  dplyr::mutate(P.log = -log10(P.value)) %>%
+  dplyr::arrange(P.log) %>%
+  dplyr::mutate(Cancer = factor(Cancer, levels=Cancer)) %>%
+  ggplot(aes(x = P.log, y = Cancer, fill = P.direction, text = paste0("P.value: ", P.format))) +
+  geom_col() +
+  scale_fill_manual(values = c("Higher Risk"="#fc8d59","Lower Risk"="#99d594")) +
+  geom_vline(xintercept = -log10(0.05), 
+         # linetype="dashed", 
+         color="red", size=0.3) +
+  xlab("-log10(P.value)") + ylab(NULL) +
+  theme_bw()
+
+ggplotly(p)
+```
+</center>
+
+
+## 2.2 PFI
+This part includes the log-rank test between higher and lower `r id_type` ``r id_name`` groups based on median value in primary tumor samples with valid Progression-Free Interval (PFI) data across all TCGA projects.
+
+"Higher risk" indicates higher risk in the group with elevated molecular expression, whereas "Lower risk" indicates lower risk in the group with elevated molecular expression. The red vertical line indicates that P equals 0.05.
+
+```{r sur_2, echo = FALSE}
+sur_res_sub = subset(sur_res, Event == "PFI") %>%
+  tibble::remove_rownames()
+
+sur_res_sub[,c(1,2,5,4)] %>%
+  dplyr::rename(P.value=P.format) %>%
+  datatable(.,filter = 'top',
+           options = list(pageLength = 5,
+						columnDefs = list(list(className = 'dt-center', targets="_all"))))
+
+```
+
+<center>
+```{r, sur_2_plot, echo = FALSE, fig.width=6, fig.height=4.5}
+p = sur_res_sub %>% na.omit() %>% 
+  dplyr::mutate(P.log = -log10(P.value)) %>%
+  dplyr::arrange(P.log) %>%
+  dplyr::mutate(Cancer = factor(Cancer, levels=Cancer)) %>%
+  ggplot(aes(x = P.log, y = Cancer, fill = P.direction, text = paste0("P.value: ", P.format))) +
+  geom_col() +
+  scale_fill_manual(values = c("Higher Risk"="#fc8d59","Lower Risk"="#99d594")) +
+  geom_vline(xintercept = -log10(0.05), 
+         # linetype="dashed", 
+         color="red", size=0.3) +
+  xlab("-log10(P.value)") + ylab(NULL) +
+  theme_bw()
+
+ggplotly(p)
+```
+</center>
+
+## 2.3 DFI
+This part includes the log-rank test between higher and lower `r id_type` ``r id_name`` groups based on median value in primary tumor samples with valid Disease-Free Interval (DFI) data across all TCGA projects.
+
+"Higher risk" indicates higher risk in the group with elevated molecular expression, whereas "Lower risk" indicates lower risk in the group with elevated molecular expression. The red vertical line indicates that P equals 0.05.
+
+```{r sur_3, echo = FALSE}
+sur_res_sub = subset(sur_res, Event == "DFI") %>%
+  tibble::remove_rownames()
+
+sur_res_sub[,c(1,2,5,4)] %>%
+  dplyr::rename(P.value=P.format) %>%
+  datatable(.,filter = 'top',
+           options = list(pageLength = 5,
+						columnDefs = list(list(className = 'dt-center', targets="_all"))))
+
+```
+
+<center>
+```{r, sur_3_plot, echo = FALSE, fig.width=6, fig.height=4.5}
+p = sur_res_sub %>% na.omit() %>% 
+  dplyr::mutate(P.log = -log10(P.value)) %>%
+  dplyr::arrange(P.log) %>%
+  dplyr::mutate(Cancer = factor(Cancer, levels=Cancer)) %>%
+  ggplot(aes(x = P.log, y = Cancer, fill = P.direction, text = paste0("P.value: ", P.format))) +
+  geom_col() +
+  scale_fill_manual(values = c("Higher Risk"="#fc8d59","Lower Risk"="#99d594")) +
+  geom_vline(xintercept = -log10(0.05), 
+         # linetype="dashed", 
+         color="red", size=0.3) +
+  xlab("-log10(P.value)") + ylab(NULL) +
+  theme_bw()
+
+ggplotly(p)
+```
+</center>
+
+
+## 2.4 DSS
+This part includes the log-rank test between higher and lower `r id_type` ``r id_name`` groups based on median value in primary tumor samples with valid Disease-Specific Survival (DSS) survival data across all TCGA projects.
+
+"Higher risk" indicates higher risk in the group with elevated molecular expression, whereas "Lower risk" indicates lower risk in the group with elevated molecular expression. The red vertical line indicates that P equals 0.05.
+
+```{r sur_4, echo = FALSE}
+sur_res_sub = subset(sur_res, Event == "DSS") %>%
+  tibble::remove_rownames()
+
+sur_res_sub[,c(1,2,5,4)] %>%
+  dplyr::rename(P.value=P.format) %>%
+  datatable(.,filter = 'top',
+           options = list(pageLength = 5,
+						columnDefs = list(list(className = 'dt-center', targets="_all"))))
+
+```
+
+<center>
+```{r, sur_4_plot, echo = FALSE, fig.width=6, fig.height=4.5}
+p = sur_res_sub %>% na.omit() %>% 
+  dplyr::mutate(P.log = -log10(P.value)) %>%
+  dplyr::arrange(P.log) %>%
+  dplyr::mutate(Cancer = factor(Cancer, levels=Cancer)) %>%
+  ggplot(aes(x = P.log, y = Cancer, fill = P.direction, text = paste0("P.value: ", P.format))) +
+  geom_col() +
+  scale_fill_manual(values = c("Higher Risk"="#fc8d59","Lower Risk"="#99d594")) +
+  geom_vline(xintercept = -log10(0.05), 
+         # linetype="dashed", 
+         color="red", size=0.3) +
+  xlab("-log10(P.value)") + ylab(NULL) +
+  theme_bw()
+
+ggplotly(p)
+```
+</center>
+
+
+
+
+# 3. Tumor index association
+## 3.1 Tumor Stemness
+This part includes the spearman correlation of `r id_type` ``r id_name`` with **`r length(unique(cor_res$L3[cor_res$L2=="Tumor Stemness"]))`** common Tumor Stemness related items in primary tumor samples across all TCGA projects. They are `r sort(unique(cor_res$L3[cor_res$L2=="Tumor Stemness"]))`.
+
+
+
+```{r idx_1, echo = FALSE}
+cor_res_sub = cor_res %>%
+  dplyr::filter(L1 == "Tumor index") %>%
+  dplyr::filter(L2 == "Tumor Stemness") %>%
+  dplyr::rename(`Tumor Stemness` = L3)
+
+
+cor_res_sub[,c(-1, -2, -6)] %>%
+  dplyr::rename(P.value=P.format) %>%
+  datatable(.,filter = 'top',
+            options = list(pageLength = 5,
+						columnDefs = list(list(className = 'dt-center', targets="_all"))))
+```
+
+
+<center>
+```{r idx_1_plot, echo = FALSE, fig.width=6, fig.height=5}
+p = cor_res_sub %>%
+  ggplot(aes(x = `Tumor Stemness`, y = Cancer, text = paste0("R: ", R))) +
+  geom_tile(aes(fill = R)) +
+  geom_text(aes(label=P.label), nudge_y = -0.2, size = 3)+
+  xlab(NULL) + ylab(NULL) +
+  scale_fill_gradient2(low = "green", mid = "white", high = "red",
+                        breaks = c(-0.4,0,0.4)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust=1))
+# p
+ggplotly(p)
+```
+</center>
+
+
+## 3.2 Tumor Mutation Burden
+This part includes the spearman correlation of `r id_type` ``r id_name`` with **`r length(unique(cor_res$L3[cor_res$L2=="Tumor Mutation Burden"]))`** common Tumor Mutation Burden related items in primary tumor samples across all TCGA projects. They are `r sort(unique(cor_res$L3[cor_res$L2=="Tumor Mutation Burden"]))`.
+
+
+```{r idx_2, echo = FALSE}
+cor_res_sub = cor_res %>%
+  dplyr::filter(L1 == "Tumor index") %>%
+  dplyr::filter(L2 == "Tumor Mutation Burden") %>%
+  dplyr::rename(`Tumor Mutation Burden` = L3)
+
+
+cor_res_sub[,c(-1, -2, -6)] %>%
+  dplyr::rename(P.value=P.format) %>%
+  datatable(.,filter = 'top',
+            options = list(pageLength = 5,
+						columnDefs = list(list(className = 'dt-center', targets="_all"))))
+```
+
+
+<center>
+```{r idx_2_plot, echo = FALSE, fig.width=6, fig.height=5}
+p = cor_res_sub %>%
+  ggplot(aes(x = `Tumor Mutation Burden`, y = Cancer, text = paste0("R: ", R))) +
+  geom_tile(aes(fill = R)) +
+  geom_text(aes(label=P.label), nudge_y = -0.2, size = 3)+
+  xlab(NULL) + ylab(NULL) +
+  scale_fill_gradient2(low = "green", mid = "white", high = "red",
+                        breaks = c(-0.4,0,0.4)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust=1))
+# p
+ggplotly(p)
+```
+</center>
+
+
+
+## 3.3 Genome Instability
+This part includes the spearman correlation of `r id_type` ``r id_name`` with **`r length(unique(cor_res$L3[cor_res$L2=="Genome Instability"]))`** common Genome Instability related items in primary tumor samples across all TCGA projects. They are `r sort(unique(cor_res$L3[cor_res$L2=="Genome Instability"]))`.
+
+
+
+```{r idx_3, echo = FALSE}
+cor_res_sub = cor_res %>%
+  dplyr::filter(L1 == "Tumor index") %>%
+  dplyr::filter(L2 == "Genome Instability") %>%
+  dplyr::rename(`Genome Instability` = L3)
+
+
+cor_res_sub[,c(-1, -2, -6)] %>%
+  dplyr::rename(P.value=P.format) %>%
+  datatable(.,filter = 'top',
+            options = list(pageLength = 5,
+						columnDefs = list(list(className = 'dt-center', targets="_all"))))
+```
+
+
+<center>
+```{r idx_3_plot, echo = FALSE, fig.width=6, fig.height=5}
+p = cor_res_sub %>%
+  ggplot(aes(x = `Genome Instability`, y = Cancer, text = paste0("R: ", R))) +
+  geom_tile(aes(fill = R)) +
+  geom_text(aes(label=P.label), nudge_y = -0.2, size = 3)+
+  xlab(NULL) + ylab(NULL) +
+  scale_fill_gradient2(low = "green", mid = "white", high = "red",
+                        breaks = c(-0.4,0,0.4)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust=1))
+# p
+ggplotly(p)
+```
+</center>
+
+
+
+
+# 4. Immune infiltration association 
+## 4.1 CIBERSORT
+This part includes the spearman correlation of `r id_type` ``r id_name`` with **`r length(unique(cor_res$L3[cor_res$L2=="CIBERSORT"]))`** CIBERSORT based items in primary tumor samples across all TCGA projects. They are `r sort(unique(cor_res$L3[cor_res$L2=="CIBERSORT"]))`.
+
+
+
+```{r immu_1, echo = FALSE}
+cor_res_sub = cor_res %>%
+  dplyr::filter(L1 == "Immune Infiltration") %>%
+  dplyr::filter(L2 == "CIBERSORT") %>%
+  dplyr::rename(`CIBERSORT` = L3)
+
+
+cor_res_sub[,c(-1, -2, -6)] %>%
+  dplyr::rename(P.value=P.format) %>%
+  datatable(.,filter = 'top',
+            options = list(pageLength = 5,
+						columnDefs = list(list(className = 'dt-center', targets="_all"))))
+```
+
+
+<center>
+```{r immu_1_plot, echo = FALSE, fig.width=7, fig.height=6}
+p = cor_res_sub %>%
+  ggplot(aes(x = `CIBERSORT`, y = Cancer, text = paste0("R: ", R))) +
+  geom_tile(aes(fill = R)) +
+  geom_text(aes(label=P.label), nudge_y = -0.2, size = 3)+
+  xlab(NULL) + ylab(NULL) +
+  scale_fill_gradient2(low = "green", mid = "white", high = "red",
+                        breaks = c(-0.4,0,0.4)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust=1))
+# p
+ggplotly(p)
+```
+</center>
+
+
+
+## 4.2 TIMER
+This part includes the spearman correlation of `r id_type` ``r id_name`` with **`r length(unique(cor_res$L3[cor_res$L2=="TIMER"]))`** TIMER based items in primary tumor samples across all TCGA projects. They are `r sort(unique(cor_res$L3[cor_res$L2=="TIMER"]))`.
+
+```{r immu_2, echo = FALSE}
+cor_res_sub = cor_res %>%
+  dplyr::filter(L1 == "Immune Infiltration") %>%
+  dplyr::filter(L2 == "TIMER") %>%
+  dplyr::rename(`TIMER` = L3)
+
+
+cor_res_sub[,c(-1, -2, -6)] %>%
+  dplyr::rename(P.value=P.format) %>%
+  datatable(.,filter = 'top',
+            options = list(pageLength = 5,
+						columnDefs = list(list(className = 'dt-center', targets="_all"))))
+```
+
+
+<center>
+```{r immu_2_plot, echo = FALSE, fig.width=7, fig.height=6}
+p = cor_res_sub %>%
+  ggplot(aes(x = `TIMER`, y = Cancer, text = paste0("R: ", R))) +
+  geom_tile(aes(fill = R)) +
+  geom_text(aes(label=P.label), nudge_y = -0.2, size = 3)+
+  xlab(NULL) + ylab(NULL) +
+  scale_fill_gradient2(low = "green", mid = "white", high = "red",
+                        breaks = c(-0.4,0,0.4)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust=1))
+# p
+ggplotly(p)
+```
+</center>
+
+
+## 4.3 XCELL
+This part includes the spearman correlation of `r id_type` ``r id_name`` with **`r length(unique(cor_res$L3[cor_res$L2=="XCELL"]))`** XCELL based items in primary tumor samples across all TCGA projects. They are `r sort(unique(cor_res$L3[cor_res$L2=="XCELL"]))`.
+
+```{r immu_3, echo = FALSE}
+cor_res_sub = cor_res %>%
+  dplyr::filter(L1 == "Immune Infiltration") %>%
+  dplyr::filter(L2 == "XCELL") %>%
+  dplyr::rename(`XCELL` = L3)
+
+
+cor_res_sub[,c(-1, -2, -6)] %>%
+  dplyr::rename(P.value=P.format) %>%
+  datatable(.,filter = 'top',
+            options = list(pageLength = 5,
+						columnDefs = list(list(className = 'dt-center', targets="_all"))))
+```
+
+
+<center>
+```{r immu_3_plot, echo = FALSE, fig.width=9, fig.height=6}
+p = cor_res_sub %>%
+  ggplot(aes(x = `XCELL`, y = Cancer, text = paste0("R: ", R))) +
+  geom_tile(aes(fill = R)) +
+  geom_text(aes(label=P.label), nudge_y = -0.2, size = 2)+
+  xlab(NULL) + ylab(NULL) +
+  scale_fill_gradient2(low = "green", mid = "white", high = "red",
+                        breaks = c(-0.4,0,0.4)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust=1))
+# p
+ggplotly(p)
+```
+</center>
+
+
+
+# 5. Pathway activity association
+
+## 5.1 HALLMARK
+This part includes the spearman correlation of `r id_type` ``r id_name`` with **`r length(unique(cor_res$L3[cor_res$L2=="HALLMARK"]))`** HALLMARK originated items in primary tumor samples across all TCGA projects. See all the items  [here](https://www.gsea-msigdb.org/gsea/msigdb/human/genesets.jsp?collection=H).
+
+```{r pw_1, echo = FALSE}
+cor_res_sub = cor_res %>%
+  dplyr::filter(L1 == "Pathway activity") %>%
+  dplyr::filter(L2 == "HALLMARK") %>%
+  dplyr::rename(`HALLMARK` = L3)
+
+
+cor_res_sub[,c(-1, -2, -6)] %>%
+  dplyr::rename(P.value=P.format) %>%
+  datatable(.,filter = 'top',
+            options = list(pageLength = 5,
+						columnDefs = list(list(className = 'dt-center', targets="_all"))))
+```
+
+
+<center>
+```{r pw_1_plot, echo = FALSE, fig.width=10, fig.height=6.5}
+p = cor_res_sub %>%
+  ggplot(aes(x = `HALLMARK`, y = Cancer, text = paste0("R: ", R))) +
+  geom_tile(aes(fill = R)) +
+  geom_text(aes(label=P.label), nudge_y = -0.2, size = 1.7)+
+  xlab(NULL) + ylab(NULL) +
+  scale_fill_gradient2(low = "green", mid = "white", high = "red",
+                        breaks = c(-0.4,0,0.4)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust=1, size = 7))
+# p
+ggplotly(p)
+```
+</center>
+
+
+
+## 5.2 KEGG
+This part includes the spearman correlation of `r id_type` ``r id_name`` with **`r length(unique(cor_res$L3[cor_res$L2=="KEGG"]))`** KEGG originated items in primary tumor samples across all TCGA projects. See all the items  [here](https://www.gsea-msigdb.org/gsea/msigdb/human/genesets.jsp?collection=CP:KEGG_LEGACY). Top 50 most significant terms are selected for visualization.
+
+```{r pw_2, echo = FALSE}
+cor_res_sub = cor_res %>%
+  dplyr::filter(L1 == "Pathway activity") %>%
+  dplyr::filter(L2 == "KEGG") %>%
+  dplyr::rename(`KEGG` = L3)
+
+
+cor_res_sub[,c(-1, -2, -6)] %>%
+  dplyr::rename(P.value=P.format) %>%
+  datatable(.,filter = 'top',
+            options = list(pageLength = 5,
+						columnDefs = list(list(className = 'dt-center', targets="_all"))))
+```
+
+
+<center>
+```{r pw_2_plot, echo = FALSE, fig.width=10, fig.height=6.5}
+# 选择50条显著通路
+KEGG_sle = cor_res_sub %>%
+  dplyr::group_by(KEGG) %>%
+  dplyr:::summarise(n = sum(P.label==" ")) %>%
+  dplyr::arrange(n) %>% head(50) %>%
+  dplyr::pull(KEGG)
+
+p = cor_res_sub %>%
+  dplyr::filter(KEGG %in% KEGG_sle) %>%
+  ggplot(aes(x = `KEGG`, y = Cancer, text = paste0("R: ", R))) +
+  geom_tile(aes(fill = R)) +
+  geom_text(aes(label=P.label), nudge_y = -0.2, size = 1.7)+
+  xlab(NULL) + ylab(NULL) +
+  scale_fill_gradient2(low = "green", mid = "white", high = "red",
+                        breaks = c(-0.4,0,0.4)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust=1, size = 7))
+# p
+ggplotly(p)
+```
+</center>
+
+
+
+## 5.3 IOBR
+This part includes the spearman correlation of `r id_type` ``r id_name`` with  **`r length(unique(cor_res$L3[cor_res$L2=="IOBR"]))`** [IOBR](https://doi.org/10.3389/fimmu.2021.687975) originated items in primary tumor samples across all TCGA projects. See all the items here through IOBR R package `IOBR::signature_collection` or [here](https://github.com/lishensuo/utils/blob/main/IOBR_signature_collection.csv). Top 50 most significant terms are selected for visualization.
+
+```{r pw_3, echo = FALSE}
+cor_res_sub = cor_res %>%
+  dplyr::filter(L1 == "Pathway activity") %>%
+  dplyr::filter(L2 == "IOBR") %>%
+  dplyr::rename(`IOBR` = L3)
+
+
+cor_res_sub[,c(-1, -2, -6)] %>%
+  dplyr::rename(P.value=P.format) %>%
+  datatable(.,filter = 'top',
+            options = list(pageLength = 5,
+						columnDefs = list(list(className = 'dt-center', targets="_all"))))
+```
+
+
+<center>
+```{r pw_3_plot, echo = FALSE, fig.width=10, fig.height=6.5}
+# 选择50条显著通路
+IOBR_sle = cor_res_sub %>%
+  dplyr::group_by(IOBR) %>%
+  dplyr:::summarise(n = sum(P.label==" ")) %>%
+  dplyr::arrange(n) %>% head(50) %>%
+  dplyr::pull(IOBR)
+
+p = cor_res_sub %>%
+  dplyr::filter(IOBR %in% IOBR_sle) %>%
+  ggplot(aes(x = `IOBR`, y = Cancer, text = paste0("R: ", R))) +
+  geom_tile(aes(fill = R)) +
+  geom_text(aes(label=P.label), nudge_y = -0.2, size = 1.7)+
+  xlab(NULL) + ylab(NULL) +
+  scale_fill_gradient2(low = "green", mid = "white", high = "red",
+                        breaks = c(-0.4,0,0.4)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust=1, size = 7))
+# p
+ggplotly(p)
+```
+</center>
+
+
+
+
+
+
