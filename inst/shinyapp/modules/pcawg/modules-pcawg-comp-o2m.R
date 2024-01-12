@@ -83,7 +83,7 @@ ui.modules_pcawg_comp_o2m = function(id) {
 				        size = "sm"
 					),
 					br(),
-					selectInput(ns("comp_method"), "Comparison metohd",choices = c("t-test", "wilcoxon")),
+					selectInput(ns("comp_method"), "Comparison method",choices = c("t-test", "wilcoxon")),
 					br(),
 
 					column(3, colourpicker::colourInput(inputId = ns("group_1_color_2"), "Color (group-1)", "#E69F00")),

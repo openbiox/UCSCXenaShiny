@@ -267,25 +267,25 @@ mol_origin_Server = function(input, output, session, database = "toil"){
 			link_hub = "https://toil.xenahubs.net"
 			if(input$data_origin == "mRNA Expression"){
 				active_set = switch(input$toil_gene_norm,
-					"tpm" = "tcga_RSEM_gene_tpm",
-					"fpkm" = "tcga_RSEM_gene_fpkm",
-					"nc" = "tcga_RSEM_gene_nc"		
+					"tpm" = "TcgaTargetGtex_rsem_gene_tpm",
+					"fpkm" = "TcgaTargetGtex_rsem_gene_fpkm",
+					"nc" = "TcgaTargetGtex_RSEM_Hugo_norm_count"		
 				)
 				link_set = switch(input$toil_gene_norm,
-					"tpm" = "https://xenabrowser.net/datapages/?dataset=tcga_RSEM_gene_tpm&host=https://toil.xenahubs.net",
-					"fpkm" = "https://xenabrowser.net/datapages/?dataset=tcga_RSEM_gene_fpkm&host=https://toil.xenahubs.net",
-					"nc" = "https://xenabrowser.net/datapages/?dataset=tcga_RSEM_Hugo_norm_count&host=https://toil.xenahubs.net"		
+					"tpm" = "https://xenabrowser.net/datapages/?dataset=TcgaTargetGtex_rsem_gene_tpm&host=https://toil.xenahubs.net",
+					"fpkm" = "https://xenabrowser.net/datapages/?dataset=TcgaTargetGtex_rsem_gene_fpkm&host=https://toil.xenahubs.net",
+					"nc" = "https://xenabrowser.net/datapages/?dataset=TcgaTargetGtex_RSEM_Hugo_norm_count&host=https://toil.xenahubs.net"		
 				)
 			} else if(input$data_origin == "Transcript Expression"){
 				active_set = switch(input$toil_trans_norm,
-					"tpm" = "tcga_rsem_isoform_tpm",
-					"fpkm" = "tcga_RSEM_isoform_fpkm",
-					"isopct" = "tcga_rsem_isopct"		
+					"tpm" = "TcgaTargetGtex_rsem_isoform_tpm",
+					"fpkm" = "TcgaTargetGtex_RSEM_isoform_fpkm",
+					"isopct" = "TcgaTargetGtex_rsem_isopct"		
 				)
 				link_set = switch(input$toil_trans_norm,
-					"tpm" = "https://xenabrowser.net/datapages/?dataset=tcga_rsem_isoform_tpm&host=https://toil.xenahubs.net",
-					"fpkm" = "https://xenabrowser.net/datapages/?dataset=tcga_RSEM_isoform_fpkm&host=https://toil.xenahubs.net",
-					"isopct" = "https://xenabrowser.net/datapages/?dataset=tcga_rsem_isopct&host=https://toil.xenahubs.net"		
+					"tpm" = "https://xenabrowser.net/datapages/?dataset=TcgaTargetGtex_rsem_isoform_tpm&host=https://toil.xenahubs.net",
+					"fpkm" = "https://xenabrowser.net/datapages/?dataset=TcgaTargetGtex_RSEM_isoform_fpkm&host=https://toil.xenahubs.net",
+					"isopct" = "https://xenabrowser.net/datapages/?dataset=TcgaTargetGtex_rsem_isopct&host=https://toil.xenahubs.net"		
 				)
 			} else if(input$data_origin == "DNA Methylation"){
 				# Not toil hub!

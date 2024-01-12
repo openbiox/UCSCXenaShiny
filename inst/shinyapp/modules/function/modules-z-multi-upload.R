@@ -258,15 +258,15 @@ multi_upload_Server = function(input, output, session, database = "toil", #id_op
 				    `Phenotype data` = input$phenotype_data_id
 				  )
 		} else if (input$L3_x_type=="File"){
-			file = input$upload_sp_info
+			file = input$fl_L3_x
 			if(is.null(file$datapath)){  # 如果空文件
 				L3s_x = NULL
 			} else {
 				L3s_x = read.table(file$datapath)[,1]
-				L3s_x = L3s_x[L3s_x %in% all_ids]
-				if(length(L3s_x)>500 & L2_x() %in% id_category[["Molecular profile"]]){
-					L3s_x = L3s_x[1:500]
-				}
+				L3s_x = L3s_x[L3s_x %in% id_option[[input$data_L1]][[L2_x()]]$all]
+				if(length(L3s_x)>1000 & L2_x() %in% id_category[["Molecular profile"]]){
+					L3s_x = L3s_x[1:1000]
+				} 
 			}
 		} else if (input$L3_x_type=="All"){
 			pw_sle = ifelse(is.null(input$tab_All_PW),"ANGIOGENESIS",input$tab_All_PW)

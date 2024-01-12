@@ -85,7 +85,7 @@ ui.modules_pancan_cor_o2m = function(id) {
 				        size = "sm"
 					),
 					br(),
-					selectInput(ns("cor_method"), "Correlation metohd",choices = c("Pearson", "Spearman")),
+					selectInput(ns("cor_method"), "Correlation method",choices = c("Pearson", "Spearman")),
 
 					column(3, colourpicker::colourInput(inputId = ns("positive_color"), "Positive color", "#d53e4f")),
 					column(3, colourpicker::colourInput(inputId = ns("negative_color"), "Negative color", "#3288bd")),

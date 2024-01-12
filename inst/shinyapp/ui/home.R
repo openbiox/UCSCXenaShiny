@@ -120,12 +120,16 @@ ui.page_home <- function() {
             tabPanel(
               "Cohort number",
               tags$br(),
-              plotly::plotlyOutput("Xenasummary1", height = "100%")
+              # plotly::plotlyOutput("Xenasummary1", height = "100%")
+              plotOutput("Xenasummary1")
+
             ),
             tabPanel(
               "Dataset number",
               tags$br(),
-              plotly::plotlyOutput("Xenasummary2", height = "100%")
+              # plotly::plotlyOutput("Xenasummary2", height = "100%")
+              plotOutput("Xenasummary2")
+
             )
           )
         )

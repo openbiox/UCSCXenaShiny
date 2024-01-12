@@ -85,7 +85,7 @@ ui.modules_pancan_cor_o2o = function(id) {
 				        size = "sm"
 					),
 					br(),
-					selectInput(ns("cor_method"), "Correlation metohd",choices = c("Pearson", "Spearman")),
+					selectInput(ns("cor_method"), "Correlation method",choices = c("Pearson", "Spearman")),
 					fluidRow(
 						column(3, colourpicker::colourInput(inputId = ns("line_color"), "Line color", "#0000FF")),
 						column(3, colourpicker::colourInput(inputId = ns("x_hist_color"), "Hist color(x)", "#009E73")),
