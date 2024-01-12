@@ -9,7 +9,17 @@ print(Sys.info())
 
 # Set options and run app
 
-options(xena.cacheDir = "/xena", xena.zenodoDir = "/xena/datasets")
+if(dir.exists("/xena")){ 
+  # hiplot
+  xena.cacheDir = "/xena"
+  xena.zenodoDir = "/xena/datasets"
+} else {
+  # zhoulab
+  xena.cacheDir = "/home/shiny/apps/xena/"
+  xena.zenodoDir = "/home/shiny/apps/xena/datasets/"
+}
+options(xena.cacheDir = xena.cacheDir, xena.zenodoDir = xena.zenodoDir)
+
 options(xena.runMode = "server")
 
 library(UCSCXenaShiny)
