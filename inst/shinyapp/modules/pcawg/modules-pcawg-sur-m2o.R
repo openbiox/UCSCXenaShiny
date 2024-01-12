@@ -325,8 +325,12 @@ server.modules_pcawg_sur_m2o = function(input, output, session) {
 		datas_sub
 	})
 
+
+	w <- waiter::Waiter$new(id = ns("L3s_x_data_sur_group"), html = waiter::spin_hexdots(), color = "black")
+
 	output$L3s_x_data_sur_group.ui = renderUI({
 		output$L3s_x_data_sur_group = renderDataTable({
+			w$show()
 			group_stat = L3s_x_data_sur_group()
 			group_stat = group_stat %>%
 				dplyr::count(id, group) %>% 

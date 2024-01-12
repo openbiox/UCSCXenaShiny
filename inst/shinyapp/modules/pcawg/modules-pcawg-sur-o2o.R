@@ -73,7 +73,7 @@ ui.modules_pcawg_sur_o2o = function(id) {
 				        block = TRUE,
 				        size = "sm"
 					),
-					selectInput(ns("sur_method"), "1. Survival metohd",
+					selectInput(ns("sur_method"), "1. Survival method",
 						choices = c("Log-rank test", "Univariate Cox regression")),
 
 				    materialSwitch(ns("use_origin"), 

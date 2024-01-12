@@ -86,7 +86,7 @@ ui.modules_pancan_comp_o2m = function(id) {
 				        size = "sm"
 					),
 					br(),
-					selectInput(ns("comp_method"), "Comparison metohd",choices = c("t-test", "wilcoxon")),
+					selectInput(ns("comp_method"), "Comparison method",choices = c("t-test", "wilcoxon")),
 					br(),
 
 					column(3, colourpicker::colourInput(inputId = ns("group_1_color_2"), "Color (group-1)", "#E69F00")),
@@ -270,7 +270,7 @@ server.modules_pancan_comp_o2m = function(input, output, session) {
 				"Please inspect whether to set groups or download variable data in S2 or S3 step."),
 		)
 		merge_data_line_sub = merge_data_line() %>%
-			dplyr::filter(cancer %in% unique(merge_data_line()$cancer))
+			dplyr::filter(cancer %in% unique(comp_data_line()$cancer))
 
 		p1 = ggplot(merge_data_line_sub) + 
 		  stat_summary(aes(x=cancer, y=value, color=group),
@@ -310,7 +310,7 @@ server.modules_pancan_comp_o2m = function(input, output, session) {
 		  theme(panel.grid.major.x = element_blank(),
 		        panel.grid.minor.x = element_blank())
 		
-		p = p1 + p2 + patchwork::plot_layout(widths = c(5,1))
+		p = p1 + p2 + patchwork::plot_layout(widths = c(5,0.3))
 
 		return(p)
 	})

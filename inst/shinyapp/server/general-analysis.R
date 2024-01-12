@@ -143,32 +143,37 @@ output$ga_dataset_table <- DT::renderDataTable(
 
 
 # Individual analysis pages -------------------------------------------------------------
+observeEvent(req(input$navbar=="General Analysis"),{
+  callModule(
+    server.modules_ga_scatter_correlation, "module_ga_scatter_correlation",
+    selected_database_rm_phenotype, selected_database_add_url_and_phenotype,
+    custom_file
+  )
+  callModule(
+    server.modules_ga_matrix_correlation, "module_ga_matrix_correlation",
+    selected_database_rm_phenotype, selected_database_add_url_and_phenotype,
+    custom_file
+  )
+  callModule(
+    server.modules_ga_group_comparison, "module_ga_group_comparison",
+    selected_database_rm_phenotype, selected_database_add_url_and_phenotype,
+    custom_file
+  )
+  callModule(
+    server.modules_ga_surv_analysis, "module_ga_surv_analysis",
+    selected_database_rm_phenotype, selected_database_add_url_and_phenotype,
+    custom_file
+  )
+  callModule(
+    server.modules_ga_dim_distribution, "module_ga_dim_distribution",
+    selected_database_rm_phenotype, selected_database_add_url_and_phenotype,
+    custom_file
+  )
+}, once = TRUE)  
 
-callModule(
-  server.modules_ga_scatter_correlation, "module_ga_scatter_correlation",
-  selected_database_rm_phenotype, selected_database_add_url_and_phenotype,
-  custom_file
-)
-callModule(
-  server.modules_ga_matrix_correlation, "module_ga_matrix_correlation",
-  selected_database_rm_phenotype, selected_database_add_url_and_phenotype,
-  custom_file
-)
-callModule(
-  server.modules_ga_group_comparison, "module_ga_group_comparison",
-  selected_database_rm_phenotype, selected_database_add_url_and_phenotype,
-  custom_file
-)
-callModule(
-  server.modules_ga_surv_analysis, "module_ga_surv_analysis",
-  selected_database_rm_phenotype, selected_database_add_url_and_phenotype,
-  custom_file
-)
-callModule(
-  server.modules_ga_dim_distribution, "module_ga_dim_distribution",
-  selected_database_rm_phenotype, selected_database_add_url_and_phenotype,
-  custom_file
-)
+
+
+
 # Show use alert ----------------------------------------------------------
 
 observeEvent(input$use_ga_page, {

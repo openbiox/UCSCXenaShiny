@@ -209,6 +209,7 @@ server.modules_pancan_sur_m2o = function(input, output, session) {
 
 	L3s_x_data_sur = reactive({
 		sur_dat_raw = load_data("tcga_surv") %>%
+			dplyr::rename("Sample"="sample") %>%
 			dplyr::select("Sample",contains(input$endpoint_type)) %>%
 			na.omit()
 		colnames(sur_dat_raw)[2:3] = c("status","time")
@@ -359,7 +360,7 @@ server.modules_pancan_sur_m2o = function(input, output, session) {
 		valid_ids = unique(datas$id)
 
 
-		withProgress(message = "Your analyzation has been submitted. Please wait for a while.",{
+		withProgress(message = "Please wait for a while.",{
 			sur_stat = lapply(seq(valid_ids), function(i){
 			    incProgress(1 / length(valid_ids), detail = paste0("(Finished ",i,"/",length(valid_ids),")"))
 				valid_id = valid_ids[i]

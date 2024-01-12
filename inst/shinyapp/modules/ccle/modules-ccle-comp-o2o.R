@@ -77,7 +77,7 @@ ui.modules_ccle_comp_o2o = function(id) {
 				        size = "sm"
 					),
 					br(),
-					selectInput(ns("comp_method"), "Comparison metohd",choices = c("t-test", "wilcoxon")),
+					selectInput(ns("comp_method"), "Comparison method",choices = c("t-test", "wilcoxon")),
 					br(),
 					column(3, colourpicker::colourInput(inputId = ns("group_1_color"), "Color (group-1)", "#E69F00")),
 					column(3, colourpicker::colourInput(inputId = ns("group_2_color"), "Color (group-2)", "#56B4E9")),

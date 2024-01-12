@@ -7,7 +7,7 @@ ui.page_download <- function() {
 			ui.modules_download_pancan("modules_download_pancan")
 	    ),
 	    tabPanel(
-			"Based on Respository Datasets",
+			"Based on Repository Datasets",
 			ui.modules_download_dataset("modules_download_dataset")
 	    ),
 	)

@@ -351,14 +351,16 @@ filter_samples_Server = function(input, output, session, database="toil", #id_op
 			# 以clinical_phe作为最终的背景人群参考
 			x_data = clinical_phe[,"Sample"] %>% 
 			  dplyr::rename(sample=Sample) %>% 
-			  dplyr::mutate(value=x_data$value[match(sample, x_data$sample)]) 
+			  dplyr::mutate(value=x_data$value[match(sample, x_data$Sample)]) 
 
 			colnames(x_data)[2] = add_phes$label[[i]]
 			x_data %>%
 				tibble::column_to_rownames("sample")
+
 		}) %>% do.call(cbind, .)
 		x_tmp %>% tibble::rownames_to_column("sample")
 	})
+
 
 	## step2观察表型
 	output$filter_phe_01_by.ui = renderUI({

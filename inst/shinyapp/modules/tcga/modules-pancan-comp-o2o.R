@@ -84,7 +84,7 @@ ui.modules_pancan_comp_o2o = function(id) {
 					),
 
 					br(),
-					selectInput(ns("comp_method"), "Comparison metohd",choices = c("t-test", "wilcoxon")),
+					selectInput(ns("comp_method"), "Comparison method",choices = c("t-test", "wilcoxon")),
 					br(),
 
 					column(3, colourpicker::colourInput(inputId = ns("group_1_color"), "Color (group-1)", "#E69F00")),
@@ -244,10 +244,14 @@ server.modules_pancan_comp_o2o = function(input, output, session) {
 
 
 	comp_plot_box = eventReactive(input$step3_plot_box, {
-		# shiny::validate(
-		# 	need(try(nrow(merge_data_box())>0), 
-		# 		"Please inspect whether to set groups or download variable data in S2 or S3 step."),
-		# )
+		shiny::validate(
+			need(try(nrow(merge_data_box())>0), 
+				"Please inspect whether to set groups or download variable data in S2 or S3 step."),
+		)
+		shiny::validate(
+			need(try(length(unique(merge_data_box()$group))==2), 
+				"No enough samples for comparing, please check your input."),
+		)
 		merge_data_box = merge_data_box()
 
 		if(!cancer_choose$single_cancer_ok){

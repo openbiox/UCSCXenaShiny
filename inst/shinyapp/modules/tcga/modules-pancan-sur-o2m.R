@@ -89,7 +89,7 @@ ui.modules_pancan_sur_o2m = function(id) {
 				        size = "sm"
 					),
 
-					selectInput(ns("sur_method"), "1. Survival metohd",
+					selectInput(ns("sur_method"), "1. Survival method",
 						choices = c("Log-rank test", "Univariate Cox regression")),
 
 				    materialSwitch(ns("use_origin"), 
@@ -217,8 +217,8 @@ server.modules_pancan_sur_o2m = function(input, output, session) {
 
 	# 生存资料
 	sur_dat_v1 = reactive({
-		sur_dat_raw = load_data("tcga_surv") 
-		cli_dat_raw = load_data("tcga_clinical") 
+		sur_dat_raw = load_data("tcga_surv") %>% dplyr::rename("Sample"="sample")
+		cli_dat_raw = load_data("tcga_clinical") %>% dplyr::rename("Sample"="sample")
 		sur_dat_sub = sur_dat_raw %>%
 			dplyr::filter(Sample %in% cancer_choose$filter_phe_id) %>%
 			dplyr::select("Sample",contains(input$endpoint_type)) %>%
@@ -329,7 +329,7 @@ server.modules_pancan_sur_o2m = function(input, output, session) {
 		)
 		if(input$sur_method=="Log-rank test"){
 			dat = sur_res_multi$sur_res
-			print(head(dat))
+			# print(head(dat))
 			pval_df = dat %>%
 			  dplyr::select(Cancer, Group, rmean, p.value) %>% 
 			  dplyr::group_by(Cancer) %>% 
@@ -338,7 +338,7 @@ server.modules_pancan_sur_o2m = function(input, output, session) {
 			                              paste0("High risk(", Group[1],")"))) %>% 
 			  dplyr::distinct(Cancer, p.value, Risk) %>% as.data.frame() %>% 
 			  dplyr::mutate(Cancer = factor(Cancer, levels = rev(sort(Cancer))))
-			print(head(pval_df))
+			# print(head(pval_df))
 			fill_cols = c(input$multi_log_color1, input$multi_log_color2)
 			names(fill_cols) = c(
 				paste0("Low risk(Group=",levels(sur_res_multi$sur_dat$Group)[1], ")"),

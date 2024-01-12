@@ -1,8 +1,8 @@
 ---
-title: "Exploratory Analysis Report of UCSCXenashiny v2.0 Molecule Profiling"
-subtitle: "UCSCXenashiny developer team"
+title: "Exploratory Analysis of UCSCXenashiny v2.0 Molecule Profiling"
+subtitle: "Summary Report for `r params$id_type` `r params$id_name`"
 author: 
-  - name: "Shensuo Li"
+  - name: "Shensuo Li, UCSCXenashiny developer team"
     email: lishensuo@163.com
 date: "`r Sys.Date()`"
 params:
@@ -73,7 +73,7 @@ link_set = switch(id_type,
 
 
 # Introduction
-This report is generated using the results obtained from the `UCSCXenaShiny::mol_quick_analysis` function. The analysis encompasses three distinct types: Correlation, Comparison, and Survival, each executed for `r id_type` ``r id_name`` sourced from the [dataset](`r link_set`) in UCSC Xena TOIL hub. [All TCGA projects](https://gdc.cancer.gov/resources-tcga-users/tcga-code-tables/tcga-study-abbreviations) are analyzed individually and some cancer projects may be missing due to few samples with valid data for some analysis. The notation for statistical significance analysis is as follows: * indicates a P-value less than 0.05, ** indicates a P-value less than 0.01, and *** indicates a P-value less than 0.001. 
+This report is generated using the results obtained from the `UCSCXenaShiny::mol_quick_analysis` function. The analysis encompasses 5 sections, each executed for `r id_type` ``r id_name`` sourced from the [dataset](`r link_set`) in UCSC Xena TOIL hub. [All TCGA projects](https://gdc.cancer.gov/resources-tcga-users/tcga-code-tables/tcga-study-abbreviations) are analyzed individually and some cancer projects may be missing due to few samples with valid data for some analysis. The notation for statistical significance analysis is as follows: * indicates a P-value less than 0.05, ** indicates a P-value less than 0.01, and *** indicates a P-value less than 0.001. 
 
 Please note that our [Shiny app](https://shiny.hiplot.cn/ucsc-xena-shiny/) offers more comprehensive exploration possibilities, including alternative datasets for the same molecule, alternative analysis methods, molecule-molecule analysis, personalized sample filtering and grouping, result visualization, and download options.
 
@@ -136,7 +136,7 @@ p = phe_res_TN %>%
   scale_fill_manual(values = c("Higher Exp."="#fc8d59","Lower Exp."="#99d594")) +
   geom_vline(xintercept = -log10(0.05), 
            # linetype="dashed", 
-           color="red", size=0.3) +
+           color="red", linewidth=0.3) +
   xlab("-log10(P.value)") + ylab(NULL) +
   theme_bw()
 ggplotly(p)
@@ -174,7 +174,7 @@ p = phe_res_Age %>%
   scale_fill_manual(values = c("Higher Exp."="#fc8d59","Lower Exp."="#99d594")) +
   geom_vline(xintercept = -log10(0.05), 
          # linetype="dashed", 
-         color="red", size=0.3) +
+         color="red", linewidth=0.3) +
   xlab("-log10(P.value)") + ylab(NULL) +
   theme_bw()
 ggplotly(p)
@@ -213,7 +213,7 @@ p = phe_res_Gender %>%
   scale_fill_manual(values = c("Higher Exp."="#fc8d59","Lower Exp."="#99d594")) +
   geom_vline(xintercept = -log10(0.05), 
          # linetype="dashed", 
-         color="red", size=0.3) +
+         color="red", linewidth=0.3) +
   xlab("-log10(P.value)") + ylab(NULL) +
   theme_bw()
 ggplotly(p)
@@ -249,7 +249,7 @@ p = phe_res_Stage %>%
   xlab("-log10(P.value)") + ylab(NULL) +
   geom_vline(xintercept = -log10(0.05), 
          # linetype="dashed", 
-         color="red", size=0.3) +
+         color="red", linewidth=0.3) +
   theme_bw()
 ggplotly(p)
 ```
@@ -287,7 +287,7 @@ p = sur_res_sub %>% na.omit() %>%
   scale_fill_manual(values = c("Higher Risk"="#fc8d59","Lower Risk"="#99d594")) +
   geom_vline(xintercept = -log10(0.05), 
          # linetype="dashed", 
-         color="red", size=0.3) +
+         color="red", linewidth=0.3) +
   xlab("-log10(P.value)") + ylab(NULL) +
   theme_bw()
 
@@ -324,7 +324,7 @@ p = sur_res_sub %>% na.omit() %>%
   scale_fill_manual(values = c("Higher Risk"="#fc8d59","Lower Risk"="#99d594")) +
   geom_vline(xintercept = -log10(0.05), 
          # linetype="dashed", 
-         color="red", size=0.3) +
+         color="red", linewidth=0.3) +
   xlab("-log10(P.value)") + ylab(NULL) +
   theme_bw()
 
@@ -360,7 +360,7 @@ p = sur_res_sub %>% na.omit() %>%
   scale_fill_manual(values = c("Higher Risk"="#fc8d59","Lower Risk"="#99d594")) +
   geom_vline(xintercept = -log10(0.05), 
          # linetype="dashed", 
-         color="red", size=0.3) +
+         color="red", linewidth=0.3) +
   xlab("-log10(P.value)") + ylab(NULL) +
   theme_bw()
 
@@ -397,7 +397,7 @@ p = sur_res_sub %>% na.omit() %>%
   scale_fill_manual(values = c("Higher Risk"="#fc8d59","Lower Risk"="#99d594")) +
   geom_vline(xintercept = -log10(0.05), 
          # linetype="dashed", 
-         color="red", size=0.3) +
+         color="red", linewidth=0.3) +
   xlab("-log10(P.value)") + ylab(NULL) +
   theme_bw()
 

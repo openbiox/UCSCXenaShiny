@@ -184,8 +184,14 @@ server.modules_ga_scatter_correlation <- function(
             tags$p("Error to query data and plot. Please make sure the two selected datasets are 'genomicMatrix' type."),
             tags$p("'genomicMatrix' type means the dataset is stored in feature-by-sample format, e.g., gene-by-sample expression matrix."),
             tags$p("The type of datasets can be found at the dataset table by clicking 'Pre-selected Datasets for Analysis' on the 'General Analysis' Page."),
-            tags$img(src = "https://gitee.com/ShixiangWang/ImageCollection/raw/master/png/20210708184045.png",
+            tags$img(#src = "https://gitee.com/ShixiangWang/ImageCollection/raw/master/png/20210708184045.png",
+              #src="https://upload.wikimedia.org/wikipedia/zh/thumb/1/13/Baidu_baike_logo.svg/330px-Baidu_baike_logo.svg.png",
+              src = "20210708184045.png",
                      alt = "errorImg", width = "98%", height = "98%")
+
+
+
+
           ),
           type = "error"
         )

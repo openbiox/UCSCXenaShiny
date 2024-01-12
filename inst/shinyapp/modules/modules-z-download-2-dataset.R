@@ -181,6 +181,7 @@ server.modules_download_dataset = function(input, output, session){
 
 	candi_ids = eventReactive(input$load_id,{
 		hub_link = unique(XenaData$XenaHosts[XenaData$XenaHostNames==input$one_datahub])
+		url <- has_probeMap(host = hub_link,dataset = input$one_dataset, return_url = T)
 		if(input$id_type=="Primary ID"){
 			candi_ids = fetch_dataset_identifiers(host = hub_link,dataset = input$one_dataset)
 		} else {

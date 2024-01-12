@@ -178,6 +178,13 @@ PW_meta <- PW_meta %>%
   dplyr::mutate(display = paste0(Name, " (", size, ")"), .before = 6)
 
 
+
+
+
+
+
+
+
 ## TCGA/PCAWG/CCLE value & id for general analysis
 general_value_id = UCSCXenaShiny:::query_general_id()
 # id
@@ -201,11 +208,14 @@ ccle_value_option = general_value_id[["value"]][[3]]
 ccle_index_value = ccle_value_option[["Tumor index"]]
 ccle_phenotype_value = ccle_value_option[["Phenotype data"]]
 
+
 TIL_signatures = lapply(tcga_id_option$`Immune Infiltration`, function(x) {
   x$all
 }) %>% reshape2::melt() %>% 
   dplyr::mutate(x = paste0(value,"_",L1)) %>%
   dplyr::pull(x)
+
+
 
 # Help → ID reference
 tcga_id_referrence = load_data("pancan_identifier_help")
@@ -415,11 +425,19 @@ server <- function(input, output, session) {
   message("Shiny app run successfully! Enjoy it!\n")
   message("               --  Xena shiny team\n")
 
+  # observe(print(input$navbar))
+
   # inst/shinyapp/server
   source(server_file("home.R"), local = TRUE)
   source(server_file("repository.R"), local = TRUE)
   source(server_file("modules.R"), local = TRUE)
+
+  # observeEvent({input$navbar=="TCGA+GTEx: Molecular Profile Distribution Across Cancer Types (Tumor VS Normal)"},{
+  #     callModule(server.modules_pancan_dist, "module_gene_pancan_dist")
+  # }, once = TRUE, ignoreInit = TRUE)  
+
   # source(server_file("global.R"), local = TRUE)
+
   source(server_file("general-analysis.R"), local = TRUE)
   observe_helpers(help_dir ="helper")
 
