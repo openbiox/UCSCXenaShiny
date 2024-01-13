@@ -4,18 +4,15 @@ ui.modules_ccle_drug_response_diff <- function(id) {
     fluidRow(
       column(3,
         wellPanel(
-          selectizeInput(
+          virtualSelectInput(
             inputId = ns("ccle_search"),
             label = "Input a gene or list (as signature)",
             choices = NULL,
             multiple = TRUE,
             width = "100%",
-            options = list(
-              create = TRUE,
-              maxOptions = 5,
-              placeholder = "Enter a gene symbol, e.g. TP53",
-              plugins = list("restore_on_backspace")
-            )
+            search = TRUE,
+            allowNewOption = TRUE,
+            dropboxWidth = "200%"
           ),
           materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = TRUE),
           colourpicker::colourInput(inputId = ns("high_col"), "High group color", "#DF2020"),
@@ -102,12 +99,10 @@ server.modules_ccle_drug_response_diff <- function(input, output, session) {
   })
 
   observe({
-    updateSelectizeInput(
-      session,
+    updateVirtualSelect(
       "ccle_search",
       choices = profile_choices()$all,
-      selected = profile_choices()$default,
-      server = TRUE
+      selected = profile_choices()$default
     )
   })
 

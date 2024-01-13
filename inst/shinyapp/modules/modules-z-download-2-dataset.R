@@ -27,7 +27,10 @@ ui.modules_download_dataset = function(id){
 								choices = NULL, selected = NULL)
 						),
 					),
-					selectizeInput(ns("one_dataset"), NULL,choices=NULL,selected=NULL),
+					virtualSelectInput(ns("one_dataset"), NULL,choices=NULL,selected=NULL,
+					                   search = TRUE,
+					                   allowNewOption = FALSE,
+					                   dropboxWidth = "200%"),
 					uiOutput(ns("dataset_link")),
 					# br(),
 					h3("3. Select multiple ids"),
@@ -123,12 +126,10 @@ server.modules_download_dataset = function(input, output, session){
 
 	observe({
 		format_types = sort(unique(XenaData$Type[XenaData$XenaHostNames==input$one_datahub]))
-	    updateSelectizeInput(
-	      session,
+	    updateVirtualSelect(
 	      "format_type",
 	      choices = format_types,
-	      selected = "genomicMatrix",
-	      server = TRUE
+	      selected = "genomicMatrix"
 	    )
 	})
 
@@ -136,12 +137,10 @@ server.modules_download_dataset = function(input, output, session){
 	    profile_types = sort(unique(XenaData$DataSubtype[
 	    							XenaData$XenaHostNames==input$one_datahub & 
 	    							XenaData$Type==input$format_type]))
-	    updateSelectizeInput(
-	      session,
+	    updateVirtualSelect(
 	      "profile_type",
 	      choices = profile_types,
-	      selected = profile_types[1],
-	      server = TRUE
+	      selected = profile_types[1]
 	    )
 	})
 
@@ -150,12 +149,10 @@ server.modules_download_dataset = function(input, output, session){
 	    							XenaData$XenaHostNames==input$one_datahub & 
 	    							XenaData$Type==input$format_type &
 	    							XenaData$DataSubtype==input$profile_type]))
-	    updateSelectizeInput(
-	      session,
+	    updateVirtualSelect(
 	      "one_dataset",
 	      choices = datasets,
-	      selected = datasets[1],
-	      server = TRUE
+	      selected = datasets[1]
 	    )
 	})
 
@@ -192,12 +189,10 @@ server.modules_download_dataset = function(input, output, session){
 
 
 	observe({
-	    updateSelectizeInput(
-	      session,
+	    updateVirtualSelect(
 	      "multi_ids",
 	      choices = sort(candi_ids()),
-	      selected = sort(candi_ids())[1],
-	      server = TRUE
+	      selected = sort(candi_ids())[1]
 	    )	
 	})
 

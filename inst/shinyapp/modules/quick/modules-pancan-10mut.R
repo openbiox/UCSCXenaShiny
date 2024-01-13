@@ -4,17 +4,14 @@ ui.modules_pancan_mut = function(id){
 		column(
 			3,
 			wellPanel(
-	            selectizeInput(
+	            virtualSelectInput(
 	              inputId = ns("mut_Gene"),
 	              label = "Input a gene with mutation ralated grouping",
 	              choices = NULL,
 	              width = "100%",
-	              options = list(
-	              	create = TRUE,
-	              	maxOptions = 5,
-	              	placeholder = "Enter a gene symbol, e.g. TP53",
-	              	plugins = list("restore_on_backspace")
-     		      )
+	              search = TRUE,
+	              allowNewOption = TRUE,
+	              dropboxWidth = "200%"
 	            ),
 	            shinyWidgets::prettyRadioButtons(
 	              inputId = ns("Mode"), label = "Select analysis cancer(s):",
@@ -46,17 +43,14 @@ ui.modules_pancan_mut = function(id){
 	              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "miRNA Expression"),
 	              animation = "jelly"
 	            ),
-	            selectizeInput(
+	            virtualSelectInput(
 	              inputId = ns("Pancan_search"),
 	              label = "Input affected gene or formula (as signature)",
 	              choices = NULL,
 	              width = "100%",
-	              options = list(
-	                create = TRUE,
-	                maxOptions = 5,
-	                placeholder = "Enter a gene symbol, e.g. TP53",
-	                plugins = list("restore_on_backspace")
-	              )
+	              search = TRUE,
+	              allowNewOption = TRUE,
+	              dropboxWidth = "200%"
 	        	),
 			),
 			wellPanel(
@@ -122,12 +116,10 @@ server.modules_pancan_mut = function(input, output, session){
 	ns = session$ns
 
 	observe({
-	  updateSelectizeInput(
-	    session,
+	  updateVirtualSelect(
 	    "mut_Gene",
 	    choices = pancan_identifiers$gene,
-	    selected = "TP53",
-	    server = TRUE
+	    selected = "TP53"
 	  )
 	})
 
@@ -146,12 +138,10 @@ server.modules_pancan_mut = function(input, output, session){
 	})
 
 	observe({
-	  updateSelectizeInput(
-	    session,
+	  updateVirtualSelect(
 	    "Pancan_search",
 	    choices = profile_choices()$all,
-	    selected = profile_choices()$default,
-	    server = TRUE
+	    selected = profile_choices()$default
 	  )
 	})
 

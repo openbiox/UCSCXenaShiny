@@ -143,7 +143,7 @@ pancan_identifiers <- readRDS(
     package = "UCSCXenaShiny"
   )
 )
-all_preload_identifiers <- c("NONE", as.character(unlist(pancan_identifiers)))
+all_preload_identifiers <- c("NONE", unique(as.character(unlist(pancan_identifiers))))
 tryCatch(
   load_data("transcript_identifier"),
   error = function(e) {

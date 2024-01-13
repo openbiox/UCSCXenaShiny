@@ -64,8 +64,11 @@ mol_origin_UI = function(id, database = "toil"){
 							),
 							column(
 								6,
-								selectizeInput(ns("toil_L2_3_methy_3_gene"),"(2)Gene",
-									choices = NULL, options = list(create = TRUE, maxOptions = 5)),
+								virtualSelectInput(ns("toil_L2_3_methy_3_gene"),"(2)Gene",
+									choices = NULL, 
+									search = TRUE,
+									allowNewOption = TRUE,
+									dropboxWidth = "200%"),
 							)
 						),
 						fluidRow(
@@ -81,7 +84,7 @@ mol_origin_UI = function(id, database = "toil"){
 							),
 							column(
 								8,
-				        selectizeInput(
+				        virtualSelectInput(
 				          inputId = ns("toil_L2_3_methy_3_cpg"),
 				          label = "(4)CpG sites",
 				          choices = NULL,
@@ -157,12 +160,10 @@ mol_origin_Server = function(input, output, session, database = "toil"){
 	  	selected = input$data_origin)
 	}) 
 
-  updateSelectizeInput(
-    session,
+  updateVirtualSelect(
     inputId = "toil_L2_3_methy_3_gene",
     choices = pancan_identifiers$gene,
-    selected = "TP53",
-    server = TRUE
+    selected = "TP53"
   )
 
   # 特定基因下所包含的所有CpG位点
@@ -184,12 +185,10 @@ mol_origin_Server = function(input, output, session, database = "toil"){
 			dplyr::filter(chromStart >= input$chr_min) %>% 
 			dplyr::filter(chromEnd  <= input$chr_max) %>% 
 			dplyr::pull(CpG)
-    updateSelectizeInput(
-      session,
+    updateVirtualSelect(
       "toil_L2_3_methy_3_cpg",
       choices = cpg_ids,
-      selected = NULL,
-      server = TRUE
+      selected = NULL
     )
 	})
 

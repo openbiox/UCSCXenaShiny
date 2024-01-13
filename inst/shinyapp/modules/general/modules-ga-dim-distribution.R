@@ -7,17 +7,14 @@ ui.modules_ga_dim_distribution <- function(id) {
         wellPanel(
           h4("Analysis Controls"),
           uiOutput(ns("ga_data1_id")),
-          selectizeInput(
+          virtualSelectInput(
             inputId = ns("ga_data1_mid"), 
             label = "Molecule identifier",
             choices = NULL,
             multiple = TRUE,
-            options = list(
-              create = TRUE,
-              maxOptions = 5,
-              placeholder = "e.g. TP53, PTEN, KRAS",
-              plugins = list("restore_on_backspace")
-            )
+            search = TRUE,
+            allowNewOption = TRUE,
+            dropboxWidth = "200%"
           ),
           shinyBS::bsPopover(ns("ga_data1_mid"),
             title = "Note",
@@ -25,25 +22,6 @@ ui.modules_ga_dim_distribution <- function(id) {
             placement = "right", options = list(container = "body")
           ),
           uiOutput(ns("ga_data2_id")),
-
-
-          # selectizeInput(
-          #   inputId = ns("ga_data2_mid"), # multiple molecule identifiers
-          #   label = "Molecule identifiers",
-          #   choices = NULL,
-          #   multiple = TRUE,
-          #   options = list(
-          #     create = TRUE,
-          #     maxOptions = 5,
-          #     placeholder = "e.g. TP53, PTEN, KRAS",
-          #     plugins = list("restore_on_backspace")
-          #   )
-          # ),
-          # shinyBS::bsPopover(ns("ga_data2_mid"),
-          #   title = "Note",
-          #   content = "Ignore this option when you select a phenotype dataset",
-          #   placement = "right", options = list(container = "body")
-          # ),
 
           shinyWidgets::prettyRadioButtons(
             inputId = ns("ga_data2_mid_ways"), label = "Molecule identifiers",
@@ -57,26 +35,25 @@ ui.modules_ga_dim_distribution <- function(id) {
             id = ns("ga_data2_mid_params"),
             type = "hidden",
             tabPanel("Select",
-                selectizeInput(
+                virtualSelectInput(
             inputId = ns("ga_data2_mid_1"),
             label = NULL,
             choice = NULL,
             width = "100%",
             multiple = TRUE, 
-            options = list(
-              create = TRUE,
-              maxOption = 5,
-              placeholder = "Enter the ids of selected profile",
-              plugins = list("restore_on_backspace")))),
+            search = TRUE,
+            allowNewOption = TRUE,
+            dropboxWidth = "200%")),
             tabPanel("Pathway", 
-                selectizeInput(
+                virtualSelectInput(
               inputId = ns("ga_data2_mid_2"),
               label = NULL,
               choice = NULL,
               width = "100%",
               multiple = FALSE, 
-              options = list(
-                placeholder = "Choose the patwhay geneset(Symbol)"))),
+              search = TRUE,
+              allowNewOption = FALSE,
+              dropboxWidth = "200%")),
             tabPanel("File",
               fileInput(ns("ga_data2_mid_3"), NULL, placeholder = "One column molecule id file(.txt)" )
             )
@@ -219,12 +196,10 @@ server.modules_ga_dim_distribution <- function(
   })
 
   observe({
-    updateSelectizeInput(
-      session,
+    updateVirtualSelect(
       "ga_data1_mid",
       choices = id1_choices()$all,
-      selected = id1_choices()$selected,
-      server = TRUE
+      selected = id1_choices()$selected
     )
   })
 
@@ -264,19 +239,15 @@ server.modules_ga_dim_distribution <- function(
   })
 
   observe({
-    updateSelectizeInput(
-      session,
+    updateVirtualSelect(
       "ga_data2_mid_1",
       choices = id2_choices()$all,
-      selected = id2_choices()$selected,
-      server = TRUE
+      selected = id2_choices()$selected
     )
-    updateSelectizeInput(
-      session,
+    updateVirtualSelect(
       "ga_data2_mid_2",
       choices = split(PW_meta$display, PW_meta$Type),
-      selected = "SULFUR_METABOLISM (13)",
-      server = TRUE
+      selected = "SULFUR_METABOLISM (13)"
     )
   })
 

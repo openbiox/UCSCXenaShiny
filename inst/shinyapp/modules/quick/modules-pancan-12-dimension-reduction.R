@@ -29,26 +29,25 @@ ui.modules_dim_dist = function(id){
 					  id = ns("input_params"),
 					  type = "hidden",
 					  tabPanel("Select",
-			        	selectizeInput(
+			        	virtualSelectInput(
 						inputId = ns("ids_ways_1"),
 						label = NULL,
 						choice = NULL,
 						width = "100%",
 						multiple = TRUE, 
-						options = list(
-							create = TRUE,
-							maxOption = 5,
-							placeholder = "Enter the ids of selected profile",
-							plugins = list("restore_on_backspace")))),
+						search = TRUE,
+						allowNewOption = TRUE,
+						dropboxWidth = "200%")),
 					  tabPanel("Pathway", 
-			        	selectizeInput(
+			        	virtualSelectInput(
 							inputId = ns("ids_ways_2"),
 							label = NULL,
 							choice = NULL,
 							width = "100%",
 							multiple = FALSE, 
-							options = list(
-								placeholder = "Choose the patwhay geneset(Symbol)"))),
+							search = TRUE,
+							allowNewOption = TRUE,
+							dropboxWidth = "200%")),
 						tabPanel("File",
 							fileInput(ns("ids_ways_3"), NULL, placeholder = "One column molecule id file(.txt)" )
 						)
@@ -214,19 +213,15 @@ server.modules_dim_dist = function(input, output, session){
 	opt_pancan = callModule(mol_origin_Server, "mol_origin2quick", database = "toil")
 
 	observe({
-	  updateSelectizeInput(
-	    session,
+	  updateVirtualSelect(
 	    "ids_ways_1",
 	    choices = profile_choices()$all,
-	    selected = profile_choices()$default,
-	    server = TRUE
+	    selected = profile_choices()$default
 	  )
-	  updateSelectizeInput(
-	    session,
+	  updateVirtualSelect(
 	    "ids_ways_2",
 	    choices = split(PW_meta$display, PW_meta$Type),
-	    selected = "SULFUR_METABOLISM (13)",
-	    server = TRUE
+	    selected = "SULFUR_METABOLISM (13)"
 	  )
 	})
 
@@ -281,12 +276,10 @@ server.modules_dim_dist = function(input, output, session){
 	})
 
 	observe({
-		updateSelectizeInput(
-			session,
+		updateVirtualSelect(
 			"choose_group",
 			choices = colnames(group_general())[-1:-2],
-			selected = "Code",
-			server = TRUE
+			selected = "Code"
 		)
 	})
 

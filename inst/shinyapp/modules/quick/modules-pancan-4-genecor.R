@@ -18,17 +18,14 @@ ui.modules_pancan_gene_cor <- function(id) {
             choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
             animation = "jelly"
           ),
-          selectizeInput(
+          virtualSelectInput(
             inputId = ns("Pancan_search1"),
             label = "Input a gene or formula (as signature)",
             choices = NULL,
             width = "100%",
-            options = list(
-              create = TRUE,
-              maxOptions = 5,
-              placeholder = "Enter a gene symbol, e.g. CSF1R",
-              plugins = list("restore_on_backspace")
-            )
+            search = TRUE,
+            allowNewOption = TRUE,
+            dropboxWidth = "200%"
           ),
           shinyWidgets::prettyRadioButtons(
             inputId = ns("profile2"), label = "Select a genomic profile:",
@@ -36,17 +33,14 @@ ui.modules_pancan_gene_cor <- function(id) {
             choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
             animation = "jelly"
           ),
-          selectizeInput(
+          virtualSelectInput(
             inputId = ns("Pancan_search2"),
             label = "Input a gene or formula (as signature)",
             choices = NULL,
             width = "100%",
-            options = list(
-              create = TRUE,
-              maxOptions = 5,
-              placeholder = "Enter a gene symbol, e.g. JAK3",
-              plugins = list("restore_on_backspace")
-            )
+            search = TRUE,
+            allowNewOption = TRUE,
+            dropboxWidth = "200%"
           )
 
           )),
@@ -150,12 +144,10 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
   })
 
   observe({
-    updateSelectizeInput(
-      session,
+    updateVirtualSelect(
       "Pancan_search1",
       choices = profile_choices1()$all,
-      selected = profile_choices1()$default,
-      server = TRUE
+      selected = profile_choices1()$default
     )
   })
 
@@ -172,12 +164,10 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
   })
 
   observe({
-    updateSelectizeInput(
-      session,
+    updateVirtualSelect(
       "Pancan_search2",
       choices = profile_choices2()$all,
-      selected = profile_choices2()$default,
-      server = TRUE
+      selected = profile_choices2()$default
     )
   })
 

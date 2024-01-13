@@ -25,17 +25,14 @@ ui.modules_pcawg_unicox <- function(id) {
             ),
             animation = "jelly"
           ),
-          selectizeInput(
+          virtualSelectInput(
             inputId = ns("Pancan_search"),
             label = "Input a gene or formula (as signature)",
             choices = NULL,
             width = "100%",
-            options = list(
-              create = TRUE,
-              maxOptions = 5,
-              placeholder = "Enter a gene symbol, e.g. TP53",
-              plugins = list("restore_on_backspace")
-            )
+            search = TRUE,
+            allowNewOption = TRUE,
+            dropboxWidth = "200%"
           ),
           # selectInput(inputId = ns("measure"), label = "Select Measure for plot", choices = c("OS", "PFI", "DSS", "DFI"), selected = "OS"),
           selectInput(inputId = ns("threshold"), label = "Select Threshold for plot", choices = c(0.25, 0.5), selected = 0.5),
@@ -118,12 +115,10 @@ server.modules_pcawg_unicox <- function(input, output, session) {
   })
 
   observe({
-    updateSelectizeInput(
-      session,
+    updateVirtualSelect(
       "Pancan_search",
       choices = profile_choices()$all,
-      selected = profile_choices()$default,
-      server = TRUE
+      selected = profile_choices()$default
     )
   })
 

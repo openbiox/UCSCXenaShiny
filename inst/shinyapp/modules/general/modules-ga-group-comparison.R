@@ -7,16 +7,13 @@ ui.modules_ga_group_comparison <- function(id) {
         wellPanel(
           h4("Analysis Controls"),
           uiOutput(ns("ga_data1_id")),
-          selectizeInput(
+          virtualSelectInput(
             inputId = ns("ga_data1_mid"), # molecule identifier
             label = "Molecule identifier",
             choices = NULL,
-            options = list(
-              create = TRUE,
-              maxOptions = 5,
-              placeholder = "e.g. TP53",
-              plugins = list("restore_on_backspace")
-            )
+            search = TRUE,
+            allowNewOption = TRUE,
+            dropboxWidth = "200%"
           ),
           shinyBS::bsPopover(ns("ga_data1_mid"),
             title = "Note",
@@ -24,16 +21,13 @@ ui.modules_ga_group_comparison <- function(id) {
             placement = "right", options = list(container = "body")
           ),
           uiOutput(ns("ga_data2_id")),
-          selectizeInput(
+          virtualSelectInput(
             inputId = ns("ga_data2_mid"), # molecule identifier
             label = "Molecule identifier",
             choices = NULL,
-            options = list(
-              create = TRUE,
-              maxOptions = 5,
-              placeholder = "e.g. TP53",
-              plugins = list("restore_on_backspace")
-            )
+            search = TRUE,
+            allowNewOption = TRUE,
+            dropboxWidth = "200%"
           ),
           shinyBS::bsPopover(ns("ga_data2_mid"),
             title = "Note",
@@ -168,12 +162,10 @@ server.modules_ga_group_comparison <- function(
   })
 
   observe({
-    updateSelectizeInput(
-      session,
+    updateVirtualSelect(
       "ga_data1_mid",
       choices = id1_choices()$all,
-      selected = id1_choices()$selected,
-      server = TRUE
+      selected = id1_choices()$selected
     )
   })
 
@@ -213,12 +205,10 @@ server.modules_ga_group_comparison <- function(
   })
 
   observe({
-    updateSelectizeInput(
-      session,
+    updateVirtualSelect(
       "ga_data2_mid",
       choices = id2_choices()$all,
-      selected = id2_choices()$selected,
-      server = TRUE
+      selected = id2_choices()$selected
     )
   })
 

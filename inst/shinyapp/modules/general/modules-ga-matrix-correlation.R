@@ -7,17 +7,14 @@ ui.modules_ga_matrix_correlation <- function(id) {
         wellPanel(
           h4("Analysis Controls"),
           uiOutput(ns("ga_data1_id")),
-          selectizeInput(
+          virtualSelectInput(
             inputId = ns("ga_data1_mid"), # molecule identifier
             label = "Molecule identifiers:",
             choices = NULL,
             multiple = TRUE,
-            options = list(
-              create = TRUE,
-              maxOptions = 5,
-              placeholder = "e.g. TP53, PTEN, KRAS",
-              plugins = list("restore_on_backspace")
-            )
+            search = TRUE,
+            allowNewOption = TRUE,
+            dropboxWidth = "200%"
           ),
           selectInput(ns("ga_matrix_type"), "Matrix Type",
             choices = c("full", "upper", "lower"), selected = "full", multiple = FALSE
@@ -119,13 +116,11 @@ server.modules_ga_matrix_correlation <- function(
   })
 
   observe({
-    updateSelectizeInput(
-      session,
+    updateVirtualSelect(
       "ga_data1_mid",
       choices = if (is.null(custom_file$fData)) all_preload_identifiers else
         unique(c(custom_file$fData[[1]], all_preload_identifiers)),
-      selected = c("TP53", "KRAS", "PTEN"),
-      server = TRUE
+      selected = c("TP53", "KRAS", "PTEN")
     )
   })
 
@@ -186,7 +181,7 @@ server.modules_ga_matrix_correlation <- function(
             session,
             title = "Error",
             text = tags$span(
-              tags$p("Error to query data and plot. Please make sure the two selected datasets are 'genomicMatrix' type."),
+              tags$p("Error to query data and plot. Please make sure dataset is selected and the selected dataset is 'genomicMatrix' type."),
               tags$p("'genomicMatrix' type means the dataset is stored in feature-by-sample format, e.g., gene-by-sample expression matrix."),
               tags$p("The type of datasets can be found at the dataset table by clicking 'Pre-selected Datasets for Analysis' on the 'General Analysis' Page."),
               tags$img(src = "20210708184045.png",

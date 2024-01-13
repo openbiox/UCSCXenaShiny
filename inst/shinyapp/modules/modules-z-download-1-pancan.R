@@ -90,39 +90,49 @@ ui.modules_download_pancan = function(id){
 							    id = ns("data_L3_tab"),
 							    type = "hidden",
 								tabPanel("Molecular profile",
-						            selectizeInput(
+						            virtualSelectInput(
 						              inputId = ns("genomic_profile_id"),
 						              label = NULL,
 						              choices = NULL, multiple = TRUE,
-						              options = list(create = TRUE, maxOptions = 10))
+						              search = TRUE,
+						              allowNewOption = TRUE,
+						              dropboxWidth = "200%")
 								),
 								tabPanel("Tumor index",
-						            selectizeInput(
+						            virtualSelectInput(
 						              inputId = ns("tumor_index_id"),
 						              label = NULL,
 						              choices = NULL, multiple = TRUE,
-						              options = list(create = FALSE, maxOptions = 10))
+						              search = TRUE,
+						              allowNewOption = FALSE,
+						              dropboxWidth = "200%")
 								),
 								tabPanel("Immune Infiltration",
-						            selectizeInput(
+						            virtualSelectInput(
 						              inputId = ns("immune_infiltration_id"),
 						              label = NULL,
 						              choices = NULL, multiple = TRUE,
-						              options = list(create = FALSE, maxOptions = 10))
+						              search = TRUE,
+						              allowNewOption = FALSE,
+						              dropboxWidth = "200%")
 								),
 								tabPanel("Pathway activity",
-						            selectizeInput(
+						            virtualSelectInput(
 						              inputId = ns("pathway_activity_id"),
 						              label = NULL,
 						              choices = NULL, multiple = TRUE,
-						              options = list(create = FALSE, maxOptions = 10))
+						              search = TRUE,
+						              allowNewOption = FALSE,
+						              dropboxWidth = "200%")
 								),
 								tabPanel("Phenotype data",
-						            selectizeInput(
+						            virtualSelectInput(
 						              inputId = ns("phenotype_data_id"),
 						              label = NULL,
 						              choices = NULL, multiple = TRUE,
-						              options = list(create = FALSE, maxOptions = 10))
+						              search = TRUE,
+						              allowNewOption = FALSE,
+						              dropboxWidth = "200%")
 								)
 							),	
 						),
@@ -228,75 +238,55 @@ server.modules_download_pancan = function(input, output, session, custom_metadat
 	# update L2 choice
 	observe({
 	  #L2
-	  updateSelectizeInput(
-	    session,
+	  updateVirtualSelect(
 	    "genomic_profile",
-	    choices = names(id_option()[["Molecular profile"]]),
-	    server = TRUE
+	    choices = names(id_option()[["Molecular profile"]])
 	  )
-	  updateSelectizeInput(
-	    session,
+	  updateVirtualSelect(
 	    "tumor_index",
-	    choices = names(id_option()[["Tumor index"]]),
-	    server = TRUE
+	    choices = names(id_option()[["Tumor index"]])
 	  )
-	  updateSelectizeInput(
-	    session,
+	  updateVirtualSelect(
 	    "immune_infiltration",
-	    choices = names(id_option()[["Immune Infiltration"]]),
-	    server = TRUE
+	    choices = names(id_option()[["Immune Infiltration"]])
 	  )
-	  updateSelectizeInput(
-	    session,
+	  updateVirtualSelect(
 	    "pathway_activity",
-	    choices = names(id_option()[["Pathway activity"]]),
-	    server = TRUE
+	    choices = names(id_option()[["Pathway activity"]])
 	  )
-	  updateSelectizeInput(
-	    session,
+	  updateVirtualSelect(
 	    "phenotype_data",
-	    choices = names(id_option()[["Phenotype data"]])[1],
-	    server = TRUE
+	    choices = names(id_option()[["Phenotype data"]])[1]
 	  )
 	})
 
 	# update L3 choice
 	observe({
 	  #L3
-	  updateSelectizeInput(
-	    session,
+	  updateVirtualSelect(
 	    "genomic_profile_id",
 	    choices = genomic_profile_choices()$all,
-	    selected = genomic_profile_choices()$default,
-	    server = TRUE
+	    selected = genomic_profile_choices()$default
 	  )
-	  updateSelectizeInput(
-	    session,
+	  updateVirtualSelect(
 	    "tumor_index_id",
 	    choices = tumor_index_choices()$all,
-	    selected = tumor_index_choices()$default,
-	    server = TRUE
+	    selected = tumor_index_choices()$default
 	  )
-	  updateSelectizeInput(
-	    session,
+	  updateVirtualSelect(
 	    "immune_infiltration_id",
 	    choices = immune_infiltration_choices()$all,
-	    selected = immune_infiltration_choices()$default,
-	    server = TRUE
+	    selected = immune_infiltration_choices()$default
 	  )
-	  updateSelectizeInput(
-	    session,
+	  updateVirtualSelect(
 	    "pathway_activity_id",
 	    choices = pathway_activity_choices()$all,
-	    selected = pathway_activity_choices()$default,
-	    server = TRUE
+	    selected = pathway_activity_choices()$default
 	  )
-	  updateSelectizeInput(
-	    session,
+	  updateVirtualSelect(
 	    "phenotype_data_id",
 	    choices = phenotype_data_choices()$all,
-	    selected = phenotype_data_choices()$default,
-	    server = TRUE
+	    selected = phenotype_data_choices()$default
 	  )
 	})
 

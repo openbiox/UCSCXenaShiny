@@ -18,17 +18,14 @@ ui.modules_pancan_til <- function(id) {
               choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
               animation = "jelly"
             ),
-            selectizeInput(
+            virtualSelectInput(
               inputId = ns("Pancan_search"),
               label = "Input a gene or formula (as signature)",
               choices = NULL,
               width = "100%",
-              options = list(
-                create = TRUE,
-                maxOptions = 5,
-                placeholder = "Enter a gene symbol, e.g. TP53",
-                plugins = list("restore_on_backspace")
-              )
+              search = TRUE,
+              allowNewOption = TRUE,
+              dropboxWidth = "200%"
             ),
         shinyWidgets::pickerInput(
           inputId = ns("immune_sig"),
@@ -118,12 +115,10 @@ server.modules_pancan_til <- function(input, output, session) {
   })
 
   observe({
-    updateSelectizeInput(
-      session,
+    updateVirtualSelect(
       "Pancan_search",
       choices = profile_choices()$all,
-      selected = profile_choices()$default,
-      server = TRUE
+      selected = profile_choices()$default
     )
   })
 

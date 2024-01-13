@@ -34,17 +34,14 @@ ui.modules_ccle_genecor <- function(id) {
             choiceNames = c("mRNA Expression", "Protein Expression", "Copy Number Variation"),
             animation = "jelly"
           ),
-          selectizeInput(
+          virtualSelectInput(
             inputId = ns("ccle_search1"),
             label = NULL,
             choices = NULL,
             width = "100%",
-            options = list(
-              create = TRUE,
-              maxOptions = 5,
-              placeholder = "Enter a gene symbol, e.g. TP53",
-              plugins = list("restore_on_backspace")
-            )
+            search = TRUE,
+            allowNewOption = TRUE,
+            dropboxWidth = "200%"
           ),
           shinyWidgets::prettyRadioButtons(
             inputId = ns("profile2"), label = "Select a genomic profile:",
@@ -52,17 +49,14 @@ ui.modules_ccle_genecor <- function(id) {
             choiceNames = c("mRNA Expression", "Protein Expression", "Copy Number Variation"),
             animation = "jelly"
           ),
-          selectizeInput(
+          virtualSelectInput(
             inputId = ns("ccle_search2"),
             label = NULL,
             choices = NULL,
             width = "100%",
-            options = list(
-              create = TRUE,
-              maxOptions = 5,
-              placeholder = "Enter a gene symbol, e.g. TP53",
-              plugins = list("restore_on_backspace")
-            )
+            search = TRUE,
+            allowNewOption = TRUE,
+            dropboxWidth = "200%"
           ),
           shinyBS::bsPopover(ns("ccle_search"),
             title = "Tips",
@@ -162,12 +156,10 @@ server.modules_ccle_genecor <- function(input, output, session) {
   })
 
   observe({
-    updateSelectizeInput(
-      session,
+    updateVirtualSelect(
       "ccle_search1",
       choices = profile_choices1()$all,
-      selected = profile_choices1()$default,
-      server = TRUE
+      selected = profile_choices1()$default
     )
   })
 
@@ -183,12 +175,10 @@ server.modules_ccle_genecor <- function(input, output, session) {
   opt_pancan = callModule(mol_origin_Server, "mol_origin2quick", database = "ccle")
 
   observe({
-    updateSelectizeInput(
-      session,
+    updateVirtualSelect(
       "ccle_search2",
       choices = profile_choices2()$all,
-      selected = profile_choices2()$default,
-      server = TRUE
+      selected = profile_choices2()$default
     )
   })
 

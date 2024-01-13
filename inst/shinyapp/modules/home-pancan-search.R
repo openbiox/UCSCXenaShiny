@@ -16,17 +16,14 @@ ui.home_search_box <- function(id) {
     ),
     column(
       5,
-      selectizeInput(
+      virtualSelectInput(
         inputId = ns("Pancan_search"),
         label = NULL,
         choices = NULL,
         width = "100%",
-        options = list(
-          create = TRUE,
-          maxOptions = 5,
-          # placeholder = "Enter a gene symbol, e.g. TP53",
-          plugins = list("restore_on_backspace")
-        )
+        search = TRUE,
+        allowNewOption = TRUE,
+        dropboxWidth = "200%"
       )
     ),
     column(
@@ -64,12 +61,10 @@ server.home_search_box <- function(input, output, session) {
       "methylation" = tcga_id_option$`Molecular profile`$`DNA Methylation`$default,
       "miRNA" = tcga_id_option$`Molecular profile`$`miRNA Expression`$default
     )
-    updateSelectizeInput(
-      session,
+    updateVirtualSelect(
       "Pancan_search",
       choices = mol_choices,
-      selected = mol_selected,
-      server = TRUE
+      selected = mol_selected
     )
   })
 

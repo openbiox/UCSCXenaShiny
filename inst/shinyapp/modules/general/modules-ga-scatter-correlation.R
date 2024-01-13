@@ -7,28 +7,22 @@ ui.modules_ga_scatter_correlation <- function(id) {
         wellPanel(
           h4("Analysis Controls"),
           uiOutput(ns("ga_data1_id")),
-          selectizeInput(
+          virtualSelectInput(
             inputId = ns("ga_data1_mid"), # molecule identifier
             label = "Dataset 1 molecule identifier:",
             choices = NULL,
-            options = list(
-              create = TRUE,
-              maxOptions = 5,
-              placeholder = "e.g. TP53",
-              plugins = list("restore_on_backspace")
-            )
+            search = TRUE,
+            allowNewOption = TRUE,
+            dropboxWidth = "200%"
           ),
           uiOutput(ns("ga_data2_id")),
-          selectizeInput(
+          virtualSelectInput(
             inputId = ns("ga_data2_mid"), # molecule identifier
             label = "Dataset 2 molecule identifier:",
             choices = NULL,
-            options = list(
-              create = TRUE,
-              maxOptions = 5,
-              placeholder = "e.g. TP53",
-              plugins = list("restore_on_backspace")
-            )
+            search = TRUE,
+            allowNewOption = TRUE,
+            dropboxWidth = "200%"
           ),
           materialSwitch(
             inputId = ns("ga_use_ggstats"),
@@ -114,13 +108,11 @@ server.modules_ga_scatter_correlation <- function(
   })
 
   observe({
-    updateSelectizeInput(
-      session,
+    updateVirtualSelect(
       "ga_data1_mid",
       choices = if (is.null(custom_file$fData)) all_preload_identifiers else
         unique(c(custom_file$fData[[1]], all_preload_identifiers)),
-      selected = "TP53",
-      server = TRUE
+      selected = "TP53"
     )
   })
 
@@ -136,13 +128,11 @@ server.modules_ga_scatter_correlation <- function(
   })
 
   observe({
-    updateSelectizeInput(
-      session,
+    updateVirtualSelect(
       "ga_data2_mid",
       choices = if (is.null(custom_file$fData)) all_preload_identifiers else
         unique(c(custom_file$fData[[1]], all_preload_identifiers)),
-      selected = "KRAS",
-      server = TRUE
+      selected = "KRAS"
     )
   })
 
@@ -181,7 +171,7 @@ server.modules_ga_scatter_correlation <- function(
           title = "Error",
           text = tags$span(
             tags$p(paste0("Error: ", p_scatter())),
-            tags$p("Error to query data and plot. Please make sure the two selected datasets are 'genomicMatrix' type."),
+            tags$p("Error to query data and plot. Please make sure datasets are selected and the two selected datasets are 'genomicMatrix' type."),
             tags$p("'genomicMatrix' type means the dataset is stored in feature-by-sample format, e.g., gene-by-sample expression matrix."),
             tags$p("The type of datasets can be found at the dataset table by clicking 'Pre-selected Datasets for Analysis' on the 'General Analysis' Page."),
             tags$img(#src = "https://gitee.com/ShixiangWang/ImageCollection/raw/master/png/20210708184045.png",

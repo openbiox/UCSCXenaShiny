@@ -7,16 +7,13 @@ ui.modules_ga_surv_analysis <- function(id) {
         wellPanel(
           h4("Analysis Controls"),
           uiOutput(ns("ga_data1_id")),
-          selectizeInput(
+          virtualSelectInput(
             inputId = ns("ga_data1_mid"), # molecule identifier
             label = "Dataset 1 molecule identifier:",
             choices = NULL,
-            options = list(
-              create = TRUE,
-              maxOptions = 5,
-              placeholder = "e.g. TP53",
-              plugins = list("restore_on_backspace")
-            )
+            search = TRUE,
+            allowNewOption = TRUE,
+            dropboxWidth = "200%"
           ),
           shinyBS::bsPopover(ns("ga_data1_mid"),
             title = "Note",
@@ -139,12 +136,10 @@ server.modules_ga_surv_analysis <- function(
   })
 
   observe({
-    updateSelectizeInput(
-      session,
+    updateVirtualSelect(
       "ga_data1_mid",
       choices = id1_choices()$all,
-      selected = id1_choices()$selected,
-      server = TRUE
+      selected = id1_choices()$selected
     )
   })
 

@@ -66,39 +66,49 @@ download_feat_UI = function(id, button_name="Query data", database = "toil"){
 		    id = ns("data_L3_tab"),
 		    type = "hidden",
 			tabPanel("Molecular profile",
-	            selectizeInput(
+	            virtualSelectInput(
 	              inputId = ns("genomic_profile_id"),
 	              label = "Identifier:",
 	              choices = NULL,
-	              options = list(create = TRUE, maxOptions = 10))
+	              search = TRUE,
+	              allowNewOption = TRUE,
+	              dropboxWidth = "200%")
 			),
 			tabPanel("Tumor index",
-	            selectizeInput(
+	            virtualSelectInput(
 	              inputId = ns("tumor_index_id"),
 	              label = "Identifier:",
 	              choices = NULL,
-	              options = list(create = FALSE, maxOptions = 10))
+	              search = TRUE,
+	              allowNewOption = FALSE,
+	              dropboxWidth = "200%")
 			),
 			tabPanel("Immune Infiltration",
-	            selectizeInput(
+	            virtualSelectInput(
 	              inputId = ns("immune_infiltration_id"),
 	              label = "Identifier:",
 	              choices = NULL,
-	              options = list(create = FALSE, maxOptions = 10))
+	              search = TRUE,
+	              allowNewOption = FALSE,
+	              dropboxWidth = "200%")
 			),
 			tabPanel("Pathway activity",
-	            selectizeInput(
+	            virtualSelectInput(
 	              inputId = ns("pathway_activity_id"),
 	              label = "Identifier:",
 	              choices = NULL,
-	              options = list(create = FALSE, maxOptions = 10))
+	              search = TRUE,
+	              allowNewOption = FALSE,
+	              dropboxWidth = "200%")
 			),
 			tabPanel("Phenotype data",
-	            selectizeInput(
+	            virtualSelectInput(
 	              inputId = ns("phenotype_data_id"),
 	              label = "Identifier:",
 	              choices = NULL,
-	              options = list(create = FALSE, maxOptions = 10))
+	              search = TRUE,
+	              allowNewOption = FALSE,
+	              dropboxWidth = "200%")
 			)
 		),
 		uiOutput(ns("x_axis_data_table"))
@@ -150,40 +160,30 @@ download_feat_Server = function(input, output, session, database = "toil",#id_op
 
 
 	observe({
-	  updateSelectizeInput(
-	    session,
+	  updateVirtualSelect(
 	    "genomic_profile_id",
 	    choices = genomic_profile_choices()$all,
-	    selected = genomic_profile_choices()$default,
-	    server = TRUE
+	    selected = genomic_profile_choices()$default
 	  )
-	  updateSelectizeInput(
-	    session,
+	  updateVirtualSelect(
 	    "tumor_index_id",
 	    choices = tumor_index_choices()$all,
-	    selected = tumor_index_choices()$default,
-	    server = TRUE
+	    selected = tumor_index_choices()$default
 	  )
-	  updateSelectizeInput(
-	    session,
+	  updateVirtualSelect(
 	    "immune_infiltration_id",
 	    choices = immune_infiltration_choices()$all,
-	    selected = immune_infiltration_choices()$default,
-	    server = TRUE
+	    selected = immune_infiltration_choices()$default
 	  )
-	  updateSelectizeInput(
-	    session,
+	  updateVirtualSelect(
 	    "pathway_activity_id",
 	    choices = pathway_activity_choices()$all,
-	    selected = pathway_activity_choices()$default,
-	    server = TRUE
+	    selected = pathway_activity_choices()$default
 	  )
-	  updateSelectizeInput(
-	    session,
+	  updateVirtualSelect(
 	    "phenotype_data_id",
 	    choices = phenotype_data_choices()$all,
-	    selected = phenotype_data_choices()$default,
-	    server = TRUE
+	    selected = phenotype_data_choices()$default
 	  )
 	})
 

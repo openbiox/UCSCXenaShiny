@@ -28,11 +28,14 @@ ui.modules_pcawg_sur_plot <- function(id) {
           ),
           animation = "jelly"
         ),
-        selectizeInput(
+        virtualSelectInput(
           inputId = ns("item_input"),
           label = "Item:",
           choices = NULL,
-          width = "100%"
+          width = "100%",
+          search = TRUE,
+          allowNewOption = FALSE,
+          dropboxWidth = "200%"
         ),
         
         shinyWidgets::actionBttn(
@@ -153,12 +156,10 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
   })
   
   observe({
-    updateSelectizeInput(
-      session,
+    updateVirtualSelect(
       "item_input",
       choices = profile_choices()$all,
-      selected = profile_choices()$default,
-      server = TRUE
+      selected = profile_choices()$default
     )
   })
 

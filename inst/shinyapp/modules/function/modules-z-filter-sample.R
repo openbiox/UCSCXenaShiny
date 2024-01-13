@@ -73,39 +73,49 @@ filter_samples_UI = function(id, database="toil"){
 				    id = ns("data_L3_tab"),
 				    type = "hidden",
 					tabPanel("Molecular profile",
-			            selectizeInput(
+			            virtualSelectInput(
 			              inputId = ns("genomic_profile_id"),
 			              label = "Identifier:",
 			              choices = NULL,
-			              options = list(create = TRUE, maxOptions = 5))
+			              search = TRUE,
+			              allowNewOption = TRUE,
+			              dropboxWidth = "200%")
 					),
 					tabPanel("Tumor index",
-			            selectizeInput(
+			            virtualSelectInput(
 			              inputId = ns("tumor_index_id"),
 			              label = "Identifier:",
 			              choices = NULL,
-			              options = list(create = FALSE, maxOptions = 5))
+			              search = TRUE,
+			              allowNewOption = FALSE,
+			              dropboxWidth = "200%")
 					),
 					tabPanel("Immune Infiltration",
-			            selectizeInput(
+			            virtualSelectInput(
 			              inputId = ns("immune_infiltration_id"),
 			              label = "Identifier:",
 			              choices = NULL,
-			              options = list(create = FALSE, maxOptions = 5))
+			              search = TRUE,
+			              allowNewOption = FALSE,
+			              dropboxWidth = "200%")
 					),
 					tabPanel("Pathway activity",
-			            selectizeInput(
+			            virtualSelectInput(
 			              inputId = ns("pathway_activity_id"),
 			              label = "Identifier:",
 			              choices = NULL,
-			              options = list(create = FALSE, maxOptions = 5))
+			              search = TRUE,
+			              allowNewOption = FALSE,
+			              dropboxWidth = "200%")
 					),
 					tabPanel("Phenotype data",
-			            selectizeInput(
+			            virtualSelectInput(
 			              inputId = ns("phenotype_data_id"),
 			              label = "Identifier:",
 			              choices = NULL,
-			              options = list(create = FALSE, maxOptions = 5))
+			              search = TRUE,
+			              allowNewOption = FALSE,
+			              dropboxWidth = "200%")
 					)
 				),
 			    fluidRow(
@@ -205,48 +215,40 @@ filter_samples_Server = function(input, output, session, database="toil", #id_op
 		genomic_profile_choices <- reactive({
 		  id_option[["Molecular profile"]][[input$genomic_profile]]
 		})
-	    updateSelectizeInput(
-	      session,
+	    updateVirtualSelect(
 	      "genomic_profile_id",
 	      choices = genomic_profile_choices()$all,
-	      selected = genomic_profile_choices()$default,
-	      server = TRUE
+	      selected = genomic_profile_choices()$default
 	    )
 	})
 	observeEvent(input$tumor_index, {
 		tumor_index_choices <- reactive({
 		  id_option[["Tumor index"]][[input$tumor_index]]
 		})
-	    updateSelectizeInput(
-	      session,
+	    updateVirtualSelect(
 	      "tumor_index_id",
 	      choices = tumor_index_choices()$all,
-	      selected = tumor_index_choices()$default,
-	      server = TRUE
+	      selected = tumor_index_choices()$default
 	    )
 	})
 	observeEvent(input$immune_infiltration, {
 		immune_infiltration_choices <- reactive({
 		  id_option[["Immune Infiltration"]][[input$immune_infiltration]]
 		})
-	    updateSelectizeInput(
-	      session,
+	    updateVirtualSelect(
 	      "immune_infiltration_id",
 	      choices = immune_infiltration_choices()$all,
-	      selected = immune_infiltration_choices()$default,
-	      server = TRUE
+	      selected = immune_infiltration_choices()$default
 	    )
 	})
 	observeEvent(input$pathway_activity, {
 		pathway_activity_choices <- reactive({
 		  id_option[["Pathway activity"]][[input$pathway_activity]]
 		})
-	    updateSelectizeInput(
-	      session,
+	    updateVirtualSelect(
 	      "pathway_activity_id",
 	      choices = pathway_activity_choices()$all,
-	      selected = pathway_activity_choices()$default,
-	      server = TRUE
+	      selected = pathway_activity_choices()$default
 	    )
 	})
 	observeEvent(input$phenotype_data, {
@@ -258,12 +260,10 @@ filter_samples_Server = function(input, output, session, database="toil", #id_op
 			}
 			id_tmp[[input$phenotype_data]]
 		})
-		updateSelectizeInput(
-		  session,
+		updateVirtualSelect(
 		  "phenotype_data_id",
 		  choices = phenotype_data_choices()$all,
-		  selected = phenotype_data_choices()$default,
-		  server = TRUE
+		  selected = phenotype_data_choices()$default
 		)
 	})
 

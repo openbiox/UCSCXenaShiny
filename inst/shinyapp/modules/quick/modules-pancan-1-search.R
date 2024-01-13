@@ -16,17 +16,14 @@ fluidRow(column(3,
               choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "miRNA Expression"),
               animation = "jelly"
             ),
-            selectizeInput(
+            virtualSelectInput(
               inputId = ns("Pancan_search"),
               label = "Input a gene or formula (as signature)",
               choices = NULL,
               width = "100%",
-              options = list(
-                create = TRUE,
-                maxOptions = 5,
-                placeholder = "Enter a gene symbol, e.g. TP53",
-                plugins = list("restore_on_backspace")
-              )
+              search = TRUE,
+              allowNewOption = TRUE,
+              dropboxWidth = "200%"
         ),
         shinyBS::bsPopover(ns("Pancan_search"),
           title = "Tips",
@@ -107,12 +104,10 @@ server.modules_pancan_dist <- function(input, output, session) {
   })
 
   observe({
-    updateSelectizeInput(
-      session,
+    updateVirtualSelect(
       "Pancan_search",
       choices = profile_choices()$all,
-      selected = profile_choices()$default,
-      server = TRUE
+      selected = profile_choices()$default
     )
   })
 

@@ -55,8 +55,10 @@ add_signature_UI = function(id, database = "toil"){
 					),
 					column(
 						4,
-						selectizeInput(ns("add_mol"), NULL, NULL, 
-							options = list(create = TRUE, maxOptions = 10))
+						virtualSelectInput(ns("add_mol"), NULL, NULL, 
+						                   search = TRUE,
+						                   allowNewOption = TRUE,
+						                   dropboxWidth = "200%")
 					)
 				),
 				fluidRow(column(8,
@@ -138,12 +140,10 @@ add_signature_Server = function(input, output, session, database = "toil"){
 
 		  id_option[["Molecular profile"]][[genomic_profile]]
 		})
-	    updateSelectizeInput(
-	      session,
+	    updateVirtualSelect(
 	      "add_mol",
 	      choices = genomic_profile_choices()$all,
-	      selected = genomic_profile_choices()$default,
-	      server = TRUE
+	      selected = genomic_profile_choices()$default
 	    )
 	})
 	dynamic_condi = reactiveValues(mols = NULL, add = 0, del = 0, sum = 0, check = NULL)
