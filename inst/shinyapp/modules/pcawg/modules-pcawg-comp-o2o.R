@@ -9,19 +9,22 @@ ui.modules_pcawg_comp_o2o = function(id) {
 					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
 
-					h4("1. Modify datasets[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Set molecular profile origin", 
+					h4(strong("S1.1 Modify datasets"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Modify datasets", 
 					                   content = "data_origin"),
 					mol_origin_UI(ns("mol_origin2comp"), database = "pcawg"),
 
-					h4("2. Choose project"),
+					h4(strong("S1.2 Choose project")),
 					pickerInput(
 						ns("choose_cancer"),NULL,
 						choices = pcawg_items),
 					br(),
 
-					h4("3. Filter samples[opt]"),
+					h4(strong("S1.3 Filter samples"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Filter samples", 
+					                   content = "choose_samples"),
 					h5("Quick filter:"),
 					pickerInput(
 						ns("filter_by_code"), NULL,
@@ -34,18 +37,19 @@ ui.modules_pcawg_comp_o2o = function(id) {
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),
 
-					h4("4. Upload metadata[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Upload sample info", 
+					h4(strong("S1.4 Upload metadata"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Upload metadata", 
 					                   content = "custom_metadata"),
 					shinyFeedback::useShinyFeedback(),
 					custom_meta_UI(ns("custom_meta2comp")),
 					br(),
 
-					h4("5. Add signature[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Add molecular signature", 
+					h4(strong("S1.5 Add signature"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Add signature", 
 					                   content = "add_signature"),
+						
 					add_signature_UI(ns("add_signature2comp"), database = "pcawg"),
 
 
@@ -58,48 +62,56 @@ ui.modules_pcawg_comp_o2o = function(id) {
 					style = "height:1100px",
 					h2("S2: Get data", align = "center"),
 					# 调用分组模块UI
+					h4(strong("S2.1 Divide 2 groups by one condition")) %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Divide 2 groups", 
+					                   content = "set_groups"),
 					group_samples_UI(ns("group_samples2comp"),database = "pcawg"),
 
 					# 下载待比较数据
+					h4(strong("S2.2 Get data for comparison")) %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Get one data", 
+					                   content = "get_one_data"), 
 					download_feat_UI(ns("download_y_axis"), 
-						button_name="Query variable to compare",database = "pcawg")
+						button_name="Query",database = "pcawg")
 				)
 			),
 			# 分析/绘图/下载
 			column(
 				5,
 				wellPanel(
-					h2("S3: Analyze", align = "center"),
+					h2("S3: Analyze & Visualize", align = "center") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Analyze & Visualize", 
+					                   content = "analyze_comp_1"),  
 					style = "height:1100px",
 
+					h4(strong("S3.1 Set analysis parameters")), 
+					selectInput(ns("comp_method"), "Comparison method",choices = c("t-test", "wilcoxon")),
+					h4(strong("S3.2 Set visualization parameters")), 
+					column(3, colourpicker::colourInput(inputId = ns("group_1_color"), "Color (Group 1):", "#E69F00")),
+					column(3, colourpicker::colourInput(inputId = ns("group_2_color"), "Color (Group 2):", "#56B4E9")),
+					column(3, numericInput(inputId = ns("point_size"), label = "Point size:", value = 3, step = 0.5)),
+					column(3, numericInput(inputId = ns("point_alpha"), label = "Point alpha:", value = 0.4, step = 0.1, min = 0, max = 1)),
+						
+					# verbatimTextOutput(ns("tmp123")),
 					shinyWidgets::actionBttn(
-						ns("step3_plot_box"), "Go/Update BoxViolin",
+						ns("step3_plot_box"), "Run",
 				        style = "gradient",
 				        icon = icon("chart-line"),
 				        color = "primary",
 				        block = TRUE,
 				        size = "sm"
 					),
-
-
 					br(),
-					selectInput(ns("comp_method"), "Comparison method",choices = c("t-test", "wilcoxon")),
-					br(),
-
-					column(3, colourpicker::colourInput(inputId = ns("group_1_color"), "Color (group-1)", "#E69F00")),
-					column(3, colourpicker::colourInput(inputId = ns("group_2_color"), "Color (group-2)", "#56B4E9")),
-					column(3, numericInput(inputId = ns("point_size"), label = "Point size", value = 3, step = 0.5)),
-					column(3, numericInput(inputId = ns("point_alpha"), label = "Point alpha", value = 0.4, step = 0.1, min = 0, max = 1)),
-					
-					# verbatimTextOutput(ns("tmp123")),
-
 					fluidRow(
 						column(10, offset = 1,
 							   plotOutput({ns("comp_plot_box")}, height = "500px") 
 						)
 					),
 
-				    br(),
+					h4(strong("S3.3 Download results")), 
 				    fluidRow(
 				    	column(3, downloadButton(ns("save_plot_bt"), "Figure")),
 				    	column(3, offset = 0, downloadButton(ns("save_data_raw"), "Raw data(.csv)")),
@@ -218,7 +230,8 @@ server.modules_pcawg_comp_o2o = function(input, output, session) {
 							 samples=reactive(cancer_choose$filter_phe_id),
 							 custom_metadata=reactive(custom_meta_sig()),
 						     opt_pancan = reactive(opt_pancan()),
-						     check_numeric=TRUE
+						     check_numeric=TRUE,
+						     table.ui = FALSE
 							 )
 
 	# 合并分析

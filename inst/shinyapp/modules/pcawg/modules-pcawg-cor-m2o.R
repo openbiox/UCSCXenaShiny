@@ -9,19 +9,22 @@ ui.modules_pcawg_cor_m2o = function(id) {
 					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
 
-					h4("1. Modify datasets[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Set molecular profile origin", 
+					h4(strong("S1.1 Modify datasets"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Modify datasets", 
 					                   content = "data_origin"),
 					mol_origin_UI(ns("mol_origin2cor"), database = "pcawg"),
 
-					h4("2. Choose project"),
+					h4(strong("S1.2 Choose project")),
 					pickerInput(
 						ns("choose_cancer"),NULL,
 						choices = pcawg_items),
 					br(),
 
-					h4("3. Filter samples[opt]"),
+					h4(strong("S1.3 Filter samples"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Filter samples", 
+					                   content = "choose_samples"),
 					h5("Quick filter:"),
 					pickerInput(
 						ns("filter_by_code"), NULL,
@@ -34,17 +37,17 @@ ui.modules_pcawg_cor_m2o = function(id) {
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),
 
-					h4("4. Upload metadata[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Upload sample info", 
+					h4(strong("S1.4 Upload metadata"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Upload metadata", 
 					                   content = "custom_metadata"),
 					shinyFeedback::useShinyFeedback(),
 					custom_meta_UI(ns("custom_meta2cor")),
 					br(),
 
-					h4("5. Add signature[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Add molecular signature", 
+					h4(strong("S1.5 Add signature"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Add signature", 
 					                   content = "add_signature"),
 					add_signature_UI(ns("add_signature2cor"), database = "pcawg"),
 
@@ -56,38 +59,51 @@ ui.modules_pcawg_cor_m2o = function(id) {
 					style = "height:1100px",
 					h2("S2: Get data", align = "center"),
 					# 批量数据下载
+					h4(strong("S2.1 Get batch data for X-axis")) %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Get batch data", 
+					                   content = "get_batch_data"), 
 					multi_upload_UI(ns("multi_upload2cor"),
-						button_name = "Query batch data(x-axis)", database = "pcawg"),
-					br(),br(),
-
+						button_name = "Query", database = "pcawg"),
+					# br(),br(),
 					# 单项数据下载
+					h4(strong("S2.2 Get data for Y-axis")) %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Get one data", 
+					                   content = "get_one_data"),  
 					download_feat_UI(ns("download_y_axis"), 
-						button_name="Query data(y-axis)", database = "pcawg")
+						button_name="Query", database = "pcawg")
 				)
 			),
 			column(
 				5,
 				wellPanel(
 					style = "height:1100px",
-					h2("S3: Batch analyze", align = "center"),
+					h2("S3: Analyze", align = "center") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Analyze", 
+					                   content = "analyze_cor_3"), 
+
+					br(),br(),
+					h4(strong("S3.1 Set analysis parameters")), 
+					selectInput(ns("cor_method"), "Correlation method:",choices = c("pearson", "spearman")),
+
+					# br(),br(),
 					shinyWidgets::actionBttn(
-						ns("cal_batch_cor"), "Start calculation",
+						ns("cal_batch_cor"), "Run",
 				        style = "gradient",
-				        icon = icon("search"),
+				        icon = icon("table"),
 				        color = "primary",
 				        block = TRUE,
 				        size = "sm"
 					),
-					br(),br(),
-					h4("1. Set method"),
-					selectInput(ns("cor_method"), NULL,choices = c("pearson", "spearman")),
-
-					br(),br(),
+					br(),
 					fluidRow(
 						column(10, offset = 1,
 							   div(uiOutput(ns("cor_stat_tb.ui")),style = "height:600px"),
 							   )
 					),
+					h4(strong("S3.2 Download results")), 
 					uiOutput(ns("cor_stat_dw.ui"))
 				)
 			)
@@ -195,7 +211,7 @@ server.modules_pcawg_cor_m2o = function(input, output, session) {
 		y_data = L3_y_data()[,c("id","Sample","value")]
 		colnames(y_data)[c(1,3)] = paste0("y_",colnames(y_data)[c(1,3)])
 
-		withProgress(message = "Your analyzation has been submitted. Please wait for a while.",{
+		withProgress(message = "Please wait for a while.",{
 			cor_stat = lapply(seq(L3s_x()), function(i) {
 			    incProgress(1 / length(L3s_x()), detail = paste0("(Finished ",i,"/",length(L3s_x()),")"))
 				

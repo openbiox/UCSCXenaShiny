@@ -8,14 +8,14 @@ group_samples_UI = function(id, button_name="Filter by multi-conditions", databa
   tagList(
     # h4("1. Select one condition"),
 
-    shinyWidgets::actionBttn(
-      ns("query_dist"), "Select/Observe one condition",
-          style = "gradient",
-          icon = icon("search"),
-          color = "primary",
-          block = TRUE,
-          size = "sm"
-    ),
+    # shinyWidgets::actionBttn(
+    #   ns("query_dist"), "Observe",
+    #       style = "gradient",
+    #       icon = icon("chart-simple"),
+    #       color = "primary",
+    #       block = TRUE,
+    #       size = "sm"
+    # ),
     
     fluidRow(
       column(
@@ -115,18 +115,27 @@ group_samples_UI = function(id, button_name="Filter by multi-conditions", databa
                  dropboxWidth = "200%")  
       )
     ),
-
-    verbatimTextOutput(ns("condi_dist")),
-    
-    # h4("2. Group by two range"),
     shinyWidgets::actionBttn(
-      ns("group_range"), "Group by two range",
+      ns("query_dist"), "Observe",
           style = "gradient",
-          icon = icon("search"),
+          icon = icon("chart-simple"),
           color = "primary",
           block = TRUE,
           size = "sm"
     ),
+    div(verbatimTextOutput(ns("condi_dist")),
+      style = "margin-top: 5px; margin-bottom: 0px;"
+    ),
+    
+    # h4("2. Group by two range"),
+    # shinyWidgets::actionBttn(
+    #   ns("group_range"), "Group",
+    #       style = "gradient",
+    #       icon = icon("list"),
+    #       color = "primary",
+    #       block = TRUE,
+    #       size = "sm"
+    # ),
 
 		uiOutput(ns("set_quantile.ui")),
     materialSwitch(ns("reverse_level"), "Whether reverse levels?"),
@@ -136,8 +145,18 @@ group_samples_UI = function(id, button_name="Filter by multi-conditions", databa
      #               content = "set_groups"),
 		uiOutput(ns("set_group1.ui")),
 		uiOutput(ns("set_group2.ui")),
+    shinyWidgets::actionBttn(
+      ns("group_range"), "Group",
+          style = "gradient",
+          icon = icon("list"),
+          color = "primary",
+          block = TRUE,
+          size = "sm"
+    ),
 
-    verbatimTextOutput(ns("merge_out_tip")),
+    div(verbatimTextOutput(ns("merge_out_tip")),
+      style = "margin-top: 5px; margin-bottom: 0px;"
+    )
     # verbatimTextOutput(ns("tmp123"))
     
   )

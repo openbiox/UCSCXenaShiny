@@ -7,22 +7,22 @@ ui.modules_pancan_sur_m2o = function(id) {
 				wellPanel(
 					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
-					h4("1. Modify datasets[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Set molecular profile origin", 
+					h4(strong("S1.1 Modify datasets"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Modify datasets", 
 					                   content = "data_origin"),
 					mol_origin_UI(ns("mol_origin2sur"), database = "toil"),
 
-					h4("2. Choose one cancer"),
+					h4(strong("S1.2 Choose cancer")),
 					pickerInput(
 						ns("choose_cancer"), NULL,
 						choices = sort(tcga_cancer_choices),
 						selected = "BRCA"),
 					br(),
 
-					h4("3. Filter samples[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Choose samples for personalized need", 
+					h4(strong("S1.3 Filter samples"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Filter samples", 
 					                   content = "choose_samples"),
 					h5("Quick filter:"),
 					pickerInput(
@@ -36,17 +36,17 @@ ui.modules_pancan_sur_m2o = function(id) {
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),
 					
-					h4("4. Upload metadata[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Upload sample info", 
+					h4(strong("S1.4 Upload metadata"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Upload metadata", 
 					                   content = "custom_metadata"),
 					shinyFeedback::useShinyFeedback(),
 					custom_meta_UI(ns("custom_meta2sur")),
 					br(),
 
-					h4("5. Add signature[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Add molecular signature", 
+					h4(strong("S1.5 Add signature"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Add signature", 
 					                   content = "add_signature"),
 					add_signature_UI(ns("add_signature2sur"), database = "toil"),
 				)
@@ -57,61 +57,74 @@ ui.modules_pancan_sur_m2o = function(id) {
 					style = "height:1100px",
 
 					h2("S2: Get data", align = "center"),
-
+					h4(strong("S2.1 Select survival endpoint")), 
 				    shinyWidgets::prettyRadioButtons(
-				        inputId = ns("endpoint_type"), label = "Endpoint type:",
+				        inputId = ns("endpoint_type"), label = NULL,
 				        choiceValues = c("OS", "DSS", "DFI", "PFI"),
 				        choiceNames = c("OS (Overall Survial)", "DSS (Disease-Specific Survival)", 
 				        				"DFI (Disease-Free Interval)", "PFI (Progression-Free Interval)"),
 				        selected = "OS",inline = TRUE
 				    ),
 				    br(),
-					multi_upload_UI(ns("multi_upload2sur"),"Select multiple conditions", database = "toil"),
+					h4(strong("S2.2 Divide 2 groups by batch conditions")) %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Divide 2 groups by batch conditions", 
+					                   content = "get_batch_data_set_groups"), 
+					multi_upload_UI(ns("multi_upload2sur"),"Observe", database = "toil"),
 				    # uiOutput(ns("L3s_x_data_sur.ui")),
-
+					uiOutput(ns("set_quantile.ui")),
+					uiOutput(ns("set_group1.ui")),
+					uiOutput(ns("set_group2.ui")),
+					# br(),
 					shinyWidgets::actionBttn(
-						ns("set_group"), "Group by two range",
+						ns("set_group"), "Group",
 				        style = "gradient",
 				        icon = icon("search"),
 				        color = "primary",
 				        block = TRUE,
 				        size = "sm"
 					),
-					br(),
-					uiOutput(ns("set_quantile.ui")),
-					uiOutput(ns("set_group1.ui")),
-					uiOutput(ns("set_group2.ui")),
-					br(),
-					uiOutput(ns("L3s_x_data_sur_group.ui"))
+				    div(uiOutput(ns("L3s_x_data_sur_group.ui")),
+				      style = "margin-top: 5px; margin-bottom: 0px;"
+				    ),
+					# uiOutput(ns("L3s_x_data_sur_group.ui"))
 				)
 			),	
 			column(
 				5,
 				wellPanel(
 					style = "height:1100px",
-					h2("S3: Batch analyze", align = "center"),
+					h2("S3: Analyze", align = "center") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Analyze", 
+					                   content = "analyze_sur_3"), 
 					# br(),
+					h4(strong("S3.1 Set analysis parameters")), 
+
+					# br(),br(),
+					selectInput(ns("sur_method"), "Survival method:",c("Log-rank test","Cox regression")),
+				    materialSwitch(ns("use_origin"), 
+					    	"Whether use initial data before grouping?"),
+					  #   	 %>% 
+							# helper(type = "markdown", size = "m", fade = TRUE, 
+						 #                   title = "About the initial phenotype", 
+						 #                   content = "sur_initial_group"),
+					br(),br(),
 					shinyWidgets::actionBttn(
-						ns("cal_batch_sur"), "Start calculation",
+						ns("cal_batch_sur"), "Run",
 				        style = "gradient",
-				        icon = icon("search"),
+				        icon = icon("table"),
 				        color = "primary",
 				        block = TRUE,
 				        size = "sm"
 					),
-					br(),br(),
-					selectInput(ns("sur_method"), "Analysis method",c("Log-rank test","Cox regression")),
-				    materialSwitch(ns("use_origin"), 
-					    	"Whether use initial data before grouping") %>% 
-							helper(type = "markdown", size = "m", fade = TRUE, 
-						                   title = "About the initial phenotype", 
-						                   content = "sur_initial_group"),
-					br(),br(),
+					br(),
 					fluidRow(
 						column(10, offset = 1,
 							   div(uiOutput(ns("sur_stat_tb.ui")),style = "height:600px"),
 							   )
 					),
+					h4(strong("S3.2 Download results")), 
 					uiOutput(ns("sur_stat_dw.ui"))
 				)
 			)
@@ -388,7 +401,11 @@ server.modules_pancan_sur_m2o = function(input, output, session) {
 					if(!input$use_origin){
 						datas_sub$Group = datas_sub$group
 					} else {
-						datas_sub$Group = datas_sub$value
+						if(class(datas_sub$value)!="character"){
+							datas_sub$Group = datas_sub$value
+						} else {
+							datas_sub$Group = datas_sub$group
+						}
 					}
 					fit <- coxph(Surv(time, status) ~ Group, data = datas_sub)
 					sur_res = summary(fit)$coefficients %>% as.data.frame() %>%

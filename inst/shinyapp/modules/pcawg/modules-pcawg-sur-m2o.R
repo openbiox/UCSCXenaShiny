@@ -9,19 +9,22 @@ ui.modules_pcawg_sur_m2o = function(id) {
 					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
 
-					h4("1. Modify datasets[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Set molecular profile origin", 
+					h4(strong("S1.1 Modify datasets"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Modify datasets", 
 					                   content = "data_origin"),
 					mol_origin_UI(ns("mol_origin2sur"), database = "pcawg"),
 
-					h4("2. Choose project"),
+					h4(strong("S1.2 Choose project")),
 					pickerInput(
 						ns("choose_cancer"),NULL,
 						choices = pcawg_items),
 					br(),
 
-					h4("3. Filter samples[opt]"),
+					h4(strong("S1.3 Filter samples"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Filter samples", 
+					                   content = "choose_samples"),
 					h5("Quick filter:"),
 					pickerInput(
 						ns("filter_by_code"), NULL,
@@ -34,17 +37,17 @@ ui.modules_pcawg_sur_m2o = function(id) {
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),
 
-					h4("4. Upload metadata[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Upload sample info", 
+					h4(strong("S1.4 Upload metadata"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Upload metadata", 
 					                   content = "custom_metadata"),
 					shinyFeedback::useShinyFeedback(),
 					custom_meta_UI(ns("custom_meta2sur")),
 					br(),
 
-					h4("5. Add signature[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Add molecular signature", 
+					h4(strong("S1.5 Add signature"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Add signature", 
 					                   content = "add_signature"),
 					add_signature_UI(ns("add_signature2sur"), database = "pcawg")
 				)
@@ -55,54 +58,69 @@ ui.modules_pcawg_sur_m2o = function(id) {
 					style = "height:1100px",
 
 					h2("S2: Get data", align = "center"),
+					h4(strong("S2.1 Select survival endpoint")), 
+					p("Only OS (Overall Survial) is supported."),
+				    br(),
 
-					multi_upload_UI(ns("multi_upload2sur"),
-						button_name="Select multiple conditions",database = "pcawg"),
+					h4(strong("S2.2 Divide 2 groups by batch conditions")) %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Divide 2 groups by batch conditions", 
+					                   content = "get_batch_data_set_groups"), 
+					multi_upload_UI(ns("multi_upload2sur"),	button_name="Observe",database = "pcawg"),
 				    # uiOutput(ns("L3s_x_data_sur.ui")),
 
+
+					# br(),
+					uiOutput(ns("set_quantile.ui")),
+					uiOutput(ns("set_group1.ui")),
+					uiOutput(ns("set_group2.ui")),
 					shinyWidgets::actionBttn(
-						ns("set_group"), "Group by two range",
+						ns("set_group"), "Group",
 				        style = "gradient",
 				        icon = icon("search"),
 				        color = "primary",
 				        block = TRUE,
 				        size = "sm"
 					),
-					br(),
-					uiOutput(ns("set_quantile.ui")),
-					uiOutput(ns("set_group1.ui")),
-					uiOutput(ns("set_group2.ui")),
-					br(),
-					uiOutput(ns("L3s_x_data_sur_group.ui"))
+					# uiOutput(ns("L3s_x_data_sur_group.ui"))
+				    div(uiOutput(ns("L3s_x_data_sur_group.ui")),
+				      style = "margin-top: 5px; margin-bottom: 0px;"
+				    ),
 				)
 			),	
 			column(
 				5,
 				wellPanel(
 					style = "height:1100px",
-					h2("S3: Batch analyze", align = "center"),
+					h2("S3: Analyze", align = "center") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Analyze", 
+					                   content = "analyze_sur_3"),
 					# br(),
+					h4(strong("S3.1 Set analysis parameters")), 
+					# br(),br(),
+					selectInput(ns("sur_method"), "Survival method:",c("Log-rank test","Cox regression")),
+				    materialSwitch(ns("use_origin"), 
+					    	"Whether use initial data before grouping?") %>% 
+							helper(type = "markdown", size = "m", fade = TRUE, 
+						                   title = "About the initial phenotype", 
+						                   content = "sur_initial_group"),
+					br(),br(),
 					shinyWidgets::actionBttn(
-						ns("cal_batch_sur"), "Start calculation",
+						ns("cal_batch_sur"), "Run",
 				        style = "gradient",
-				        icon = icon("search"),
+				        icon = icon("table"),
 				        color = "primary",
 				        block = TRUE,
 				        size = "sm"
 					),
-					br(),br(),
-					selectInput(ns("sur_method"), "Analysis method",c("Log-rank test","Cox regression")),
-				    materialSwitch(ns("use_origin"), 
-					    	"Whether use initial data before grouping") %>% 
-							helper(type = "markdown", size = "m", fade = TRUE, 
-						                   title = "About the initial phenotype", 
-						                   content = "sur_initial_group"),
 					br(),br(),
 					fluidRow(
 						column(10, offset = 1,
 							   div(uiOutput(ns("sur_stat_tb.ui")),style = "height:600px"),
 							   )
 					),
+					h4(strong("S3.2 Download results")), 
 					uiOutput(ns("sur_stat_dw.ui"))
 				)
 			)
@@ -349,7 +367,7 @@ server.modules_pcawg_sur_m2o = function(input, output, session) {
 		datas = L3s_x_data_sur_group()
 		valid_ids = unique(datas$id)
 
-		withProgress(message = "Your analyzation has been submitted. Please wait for a while.",{
+		withProgress(message = "Please wait for a while.",{
 			sur_stat = lapply(seq(valid_ids), function(i){
 			    incProgress(1 / length(valid_ids), detail = paste0("(Finished ",i,"/",length(valid_ids),")"))
 				valid_id = valid_ids[i]

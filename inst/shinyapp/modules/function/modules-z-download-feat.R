@@ -7,118 +7,134 @@ download_feat_UI = function(id, button_name="Query data", database = "toil"){
 			"ccle"=ccle_id_option)
 
 	tagList(
-		shinyWidgets::actionBttn(
-			ns("query_data"), button_name,
-	        style = "gradient",
-	        icon = icon("search"),
-	        color = "primary",
-	        block = TRUE,
-	        size = "sm"
-		),
-	    fluidRow(
-	    	column(
-	    		6,
-			    selectInput(
-			    	ns("data_L1"), label = "Data type:",
-			    	choices = names(id_option),
-			    	selected = "Molecular profile"
-			    )
-	    	),
-	    	column(
-	    		6,
+		# shinyWidgets::actionBttn(
+		# 	ns("query_data"), button_name,
+	 #        style = "gradient",
+	 #        icon = icon("search"),
+	 #        color = "primary",
+	 #        block = TRUE,
+	 #        size = "sm"
+		# ),
+		# fluidRow(
+		# 	column(10, offset = 1,
+			    fluidRow(
+			    	column(
+			    		6,
+					    selectInput(
+					    	ns("data_L1"), label = "Data type:",
+					    	choices = names(id_option),
+					    	selected = "Molecular profile"
+					    )
+			    	),
+			    	column(
+			    		6,
+					    tabsetPanel(
+						    id = ns("data_L2_tab"),
+						    type = "hidden",
+							tabPanel("Molecular profile", 
+								selectInput(
+									ns("genomic_profile"), "Data subtype:",
+									choices = names(id_option[["Molecular profile"]]),
+									selected = "mRNA Expression")
+							),
+							tabPanel("Tumor index",
+								selectInput(
+									ns("tumor_index"), "Data subtype:",
+									choices = names(id_option[["Tumor index"]]),
+									selected = "Tumor Purity")
+							),
+							tabPanel("Immune Infiltration",
+								selectInput(
+									ns("immune_infiltration"), "Data subtype:",
+									choices = names(id_option[["Immune Infiltration"]]),
+									selected = "CIBERSORT")
+							),
+							tabPanel("Pathway activity",
+								selectInput(
+									ns("pathway_activity"), "Data subtype:",
+									choices = names(id_option[["Pathway activity"]]),
+									selected = "HALLMARK")
+							),
+							tabPanel("Phenotype data",
+								selectInput(
+									ns("phenotype_data"), "Data subtype:",
+									choices = names(id_option[["Phenotype data"]]),
+									selected = "Clinical Phenotye")
+							)
+						)
+			    	)
+			    ),
 			    tabsetPanel(
-				    id = ns("data_L2_tab"),
+				    id = ns("data_L3_tab"),
 				    type = "hidden",
-					tabPanel("Molecular profile", 
-						selectInput(
-							ns("genomic_profile"), "Data subtype:",
-							choices = names(id_option[["Molecular profile"]]),
-							selected = "mRNA Expression")
+					tabPanel("Molecular profile",
+			            virtualSelectInput(
+			              inputId = ns("genomic_profile_id"),
+			              label = "Identifier:",
+			              choices = NULL,
+			              search = TRUE,
+			              allowNewOption = TRUE,
+			              dropboxWidth = "200%")
 					),
 					tabPanel("Tumor index",
-						selectInput(
-							ns("tumor_index"), "Data subtype:",
-							choices = names(id_option[["Tumor index"]]),
-							selected = "Tumor Purity")
+			            virtualSelectInput(
+			              inputId = ns("tumor_index_id"),
+			              label = "Identifier:",
+			              choices = NULL,
+			              search = TRUE,
+			              allowNewOption = FALSE,
+			              dropboxWidth = "200%")
 					),
 					tabPanel("Immune Infiltration",
-						selectInput(
-							ns("immune_infiltration"), "Data subtype:",
-							choices = names(id_option[["Immune Infiltration"]]),
-							selected = "CIBERSORT")
+			            virtualSelectInput(
+			              inputId = ns("immune_infiltration_id"),
+			              label = "Identifier:",
+			              choices = NULL,
+			              search = TRUE,
+			              allowNewOption = FALSE,
+			              dropboxWidth = "200%")
 					),
 					tabPanel("Pathway activity",
-						selectInput(
-							ns("pathway_activity"), "Data subtype:",
-							choices = names(id_option[["Pathway activity"]]),
-							selected = "HALLMARK")
+			            virtualSelectInput(
+			              inputId = ns("pathway_activity_id"),
+			              label = "Identifier:",
+			              choices = NULL,
+			              search = TRUE,
+			              allowNewOption = FALSE,
+			              dropboxWidth = "200%")
 					),
 					tabPanel("Phenotype data",
-						selectInput(
-							ns("phenotype_data"), "Data subtype:",
-							choices = names(id_option[["Phenotype data"]]),
-							selected = "Clinical Phenotye")
+			            virtualSelectInput(
+			              inputId = ns("phenotype_data_id"),
+			              label = "Identifier:",
+			              choices = NULL,
+			              search = TRUE,
+			              allowNewOption = FALSE,
+			              dropboxWidth = "200%")
 					)
-				)
-	    	)
-	    ),
-	    tabsetPanel(
-		    id = ns("data_L3_tab"),
-		    type = "hidden",
-			tabPanel("Molecular profile",
-	            virtualSelectInput(
-	              inputId = ns("genomic_profile_id"),
-	              label = "Identifier:",
-	              choices = NULL,
-	              search = TRUE,
-	              allowNewOption = TRUE,
-	              dropboxWidth = "200%")
-			),
-			tabPanel("Tumor index",
-	            virtualSelectInput(
-	              inputId = ns("tumor_index_id"),
-	              label = "Identifier:",
-	              choices = NULL,
-	              search = TRUE,
-	              allowNewOption = FALSE,
-	              dropboxWidth = "200%")
-			),
-			tabPanel("Immune Infiltration",
-	            virtualSelectInput(
-	              inputId = ns("immune_infiltration_id"),
-	              label = "Identifier:",
-	              choices = NULL,
-	              search = TRUE,
-	              allowNewOption = FALSE,
-	              dropboxWidth = "200%")
-			),
-			tabPanel("Pathway activity",
-	            virtualSelectInput(
-	              inputId = ns("pathway_activity_id"),
-	              label = "Identifier:",
-	              choices = NULL,
-	              search = TRUE,
-	              allowNewOption = FALSE,
-	              dropboxWidth = "200%")
-			),
-			tabPanel("Phenotype data",
-	            virtualSelectInput(
-	              inputId = ns("phenotype_data_id"),
-	              label = "Identifier:",
-	              choices = NULL,
-	              search = TRUE,
-	              allowNewOption = FALSE,
-	              dropboxWidth = "200%")
-			)
-		),
-		uiOutput(ns("x_axis_data_table"))
+				),
+				shinyWidgets::actionBttn(
+					ns("query_data"), button_name,
+			        style = "gradient",
+			        icon = icon("search"),
+			        color = "primary",
+			        block = TRUE,
+			        size = "sm"
+				),
+		# 	),
+		# ),
+
+		# br(),
+		div(uiOutput(ns("x_axis_data_table")),
+			style = "margin-top: 5px; margin-bottom: 0px;"
+		)
 	)
 }
 
 
 
 download_feat_Server = function(input, output, session, database = "toil",#id_option=tcga_id_option,
-								samples=NULL, custom_metadata=NULL, opt_pancan=NULL, check_numeric=FALSE){
+								samples=NULL, custom_metadata=NULL, opt_pancan=NULL, check_numeric=FALSE, table.ui=TRUE){
 	ns <- session$ns
 	# id_option = tcga_id_option
 	id_option = switch(database, 
@@ -250,28 +266,37 @@ download_feat_Server = function(input, output, session, database = "toil",#id_op
 	observeEvent(input$query_data,{
 		w$show()
 		output$x_axis_data_table = renderUI({
-			output$x_tmp_table = renderDataTable({
-				# shiny::validate(
-				# 	need(try(nrow(download_data())>0), 
-				# 		"No sample data were available. Please inspect operations in Preset step."),
-				# )
-				# if(check_numeric){
-				# 	shiny::validate(
-				# 		need(try(class(download_data()$value)!="character"), 
-				# 			"Please select a numeric variable."),
-				# 	)	
-				# }
-				x_axis_data_ = download_data()[,c("Sample","value","cancer")]
+			if(table.ui){
+				output$x_tmp_table = renderDataTable({
+					# shiny::validate(
+					# 	need(try(nrow(download_data())>0), 
+					# 		"No sample data were available. Please inspect operations in Preset step."),
+					# )
+					# if(check_numeric){
+					# 	shiny::validate(
+					# 		need(try(class(download_data()$value)!="character"), 
+					# 			"Please select a numeric variable."),
+					# 	)	
+					# }
+					x_axis_data_ = download_data()[,c("Sample","value","cancer")]
 
-				if(class(x_axis_data_[,"value"])=="numeric"){
-					x_axis_data_[,"value"] = round(x_axis_data_[,"value"], digits = 3)
-				}
-				datatable(x_axis_data_, 
-					options = list(pageLength = 3,
-						columnDefs = list(list(className = 'dt-center', targets="_all")))
-				)
-			}) 
-			dataTableOutput(ns("x_tmp_table"))
+					if(class(x_axis_data_[,"value"])=="numeric"){
+						x_axis_data_[,"value"] = round(x_axis_data_[,"value"], digits = 3)
+					}
+					datatable(x_axis_data_, 
+						options = list(pageLength = 3,
+							columnDefs = list(list(className = 'dt-center', targets="_all")))
+					)
+				}) 
+				dataTableOutput(ns("x_tmp_table"))
+			} else {
+				output$x_tmp_table = renderPrint({
+					# ids_num = nrow()
+					cat(paste0("Tip: identifier values of ", nrow(download_data()), " samples are prepared."))
+				})
+				verbatimTextOutput(ns("x_tmp_table"))
+			}
+
 		})
 	})
 

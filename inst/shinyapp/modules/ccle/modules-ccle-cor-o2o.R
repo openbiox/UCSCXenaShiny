@@ -9,13 +9,13 @@ ui.modules_ccle_cor_o2o = function(id) {
 					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
 
-					h4("1. Modify datasets[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Set molecular profile origin", 
+					h4(strong("S1.1 Modify datasets"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Modify datasets", 
 					                   content = "data_origin"),
 					mol_origin_UI(ns("mol_origin2cor"), database = "ccle"),
 
-					h4("2. Choose sites"),
+					h4(strong("S1.2 Choose sites")),
 					pickerInput(
 						ns("choose_cancer"),NULL,
 						choices = sort(unique(ccle_info_fine$Site_Primary)),
@@ -25,24 +25,27 @@ ui.modules_ccle_cor_o2o = function(id) {
 					),
 					br(),
 
-					h4("3. Filter samples[opt]"),
+					h4(strong("S1.3 Filter samples"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Filter samples", 
+					                   content = "choose_samples"),
 					h5("Exact filter:"),
 					filter_samples_UI(ns("filter_samples2cor"), database = "ccle"),
 					br(),
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),
 
-					h4("4. Upload metadata[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Upload sample info", 
+					h4(strong("S1.4 Upload metadata"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Upload metadata", 
 					                   content = "custom_metadata"),
 					shinyFeedback::useShinyFeedback(),
 					custom_meta_UI(ns("custom_meta2cor")),
 					br(),
 
-					h4("5. Add signature[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Add molecular signature", 
+					h4(strong("S1.5 Add signature"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Add signature", 
 					                   content = "add_signature"),
 					add_signature_UI(ns("add_signature2cor"), database = "ccle"),
 
@@ -55,12 +58,20 @@ ui.modules_ccle_cor_o2o = function(id) {
 					style = "height:1100px",
 					h2("S2: Get data", align = "center"),
 					# X
+					h4(strong("S2.1 Get data for X-axis")) %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Get one data", 
+					                   content = "get_one_data"), 
 					download_feat_UI(ns("download_x_axis"), 
-						button_name="Query data(x-axis)",database = "ccle"),
-		            br(),br(),
+						button_name="Query",database = "ccle"),
+		            # br(),br(),
 		            # Y
+		            h4(strong("S2.2 Get data for Y-axis")) %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Get one data", 
+					                   content = "get_one_data"), 
 					download_feat_UI(ns("download_y_axis"), 
-						button_name="Query data(y-axis)",database = "ccle")
+						button_name="Query",database = "ccle")
 
 				)
 			),
@@ -68,10 +79,25 @@ ui.modules_ccle_cor_o2o = function(id) {
 			column(
 				5,
 				wellPanel(
-					h2("S3: Analyze & Visualize", align = "center"),
+					h2("S3: Analyze & Visualize", align = "center") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Analyze & Visualize", 
+					                   content = "analyze_cor_1"),  
 					style = "height:1100px",
+					h4(strong("S3.1 Set analysis parameters")), 
+					selectInput(ns("cor_method"), "Correlation method:",choices = c("Pearson", "Spearman")),
+					h4(strong("S3.2 Set visualization parameters")), 
+					fluidRow(
+						column(3, colourpicker::colourInput(inputId = ns("line_color"), "Line color:", "#0000FF")),
+						column(3, colourpicker::colourInput(inputId = ns("x_hist_color"), "Hist color(x):", "#009E73")),
+						column(3, colourpicker::colourInput(inputId = ns("y_hist_color"), "Hist color(y):", "#D55E00"))
+					),
+					fluidRow(
+						column(3, numericInput(inputId = ns("point_size"), label = "Point size:", value = 3, step = 0.5)),
+						column(3, numericInput(inputId = ns("point_alpha"), label = "Point alpha:", value = 0.4, step = 0.1, min = 0, max = 1))
+					),
 					shinyWidgets::actionBttn(
-						ns("step3_plot_sct"), "Run/Update",
+						ns("step3_plot_sct"), "Run",
 				        style = "gradient",
 				        icon = icon("chart-line"),
 				        color = "primary",
@@ -79,23 +105,12 @@ ui.modules_ccle_cor_o2o = function(id) {
 				        size = "sm"
 					),
 					br(),
-					selectInput(ns("cor_method"), "Correlation method",choices = c("Pearson", "Spearman")),
-					fluidRow(
-						column(3, colourpicker::colourInput(inputId = ns("line_color"), "Line color", "#0000FF")),
-						column(3, colourpicker::colourInput(inputId = ns("x_hist_color"), "Hist color(x)", "#009E73")),
-						column(3, colourpicker::colourInput(inputId = ns("y_hist_color"), "Hist color(y)", "#D55E00"))
-					),
-					fluidRow(
-						column(3, numericInput(inputId = ns("point_size"), label = "Point size", value = 3, step = 0.5)),
-						column(3, numericInput(inputId = ns("point_alpha"), label = "Point alpha", value = 0.4, step = 0.1, min = 0, max = 1))
-					),
-
 					fluidRow(
 						column(10, offset = 1,
 							   plotOutput({ns("cor_plot_sct")}, height = "500px") 
 						)
 					),
-				    br(),
+					h4(strong("S3.3 Download results")), 
 				    fluidRow(
 				    	column(3, downloadButton(ns("save_plot_bt"), "Figure")),
 				    	column(3, offset = 0, downloadButton(ns("save_data_raw"), "Raw data(.csv)")),

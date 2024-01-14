@@ -131,17 +131,17 @@ query_general_id = function(){
 
   ## tumor_index
   tcga_index_id = list(
-    `Tumor Purity` = list(all = colnames(tcga_index_value$`Tumor Purity`)[3:7], default = "ESTIMATE"),
-    `Tumor Stemness` = list(all = colnames(tcga_index_value$`Tumor Stemness`)[2:6], default = "RNAss"),
-    `Tumor Mutation Burden` = list(all = colnames(tcga_index_value$`Tumor Mutation Burden`)[4:5], default = "Non_silent_per_Mb"),
-    `Microsatellite Instability` = list(all = setdiff(colnames(tcga_index_value$`Microsatellite Instability`)[3:21],
-                                                      c("MSI_intronic","MSI_intronic_profiled","MSI_noncoding","MSI_noncoding_profiled")), 
+    `Tumor Purity` = list(all = sort(colnames(tcga_index_value$`Tumor Purity`)[3:7]), default = "ESTIMATE"),
+    `Tumor Stemness` = list(all = sort(colnames(tcga_index_value$`Tumor Stemness`)[2:6]), default = "RNAss"),
+    `Tumor Mutation Burden` = list(all = sort(colnames(tcga_index_value$`Tumor Mutation Burden`)[4:5]), default = "Non_silent_per_Mb"),
+    `Microsatellite Instability` = list(all = sort(setdiff(colnames(tcga_index_value$`Microsatellite Instability`)[3:21],
+                                                      c("MSI_intronic","MSI_intronic_profiled","MSI_noncoding","MSI_noncoding_profiled"))), 
                                         default = "Total_nb_MSI_events"),
-    `Genome Instability` = list(all = colnames(tcga_index_value$`Genome Instability`)[2:6], default = "ploidy")
+    `Genome Instability` = list(all = sort(colnames(tcga_index_value$`Genome Instability`)[2:6]), default = "ploidy")
   )
 
   ## tumor_immune
-  tcga_immune_id = lapply(tcga_immune_value, function(x) {list(all=colnames(x)[-1])})
+  tcga_immune_id = lapply(tcga_immune_value, function(x) {list(all=sort(colnames(x)[-1]))})
   tcga_immune_id$`CIBERSORT`$default = "Monocyte"
   tcga_immune_id$`CIBERSORT-ABS`$default = "Monocyte"
   tcga_immune_id$`EPIC`$default = "Macrophage"
@@ -151,14 +151,14 @@ query_general_id = function(){
   tcga_immune_id$`XCELL`$default = "Monocyte"
 
   ## tumor_pathway
-  tcga_pathway_id = lapply(tcga_pathway_value, function(x) {list(all=colnames(x)[-1])})
+  tcga_pathway_id = lapply(tcga_pathway_value, function(x) {list(all=sort(colnames(x)[-1]))})
   tcga_pathway_id$HALLMARK$default = "APOPTOSIS"
   tcga_pathway_id$KEGG$default = "CELL_CYCLE"
   tcga_pathway_id$IOBR$default = "Biotin_Metabolism"
 
   ## tumor_phenotype
   tcga_phenotype_id = list(
-    `Clinical Phenotype` = list(all=colnames(tcga_phenotype_value$`Clinical Phenotype`[3:8]),default="Code"),
+    `Clinical Phenotype` = list(all=sort(colnames(tcga_phenotype_value$`Clinical Phenotype`[3:8])),default="Code"),
     `Custom metadata` = list(all=NULL, default=NULL)
   )
 
@@ -176,11 +176,11 @@ query_general_id = function(){
   pcawg_id_option = tcga_id_option
   pcawg_id_referrence = load_data("pcawg_identifier")
   pcawg_id_option$`Molecular profile` = list(
-       `mRNA Expression` = list(all = pcawg_id_referrence$id_gene$Level3, default = "TP53"),
-       `Promoter Activity` = list(all = pcawg_id_referrence$id_pro$Level3, default = "prmtr.1"),
-       `Gene Fusion` = list(all = pcawg_id_referrence$id_fusion$Level3, default = "SAMD11"),
-       `miRNA Expression` = list(all = pcawg_id_referrence$id_mi$Level3, default = "hsa-let-7a-2-3p"),
-       `APOBEC Mutagenesis` = list(all = pcawg_id_referrence$id_maf$Level3, default = "A3A_or_A3B")
+       `mRNA Expression` = list(all = sort(pcawg_id_referrence$id_gene$Level3), default = "TP53"),
+       `Promoter Activity` = list(all = sort(pcawg_id_referrence$id_pro$Level3), default = "prmtr.1"),
+       `Gene Fusion` = list(all = sort(pcawg_id_referrence$id_fusion$Level3), default = "SAMD11"),
+       `miRNA Expression` = list(all = sort(pcawg_id_referrence$id_mi$Level3), default = "hsa-let-7a-2-3p"),
+       `APOBEC Mutagenesis` = list(all = sort(pcawg_id_referrence$id_maf$Level3), default = "A3A_or_A3B")
     )
   pcawg_id_option$`Tumor index` = list(
        `Tumor Purity` = list(all = c("purity", "ploidy", "purity_conf_mad", "wgd_status", "wgd_uncertain"), 
@@ -196,10 +196,10 @@ query_general_id = function(){
   ccle_id_option = list()
   ccle_id_referrence = load_data("ccle_identifier")
   ccle_id_option$`Molecular profile` = list(
-       `mRNA Expression` = list(all = ccle_id_referrence$id_gene$Level3, default = "TP53"),
-       `Protein Expression` = list(all = ccle_id_referrence$id_pro$Level3, default = "14-3-3_beta"),
-       `Copy Number Variation` = list(all = ccle_id_referrence$id_cnv$Level3, default = "TP53"),
-       `Mutation status` = list(all = ccle_id_referrence$id_mut$Level3, default = "TP53")
+       `mRNA Expression` = list(all = sort(ccle_id_referrence$id_gene$Level3), default = "TP53"),
+       `Protein Expression` = list(all = sort(ccle_id_referrence$id_pro$Level3), default = "14-3-3_beta"),
+       `Copy Number Variation` = list(all = sort(ccle_id_referrence$id_cnv$Level3), default = "TP53"),
+       `Mutation status` = list(all = sort(ccle_id_referrence$id_mut$Level3), default = "TP53")
     )
   ccle_id_option$`Tumor index` = list(
        `Tumor Purity` = list(all = c("Purity", "Ploidy", "Genome Doublings", "Lineage"), 

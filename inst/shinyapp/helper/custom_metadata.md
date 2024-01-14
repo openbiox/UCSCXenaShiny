@@ -1,10 +1,10 @@
-Here, you can upload custom metadata (.csv) for TCGA samples as the 5th data type for analysis.
+- <font size="4"> In this step, you can upload custom TCGA/PCAWG/CCLE sample data for joint analysis. The example data can be downloded to check the relevant format requirements;</font> 
+- <font size="4"> The uploaded data will be placed with **Custom metadata** (Data subtype) of Phenotype data (Data type) for analysis;</font>
 
-(1) The metadata should have column names and have not row names;
 
-(2) The first column should be 15-character length TCGA ID (like "TCGA-OR-A5J1-01") with the name "Sample";
+<p align="center">
+<img src="https://raw.githubusercontent.com/lishensuo/images2/main/img01/image-20240114150437151.png" alt="image-20240114150437151"  width="700"/>
+</p>
 
-(3) You can download the example metadata through the following button;
 
-(4) By default, we provide 5 random demo columns (TF1,2,3,4,5) without any biological meaning. 
-
+- <font size="4"> See more details in UCSCXenaShiny v2 book site (todo list). </font> 
