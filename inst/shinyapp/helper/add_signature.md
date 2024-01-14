@@ -1,13 +1,11 @@
-1. Here, you can prepare one signature by summing  multiple molecules with different coefficients. 
-<br>
+- <font size="4">In this step, you can set custom signature based on molecular profile of TCGA/PCAWG/CCLE sample data for joint analysis;</font>
+- <font size="4">You can (1) set the basic signature information and (2) molecular formula, (3) calculate the signature value and add into **Custom metadata** (Data subtype) of Phenotype data (Data type) for analysis;</font>
 
-2. After set the signature name and type, molecules can be added one by one or deleted.
 
-   <br>
+<p align="center">
+<img src="https://raw.githubusercontent.com/lishensuo/images2/main/img01/image-20240114153109823.png" alt="image-20240114153109823"    width="700"  />
+</p>
 
-3. If the check status of one molecule is "×", it means invalid NAN value which should be deleted.
 
-   <br>
-
-4. Once confirming the signature, you can query its overall value. If you set the right button as `TRUE`, the signature value will be added to the   `custom metadata` subtype of  `Phenotype data` automatically for downstream analysis. In addition, we also support direct download.
+- <font size="4"> See more details in UCSCXenaShiny v2 book site (todo list). </font> 
 

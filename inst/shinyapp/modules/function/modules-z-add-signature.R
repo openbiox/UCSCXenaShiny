@@ -28,6 +28,7 @@ add_signature_UI = function(id, database = "toil"){
 
 			wellPanel(
 				style = "background: #f7f7f7",
+				h4("1. Basic information"),
 				fluidRow(column(6,
 					h5("(1) Signature Name"),
 					textInput(ns("sig_name"), NULL, value="Signature_X"),
@@ -41,7 +42,7 @@ add_signature_UI = function(id, database = "toil"){
 
 			wellPanel(
 				style = "background: #f7f7f7",
-				h5("(3) Signature molecules"),
+				h4("2. Signature molecules"),
 				fluidRow(
 					column(
 						4,
@@ -85,7 +86,7 @@ add_signature_UI = function(id, database = "toil"){
 
 			wellPanel(
 				style = "background: #f7f7f7",
-				fluidRow(column(6,h5("(4) Signature data"))),
+				fluidRow(column(6,h4("3. Signature data"))),
 			    actionBttn(
 			      inputId = ns("query_bt"),
 			      label = "Query data",

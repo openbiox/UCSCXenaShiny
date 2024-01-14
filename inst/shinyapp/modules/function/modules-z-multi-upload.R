@@ -7,14 +7,14 @@ multi_upload_UI = function(id, button_name = "Query data(x-axis)", database = "t
 			"ccle"=ccle_id_option)
 
 	tagList(
-		shinyWidgets::actionBttn(
-			ns("inspect_data_x"), button_name,
-	        style = "gradient",
-	        icon = icon("search"),
-	        color = "primary",
-	        block = TRUE,
-	        size = "sm"
-		),
+		# shinyWidgets::actionBttn(
+		# 	ns("inspect_data_x"), button_name,
+	 #        style = "gradient",
+	 #        icon = icon("search"),
+	 #        color = "primary",
+	 #        block = TRUE,
+	 #        size = "sm"
+		# ),
 
 		# 选择major/minor type
 	    fluidRow(
@@ -66,9 +66,10 @@ multi_upload_UI = function(id, button_name = "Query data(x-axis)", database = "t
 	    ),
 
 		prettyRadioButtons(ns("L3_x_type"),"Choose multi-ids by",
-			choices = c("Selection","All","File"), selected = "Selection", inline=TRUE) %>% 
-				helper(type = "markdown", sie = "m", fade = TRUE,
-						title = "Notes for IDs selction", content = "batch_ids"),
+			choices = c("Selection","All","File"), selected = "Selection", inline=TRUE),
+			 # %>% 
+				# helper(type = "markdown", sie = "m", fade = TRUE,
+				# 		title = "Notes for IDs selction", content = "batch_ids"),
 		tabsetPanel(id = ns("L3_x_type_tab"),
 			type = "hidden",
 			tabPanel("Selection",
@@ -132,7 +133,18 @@ multi_upload_UI = function(id, button_name = "Query data(x-axis)", database = "t
 				)
 			)
 		),
-		verbatimTextOutput(ns("L3s_x_tip")),
+		shinyWidgets::actionBttn(
+			ns("inspect_data_x"), button_name,
+	        style = "gradient",
+	        icon = icon("search"),
+	        color = "primary",
+	        block = TRUE,
+	        size = "sm"
+		),
+	    div(verbatimTextOutput(ns("L3s_x_tip")),
+	      style = "margin-top: 5px; margin-bottom: 0px;"
+	    ),
+		# verbatimTextOutput(ns("L3s_x_tip")),
 		uiOutput(ns("L3s_x_data.ui"))
 	)
 }
