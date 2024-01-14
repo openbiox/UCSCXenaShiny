@@ -83,9 +83,7 @@ mol_origin_UI = function(id, database = "toil"){
 				          label = "(4)CpG sites",
 				          choices = NULL,
 				          multiple = TRUE,
-				          allowNewOption = TRUE
-				          # options = list(create = TRUE, maxOptions = 5)
-				          )
+				          allowNewOption = TRUE)
 							),
 							column(
 								4,
