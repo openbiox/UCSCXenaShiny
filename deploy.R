@@ -15,7 +15,7 @@ if(dir.exists("/xena")){
   xena.zenodoDir = "/xena/datasets"
 } else {
   # zhoulab
-  xena.cacheDir = "/home/shiny/apps/xena/"
+  xena.cacheDir = "/home/shiny/apps/xena/cache"
   xena.zenodoDir = "/home/shiny/apps/xena/datasets/"
 }
 options(xena.cacheDir = xena.cacheDir, xena.zenodoDir = xena.zenodoDir)

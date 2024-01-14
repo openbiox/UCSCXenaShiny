@@ -9,13 +9,13 @@ ui.modules_pcawg_comp_o2m = function(id) {
 					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
 
-					h4("1. Modify datasets[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Set molecular profile origin", 
+					h4(strong("S1.1 Modify datasets"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Modify datasets", 
 					                   content = "data_origin"),
 					mol_origin_UI(ns("mol_origin2cor"), database = "pcawg"),
 
-					h4("2. Choose projects"),
+					h4(strong("S1.2 Choose projects")),
 					pickerInput(
 						ns("choose_cancers"),NULL,
 						choices = pcawg_items,
@@ -25,7 +25,10 @@ ui.modules_pcawg_comp_o2m = function(id) {
 					),
 					br(),
 
-					h4("3. Filter samples[opt]"),
+					h4(strong("S1.3 Filter samples"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Filter samples", 
+					                   content = "choose_samples"),
 					h5("Quick filter:"),
 					pickerInput(
 						ns("filter_by_code"), NULL,
@@ -38,17 +41,17 @@ ui.modules_pcawg_comp_o2m = function(id) {
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),
 
-					h4("4. Upload metadata[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Upload sample info", 
+					h4(strong("S1.4 Upload metadata"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Upload metadata", 
 					                   content = "custom_metadata"),
 					shinyFeedback::useShinyFeedback(),
 					custom_meta_UI(ns("custom_meta2cor")),
 					br(),
 
-					h4("5. Add signature[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Add molecular signature", 
+					h4(strong("S1.5 Add signature"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Add signature", 
 					                   content = "add_signature"),
 					add_signature_UI(ns("add_signature2comp"), database = "pcawg"),
 
@@ -61,21 +64,40 @@ ui.modules_pcawg_comp_o2m = function(id) {
 					style = "height:1100px",
 					h2("S2: Get data", align = "center"),
 					# 调用分组模块UI
+					h4(strong("S2.1 Divide 2 groups by one condition")) %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Divide 2 groups", 
+					                   content = "set_groups"),
 					group_samples_UI(ns("group_samples2comp"),database = "pcawg"),  
 					# 下载待比较数据
+					h4(strong("S2.2 Get data for comparison")) %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Get one data", 
+					                   content = "get_one_data"), 
 					download_feat_UI(ns("download_y_axis"), 
-						button_name="Query variable to compare",database = "pcawg"),
+						button_name="Query",database = "pcawg"),
 				)
 			),
 			# 分析/绘图/下载
 			column(
 				5,
 				wellPanel(
-					h2("S4: Analyze", align = "center"),
+					h2("S3: Analyze & Visualize", align = "center") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Analyze & Visualize", 
+					                   content = "analyze_comp_2"), 
 					style = "height:1100px",
 
+					h4(strong("S3.1 Set analysis parameters")), 
+					selectInput(ns("comp_method"), "Comparison method:",choices = c("t-test", "wilcoxon")),
+					h4(strong("S3.2 Set visualization parameters")), 
+					column(3, colourpicker::colourInput(inputId = ns("group_1_color_2"), "Color (Group 1):", "#E69F00")),
+					column(3, colourpicker::colourInput(inputId = ns("group_2_color_2"), "Color (Group 2):", "#56B4E9")),
+					column(6, radioButtons(inputId = ns("significance"), label = "Significance:", 
+						choices = c("Value", "Symbol"), selected="Symbol",inline = TRUE)),
+
 					shinyWidgets::actionBttn(
-						ns("step3_plot_line"), "Go/Update line plot",
+						ns("step3_plot_line"), "Run",
 				        style = "gradient",
 				        icon = icon("chart-line"),
 				        color = "primary",
@@ -83,21 +105,13 @@ ui.modules_pcawg_comp_o2m = function(id) {
 				        size = "sm"
 					),
 					br(),
-					selectInput(ns("comp_method"), "Comparison method",choices = c("t-test", "wilcoxon")),
-					br(),
-
-					column(3, colourpicker::colourInput(inputId = ns("group_1_color_2"), "Color (group-1)", "#E69F00")),
-					column(3, colourpicker::colourInput(inputId = ns("group_2_color_2"), "Color (group-2)", "#56B4E9")),
-					column(6, radioButtons(inputId = ns("significance"), label = "Significance", 
-						choices = c("Value", "Symbol"), selected="Symbol",inline = TRUE)),
-
 					fluidRow(
 						column(10, offset = 1,
 							   plotOutput({ns("comp_plot_line")}, height = "500px") 
 						)
 					),
 
-				    br(),
+					h4(strong("S3.3 Download results")), 
 				    fluidRow(
 				    	column(3, downloadButton(ns("save_plot_bt"), "Figure")),
 				    	column(3, offset = 0, downloadButton(ns("save_data_raw"), "Raw data(.csv)")),
@@ -216,7 +230,8 @@ server.modules_pcawg_comp_o2m = function(input, output, session) {
 							 samples=reactive(cancer_choose$filter_phe_id),
 							 custom_metadata=reactive(custom_meta_sig()),
 						     opt_pancan = reactive(opt_pancan()),
-						     check_numeric=TRUE
+						     check_numeric=TRUE,
+						     table.ui = FALSE
 							 )
 	# barplot逻辑：先批量计算相关性，再绘图
 	merge_data_line = eventReactive(input$step3_plot_line, {
@@ -253,17 +268,32 @@ server.modules_pcawg_comp_o2m = function(input, output, session) {
 		merge_data_line = merge_data_line()
 		comp_method = switch(isolate(input$comp_method),
 			`t-test` = "parametric", wilcoxon = "nonparametric")
-		valid_cancer_choose = cancer_choose$multi_cancer_ok
-		stat_comp = lapply(sort(valid_cancer_choose), function(tcga_type){
-		  p = ggbetweenstats(
-		    subset(merge_data_line, cancer==tcga_type),
-		  	x = "group",
-		  	y = "value",
-		    type = comp_method)
-		  extract_stats(p)$subtitle_data
-		}) %>% do.call(rbind, .) %>% 
-		dplyr::select(!expression) %>% 
-		dplyr::mutate(cancer = sort(valid_cancer_choose), .before=1)
+		valid_cancer_choose = sort(cancer_choose$multi_cancer_ok)
+		# stat_comp = lapply(sort(valid_cancer_choose), function(tcga_type){
+		#   p = ggbetweenstats(
+		#     subset(merge_data_line, cancer==tcga_type),
+		#   	x = "group",
+		#   	y = "value",
+		#     type = comp_method)
+		#   extract_stats(p)$subtitle_data
+		# }) %>% do.call(rbind, .) %>% 
+		# dplyr::select(!expression) %>% 
+		# dplyr::mutate(cancer = sort(valid_cancer_choose), .before=1)
+		withProgress(message = "Please wait for a while.",{
+			stat_comp = lapply(seq(valid_cancer_choose), function(i){
+			  tcga_type = valid_cancer_choose[i]
+			  p = ggbetweenstats(
+			    subset(merge_data_line, cancer==tcga_type),
+			  	x = "group",
+			  	y = "value",
+			    type = comp_method)
+			  incProgress(1 / length(valid_cancer_choose), detail = paste0("(Finished ",i,"/",length(valid_cancer_choose),")"))
+			  return(extract_stats(p)$subtitle_data)
+			}) %>% do.call(rbind, .) %>% 
+			dplyr::select(!expression) %>% 
+			dplyr::mutate(cancer = valid_cancer_choose, .before=1)
+			stat_comp
+		})
 	})
 
 

@@ -7,24 +7,24 @@ ui.modules_pancan_comp_m2o = function(id) {
 			column(
 				3,
 				wellPanel(
-					style = "height:1000px",
+					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
-					h4("1. Modify datasets[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Set molecular profile origin", 
+					h4(strong("S1.1 Modify datasets"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Modify datasets", 
 					                   content = "data_origin"),
 					mol_origin_UI(ns("mol_origin2comp"), database = "toil"),
 
-					h4("2. Choose one cancer"),
+					h4(strong("S1.2 Choose cancer")),
 					pickerInput(
 						ns("choose_cancer"), NULL,
 						choices = sort(tcga_cancer_choices),
 						selected = "BRCA"),
 					br(),
 
-					h4("3. Filter samples[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Choose samples for personalized need", 
+					h4(strong("S1.3 Filter samples"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Filter samples", 
 					                   content = "choose_samples"),
 					h5("Quick filter:"),
 					pickerInput(
@@ -38,17 +38,17 @@ ui.modules_pancan_comp_m2o = function(id) {
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),
 					
-					h4("4. Upload metadata[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Upload sample info", 
+					h4(strong("S1.4 Upload metadata"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Upload metadata", 
 					                   content = "custom_metadata"),
 					shinyFeedback::useShinyFeedback(),
 					custom_meta_UI(ns("custom_meta2comp")),
 					br(),	
 
-					h4("5. Add signature[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Add molecular signature", 
+					h4(strong("S1.5 Add signature"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Add signature", 
 					                   content = "add_signature"),
 					add_signature_UI(ns("add_signature2comp"), database = "toil"),				
 				)
@@ -57,39 +57,50 @@ ui.modules_pancan_comp_m2o = function(id) {
 			column(
 				4,
 				wellPanel(
-					style = "height:1000px",
+					style = "height:1100px",
 					h2("S2: Get data", align = "center"),
+					h4(strong("S2.1 Divide 2 groups by one condition")) %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Divide 2 groups", 
+					                   content = "set_groups"),
 					# 调用分组模块UI
 					group_samples_UI(ns("group_samples2comp"), database = "toil"),
+					h4(strong("S2.2 Get batch data for comparison")) %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Get batch data", 
+					                   content = "get_batch_data"),  
 					# 批量数据下载
-					multi_upload_UI(ns("multi_upload2comp"),"Query variables to compare", database = "toil"),
+					multi_upload_UI(ns("multi_upload2comp"),"Query", database = "toil"),
 
 				)
 			),
 			column(
 				5,
 				wellPanel(
-					style = "height:1000px",
-					h2("S3: Batch analyze", align = "center"),
-
+					style = "height:1100px",
+					h2("S3: Analyze", align = "center") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Analyze", 
+					                   content = "analyze_comp_3"),  
+					h4(strong("S3.1 Set analysis parameters")), 
+					# br(),br(),
+					# h4("1. Set method"),
+					selectInput(ns("comp_method"), "Correlation method:",choices = c("t.test", "wilcox.test")),
 					shinyWidgets::actionBttn(
-						ns("cal_batch_comp"), "Start calculation",
+						ns("cal_batch_comp"), "Run",
 				        style = "gradient",
-				        icon = icon("search"),
+				        icon = icon("table"),
 				        color = "primary",
 				        block = TRUE,
 				        size = "sm"
 					),
-					br(),br(),
-					h4("1. Set method"),
-					selectInput(ns("comp_method"), NULL,choices = c("t.test", "wilcox.test")),
-
 					br(),br(),
 					fluidRow(
 						column(10, offset = 1,
 							   div(uiOutput(ns("comp_stat_tb.ui")),style = "height:600px"),
 							   )
 					),
+					h4(strong("S3.2 Download results")), 
 					uiOutput(ns("comp_stat_dw.ui"))
 				)
 			)
@@ -197,7 +208,7 @@ server.modules_pancan_comp_m2o = function(input, output, session) {
 			need(try(nrow(group_final())>0), 
 				"Please inspect whether to set groups in S2 step."),
 		)
-		withProgress(message = "Your analyzation has been submitted. Please wait for a while.",{
+		withProgress(message = "Please wait for a while.",{
 			comp_stat = lapply(seq(L3s_x()), function(i){
 				# i = 1
 			    incProgress(1 / length(L3s_x()), detail = paste0("(Finished ",i,"/",length(L3s_x()),")"))

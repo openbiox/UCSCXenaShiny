@@ -8,21 +8,21 @@ ui.modules_pancan_sur_o2o = function(id) {
 				wellPanel(
 					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
-					h4("1. Modify datasets[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Set molecular profile origin", 
+					h4(strong("S1.1 Modify datasets"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Modify datasets", 
 					                   content = "data_origin"),
 					mol_origin_UI(ns("mol_origin2sur"), database = "toil"),
 
-					h4("2. Choose cancer"),
+					h4(strong("S1.2 Choose cancer")),
 					pickerInput(
 						ns("choose_cancer"), NULL,
 						choices = sort(tcga_cancer_choices)),
 				    br(),
 
-					h4("3. Filter samples[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Choose samples for personalized need", 
+					h4(strong("S1.3 Filter samples"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Filter samples", 
 					                   content = "choose_samples"),
 					h5("Quick filter:"),
 					pickerInput(
@@ -36,17 +36,17 @@ ui.modules_pancan_sur_o2o = function(id) {
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),
 
-					h4("4. Upload metadata[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Upload sample info", 
+					h4(strong("S1.4 Upload metadata"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Upload metadata", 
 					                   content = "custom_metadata"),
 					shinyFeedback::useShinyFeedback(),
 					custom_meta_UI(ns("custom_meta2sur")),
 					br(),
 
-					h4("5. Add signature[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Add molecular signature", 
+					h4(strong("S1.5 Add signature"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Add signature", 
 					                   content = "add_signature"),
 					add_signature_UI(ns("add_signature2sur"), database = "toil"),
 
@@ -58,15 +58,20 @@ ui.modules_pancan_sur_o2o = function(id) {
 				wellPanel(
 					style = "height:1100px",
 					h2("S2: Get data", align = "center"),
+					h4(strong("S2.1 Select survival endpoint")), 
 
 				    shinyWidgets::prettyRadioButtons(
-				        inputId = ns("endpoint_type"), label = "Endpoint type:",
+				        inputId = ns("endpoint_type"), label = NULL,
 				        choiceValues = c("OS", "DSS", "DFI", "PFI"),
 				        choiceNames = c("OS (Overall Survial)", "DSS (Disease-Specific Survival)", 
 				        				"DFI (Disease-Free Interval)", "PFI (Progression-Free Interval)"),
 				        selected = "OS"
 				    ),
 				    br(),br(),
+					h4(strong("S2.2 Divide 2 groups by one condition")) %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Divide 2 groups", 
+					                   content = "set_groups"),
 				    group_samples_UI(ns("group_samples2sur"), database = "toil")  
 				)
 			),
@@ -75,39 +80,39 @@ ui.modules_pancan_sur_o2o = function(id) {
 				5,
 				wellPanel(
 					style = "height:1100px",
-					h2("S3: Analyze", align = "center"),
-				    # 绘图按钮
+					h2("S3: Analyze & Visualize", align = "center") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Analyze & Visualize", 
+					                   content = "analyze_sur_1"),  
+					h4(strong("S3.1 Set analysis parameters")), 
+					selectInput(ns("sur_method"), "Survival method:",
+						choices = c("Log-rank test", "Univariate Cox regression")),
+
+				    materialSwitch(ns("use_origin"), 
+				    	"Whether use initial data before grouping?"),
+				  #   	 %>% 
+						# helper(type = "markdown", size = "m", fade = TRUE, 
+					 #                   title = "About the initial phenotype", 
+					 #                   content = "sur_initial_group"),
+					h4(strong("S3.2 Set visualization parameters")), 
+			      	uiOutput(ns("one_params.ui")),
+
 					shinyWidgets::actionBttn(
-						ns("sur_analysis_bt_single"), "Go/Update",
+						ns("sur_analysis_bt_single"), "Run",
 				        style = "gradient",
 				        icon = icon("chart-line"),
 				        color = "primary",
 				        block = TRUE,
 				        size = "sm"
 					),
-					selectInput(ns("sur_method"), "1. Survival method",
-						choices = c("Log-rank test", "Univariate Cox regression")),
-
-				    materialSwitch(ns("use_origin"), 
-				    	"2. Whether use initial data before grouping") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "About the initial phenotype", 
-					                   content = "sur_initial_group"),
-
-
 					br(),
-
-			      	uiOutput(ns("one_params.ui")),
-
 					fluidRow(
 						column(10, offset = 1,
 							   plotOutput({ns("sur_plot_one")}, height = "500px") 
 						)
 					),
 
-
-
-				    br(),
+					h4(strong("S3.3 Download results")), 
 				    fluidRow(
 				    	column(3, downloadButton(ns("save_plot_bt"), "Figure")),
 				    	column(3, offset = 0, downloadButton(ns("save_data_raw"), "Raw data(.csv)")),
@@ -249,8 +254,8 @@ server.modules_pancan_sur_o2o = function(input, output, session) {
 	output$one_params.ui = renderUI(
 		if(input$sur_method=="Log-rank test"){
 		  	fluidRow(
-		  		column(4,colourpicker::colourInput(ns("one_log_color1"), "Curve color1", "#E7B800")),
-		  		column(4,colourpicker::colourInput(ns("one_log_color2"), "Curve color2", "#2E9FDF")),
+		  		column(4,colourpicker::colourInput(ns("one_log_color1"), "Color (Group 1):", "#E7B800")),
+		  		column(4,colourpicker::colourInput(ns("one_log_color2"), "Color (Group 2):", "#2E9FDF")),
 		  	)
 		} else if(input$sur_method=="Univariate Cox regression") {
 		}
@@ -268,7 +273,7 @@ server.modules_pancan_sur_o2o = function(input, output, session) {
 					res.cut <- surv_cutpoint(sur_res_one$sur_dat, time = "time", event = "status", variables = "origin")
 					sur_res_one$sur_dat$Group = surv_categorize(res.cut)$origin
 				} else {
-					sur_res_one$sur_dat$Group = sur_res_one$sur_dat$group
+					sur_res_one$sur_dat$Group = sur_res_one$sur_dat$group # 若不是，则仍使用提供的分组结果
 				}
 			}
 			# print(head(sur_res_one$sur_dat))
@@ -283,8 +288,11 @@ server.modules_pancan_sur_o2o = function(input, output, session) {
 			if(!input$use_origin){
 				sur_res_one$sur_dat$Group = sur_res_one$sur_dat$group
 			} else {
-				sur_res_one$sur_dat$Group = sur_res_one$sur_dat$origin
-
+				if(class(group_sur_final()$origin) != "character"){
+					sur_res_one$sur_dat$Group = sur_res_one$sur_dat$origin
+				} else {
+					sur_res_one$sur_dat$Group = sur_res_one$sur_dat$group
+				}
 			}
 			fit <- coxph(Surv(time, status) ~ Group, data = sur_res_one$sur_dat)
 			# sur_res_one$pval = summary(fit)$coefficients[1,5]

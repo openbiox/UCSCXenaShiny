@@ -59,7 +59,7 @@ mol_origin_UI = function(id, database = "toil"){
 						fluidRow(
 							column(
 								6,
-								selectInput(ns("toil_L2_3_methy_1"),"(1)Type",
+								selectInput(ns("toil_L2_3_methy_1"),"(1)Platform",
 									choices = c("450K","27K"), selected = TRUE)
 							),
 							column(
@@ -77,19 +77,21 @@ mol_origin_UI = function(id, database = "toil"){
 						),
 						fluidRow(
 							column(
-								4,
-								selectInput(ns("toil_L2_3_methy_2"),"(3)Aggregation",
-									choices = c("NA", "mean", "Q0", "Q25", "Q50", "Q75", "Q100"), 
-									selected = "mean")
-							),
-							column(
 								8,
 				        virtualSelectInput(
 				          inputId = ns("toil_L2_3_methy_3_cpg"),
 				          label = "(4)CpG sites",
 				          choices = NULL,
 				          multiple = TRUE,
-				          options = list(create = TRUE, maxOptions = 5))
+				          allowNewOption = TRUE
+				          # options = list(create = TRUE, maxOptions = 5)
+				          )
+							),
+							column(
+								4,
+								selectInput(ns("toil_L2_3_methy_2"),"(5)Aggregation",
+									choices = c("NA", "mean", "Q0", "Q25", "Q50", "Q75", "Q100"), 
+									selected = "mean")
 							)
 						),
 						verbatimTextOutput(ns("cpgs_sle_text"))
@@ -188,7 +190,8 @@ mol_origin_Server = function(input, output, session, database = "toil"){
     updateVirtualSelect(
       "toil_L2_3_methy_3_cpg",
       choices = cpg_ids,
-      selected = NULL
+      selected = cpg_ids
+      # selected = cpg_ids
     )
 	})
 
@@ -197,7 +200,7 @@ mol_origin_Server = function(input, output, session, database = "toil"){
 			updateNumericInput(
 				session,
 				"chr_min",
-				label = paste("Min coord ","(",unique(candi_cpg()$chrom),")"),
+				label = paste("(3)Min coord ","(",unique(candi_cpg()$chrom),")"),
 				value = min(candi_cpg()$chromStart)
 			)
 			updateNumericInput(

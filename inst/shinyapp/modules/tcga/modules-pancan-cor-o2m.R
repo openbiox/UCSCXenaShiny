@@ -9,13 +9,13 @@ ui.modules_pancan_cor_o2m = function(id) {
 					style = "height:1100px",
 					h2("S1: Preset", align = "center"),
 
-					h4("1. Modify datasets[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Set molecular profile origin", 
+					h4(strong("S1.1 Modify datasets"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Modify datasets", 
 					                   content = "data_origin"),
 					mol_origin_UI(ns("mol_origin2cor"), database = "toil"),
 
-					h4("2. Choose cancers"),
+					h4(strong("S1.2 Choose cancers")),
 					pickerInput(
 						ns("choose_cancers"), NULL,
 						choices = sort(tcga_cancer_choices),
@@ -26,9 +26,9 @@ ui.modules_pancan_cor_o2m = function(id) {
 
 				    br(),
 
-					h4("3. Filter samples[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Choose samples for personalized need", 
+					h4(strong("S1.3 Filter samples"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Filter samples", 
 					                   content = "choose_samples"),
 					h5("Quick filter:"),
 					pickerInput(
@@ -42,17 +42,17 @@ ui.modules_pancan_cor_o2m = function(id) {
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),
 
-					h4("4. Upload metadata[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Upload sample info", 
+					h4(strong("S1.4 Upload metadata"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Upload metadata", 
 					                   content = "custom_metadata"),
 					shinyFeedback::useShinyFeedback(),
 					custom_meta_UI(ns("custom_meta2cor")),
 					br(),
 
-					h4("5. Add signature[opt]") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "Add molecular signature", 
+					h4(strong("S1.5 Add signature"),"[opt]") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Add signature", 
 					                   content = "add_signature"),
 					add_signature_UI(ns("add_signature2cor"), database = "toil"),
 				)
@@ -62,22 +62,39 @@ ui.modules_pancan_cor_o2m = function(id) {
 				4,
 				wellPanel(
 					style = "height:1100px",
-					h2("S2: Select item for X", align = "center"),
+					h2("S2: Get data", align = "center"),
 					# 调用下载模块UI
-					download_feat_UI(ns("download_x_axis"), button_name="Query data(x-axis)", database = "toil"),
-		            br(),
-					download_feat_UI(ns("download_y_axis"), button_name="Query data(y-axis)", database = "toil"), 
+					h4(strong("S2.1 Get data for X-axis")) %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Get one data", 
+					                   content = "get_one_data"), 
+					download_feat_UI(ns("download_x_axis"), button_name="Query", database = "toil"),
+		            # br(),
+		            h4(strong("S2.2 Get data for Y-axis")) %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Get one data", 
+					                   content = "get_one_data"), 
+					download_feat_UI(ns("download_y_axis"), button_name="Query", database = "toil"), 
 				)
 			),
 			# 分析/绘图/下载
 			column(
 				5,
 				wellPanel(
-					h2("S4: Analyze", align = "center"),
+					h2("S3: Analyze & Visualize", align = "center") %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Analyze & Visualize", 
+					                   content = "analyze_cor_2"),  
 					style = "height:1100px",
-					
+					h4(strong("S3.1 Set analysis parameters")), 
+					# br(),
+					selectInput(ns("cor_method"), "Correlation method:",choices = c("Pearson", "Spearman")),
+					h4(strong("S3.2 Set visualization parameters")), 
+					column(3, colourpicker::colourInput(inputId = ns("positive_color"), "Positive color:", "#d53e4f")),
+					column(3, colourpicker::colourInput(inputId = ns("negative_color"), "Negative color:", "#3288bd")),
+			      	br(),br(),#br(),br(),
 					shinyWidgets::actionBttn(
-						ns("step3_plot_bar"), "Go/Update barplot",
+						ns("step3_plot_bar"), "Run",
 				        style = "gradient",
 				        icon = icon("chart-line"),
 				        color = "primary",
@@ -85,18 +102,12 @@ ui.modules_pancan_cor_o2m = function(id) {
 				        size = "sm"
 					),
 					br(),
-					selectInput(ns("cor_method"), "Correlation method",choices = c("Pearson", "Spearman")),
-
-					column(3, colourpicker::colourInput(inputId = ns("positive_color"), "Positive color", "#d53e4f")),
-					column(3, colourpicker::colourInput(inputId = ns("negative_color"), "Negative color", "#3288bd")),
-			      	br(),br(),br(),br(),
-
 					fluidRow(
 						column(10, offset = 1,
-							   plotOutput({ns("cor_plot_bar")}, height = "500px") 
+							   plotOutput({ns("cor_plot_bar")}, height = "480px") 
 						)
 					),
-
+					h4(strong("S3.3 Download results")), 
 				    br(),
 				    fluidRow(
 				    	column(3, downloadButton(ns("save_plot_bt"), "Figure")),
@@ -241,16 +252,22 @@ server.modules_pancan_cor_o2m = function(input, output, session) {
 		cor_method = switch(isolate(input$cor_method),
 			Pearson = "parametric", Spearman = "nonparametric")
 		valid_cancer_choose = sort(unique(merge_data_bar$cancer))
-		stat_cor = lapply(valid_cancer_choose, function(tcga_type){
-		  p = ggscatterstats(
-		    subset(merge_data_bar, cancer==tcga_type),
-		    x = "x_value",
-		    y = "y_value",
-		    type = cor_method)
-		  extract_stats(p)$subtitle_data
-		}) %>% do.call(rbind, .) %>% 
-		dplyr::select(!expression) %>% 
-		dplyr::mutate(cancer = valid_cancer_choose, .before=1)
+
+		withProgress(message = "Please wait for a while.",{
+			stat_cor = lapply(seq(valid_cancer_choose), function(i){
+			  tcga_type = valid_cancer_choose[i]
+			  p = ggscatterstats(
+			    subset(merge_data_bar, cancer==tcga_type),
+			    x = "x_value",
+			    y = "y_value",
+			    type = cor_method)
+			  incProgress(1 / length(valid_cancer_choose), detail = paste0("(Finished ",i,"/",length(valid_cancer_choose),")"))
+			  return(extract_stats(p)$subtitle_data)
+			}) %>% do.call(rbind, .) %>% 
+			dplyr::select(!expression) %>% 
+			dplyr::mutate(cancer = valid_cancer_choose, .before=1)
+			stat_cor
+		})
 	})
 
 	cor_plot_bar = eventReactive(input$step3_plot_bar, {
