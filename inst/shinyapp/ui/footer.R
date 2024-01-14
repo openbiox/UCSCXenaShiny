@@ -1,6 +1,6 @@
 ui.footer <- function() {
   tags$footer(tags$hr(),
-    HTML("Copyright &copy; 2019 - "),
+    HTML("Copyright &copy; 2019 - 2024 @"),
     tags$a(href = "https://github.com/openbiox", "Openbiox"),
     tags$br(),
     HTML("A community-driven bioinformatics innovation collaboration group in China |"),
