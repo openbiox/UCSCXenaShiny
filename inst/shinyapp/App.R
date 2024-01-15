@@ -439,7 +439,8 @@ server <- function(input, output, session) {
   # source(server_file("global.R"), local = TRUE)
 
   source(server_file("general-analysis.R"), local = TRUE)
-  observe_helpers(help_dir ="helper")
+  # observe_helpers(help_dir ="helper")
+  observe_helpers(help_dir = system.file("shinyapp", "helper", package = "UCSCXenaShiny"))
 
 }
 
