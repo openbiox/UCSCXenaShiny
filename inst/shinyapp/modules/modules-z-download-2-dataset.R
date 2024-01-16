@@ -56,8 +56,16 @@ ui.modules_download_dataset = function(id){
 					tabsetPanel(
 						id = ns("upload_type"),
 						tabPanel("Selection",
-							selectInput(ns("multi_ids"), NULL, 
-											choices=NULL, selected=NULL, multiple=T)
+							# selectInput(ns("multi_ids"), NULL, 
+							# 				choices=NULL, selected=NULL, multiple=T)
+							virtualSelectInput(
+								inputId = ns("multi_ids"),
+					            label = "Identifier:",
+					            choices = NULL,
+					            multiple = TRUE,
+					            search = TRUE,
+					            allowNewOption = FALSE,
+					            dropboxWidth = "200%")
 						),
 						tabPanel("File",
 							fluidRow(
@@ -126,7 +134,8 @@ server.modules_download_dataset = function(input, output, session){
 
 	observe({
 		format_types = sort(unique(XenaData$Type[XenaData$XenaHostNames==input$one_datahub]))
-	    updateVirtualSelect(
+	    updateSelectInput(
+	      session,
 	      "format_type",
 	      choices = format_types,
 	      selected = "genomicMatrix"
@@ -137,7 +146,8 @@ server.modules_download_dataset = function(input, output, session){
 	    profile_types = sort(unique(XenaData$DataSubtype[
 	    							XenaData$XenaHostNames==input$one_datahub & 
 	    							XenaData$Type==input$format_type]))
-	    updateVirtualSelect(
+	    updateSelectInput(
+	      session,
 	      "profile_type",
 	      choices = profile_types,
 	      selected = profile_types[1]

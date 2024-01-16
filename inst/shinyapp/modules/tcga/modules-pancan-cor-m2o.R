@@ -16,7 +16,10 @@ ui.modules_pancan_cor_m2o = function(id) {
 					                   content = "data_origin"),
 					mol_origin_UI(ns("mol_origin2cor"), database = "toil"),
 
-					h4(strong("S1.2 Choose cancer")),
+					h4(strong("S1.2 Choose cancer")) %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Cancer types", 
+					                   content = "tcga_types"),
 					pickerInput(
 						ns("choose_cancer"), NULL,
 						choices = sort(tcga_cancer_choices)),

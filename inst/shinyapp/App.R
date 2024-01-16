@@ -97,7 +97,8 @@ pacman::p_load(
   ggcorrplot,
   ggstatsplot,
   ggradar,
-  zip
+  zip,
+  msigdbr
 )
 
 options(shiny.maxRequestSize=1024*1024^2)
@@ -177,6 +178,26 @@ PW_meta <- PW_meta %>%
   }), .before = 5) %>% 
   dplyr::mutate(display = paste0(Name, " (", size, ")"), .before = 6)
 
+msigdbr_types <- data.frame(
+  gs_cat = c("H","C1", "C2", "C2", "C2", "C2", "C2", "C2", "C2", 
+             "C3", "C3", "C3", "C3", "C4", "C4", "C5", "C5", 
+             "C5", "C5", "C6", "C7", "C7", "C8"),
+  gs_subcat = c("","", "CGP", "CP", "CP:BIOCARTA", "CP:KEGG", 
+                "CP:PID", "CP:REACTOME", "CP:WIKIPATHWAYS", 
+                "MIR:MIRDB", "MIR:MIR_Legacy", "TFT:GTRD", 
+                "TFT:TFT_Legacy", "CGN", "CM", "GO:BP", 
+                "GO:CC", "GO:MF", "HPO", "", "IMMUNESIGDB", 
+                "VAX", "")
+)
+msigdbr_types = msigdbr_types %>% 
+  dplyr::mutate(gs_subcat2 = ifelse(gs_subcat=="",gs_cat,gs_subcat)) %>% 
+  dplyr::mutate(gs_subcat_label = paste0(gs_cat, "--",gs_subcat2))
+
+#   gs_cat   gs_subcat  gs_subcat2 gs_subcat_label
+# 1      H                       H            H--H
+# 2     C1                      C1          C1--C1
+# 3     C2         CGP         CGP         C2--CGP
+# 4     C2          CP          CP          C2--CP
 
 
 
@@ -439,7 +460,10 @@ server <- function(input, output, session) {
   # source(server_file("global.R"), local = TRUE)
 
   source(server_file("general-analysis.R"), local = TRUE)
-  observe_helpers(help_dir ="helper")
+  # observe_helpers(help_dir ="helper")
+  observe_helpers(help_dir = system.file("shinyapp", "helper", package = "UCSCXenaShiny"))
+
+
 
 }
 
