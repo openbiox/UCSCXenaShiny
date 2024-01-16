@@ -463,8 +463,6 @@ server <- function(input, output, session) {
   # observe_helpers(help_dir ="helper")
   observe_helpers(help_dir = system.file("shinyapp", "helper", package = "UCSCXenaShiny"))
 
-
-
 }
 
 # Run web app -------------------------------------------------------------
