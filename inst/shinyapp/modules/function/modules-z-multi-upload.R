@@ -1,6 +1,5 @@
 multi_upload_UI = function(id, button_name = "Query data(x-axis)", database = "toil"){
 	ns = NS(id)
-
 	id_option = switch(database, 
 			"toil"=tcga_id_option,
 			"pcawg"=pcawg_id_option,
@@ -124,7 +123,29 @@ multi_upload_UI = function(id, button_name = "Query data(x-axis)", database = "t
 				),	
 			),
 			tabPanel("All",
-				uiOutput(ns("tab_All"))
+				# uiOutput(ns("tab_All"))
+				fluidRow(
+					uiOutput(ns("msigdb_note.ui")), 
+					column(
+						4,
+			            virtualSelectInput(
+			              inputId = ns("msigdbr_cat"),
+			              label = NULL,
+			              choices = msigdbr_types$gs_subcat_label, 
+			              selected =  msigdbr_types$gs_subcat_label[1],
+			              dropboxWidth = "200%")
+					),
+					column(
+						8,
+			            virtualSelectInput(
+			              inputId = ns("msigdbr_pw"),
+			              label = NULL,
+			              choices = NULL, 
+			              selected =  NULL,
+			              search = TRUE,
+			              dropboxWidth = "200%")
+					)
+				)
 			),
 			tabPanel("File",
 				fluidRow(
@@ -231,11 +252,43 @@ multi_upload_Server = function(input, output, session, database = "toil", #id_op
 	  )
 	})
 
-	output$tab_All = renderUI({
-		if(L2_x() %in% id_category[["Molecular profile"]]){
-			selectInput(ns("tab_All_PW"),"ids belong to Pathway: ",
-				choices = PW_meta$Name, selected = "ANGIOGENESIS")
+	msigdbr_query = reactive({
+		category = msigdbr_types$gs_cat[msigdbr_types$gs_subcat_label==input$msigdbr_cat]
+		subcategory = msigdbr_types$gs_subcat[msigdbr_types$gs_subcat_label==input$msigdbr_cat]
+		if(length(category)!=0){
+			msigdbr_query = msigdbr(species = "Homo sapiens", 
+			                      category = category, 
+			                      subcategory = subcategory)
+			msigdbr_query
 		}
+	})
+
+	observe({
+		if(!is.null(msigdbr_query())){
+			msigdbr_term_stat = as.data.frame(table(msigdbr_query()$gs_name)) %>% 
+			  dplyr::rename(term=Var1, size=Freq) %>% 
+			  dplyr::arrange(term) %>% 
+			  dplyr::mutate(term_size = paste0(term," (", size,")"))
+			updateVirtualSelect(
+			  "msigdbr_pw",
+			  choices = msigdbr_term_stat$term_size,
+			  selected = msigdbr_term_stat$term_size[1]
+			)
+		}
+	})
+
+
+	output$msigdb_note.ui = renderUI({
+		# pw_sle = ifelse(is.null(input$msigdbr_pw),"HALLMARK_ADIPOGENESIS",input$msigdbr_pw)
+		pw_sle = str_split(input$msigdbr_pw," ")[[1]][1]
+		term_link = sprintf("https://www.gsea-msigdb.org/gsea/msigdb/human/%s.html",
+                    		ifelse(is.null(pw_sle),"HALLMARK_ADIPOGENESIS",pw_sle))
+		msigdb_link = "https://www.gsea-msigdb.org/gsea/msigdb/human/collection_details.jsp"
+
+		h5(strong(HTML('&nbsp;'),HTML('&nbsp;'),HTML('&nbsp;'),"Note: For Molecular profile, select ids in ",
+			  a("one pathway", href = term_link)," from ",
+			  a("MSigDB database", href = msigdb_link), ":"))
+
 	})
 
 	output$dw_L3_x = downloadHandler(
@@ -281,9 +334,12 @@ multi_upload_Server = function(input, output, session, database = "toil", #id_op
 				} 
 			}
 		} else if (input$L3_x_type=="All"){
-			pw_sle = ifelse(is.null(input$tab_All_PW),"ANGIOGENESIS",input$tab_All_PW)
-			pw_genes = strsplit(PW_meta$Gene[PW_meta$Name==pw_sle],"/")[[1]]
-			L3s_x = id_option[[input$data_L1]][[L2_x()]]$all
+			# pw_sle = ifelse(is.null(input$msigdbr_pw),"HALLMARK_ADIPOGENESIS",input$msigdbr_pw)
+			pw_genes = msigdbr_query() %>% 
+			  dplyr::filter(gs_name %in% str_split(input$msigdbr_pw," ")[[1]][1]) %>% 
+			  dplyr::pull(gene_symbol)
+			# pw_genes = strsplit(PW_meta$Gene[PW_meta$Name==pw_sle],"/")[[1]]
+			L3s_x = id_option[[input$data_L1]][[L2_x()]]$all #!!! 2w候选基因
 			if(L2_x() %in% 
 				c("mRNA Expression","DNA Methylation","Mutation status","Copy Number Variation")){
 				L3s_x = L3s_x[L3s_x %in% pw_genes]

@@ -14,7 +14,10 @@ ui.modules_pcawg_comp_m2o = function(id) {
 					                   content = "data_origin"),
 					mol_origin_UI(ns("mol_origin2comp"), database = "pcawg"),
 
-					h4(strong("S1.2 Choose project")),
+					h4(strong("S1.2 Choose project")) %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "PCAWG projects", 
+					                   content = "pcawg_projects"),
 					pickerInput(
 						ns("choose_cancer"),NULL,
 						choices = pcawg_items),
