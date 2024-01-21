@@ -1,6 +1,6 @@
 ---
-title: "Exploratory Analysis of UCSCXenashiny v2.0 Molecule Profiling"
-subtitle: "Summary Report for `r params$id_type` `r params$id_name`"
+title: "Exploratory Molecule Analysis of UCSCXenashiny v2.0"
+subtitle: "TCGA Pan-Cancer Report for `r params$id_type` `r params$id_name`"
 author: 
   - name: "Shensuo Li, UCSCXenashiny developer team"
     email: lishensuo@163.com
@@ -73,7 +73,7 @@ link_set = switch(id_type,
 
 
 # Introduction
-This report is generated using the results obtained from the `UCSCXenaShiny::mol_quick_analysis` function. The analysis encompasses 5 sections, each executed for `r id_type` ``r id_name`` sourced from the [dataset](`r link_set`) in UCSC Xena TOIL hub. [All TCGA projects](https://gdc.cancer.gov/resources-tcga-users/tcga-code-tables/tcga-study-abbreviations) are analyzed individually and some cancer projects may be missing due to few samples with valid data for some analysis. The notation for statistical significance analysis is as follows: * indicates a P-value less than 0.05, ** indicates a P-value less than 0.01, and *** indicates a P-value less than 0.001. 
+This report is generated using the results obtained from the `UCSCXenaShiny::mol_quick_analysis` function. The analysis encompasses 5 sections, each executed for `r id_type` ``r id_name`` sourced from the [dataset](`r link_set`) in UCSC Xena TOIL(TCGA) hub. [All TCGA projects](https://gdc.cancer.gov/resources-tcga-users/tcga-code-tables/tcga-study-abbreviations) are analyzed individually and some cancer projects may be missing due to few samples with valid data for some analysis. The notation for statistical significance analysis is as follows: * indicates a P-value less than 0.05, ** indicates a P-value less than 0.01, and *** indicates a P-value less than 0.001. 
 
 Please note that our [Shiny app](https://shiny.hiplot.cn/ucsc-xena-shiny/) offers more comprehensive exploration possibilities, including alternative datasets for the same molecule, alternative analysis methods, molecule-molecule analysis, personalized sample filtering and grouping, result visualization, and download options.
 

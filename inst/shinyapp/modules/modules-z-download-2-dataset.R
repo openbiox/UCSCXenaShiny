@@ -56,16 +56,15 @@ ui.modules_download_dataset = function(id){
 					tabsetPanel(
 						id = ns("upload_type"),
 						tabPanel("Selection",
-							# selectInput(ns("multi_ids"), NULL, 
-							# 				choices=NULL, selected=NULL, multiple=T)
-							virtualSelectInput(
-								inputId = ns("multi_ids"),
-					            label = "Identifier:",
-					            choices = NULL,
-					            multiple = TRUE,
-					            search = TRUE,
-					            allowNewOption = FALSE,
-					            dropboxWidth = "200%")
+							uiOutput(ns("multi_ids.ui")) %>% withSpinner(),
+							# virtualSelectInput(
+							# 	inputId = ns("multi_ids"),
+					  #           label = "Identifier:",
+					  #           choices = NULL,
+					  #           multiple = TRUE,
+					  #           search = TRUE,
+					  #           allowNewOption = FALSE,
+					  #           dropboxWidth = "200%")
 						),
 						tabPanel("File",
 							fluidRow(
@@ -195,6 +194,21 @@ server.modules_download_dataset = function(input, output, session){
 			candi_ids <- UCSCXenaTools:::use_cache(url, op = "readr::read_tsv(url,\n            col_types = readr::cols()\n        )[[2]]")
 		}
 		candi_ids
+	})
+
+
+	output$multi_ids.ui = renderUI({
+		input$load_id
+		Sys.sleep(1.5)
+		virtualSelectInput(
+			inputId = ns("multi_ids"),
+            label = "Identifier:",
+            choices = NULL,
+            multiple = TRUE,
+            search = TRUE,
+            allowNewOption = FALSE,
+            dropboxWidth = "200%")
+
 	})
 
 

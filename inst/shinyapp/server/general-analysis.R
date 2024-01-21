@@ -143,7 +143,7 @@ output$ga_dataset_table <- DT::renderDataTable(
 
 
 # Individual analysis pages -------------------------------------------------------------
-observeEvent(req(input$navbar=="General Analysis"),{
+observeEvent(req(input$navbar=="General Dataset Analysis"),{
   callModule(
     server.modules_ga_scatter_correlation, "module_ga_scatter_correlation",
     selected_database_rm_phenotype, selected_database_add_url_and_phenotype,

@@ -3,47 +3,72 @@ ui.home_search_box <- function(id) {
 
   # ref: https://shiny.rstudio.com/articles/selectize.html
   # https://stackoverflow.com/questions/51343552/dynamic-selectizeinput-in-shiny
-  fluidRow(
-    column(
-      3,
-      selectInput(
-        inputId = ns("Pancan_search_type"),
-        label = NULL,
-        choices = c("mRNA", "transcript", "protein", "mutation",
-                    "cnv",  "methylation", "miRNA")
-      )
-
-    ),
-    column(
-      5,
-      virtualSelectInput(
-        inputId = ns("Pancan_search"),
-        label = NULL,
-        choices = NULL,
-        width = "100%",
-        search = TRUE,
-        allowNewOption = TRUE,
-        dropboxWidth = "200%"
+  tagList(
+    fluidRow(
+      column(10, offset = 1,
+      #   5,
+        selectInput(
+          inputId = ns("Pancan_search_type"),
+          # label = NULL,
+          label = "1. Select one molecule:",
+          choices = c("mRNA", "transcript", "protein", "mutation",
+                      "cnv",  "methylation", "miRNA"),
+          selected = "mRNA"
+        )
       )
     ),
-    column(
-      4,
-      actionBttn(
-        inputId = ns("search"),
-        label = "Go!",
-        color = "primary",
-        style = "bordered",
-        size = "sm"
+    fluidRow(
+      column(10, offset = 1,
+        virtualSelectInput(
+          inputId = ns("Pancan_search"),
+          label = NULL,
+          choices = NULL,
+          width = "100%",
+          search = TRUE,
+          allowNewOption = TRUE,
+          dropboxWidth = "200%"
+        )
+      )
+    ),
+    fluidRow(
+      column(11, offset = 1,
+        h5(strong("2.Run two explorations:"))
+      )
+    ),
+    fluidRow(
+      column(
+        5, offset = 1,
+        # align="center",
+        actionBttn(
+          inputId = ns("search_1"),
+          label = "Tumor VS Normal",
+          color = "primary",
+          style = "bordered",
+          size = "sm"
+        )
+      ),
+      column(
+        5,
+        # align="center",
+        actionBttn(
+          inputId = ns("search_2"),
+          label = "Generate Report",
+          color = "primary",
+          style = "bordered",
+          size = "sm"
+        )
       )
     )
   )
+
 }
 
 server.home_search_box <- function(input, output, session) {
   ns <- session$ns
 
   observe({
-    mol_choices = switch(input$Pancan_search_type,
+
+    mol_choices = switch(ifelse(is.null(input$Pancan_search_type),"mRNA",input$Pancan_search_type),
       "mRNA" = pancan_identifiers$gene,
       "transcript" = tcga_id_option$`Molecular profile`$`Transcript Expression`$all,
       "protein" = tcga_id_option$`Molecular profile`$`Protein Expression`$all,
@@ -52,7 +77,7 @@ server.home_search_box <- function(input, output, session) {
       "methylation" = tcga_id_option$`Molecular profile`$`DNA Methylation`$all,
       "miRNA" = tcga_id_option$`Molecular profile`$`miRNA Expression`$all
     )
-    mol_selected = switch(input$Pancan_search_type,
+    mol_selected = switch(ifelse(is.null(input$Pancan_search_type),"mRNA",input$Pancan_search_type),
       "mRNA" = "TP53",
       "transcript" = tcga_id_option$`Molecular profile`$`Transcript Expression`$default,
       "protein" = tcga_id_option$`Molecular profile`$`Protein Expression`$default,
@@ -68,7 +93,7 @@ server.home_search_box <- function(input, output, session) {
     )
   })
 
-  observeEvent(input$search, {
+  observeEvent(input$search_1, {
     message(input$Pancan_search, " is queried by user from home search box.")
     if (nchar(input$Pancan_search) >= 1) {
       showModal(
@@ -96,29 +121,7 @@ server.home_search_box <- function(input, output, session) {
               h5("3. If a void plot shows, please check your input"),
               h5("4. You can get more features for this plot in page 'Quick PanCan Analysis'"),
               h5("")
-            ),
-            br(),br(),
-
-            fluidRow(
-              column(
-                3, offset =1,
-                actionButton(ns("generate_report"), "Run more analysis!")
-              ),
-              column(
-                8,
-                uiOutput(ns("button.ui")),
-              )
-            ),
-            verbatimTextOutput(ns("tip1")),
-            column(
-              12,
-              h4("NOTEs:"),
-              h5("1. More analysis such as molecule related (1) chinical phenotypes, (2) survival analysis, (3) tumor index,",
-                 "(4) immune infiltration, (5) pathway activity are supported through the button"),
-              h5("2. After clicking the analyze button, wait for about a minute until two download buttons appear on the right, indicating completion."),
-              h5("3. You can render an analysis report in html format or download the original result in zip fromat.")
-
-            ),
+            )
           )
         )
       )
@@ -137,35 +140,115 @@ server.home_search_box <- function(input, output, session) {
   })
 
 
+  observeEvent(input$search_2, {
+    message("Generate an analysis for report for ",input$Pancan_search)
+    if (nchar(input$Pancan_search) >= 1) {
+      showModal(
+        modalDialog(
+          title = paste("Generate an analysis report for ",
+                        input$Pancan_search_type," ",input$Pancan_search),
+          size = "l",
+          fluidPage(
+            fluidRow(
+              column(
+                4,
+                wellPanel(
+                  style = "height:180px",
+                  h4("1. Run the analysis:"),
+                  br(),
+                  column(
+                    12, align="center", 
+                    actionBttn(
+                      inputId = ns("report_1"),
+                      label = "Go!",
+                      color = "primary",
+                      style = "pill",
+                      size = "md",
+                      icon = shiny::icon("gear")
+                    )
+                  ),
+                  br(),
+                  fluidRow(textOutput(ns("tip1"))),
+                )
+              ),
+              column(
+                4,
+                wellPanel(
+                  style = "height:180px",
+                  h4("2. Knit the report:"),
+                  br(),
+                  column(
+                    12, align="center", 
+                    downloadBttn(
+                      outputId = ns("report_2"),
+                      label = "Download",
+                      color = "primary",
+                      style = "pill",
+                      size = "md"
+                    ),
+                  ),
+                  br(),
+                  fluidRow(textOutput(ns("tip2"))),
+                )
+              ),
+              column(
+                4,
+                wellPanel(
+                  style = "height:180px",
+                  h4("3. Obtain analyzed result:"),
+                  br(),
+                  column(
+                    12, align="center", 
+                    downloadBttn(
+                      outputId = ns("report_3"),
+                      label = "Download",
+                      color = "primary",
+                      style = "pill",
+                      size = "md"
+                    )
+                  )
+                )
+              ),              
+            ),
+            fluidRow(
+              br(),
+              h3("NOTEs:"),
+              h4("1. It will take about ",strong("one minute",style="color:red")," for the general analysis which includes the relationships between queried molecule and ",
+                "(1) chinical phenotypes, (2) survival influence, (3) tumor index (4) immune infiltration, (5) pathway activity.",
+                "You can see the ",a("example report", href = "https://lishensuo.github.io/book_test/UCSCXenaShiny_example_report.html")," while waiting."),
+              h4("2. It will take about ", strong("10 seconds",style="color:red"), " for the generation of organized report in html format."),
+              h4("3. Final, the analyzed result under the report can be directly downloaded in zip format.")
+            )
+          )
+        )
+      )
+    }
+
+  })
+
+
+
   w <- waiter::Waiter$new(id = ns("tip1"), html = waiter::spin_hexdots(), color = "grey95")
-  observeEvent(input$generate_report, {
+  observeEvent(input$report_1, {
     w$show()
-    output$tip1 = renderPrint({
-      cat("Your analysis has been done!")
+    output$tip1 = renderText({
+      paste0("Tip: You now can run step2 or step3. (",
+        format(Sys.time(), "%H:%M:%S"), ")")
     })
   })
 
 
-  observeEvent(input$generate_report, {
-
+  observeEvent(input$report_1, {    
     time_stamp = format(Sys.time(), "%Y-%m-%d_%H-%M-%S")
     res_dat = mol_quick_analysis(molecule = input$Pancan_search, 
                        data_type = input$Pancan_search_type, 
                        out_dir = tempdir(), out_report = FALSE)
-    output$button.ui = renderUI({
-      fluidRow(
-        column(
-          5, 
-          downloadButton(ns("report"), "Generate report")
-        ),
-        column(
-          5, 
-          downloadButton(ns("rawdata"), "Get rawdata")
-        )
-      )
-    })
 
-    output$report = downloadHandler(
+
+
+
+    output$report_2 = downloadHandler(
+      
       filename = paste0(time_stamp,"_report.html"),
       content = function(file) {
         tempReport <- file.path(tempdir(), paste0(time_stamp,"_report.Rmd"))
@@ -179,14 +262,13 @@ server.home_search_box <- function(input, output, session) {
         rmarkdown::render(tempReport, output_file = file,
           params = params,
           envir = new.env(parent = globalenv()))
+        
       }
     )
 
-
-    output$rawdata = downloadHandler(
-      filename = paste0(format(Sys.time(), "%Y-%m-%d_%H-%M-%S"),"_rawdata.zip"),
+    output$report_3 = downloadHandler(
+      filename = paste0(time_stamp,"_rawdata.zip"),
       content = function(file) {
-
 
         fs1 = file.path(tempdir(), paste0(time_stamp,"_molecule_clinical_result.csv"))
         fs2 = file.path(tempdir(), paste0(time_stamp,"_molecule_correlation_result.csv"))
@@ -204,7 +286,6 @@ server.home_search_box <- function(input, output, session) {
     )
 
   })
-
 
 
 }

@@ -5,7 +5,7 @@ ui.modules_download_pancan = function(id){
 			column(
 				8,
 				wellPanel(
-					style = "height:1000px",
+					style = "height:1100px",
 					fluidRow(
 						column(6,
 							h2("Part1: Download molecular data", align = "center"),
@@ -34,7 +34,40 @@ ui.modules_download_pancan = function(id){
 								),
 							),
 
-							h3("2. Select multiple ids"),	
+							h3("2. Select samples"),
+							h5("Quick filter:"),
+							fluidRow(
+								column(6,
+									pickerInput(
+										ns("filter_by_cancer"), NULL,
+										choices = NULL, selected =  NULL,
+										multiple = TRUE, options = list(`actions-box` = TRUE)
+									)
+								),
+								column(6,
+									pickerInput(
+										ns("filter_by_code"), NULL,
+										choices = NULL, selected =  NULL,
+										multiple = TRUE, options = list(`actions-box` = TRUE)
+									)
+								)
+							),
+							h5("Exact filter:"),
+							tabsetPanel(id = ns("filter_samples2dw_tab"),
+								type = "hidden",
+								tabPanel("toil",
+									filter_samples_UI(ns("filter_samples2dw_1"), database = "toil"),
+								),
+								tabPanel("pcawg",
+									filter_samples_UI(ns("filter_samples2dw_2"), database = "pcawg"),
+								),
+								tabPanel("ccle",
+									filter_samples_UI(ns("filter_samples2dw_3"), database = "ccle"),
+								),
+							),
+							verbatimTextOutput(ns("filter_id_info")),
+							
+							h3("3. Select identifiers"),	
 							# 选择major/minor type
 						    fluidRow(
 						    	column(
@@ -56,30 +89,6 @@ ui.modules_download_pancan = function(id){
 												ns("genomic_profile"), "Data subtype:",
 												choices = NULL,
 												selected = "mRNA Expression")
-										),
-										tabPanel("Tumor index",
-											selectInput(
-												ns("tumor_index"), "Data subtype:",
-												choices = NULL,
-												selected = "Tumor Purity")
-										),
-										tabPanel("Immune Infiltration",
-											selectInput(
-												ns("immune_infiltration"), "Data subtype:",
-												choices = NULL,
-												selected = "CIBERSORT")
-										),
-										tabPanel("Pathway activity",
-											selectInput(
-												ns("pathway_activity"), "Data subtype:",
-												choices = NULL,
-												selected = "HALLMARK")
-										),
-										tabPanel("Phenotype data",
-											selectInput(
-												ns("phenotype_data"), "Data subtype:",
-												choices = NULL,
-												selected = "Clinical Phenotye")
 										)
 									)
 						    	)
@@ -101,42 +110,6 @@ ui.modules_download_pancan = function(id){
 								              choices = NULL, multiple = TRUE,
 								              search = TRUE,
 								              allowNewOption = TRUE,
-								              dropboxWidth = "200%")
-										),
-										tabPanel("Tumor index",
-								            virtualSelectInput(
-								              inputId = ns("tumor_index_id"),
-								              label = NULL,
-								              choices = NULL, multiple = TRUE,
-								              search = TRUE,
-								              allowNewOption = FALSE,
-								              dropboxWidth = "200%")
-										),
-										tabPanel("Immune Infiltration",
-								            virtualSelectInput(
-								              inputId = ns("immune_infiltration_id"),
-								              label = NULL,
-								              choices = NULL, multiple = TRUE,
-								              search = TRUE,
-								              allowNewOption = FALSE,
-								              dropboxWidth = "200%")
-										),
-										tabPanel("Pathway activity",
-								            virtualSelectInput(
-								              inputId = ns("pathway_activity_id"),
-								              label = NULL,
-								              choices = NULL, multiple = TRUE,
-								              search = TRUE,
-								              allowNewOption = FALSE,
-								              dropboxWidth = "200%")
-										),
-										tabPanel("Phenotype data",
-								            virtualSelectInput(
-								              inputId = ns("phenotype_data_id"),
-								              label = NULL,
-								              choices = NULL, multiple = TRUE,
-								              search = TRUE,
-								              allowNewOption = FALSE,
 								              dropboxWidth = "200%")
 										)
 									),	
@@ -186,20 +159,22 @@ ui.modules_download_pancan = function(id){
 						        block = TRUE,
 						        size = "sm"
 							),
-							br(),
+							# br(),
 							verbatimTextOutput(ns("L3s_x_tip2")),
 							# br(),
+
+						),
+						column(6,
+							style = "height:1100px",
+							br(),br(),br(),br(),
+							dataTableOutput(ns("L3s_x_data")),
+							br(),
 							h3("3. Download results"),
 						    fluidRow(
 						    	column(3, downloadButton(ns("save_csv"), "Download table(.csv)")),
 						    	column(3, offset = 2, downloadButton(ns("save_rda"), "Download table(.rda)"))
-						    )
-						),
-						column(6,
-							style = "height:1000px",
-							br(),br(),br(),br(),
-							dataTableOutput(ns("L3s_x_data")),
-							br(),br(),
+						    ),
+							br(),
 							strong(h3("NOTEs:")),
 							h5("1. To get the whole dataset, please click 'Respository' page and download derictly from UCSC website."),
 							h5("2. Queried data in long format is for easy display and it is downloaded as the wide format. "),	
@@ -210,7 +185,7 @@ ui.modules_download_pancan = function(id){
 			column(
 				4,
 				wellPanel(
-					style = "height:1000px",
+					style = "height:1100px",
 					h2("Part2: Download other data", align = "center"),
 					h3("1. TCGA database"),
 					selectInput(ns("tcga_other_type"),NULL,
@@ -353,6 +328,7 @@ server.modules_download_pancan = function(input, output, session, custom_metadat
 
 	observe({
 	  updateTabsetPanel(inputId = "L0_datasets_tab", selected = input$L0)
+	  updateTabsetPanel(inputId = "filter_samples2dw_tab", selected = input$L0)
 	  updateTabsetPanel(inputId = "data_L2_tab", selected = input$data_L1)
 	  updateTabsetPanel(inputId = "data_L3_tab", selected = input$data_L1)
 	  updateTabsetPanel(inputId = "L3_x_type_tab", selected = input$L3_x_type)
@@ -360,7 +336,6 @@ server.modules_download_pancan = function(input, output, session, custom_metadat
 	  updateTabsetPanel(inputId = "pcawg_other_type_tab", selected = input$pcawg_other_type)
 	  updateTabsetPanel(inputId = "ccle_other_type_tab", selected = input$ccle_other_type)
 	}) 
-
 
 	opt_pancan_toil = callModule(mol_origin_Server, "mol_origin2toil", database = "toil")
 	opt_pancan_pcawg = callModule(mol_origin_Server, "mol_origin2pcawg", database = "pcawg")
@@ -374,24 +349,92 @@ server.modules_download_pancan = function(input, output, session, custom_metadat
 		)
 	})
 
+	sp_exact_toil = callModule(filter_samples_Server, "filter_samples2dw_1",
+					   database = "toil",
+					   cancers=reactive(input$filter_by_cancer),
+					   opt_pancan = reactive(opt_pancan()))
+	sp_exact_pcawg = callModule(filter_samples_Server, "filter_samples2dw_2",
+					   database = "pcawg",
+					   cancers=reactive(input$filter_by_cancer),
+					   opt_pancan = reactive(opt_pancan()))
+	sp_exact_ccle = callModule(filter_samples_Server, "filter_samples2dw_3",
+					   database = "ccle",
+					   cancers=reactive(input$filter_by_cancer),
+					   opt_pancan = reactive(opt_pancan()))
+
+	filter_samples = reactiveValues(sp=NULL)
+	observe({
+		# quick filter
+		if(input$L0=="toil"){
+			sps = tcga_clinical_fine %>%
+				dplyr::filter(Cancer %in% input$filter_by_cancer) %>%
+				dplyr::filter(Code %in% input$filter_by_code) %>%
+				dplyr::pull(Sample) %>% unique() %>% sort()
+			if(!is.null(sp_exact_toil())){
+				sps = intersect(sps, sp_exact_toil())
+			}
+		} else if (input$L0=="ccle"){
+			sps = pcawg_info_fine %>%
+				dplyr::filter(Project %in% input$filter_by_cancer) %>%
+				dplyr::filter(Type %in% input$filter_by_code) %>%
+				dplyr::pull(Sample) %>% unique() %>% sort()
+			if(!is.null(sp_exact_pcawg())){
+				sps = intersect(sps, sp_exact_pcawg())
+			}
+		} else {
+			sps = ccle_info_fine %>%
+				dplyr::filter(Site_Primary %in% input$filter_by_code)
+			if(!is.null(sp_exact_ccle())){
+				sps = intersect(sps, sp_exact_ccle())
+			}
+		} 
+
+		filter_samples$sp = sps
+		output$filter_id_info = renderPrint({
+			cat(paste0("Tip: ", length(sps), " samples are retained"))
+		})
+	})
+
+
+	## select samples
+	observe({
+		cancer_types = switch(input$L0,
+			`toil` = sort(unique(tcga_clinical_fine$Cancer)),
+			`pcawg` = sort(unique(pcawg_info_fine$Project))
+			# ,
+			# `ccle` = sort(unique(ccle_info_fine$Site_Primary))
+			)
+		updatePickerInput(
+			session,
+			"filter_by_cancer",
+			choices = cancer_types,
+			selected =  cancer_types
+		)
+	})
+	observe({
+		if(input$L0=="toil"){
+			code_types_valid = tcga_clinical_fine %>%
+				dplyr::filter(Cancer %in% input$filter_by_cancer) %>%
+				dplyr::pull(Code) %>% unique() %>% sort()
+		} else if (input$L0=="pcawg"){
+			code_types_valid = pcawg_info_fine %>%
+				dplyr::filter(Project %in% input$filter_by_cancer) %>%
+				dplyr::pull(Type) %>% unique() %>% sort()
+		} else (
+			code_types_valid = sort(unique(ccle_info_fine$Site_Primary))
+		)
+		updatePickerInput(
+			session,
+			"filter_by_code",
+			choices = code_types_valid,
+			selected =  code_types_valid
+		)
+	})
+
+
+	## select ids
 	genomic_profile_choices <- reactive({
 	  id_option()[["Molecular profile"]][[input$genomic_profile]]
-	})
-
-	tumor_index_choices <- reactive({
-	  id_option()[["Tumor index"]][[input$tumor_index]]
-	})
-
-	immune_infiltration_choices <- reactive({
-	  id_option()[["Immune Infiltration"]][[input$immune_infiltration]]
-	})
-
-	pathway_activity_choices <- reactive({
-	  id_option()[["Pathway activity"]][[input$pathway_activity]]
-	})
-
-	phenotype_data_choices <- reactive({
-	  id_option()[["Phenotype data"]][[input$phenotype_data]]
 	})
 
 	# update L2 choice
@@ -402,26 +445,6 @@ server.modules_download_pancan = function(input, output, session, custom_metadat
 	    "genomic_profile",
 	    choices = names(id_option()[["Molecular profile"]])
 	  )
-	  updateSelectInput(
-	  	session,
-	    "tumor_index",
-	    choices = names(id_option()[["Tumor index"]])
-	  )
-	  updateSelectInput(
-	  	session,
-	    "immune_infiltration",
-	    choices = names(id_option()[["Immune Infiltration"]])
-	  )
-	  updateSelectInput(
-	  	session,
-	    "pathway_activity",
-	    choices = names(id_option()[["Pathway activity"]])
-	  )
-	  updateSelectInput(
-	  	session,
-	    "phenotype_data",
-	    choices = names(id_option()[["Phenotype data"]])[1]
-	  )
 	})
 
 	# update L3 choice
@@ -431,26 +454,6 @@ server.modules_download_pancan = function(input, output, session, custom_metadat
 	    "genomic_profile_id",
 	    choices = genomic_profile_choices()$all,
 	    selected = genomic_profile_choices()$default
-	  )
-	  updateVirtualSelect(
-	    "tumor_index_id",
-	    choices = tumor_index_choices()$all,
-	    selected = tumor_index_choices()$default
-	  )
-	  updateVirtualSelect(
-	    "immune_infiltration_id",
-	    choices = immune_infiltration_choices()$all,
-	    selected = immune_infiltration_choices()$default
-	  )
-	  updateVirtualSelect(
-	    "pathway_activity_id",
-	    choices = pathway_activity_choices()$all,
-	    selected = pathway_activity_choices()$default
-	  )
-	  updateVirtualSelect(
-	    "phenotype_data_id",
-	    choices = phenotype_data_choices()$all,
-	    selected = phenotype_data_choices()$default
 	  )
 	})
 
@@ -598,7 +601,7 @@ server.modules_download_pancan = function(input, output, session, custom_metadat
 				}
 				x_data = x_data %>%
 					dplyr::arrange(Sample) %>%
-					# dplyr::filter(Sample %in% samples()) %>%
+					dplyr::filter(Sample %in% filter_samples$sp) %>%
 				    dplyr::select(id, Sample, value)
 				# 默认批量下载的应为数值型变量，若不是则剔除
 				# if(class(x_data$value)=="character"){  

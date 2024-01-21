@@ -85,6 +85,7 @@ pacman::p_load(
   shinyFeedback,
   shinythemes,
   shinyhelper,
+  shinycssloaders,
   survival,
   survminer,
   ezcox,
@@ -98,7 +99,8 @@ pacman::p_load(
   ggstatsplot,
   ggradar,
   zip,
-  msigdbr
+  msigdbr,
+  slickR
 )
 
 options(shiny.maxRequestSize=1024*1024^2)
@@ -415,18 +417,19 @@ ui <- tagList(
   autoWaiter(html = spin_loader(), color = transparent(0.5)), # change style https://shiny.john-coene.com/waiter/
   navbarPage(
     id = "navbar",
-    title = div(
-      img(src = "xena_shiny-logo_white.png", height = 49.6, style = "margin:-20px -15px -15px -15px")
-    ),
+    title = "UCSCXenaShiny v2",
+    # div(
+    #   img(src = "xena_shiny-logo_white.png", height = 49.6, style = "margin:-20px -15px -15px -15px")
+    # ),
     windowTitle = "UCSCXenaShiny",
     # inst/shinyapp/ui
     ui.page_home(),
     ui.page_repository(),
     ui.page_general_analysis(),
-    ui.page_pancan_tcga(),
-    ui.page_pancan_pcawg(),
-    ui.page_pancan_ccle(),
     ui.page_pancan_quick(),
+    ui.page_pancan_tcga(),
+    # ui.page_pancan_pcawg(),
+    # ui.page_pancan_ccle(),
     ui.page_download(),
     # ui.page_global(),
     ui.page_help(),

@@ -268,16 +268,16 @@ download_feat_Server = function(input, output, session, database = "toil",#id_op
 		output$x_axis_data_table = renderUI({
 			if(table.ui){
 				output$x_tmp_table = renderDataTable({
-					# shiny::validate(
-					# 	need(try(nrow(download_data())>0), 
-					# 		"No sample data were available. Please inspect operations in Preset step."),
-					# )
-					# if(check_numeric){
-					# 	shiny::validate(
-					# 		need(try(class(download_data()$value)!="character"), 
-					# 			"Please select a numeric variable."),
-					# 	)	
-					# }
+					shiny::validate(
+						need(try(nrow(download_data())>0), 
+							"No sample data were available. Please inspect operations in Preset step."),
+					)
+					if(check_numeric){
+						shiny::validate(
+							need(try(class(download_data()$value)!="character"), 
+								"Please select a numeric variable."),
+						)	
+					}
 					x_axis_data_ = download_data()[,c("Sample","value","cancer")]
 
 					if(class(x_axis_data_[,"value"])=="numeric"){
