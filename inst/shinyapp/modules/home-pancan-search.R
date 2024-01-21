@@ -41,7 +41,7 @@ ui.home_search_box <- function(id) {
         # align="center",
         actionBttn(
           inputId = ns("search_1"),
-          label = "Tumor VS Normal",
+          label = "Tumor vs. Normal",
           color = "primary",
           style = "bordered",
           size = "sm"

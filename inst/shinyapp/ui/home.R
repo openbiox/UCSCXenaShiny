@@ -7,11 +7,11 @@ ui.page_home <- function() {
         tags$link(rel = "stylesheet", type = "text/css", href = "bootstrap4.css")
       ),
       fluidRow(
-        column(6,
+        column(5,
           tags$div(
             column(
               12,
-              tags$h1("Welcome to UCSCXenaShiny v2!"),
+              tags$h2("Welcome to UCSCXenaShiny v2!"),
               tags$p(paste0(
                 "UCSCXenaShiny v", packageVersion("UCSCXenaShiny"),
                 " based on ",
@@ -28,14 +28,14 @@ ui.page_home <- function() {
                 "cancer omics analysis. We are confident that this update will address the ",
                 "limitations of existing web tools for cancer-related omics analysis, ",
                 "benefiting researchers and clinicians seeking a deeper understanding of molecular features."),
-                style = "font-size: 20px;"),
+                style = "font-size: 18px;"),
               tags$hr(),
             )
           )
         ),
-        column(3,
+        column(4,
           wellPanel(
-            style = "height:300px;  background: #a6cee3",
+            style = "background: #a6cee3",
             h2("TCGA Pan-Cancer Query!", align = "center"),
             # br(),
             ui.home_search_box("homepage_pancan_search"),
@@ -43,16 +43,16 @@ ui.page_home <- function() {
         ),
         column(3,
           wellPanel(
-            style = "height:300px; background: #b3cde3",
+            style = "background: #b3cde3",
             h2("Latest Release Notes", align = "center"),
             br(),
             tags$ul(
-              tags$li("2023-01-21: Adjust homepge with slick gallery to show basic page help.",style = "font-size: 16px;"),
-              tags$li("2024-01-16: Introduce MSigDB genesets  for molecule batch analysis.",style = "font-size: 16px;"),
-              tags$li("2023-12-20: Add  download modules that support data requisition.",style = "font-size: 16px;"),
+              tags$li("2024-01-21: Adjust homepge with slick gallery to show basic page help.",style = "font-size: 14px;"),
+              tags$li("2024-01-16: Introduce MSigDB genesets  for molecule batch analysis.",style = "font-size: 14px;"),
+              tags$li("2023-12-20: Add  download modules that support data requisition.",style = "font-size: 14px;"),
               tags$li("See more update logs in", 
                 a("Github", href="https://github.com/openbiox/UCSCXenaShiny"),
-                style = "font-size: 18px;")
+                style = "font-size: 16px;")
             )
           )
         )
