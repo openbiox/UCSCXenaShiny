@@ -85,19 +85,19 @@ observeEvent(req(input$navbar=="PCAWG: Survival Analysis"),{
 
 
 # TCGA pancan
-observeEvent(req(input$navbar=="TCGA Association Analysis"),{
+observeEvent(req(input$navbar=="TCGA: Association Analysis"),{
 		callModule(server.modules_pancan_cor_o2o, "modules_pancan_cor_o2o")
 		callModule(server.modules_pancan_cor_o2m, "modules_pancan_cor_o2m")
 		callModule(server.modules_pancan_cor_m2o, "modules_pancan_cor_m2o")
 }, once = TRUE)  
 
-observeEvent(req(input$navbar=="TCGA Comparison Analysis"),{
+observeEvent(req(input$navbar=="TCGA: Comparison Analysis"),{
 		callModule(server.modules_pancan_comp_o2o, "modules_pancan_comp_o2o")
 		callModule(server.modules_pancan_comp_o2m, "modules_pancan_comp_o2m")
 		callModule(server.modules_pancan_comp_m2o, "modules_pancan_comp_m2o")
 }, once = TRUE)  
 
-observeEvent(req(input$navbar=="TCGA Survival Analysis"),{
+observeEvent(req(input$navbar=="TCGA: Survival Analysis"),{
 		callModule(server.modules_pancan_sur_o2o, "modules_pancan_sur_o2o")
 		callModule(server.modules_pancan_sur_o2m, "modules_pancan_sur_o2m")
 		callModule(server.modules_pancan_sur_m2o, "modules_pancan_sur_m2o")
@@ -106,17 +106,17 @@ observeEvent(req(input$navbar=="TCGA Survival Analysis"),{
 
 
 # PCAWG 
-observeEvent(req(input$navbar=="PCAWG Association Analysis"),{
+observeEvent(req(input$navbar=="PCAWG: Association Analysis"),{
 	callModule(server.modules_pcawg_cor_o2o, "modules_pcawg_cor_o2o")
 	callModule(server.modules_pcawg_cor_o2m, "modules_pcawg_cor_o2m")
 	callModule(server.modules_pcawg_cor_m2o, "modules_pcawg_cor_m2o")
 }, once = TRUE)  
-observeEvent(req(input$navbar=="PCAWG Comparison Analysis"),{
+observeEvent(req(input$navbar=="PCAWG: Comparison Analysis"),{
 	callModule(server.modules_pcawg_comp_o2o, "modules_pcawg_comp_o2o")
 	callModule(server.modules_pcawg_comp_o2m, "modules_pcawg_comp_o2m")
 	callModule(server.modules_pcawg_comp_m2o, "modules_pcawg_comp_m2o")
 }, once = TRUE)  
-observeEvent(req(input$navbar=="PCAWG Survival Analysis"),{
+observeEvent(req(input$navbar=="PCAWG: Survival Analysis"),{
 	callModule(server.modules_pcawg_sur_o2o, "modules_pcawg_sur_o2o")
 	callModule(server.modules_pcawg_sur_o2m, "modules_pcawg_sur_o2m")
 	callModule(server.modules_pcawg_sur_m2o, "modules_pcawg_sur_m2o")
@@ -127,12 +127,12 @@ observeEvent(req(input$navbar=="PCAWG Survival Analysis"),{
 
 
 # CCLE
-observeEvent(req(input$navbar=="CCLE Association Analysis"),{
+observeEvent(req(input$navbar=="CCLE: Association Analysis"),{
 	callModule(server.modules_ccle_cor_o2o, "modules_ccle_cor_o2o")
 	callModule(server.modules_ccle_cor_m2o, "modules_ccle_cor_m2o")
 }, once = TRUE) 
 
-observeEvent(req(input$navbar=="CCLE Comparison Analysis"),{
+observeEvent(req(input$navbar=="CCLE: Comparison Analysis"),{
 	callModule(server.modules_ccle_comp_o2o, "modules_ccle_comp_o2o")
 	callModule(server.modules_ccle_comp_m2o, "modules_ccle_comp_m2o")
 }, once = TRUE) 

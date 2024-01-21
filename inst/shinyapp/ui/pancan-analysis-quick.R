@@ -1,6 +1,6 @@
 ui.page_pancan_quick <- function() {
   navbarMenu(
-    title = "Quick PanCan Analysis",
+    title = "Quick TCGA/PCAWG/CCLE Analysis",
     icon = icon("buromobelexperte"),
     # tabPanel(
     #   "Combo: Single Gene Analysis",
@@ -55,22 +55,6 @@ ui.page_pancan_quick <- function() {
         ui.modules_dim_dist("modules_dim_dist")
     ),
     tabPanel(
-      "CCLE: Molecular Profile Distribution Across Cancer Primary Sites",
-      ui.modules_ccle_dist("modules_ccle_dist")
-    ),
-    tabPanel(
-      "CCLE: Molecule-Molecule Correlation",
-      ui.modules_ccle_genecor("modules_ccle_genecor")
-    ),
-    tabPanel(
-      "CCLE: Drug Response Association",
-      ui.modules_ccle_drug_target_asso("modules_ccle_drug_target_asso")
-    ),
-    tabPanel(
-      "CCLE: Drug Response Difference",
-      ui.modules_ccle_drug_response_diff("modules_ccle_drug_response_diff")
-    ),
-    tabPanel(
       "PCAWG: Molecular Profile Distribution Across Cancer Types (Tumor VS Normal)",
       ui.modules_pcawg_dist("modules_pcawg_dist")
     ),
@@ -85,6 +69,22 @@ ui.page_pancan_quick <- function() {
     tabPanel(
       "PCAWG: Survival Analysis",
       ui.modules_pcawg_sur_plot("modules_pcawg_sur_plot")
+    ),
+    tabPanel(
+      "CCLE: Molecular Profile Distribution Across Cancer Primary Sites",
+      ui.modules_ccle_dist("modules_ccle_dist")
+    ),
+    tabPanel(
+      "CCLE: Molecule-Molecule Correlation",
+      ui.modules_ccle_genecor("modules_ccle_genecor")
+    ),
+    tabPanel(
+      "CCLE: Drug Response Association",
+      ui.modules_ccle_drug_target_asso("modules_ccle_drug_target_asso")
+    ),
+    tabPanel(
+      "CCLE: Drug Response Difference",
+      ui.modules_ccle_drug_response_diff("modules_ccle_drug_response_diff")
     )
   )
 }
