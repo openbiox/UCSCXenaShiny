@@ -1,10 +1,20 @@
 # UCSCXenaShiny 2.0.0
 
-### New Features
+## New Features
+
+https://github.com/openbiox/UCSCXenaShiny/commit/147f4612943df940d3bbd409e82a492dfce37cb4
+
+### Datasets
+
+### R Package Functions
 
 - `vis_dim_dist()` function and corresponding shiny module.
 
-### Enhancements
+### Shiny application
+
+- abc
+
+## Enhancements
 
 - Supported getting more flexible methylation value.
 
@@ -16,10 +26,9 @@ UCSCXenaShiny::get_pancan_methylation_value(
 )
 ```
 
-### Bug Fixes
+## Bug Fixes
 
-- Merge data with unequal size in pan-cancer data query with a gene signature (#283), the fix also enhance the
-sample names match.
+- Merged data with unequal size in pan-cancer data query with a gene signature (#283), the fix also enhance the sample names match.
 
 Test code:
 
