@@ -1,7 +1,7 @@
 url: https://openbiox.github.io/UCSCXenaShiny/
 template:
   bootstrap: 5
-  bootswatch: zephyr
+  bootswatch: morph
 
 authors:
   Shixiang Wang:
