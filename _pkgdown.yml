@@ -1,12 +1,13 @@
+url: https://openbiox.github.io/UCSCXenaShiny/
 template:
-  package: preferably
-  params:
-    toggle: manual
-destination: docs
+  bootstrap: 5
+  bootswatch: zephyr
 
 authors:
   Shixiang Wang:
     href: https://orcid.org/0000-0001-9855-7357
+  Shensuo Li:
+    href: https://github.com/lishensuo
   Yi Xiong:
     href: https://orcid.org/0000-0002-4370-9824
   Longfei Zhao:

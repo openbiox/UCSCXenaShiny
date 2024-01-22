@@ -57,3 +57,4 @@ Dockerfile
 deploy.*
 .dockerignore
 ^CRAN-SUBMISSION$
+^pkgdown$

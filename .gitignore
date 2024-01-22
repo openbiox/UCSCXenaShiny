@@ -68,3 +68,4 @@ data-raw/CCLE_GNF_data_090613.xls
 inst/extdata/ccle_drug_response_extend.rda
 inst/extdata/pancancer_conserved_immune_subtype.rda
 inst/extdata/toil_sig_score.rda
+docs
