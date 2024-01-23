@@ -25,7 +25,7 @@ load_data(name)
 \item \code{toil_info}: Toil hub information.
 }
 
-\strong{Remote datasets stored in \href{https://zenodo.org/record/10340116/}{Zenodo}}:
+\strong{Remote datasets stored in \href{https://zenodo.org/record/10554197/}{Zenodo}}:
 \itemize{
 \item \code{pcawg_promoter_id}: PCAWG promoter identifiers.
 \item \code{transcript_identifier}: Common transcript identifiers.
