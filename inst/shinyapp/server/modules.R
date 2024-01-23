@@ -160,4 +160,9 @@ observeEvent(req(input$navbar=="Based on Repository Datasets"),{
 	callModule(server.modules_download_dataset, "modules_download_dataset")
 }, once = TRUE) 
 
-
+# PharmacoGenomics
+callModule(serverDrugOmicPair, "DrugOmicPair")
+callModule(serverFeatureAcrossType, "FeatureAcrossType")
+callModule(serverProfileDrugSens, "ProfileDrugSens")
+callModule(serverFeatureDatabaseSig, "FeatureDatabaseSig")
+callModule(serverStatAnno, "StatAnno")
