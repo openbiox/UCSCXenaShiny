@@ -71,3 +71,10 @@ callModule(server.modules_id_reference, "modules_id_reference")
 # # download data
 callModule(server.modules_download_pancan, "modules_download_pancan")
 callModule(server.modules_download_dataset, "modules_download_dataset")
+
+# PharmacoGenomics analysis
+callModule(serverDrugOmicPair, "DrugOmicPair")
+callModule(serverFeatureAcrossType, "FeatureAcrossType")
+callModule(serverProfileDrugSens, "ProfileDrugSens")
+callModule(serverFeatureDatabaseSig, "FeatureDatabaseSig")
+callModule(serverStatAnno, "StatAnno")
