@@ -136,7 +136,7 @@ serverDrugOmicPair <- function(input, output, session){
     }
     p_list <- p_list[!sapply(p_list, is.null)]
     # Warning 
-    validate(
+    shiny::validate(
       need(length(p_list) > 0, "You have not chosen yet, or there is no result for this drug-omic pair.")
     )
     p <- wrap_plots(p_list, ncol = 3)

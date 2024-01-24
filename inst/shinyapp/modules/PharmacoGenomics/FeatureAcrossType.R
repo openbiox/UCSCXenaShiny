@@ -76,7 +76,7 @@ serverFeatureAcrossType <- function(input, output, session){
         # Preprocess
         select_features <- input$select_features
         if(select_features == "mRNA") select_features <- "exp"
-        profile <- base::get(paste0(x, "_", select_features), envir = env)
+        profile <- base::get(paste0(x, "_", select_features), envir = parent.env(environment()))
         intersected_cells <- intersect(cell_anno$Name, colnames(profile))
         sel_profile <- profile[rownames(profile) %in% input$select_specific_feature,
                                match(intersected_cells, colnames(profile))]
@@ -158,7 +158,7 @@ serverFeatureAcrossType <- function(input, output, session){
     }
     p_list <- p_list[!sapply(p_list, is.null)]
     # Warning 
-    validate(
+    shiny::validate(
       need(length(p_list) > 0, "You have not chosen yet, or there is no result for this feature.")
     )
     if(length(p_list) > 1){
