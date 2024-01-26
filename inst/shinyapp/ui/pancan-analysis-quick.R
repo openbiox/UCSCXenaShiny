@@ -1,6 +1,6 @@
 ui.page_pancan_quick <- function() {
   navbarMenu(
-    title = "Quick TCGA/PCAWG/CCLE Analysis",
+    title = "Quick T·P·C Analysis",
     icon = icon("buromobelexperte"),
     # tabPanel(
     #   "Combo: Single Gene Analysis",
