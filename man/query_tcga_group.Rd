@@ -2,7 +2,7 @@
 % Please edit documentation in R/query_tcga_group.R
 \name{query_tcga_group}
 \alias{query_tcga_group}
-\title{Group TCGA samples by build-in or custom phenotype and support filtering or merging operations}
+\title{Group TPC samples by build-in or custom phenotype and support filtering or merging operations}
 \usage{
 query_tcga_group(
   database = c("toil", "pcawg", "ccle"),
@@ -39,7 +39,7 @@ query_tcga_group(
 a list object with grouping samples and statistics
 }
 \description{
-Group TCGA samples by build-in or custom phenotype and support filtering or merging operations
+Group TPC samples by build-in or custom phenotype and support filtering or merging operations
 }
 \examples{
 \dontrun{

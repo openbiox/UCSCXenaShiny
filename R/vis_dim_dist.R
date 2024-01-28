@@ -1,7 +1,7 @@
 #' Visualize the distribution difference of samples after dimension reduction analysis
 #'
 #' @param ids molecular identifiers (>=3)
-#' @param data_type molecular types, refer to query_pancan_value() fuuntion
+#' @param data_type molecular types, refer to query_pancan_value() function
 #' @param return.data whether to reture the raw meta/matrix data (list) instead of plot
 #' @param DR_method the dimension reduction method
 #' @param palette the color setting of RColorBrewer

@@ -84,11 +84,32 @@ ui.modules_ccle_comp_o2o = function(id) {
 					h4(strong("S3.1 Set analysis parameters")), 
 					selectInput(ns("comp_method"), "Comparison method:",choices = c("t-test", "wilcoxon")),
 					h4(strong("S3.2 Set visualization parameters")), 
-					column(3, colourpicker::colourInput(inputId = ns("group_1_color"), "Color (Group 1):", "#E69F00")),
-					column(3, colourpicker::colourInput(inputId = ns("group_2_color"), "Color (Group 2):", "#56B4E9")),
-					column(3, numericInput(inputId = ns("point_size"), label = "Point size:", value = 3, step = 0.5)),
-					column(3, numericInput(inputId = ns("point_alpha"), label = "Point alpha:", value = 0.4, step = 0.1, min = 0, max = 1)),
-					
+					fluidRow(
+						column(3, colourpicker::colourInput(inputId = ns("group_1_color"), "Color (Group 1):", "#E69F00")),
+						column(3, colourpicker::colourInput(inputId = ns("group_2_color"), "Color (Group 2):", "#56B4E9")),
+					),
+					dropMenu(
+						actionButton(ns("more_visu"), "Set more visualization params"),
+						div(h3("1. Adjust points:"),style="width:400px;"),
+						fluidRow(
+							column(3, numericInput(inputId = ns("point_size"), label = "Point size:", value = 3, step = 0.5)),
+							column(3, numericInput(inputId = ns("point_alpha"), label = "Point alpha:", value = 0.4, step = 0.1, min = 0, max = 1)),
+						),
+						div(h3("2. Adjust text size:"),style="width:400px;"),
+						fluidRow(
+							column(4, numericInput(inputId = ns("axis_size"), label = "Text size:", value = 18, step = 0.5)),
+							column(4, numericInput(inputId = ns("title_size"), label = "Title size:", value = 20, step = 0.5))
+						),				
+						div(h3("3. Adjust lab and title name:"),style="width:400px;"),
+						fluidRow(
+							column(4, textInput(inputId = ns("x_name"), label = "X-axis name:")),
+							column(4, textInput(inputId = ns("y_name"), label = "Y-axis name:")),
+							column(4, textInput(inputId = ns("title_name"), label = "Title name:"))
+						),	
+						div(h5("Note: You can download the raw data and plot in local R environment for more detailed adjustment.")),
+
+					),
+					br(),
 					# verbatimTextOutput(ns("tmp123")),
 					shinyWidgets::actionBttn(
 						ns("step3_plot_box"), "Run",
@@ -230,6 +251,11 @@ server.modules_ccle_comp_o2o = function(input, output, session) {
 		cancer_choose$single_cancer_ok = min(table(merge_data_box()$group))>=3
 	})
 
+	observe({
+		updateTextInput(session, "x_name", value = "group")
+		updateTextInput(session, "y_name", value = unique(y_axis_data()$id))
+		updateTextInput(session, "title_name", value = "CCLE")
+	})
 
 	comp_plot_box = eventReactive(input$step3_plot_box, {
 		shiny::validate(
@@ -247,9 +273,9 @@ server.modules_ccle_comp_o2o = function(input, output, session) {
 			  data  = merge_data_box,
 			  x     = "group",
 			  y     = "value",
-			  xlab = cancer_choose$group,
-			  ylab = unique(merge_data_box$id),
-			  title = unique(merge_data_box$cancer),
+			  xlab = isolate(input$x_name),
+			  ylab = isolate(input$y_name),
+			  title = isolate(input$title_name),
 			  bf.message = FALSE,
 			  type = comp_method,
 			  centrality.plotting = FALSE,
@@ -258,8 +284,8 @@ server.modules_ccle_comp_o2o = function(input, output, session) {
 			  	position = ggplot2::position_jitterdodge(dodge.width = 0.6), stroke = 0, na.rm = TRUE)
 			) + 
 			  ggplot2::scale_color_manual(values = c(isolate(input$group_1_color), isolate(input$group_2_color))) +
-			  theme(text = element_text(size=18),
-			        plot.title = element_text(size=20, hjust = 0.5),
+			  theme(text = element_text(size=isolate(input$axis_size)),
+			        plot.title = element_text(size=isolate(input$title_size), hjust = 0.5),
 			        plot.subtitle = element_text(size = 12))
 			return(p)
 		}

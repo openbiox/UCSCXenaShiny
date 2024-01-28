@@ -355,7 +355,7 @@ query_general_value = function(L1, L2, L3, database = c("toil","pcawg","ccle"),
 
 
 
-#' Title quick molecule analysis and report generation
+#' Quick molecule analysis and report generation
 #'
 #' @inheritParams query_pancan_value
 #' @param out_dir path to save analysis result and report, default is '.'

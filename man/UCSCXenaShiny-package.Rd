@@ -12,6 +12,7 @@ A Shiny App for UCSC Xena Data Hubs. See \url{https://github.com/openbiox/UCSCXe
 Useful links:
 \itemize{
   \item \url{https://github.com/openbiox/UCSCXenaShiny}
+  \item \url{https://openbiox.github.io/UCSCXenaShiny/}
   \item Report bugs at \url{https://github.com/openbiox/UCSCXenaShiny/issues}
 }
 
