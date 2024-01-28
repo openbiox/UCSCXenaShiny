@@ -57,15 +57,57 @@
 <p><a href="https://github.com/openbiox/UCSCXenaShiny/commit/147f4612943df940d3bbd409e82a492dfce37cb4" class="external-link uri">https://github.com/openbiox/UCSCXenaShiny/commit/147f4612943df940d3bbd409e82a492dfce37cb4</a></p>
 <div class="section level4">
 <h4 id="datasets-2-0-0">Datasets<a class="anchor" aria-label="anchor" href="#datasets-2-0-0"></a></h4>
-</div>
+<ul><li>
+<code>load_data("tcga_PW")</code>: ssGSEA scores of HALLMARK, KEGG, IOBR terms for TCGA samples.</li>
+<li>
+<code>load_data("tcga_PW_meta")</code>: metadata annotation for HALLMARK, KEGG, IOBR terms.</li>
+<li>
+<code>load_data("pcawg_TIL")</code>: PCAWG TIL data.</li>
+<li>
+<code>load_data("pcawg_PW")</code>: ssGSEA scores of HALLMARK, KEGG, IOBR terms for PCAWG samples.</li>
+</ul></div>
 <div class="section level4">
 <h4 id="r-package-functions-2-0-0">R Package Functions<a class="anchor" aria-label="anchor" href="#r-package-functions-2-0-0"></a></h4>
 <ul><li>
-<code><a href="../reference/vis_dim_dist.html">vis_dim_dist()</a></code> function and corresponding shiny module.</li>
+<code>.opt_pancan</code> : Default setting for alternative TPC datasets.</li>
+<li>
+<code><a href="../reference/mol_quick_analysis.html">mol_quick_analysis()</a></code>: Quick molecule analysis and report generation based on TCGA dataset.</li>
+<li>
+<code><a href="../reference/query_tcga_group.html">query_tcga_group()</a></code>: Group TPC samples by build-in or custom phenotype and support filtering or merging operations.</li>
+<li>
+<code><a href="../reference/vis_dim_dist.html">vis_dim_dist()</a></code>: Visualize the distribution difference of TCGA samples after dimension reduction analysis.</li>
+<li>
+<code><a href="../reference/vis_identifier_dim_dist.html">vis_identifier_dim_dist()</a></code>: Visualize the distribution difference of samples after Molecule Identifier dimension reduction analysis.</li>
+<li>
+<code><a href="../reference/vis_toil_Mut.html">vis_toil_Mut()</a></code>: Visualize molecular profile difference between mutation and wild status of queried gene.</li>
+<li>
+<code><a href="../reference/vis_toil_Mut_cancer.html">vis_toil_Mut_cancer()</a></code>: Visualize molecular profile difference between mutation and wild status of queried gene in Single Cancer Type</li>
 </ul></div>
 <div class="section level4">
 <h4 id="shiny-application-2-0-0">Shiny application<a class="anchor" aria-label="anchor" href="#shiny-application-2-0-0"></a></h4>
-<ul><li>abc</li>
+<ul><li>
+<p>Homepage</p>
+<ul><li>Added slicker gallery to display page summary;</li>
+<li>Added report generation for TCGA pan-cancer exploration.</li>
+</ul></li>
+<li>
+<p>General Dataset Analysis</p>
+<ul><li>Added one general dimension reduction analysis module.</li>
+</ul></li>
+<li>
+<p>Quick TPC Analysis</p>
+<ul><li>Added one module for association analysis between molecule and pathway;</li>
+<li>Added one module for association analysis between molecule and mutation;</li>
+<li>Added one module for dimension reduction analysis.</li>
+</ul></li>
+<li>
+<p>Personalized Analysis</p>
+<ul><li>Designed personalized TPC analysis pipelines for based on 3 methods and 3 modes.</li>
+</ul></li>
+<li>
+<p>Download</p>
+<ul><li>Added two modules for exact subset of integrated TPC data and UCSCXena datasets.</li>
+</ul></li>
 </ul></div>
 </div>
 <div class="section level3">
@@ -78,7 +120,8 @@
 <span>  rule_out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cg21115430"</span>, <span class="st">"cg19452802"</span><span class="op">)</span>, </span>
 <span>  aggr <span class="op">=</span> <span class="st">"Q75"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-</div>
+<ul><li>Supported alternative molecular profiling datasets for quick and personalized TPC analysis.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-2-0-0">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-2-0-0"></a></h3>
 <ul><li>Merged data with unequal size in pan-cancer data query with a gene signature (<a href="https://github.com/openbiox/UCSCXenaShiny/issues/283" class="external-link">#283</a>), the fix also enhance the sample names match.</li>
