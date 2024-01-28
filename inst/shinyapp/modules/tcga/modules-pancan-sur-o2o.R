@@ -99,7 +99,46 @@ ui.modules_pancan_sur_o2o = function(id) {
 					 #                   content = "sur_initial_group"),
 					h4(strong("S3.2 Set visualization parameters")), 
 			      	uiOutput(ns("one_params.ui")),
-
+					dropMenu(
+						actionButton(ns("more_visu"), "Set more visualization params"),
+						div(h3(strong("Params for Log-rank test")),style="width:500px;"),
+						div(h4("1. Wheather to dislpay risk.table:"),style="width:500px;"),
+						fluidRow(
+							column(6, radioButtons(inputId = ns("plot_table"), label = NULL, 
+								choices = c("NO", "YES"), selected="NO",inline = TRUE)),
+						),
+						div(h4("2. Wheather to dislpay ncensor.plot:"),style="width:500px;"),
+						fluidRow(
+							column(6, radioButtons(inputId = ns("plot_ncensor"), label = NULL, 
+								choices = c("NO", "YES"), selected="NO",inline = TRUE)),
+						),
+						div(h4("3. Wheather to dislpay confidence interval:"),style="width:500px;"),
+						fluidRow(
+							column(12, radioButtons(inputId = ns("plot_CI"), label = NULL, 
+								choices = c("NO", "YES(ribbon)", "YES(step)"), selected="NO",inline = TRUE)),
+						),	
+						div(h4("2. Adjust text size:"),style="width:400px;"),
+						fluidRow(
+							column(4, numericInput(inputId = ns("axis_size"), label = "Text size:", value = 14, step = 0.5)),
+							column(4, numericInput(inputId = ns("title_size"), label = "Title size:", value = 18, step = 0.5))
+						),	
+						div(h4("4. Adjust lab and title name:"),style="width:500px;"),
+						fluidRow(
+							column(4, textInput(inputId = ns("x_name"), label = "X-axis name:")),
+							column(4, textInput(inputId = ns("title_name"), label = "Title name:"))
+						),	
+						div(h3(strong("Params for Cox regression")),style="width:500px;"),
+						div(h4("1. Adjust text size:"),style="width:400px;"),
+						fluidRow(
+							column(4, numericInput(inputId = ns("axis_size_2"), label = "Font size:", value = 0.7, step = 0.1)),
+						),	
+						div(h4("2. Adjust lab and title name:"),style="width:500px;"),
+						fluidRow(
+							column(4, textInput(inputId = ns("title_name_2"), label = "Title name:", value = "Hazard ratio"))
+						),	
+						div(h5("Note: You can download the raw data and plot in local R environment for more detailed adjustment.")),
+					),
+					br(),
 					shinyWidgets::actionBttn(
 						ns("sur_analysis_bt_single"), "Run",
 				        style = "gradient",
@@ -121,7 +160,6 @@ ui.modules_pancan_sur_o2o = function(id) {
 				    	column(3, offset = 0, downloadButton(ns("save_data_raw"), "Raw data(.csv)")),
 				    	column(3, offset = 1, downloadButton(ns("save_data_res"), "Analyzed data(.csv)")),
 				    ),
-
 				    br(),
 				    fluidRow(
 				    	column(2, p("Plot Height:")),
@@ -261,6 +299,11 @@ server.modules_pancan_sur_o2o = function(input, output, session) {
 		  		column(4,colourpicker::colourInput(ns("one_log_color2"), "Color (Group 2):", "#2E9FDF")),
 		  	)
 		} else if(input$sur_method=="Univariate Cox regression") {
+			fluidRow(
+				column(4,numericInput(ns("text_c1"), "Position of text col-1", 0.02, step = 0.01)),
+				column(4,numericInput(ns("text_c2"), "text col-2", 0.22, step = 0.01)),
+				column(4,numericInput(ns("text_c3"), "text col-3", 0.4, step = 0.01))
+			)
 		}
 	)
 
@@ -303,32 +346,89 @@ server.modules_pancan_sur_o2o = function(input, output, session) {
 		}
 	})
 
+
+ 	observe({
+		updateTextInput(session, "x_name", value = paste(input$endpoint_type, "(days)"))
+		updateTextInput(session, "title_name", value = NULL)
+ 	})
+
+
 	sur_plot_one = eventReactive(input$sur_analysis_bt_single,{
 		shiny::validate(
 			need(try(nrow(sur_res_one$sur_dat)>0), 
 				"Please inspect whether to set valid groups in S3 step."),
 		)
+		if(input$plot_CI == "NO"){
+			conf.int = FALSE
+			conf.int.style = "ribbon"
+		} else if(input$plot_CI == "YES(ribbon)"){
+			conf.int = TRUE
+			conf.int.style = "ribbon"
+		} else if(input$plot_CI == "YES(step)"){
+			conf.int = TRUE
+			conf.int.style = "step"
+		}
 		dat = sur_res_one$sur_dat
+
+		custom_theme <- function(plot_size) {
+		  theme_classic() %+replace%
+		    theme(
+		      plot.title=element_text(hjust=0.5, size = plot_size)
+		    )
+		}
+
+
+		if(input$plot_table=="NO" & input$plot_ncensor=="NO"){
+			surv.plot.height = 1
+           	risk.table.height = 0 
+           	ncensor.plot.height = 0 
+           	risk.table = FALSE
+           	ncensor.plot = FALSE
+		} else if (input$plot_table=="YES" & input$plot_ncensor=="NO"){
+			surv.plot.height = 0.7
+           	risk.table.height = 0.3 
+           	ncensor.plot.height = 0
+           	risk.table = TRUE
+           	ncensor.plot = FALSE
+		} else if (input$plot_table=="NO" & input$plot_ncensor=="YES"){
+			surv.plot.height = 0.7
+           	risk.table.height = 0 
+           	ncensor.plot.height = 0.3 
+           	risk.table = FALSE
+           	ncensor.plot = TRUE
+		} else if (input$plot_table=="YES" & input$plot_ncensor=="YES"){
+			surv.plot.height = 0.7
+           	risk.table.height = 0.15
+           	ncensor.plot.height = 0.15
+           	risk.table = TRUE
+           	ncensor.plot = TRUE
+		}
+
 		if(input$sur_method=="Log-rank test"){	
 			fit <- survfit(Surv(time, status) ~ Group, data = dat)
-
 			p <- ggsurvplot(fit, data = dat,#data = group_sur_final(), 
-                           pval = TRUE, pval.method = TRUE, 
-                           palette = c(input$one_log_color1, input$one_log_color2), 
-                           size = 1.2, font.legend = c(14, "black"), 
-                           font.x = c(14, "bold", "black"), 
-                           font.y = c(14,  "bold", "black"), 
-                           font.tickslab = c(12, "bold", "black"), 
-                           xlab = paste(input$endpoint_type, "(days)"),
-                           risk.table = TRUE, risk.table.col = "strata", risk.table.y.text = FALSE, 
-                           ncensor.plot = FALSE, 
-                           surv.plot.height = 0.7, 
-                           risk.table.height = 0.3, 
-                           ggtheme = ggplot2::theme_classic()) + 
-			  ggplot2::guides(color = ggplot2::guide_legend(ncol = 3))
+	                       pval = TRUE, pval.method = TRUE, 
+	                       palette = c(input$one_log_color1, input$one_log_color2), 
+	                       size = 1.2, font.legend = c(14, "black"), 
+	                       font.x = c(input$axis_size, "bold", "black"), 
+	                       font.y = c(input$axis_size,  "bold", "black"), 
+	                       font.tickslab = c(12, "bold", "black"), 
+	                       xlab = input$x_name,
+	                       title = input$title_name,
+	                       conf.int = conf.int,
+	                       conf.int.style = conf.int.style,
+	                       risk.table = risk.table, risk.table.col = "strata", risk.table.y.text = FALSE, 
+	                       ncensor.plot = ncensor.plot, 
+	                       surv.plot.height = surv.plot.height, 
+	                       risk.table.height = risk.table.height, 
+	                       ncensor.plot.height = ncensor.plot.height, 
+	                       ggtheme = custom_theme(input$title_size))
 		}  else if (input$sur_method=="Univariate Cox regression"){
 			fit = coxph(Surv(time, status) ~ Group , data = dat)
-			p = ggforest(fit,data = dat,fontsize = 1)
+			p = ggforest(fit,data = dat,#fontsize = 1,
+				cpositions = c(input$text_c1, input$text_c2, input$text_c3),
+				fontsize = input$axis_size_2, main = input$title_name_2
+				)
 		}
 		p
 	})

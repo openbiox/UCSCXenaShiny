@@ -13,9 +13,12 @@ load_data(name)
 \itemize{
 \item \code{ccle_absolute}: CCLE ABSOLUTE result.
 \item \code{ccle_info}: CCLE information.
+\item \code{ccle_info_fine}: cleaned CCLE information for TPC analysis.
 \item \code{pcawg_info}: PCAWG information.
+\item \code{pcawg_info_fine}: cleaned PCAWG information for TPC analysis.
 \item \code{pcawg_purity}: PCAWG tumor purity, ploidy and WGD data.
 \item \code{tcga_clinical}: TCGA clinical data.
+\item \code{tcga_clinical_fine}: cleaned TCGA information for TPC analysis.
 \item \code{tcga_genome_instability}: TCGA genome instability data.
 \item \code{tcga_gtex}: TCGA and GTEX sample info.
 \item \code{tcga_purity}: TCGA tumor purity data.
@@ -37,10 +40,14 @@ load_data(name)
 \item \code{tcga_pan_immune_signature}: TCGA pan-cancer immune signature.
 \item \code{tcga_stemness}: TCGA tumor stemness data.
 \item \code{tcga_TIL}: TCGA TIL data.
+\item \code{tcga_PW}: ssGSEA scores of HALLMARK, KEGG, IOBR terms for TCGA samples.
+\item \code{tcga_PW_meta}: metadata annotation for HALLMARK, KEGG, IOBR terms.
 \item \code{tcga_tmb}: TCGA TMB data.
 \item \code{tcga_armcalls}: TCGA arm alteration calls and Aneuploidy data.
 \item \code{tcga_dna_repair}: TCGA DNA repair data.
 \item \code{pancancer_conserved_immune_subtype}: Pan-cancer conserved immune subtypes.
+\item \code{pcawg_TIL}: PCAWG TIL data.
+\item \code{pcawg_PW}: ssGSEA scores of HALLMARK, KEGG, IOBR terms for PCAWG samples.
 }}
 }
 \value{

@@ -94,11 +94,32 @@ ui.modules_pcawg_comp_o2m = function(id) {
 					h4(strong("S3.1 Set analysis parameters")), 
 					selectInput(ns("comp_method"), "Comparison method:",choices = c("t-test", "wilcoxon")),
 					h4(strong("S3.2 Set visualization parameters")), 
-					column(3, colourpicker::colourInput(inputId = ns("group_1_color_2"), "Color (Group 1):", "#E69F00")),
-					column(3, colourpicker::colourInput(inputId = ns("group_2_color_2"), "Color (Group 2):", "#56B4E9")),
-					column(6, radioButtons(inputId = ns("significance"), label = "Significance:", 
-						choices = c("Value", "Symbol"), selected="Symbol",inline = TRUE)),
-
+					fluidRow(
+						column(3, colourpicker::colourInput(inputId = ns("group_1_color_2"), "Color (Group 1):", "#E69F00")),
+						column(3, colourpicker::colourInput(inputId = ns("group_2_color_2"), "Color (Group 2):", "#56B4E9")),
+					),
+					dropMenu(
+						actionButton(ns("more_visu"), "Set more visualization params"),
+						div(h3("1. Significance display:"),style="width:400px;"),
+						fluidRow(
+							column(6, radioButtons(inputId = ns("significance"), label = "Significance:", 
+								choices = c("Value", "Symbol"), selected="Symbol",inline = TRUE)),
+						),
+						div(h3("2. Adjust text size:"),style="width:400px;"),
+						fluidRow(
+							column(4, numericInput(inputId = ns("axis_size"), label = "Text size:", value = 18, step = 0.5)),
+							column(4, numericInput(inputId = ns("title_size"), label = "Title size:", value = 20, step = 0.5)),
+							column(4, numericInput(inputId = ns("label_size"), label = "Label size:", value = 5, step = 0.5)),
+						),				
+						div(h3("3. Adjust lab and title name:"),style="width:400px;"),
+						fluidRow(
+							column(4, textInput(inputId = ns("x_name"), label = "X-axis name:")),
+							column(4, textInput(inputId = ns("title_name"), label = "Title name:",
+								value = NULL))
+						),	
+						div(h5("Note: You can download the raw data and plot in local R environment for more detailed adjustment.")),
+					),
+					br(),
 					shinyWidgets::actionBttn(
 						ns("step3_plot_line"), "Run",
 				        style = "gradient",
@@ -272,16 +293,6 @@ server.modules_pcawg_comp_o2m = function(input, output, session) {
 		comp_method = switch(isolate(input$comp_method),
 			`t-test` = "parametric", wilcoxon = "nonparametric")
 		valid_cancer_choose = sort(cancer_choose$multi_cancer_ok)
-		# stat_comp = lapply(sort(valid_cancer_choose), function(tcga_type){
-		#   p = ggbetweenstats(
-		#     subset(merge_data_line, cancer==tcga_type),
-		#   	x = "group",
-		#   	y = "value",
-		#     type = comp_method)
-		#   extract_stats(p)$subtitle_data
-		# }) %>% do.call(rbind, .) %>% 
-		# dplyr::select(!expression) %>% 
-		# dplyr::mutate(cancer = sort(valid_cancer_choose), .before=1)
 		withProgress(message = "Please wait for a while.",{
 			stat_comp = lapply(seq(valid_cancer_choose), function(i){
 			  tcga_type = valid_cancer_choose[i]
@@ -299,7 +310,11 @@ server.modules_pcawg_comp_o2m = function(input, output, session) {
 		})
 	})
 
-
+	observe({
+		updateTextInput(session, "x_name", value = unique(y_axis_data()$id))
+		# updateTextInput(session, "y_name", value = unique(y_axis_data()$id))
+		updateTextInput(session, "title_name", value = "")
+	})
 	comp_plot_line = eventReactive(input$step3_plot_line, {
 		shiny::validate(
 			need(try(nrow(merge_data_line())>0), 
@@ -311,18 +326,21 @@ server.modules_pcawg_comp_o2m = function(input, output, session) {
 		p1 = ggplot(merge_data_line_sub) + 
 		  stat_summary(aes(x=cancer, y=value, color=group),
 		               position=position_dodge(width=0.5)) + 
-		  xlab("") + ylab("TP53") + 
+		  xlab("") + ylab(isolate(input$x_name)) + #转置
+		  ggtitle(label = isolate(input$title_name)) +
 		  ggplot2::scale_color_manual(values = c(isolate(input$group_1_color_2), isolate(input$group_2_color_2))) +
 		  coord_flip() +
 		  theme_minimal() +
 		  theme(legend.position = "top",
 		        plot.margin = margin(0,0,0,0),
-		        text = element_text(size=15))
+		  		text = element_text(size=isolate(input$axis_size)),
+				plot.title = element_text(size=isolate(input$title_size), hjust = 0.5)
+		        )
 
 		if(isolate(input$significance)=="Value"){
 			p2 = comp_data_line() %>% ggplot() + 
 			  geom_text(aes(label=formatC(p.value, format = "e", digits = 2),
-			                x=cancer,y=1),) +
+			                x=cancer,y=1), size = isolate(input$label_size)) +
 			  coord_flip()
 		} else if (isolate(input$significance)=="Symbol"){
 			p2 = comp_data_line() %>%
@@ -332,7 +350,7 @@ server.modules_pcawg_comp_o2m = function(input, output, session) {
 			    p.value < 0.05 ~ "*",
 			    TRUE ~ "ns"
 			  )) %>% ggplot() + 
-			  geom_text(aes(label=p.label, x=cancer,y=1),) +
+			  geom_text(aes(label=p.label, x=cancer,y=1), size = isolate(input$label_size)) +
 			  coord_flip()
 		}
 		p2 = p2 +
@@ -346,7 +364,7 @@ server.modules_pcawg_comp_o2m = function(input, output, session) {
 		  theme(panel.grid.major.x = element_blank(),
 		        panel.grid.minor.x = element_blank())
 		
-		p = p1 + p2 + patchwork::plot_layout(widths = c(5,1))
+		p = p1 + p2 + patchwork::plot_layout(widths = c(5,0.3))
 
 		return(p)
 	})

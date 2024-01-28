@@ -19,7 +19,7 @@ vis_dim_dist(
 \arguments{
 \item{ids}{molecular identifiers (>=3)}
 
-\item{data_type}{molecular types, refer to query_pancan_value() fuuntion}
+\item{data_type}{molecular types, refer to query_pancan_value() function}
 
 \item{return.data}{whether to reture the raw meta/matrix data (list) instead of plot}
 

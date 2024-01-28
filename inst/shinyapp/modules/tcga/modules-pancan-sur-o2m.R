@@ -100,6 +100,61 @@ ui.modules_pancan_sur_o2m = function(id) {
 					 #                   content = "sur_initial_group"),
 					h4(strong("S3.2 Set visualization parameters")), 
 			      	uiOutput(ns("multi_params.ui")),
+
+			      	dropMenu(
+						actionButton(ns("more_visu"), "Set more visualization params"),
+						placement = "left",
+						div(h3(strong("Params for Log-rank test")),style="width:500px;"),
+						div(h4("1. Add one vertical line:"),style="width:400px;"),
+				      	fluidRow(
+					  		column(6, numericInput(ns("multi_log_line"), "Add line(P):", 0.05)),
+				      	),
+						div(h4("2. Significance display:"),style="width:400px;"),
+				      	fluidRow(
+					  		column(6, selectInput(ns("multi_log_label"),"Add text:",
+					  			choices = c("Signif.(symbol)", "Signif.(value)"),selected = "Signif.(symbol)"))	
+				      	),
+						div(h4("3. Adjust text size:"),style="width:400px;"),
+						fluidRow(
+							column(4, numericInput(inputId = ns("axis_size"), label = "Text size:", value = 18, step = 0.5)),
+							column(4, numericInput(inputId = ns("title_size"), label = "Title size:", value = 20, step = 0.5)),
+							column(4, numericInput(inputId = ns("label_size"), label = "Label size:", value = 5, step = 0.5)),
+						),				
+						div(h4("4. Adjust lab and title name:"),style="width:400px;"),
+						fluidRow(
+							column(4, textInput(inputId = ns("x_name"), label = "X-axis name:", value = "-log10(P-value)")),
+							column(4, textInput(inputId = ns("title_name"), label = "Title name:",
+								value = NULL))
+						),
+
+						div(h3(strong("Params for Cox regression")),style="width:500px;"),
+						div(h4("1. Add one vertical line:"),style="width:400px;"),
+				      	fluidRow(
+					  		column(6, numericInput(ns("multi_cox_line"), "Add line(P):", 0.05)),
+				      	),
+						div(h4("2. Significance display:"),style="width:400px;"),
+				      	fluidRow(
+					  		column(6, selectInput(ns("multi_cox_label"),"Add text:",
+					  			choices = c("Signif.(symbol)", "Signif.(value)", "HR value"),selected = "HR value"))	
+				      	),
+						div(h4("3. Adjust text size:"),style="width:400px;"),
+						fluidRow(
+							column(4, numericInput(inputId = ns("axis_size_2"), label = "Text size:", value = 18, step = 0.5)),
+							column(4, numericInput(inputId = ns("title_size_2"), label = "Title size:", value = 20, step = 0.5)),
+							column(4, numericInput(inputId = ns("label_size_2"), label = "Label size:", value = 5, step = 0.5)),
+						),				
+						div(h4("4. Adjust lab and title name:"),style="width:400px;"),
+						fluidRow(
+							column(4, textInput(inputId = ns("x_name_2"), label = "X-axis name:", value = "-log10(P-value)")),
+							column(4, textInput(inputId = ns("title_name_2"), label = "Title name:",
+								value = NULL))
+						),
+						div(h5("Note: You can download the raw data and plot in local R environment for more detailed adjustment."))
+			      	),
+			      	br(),
+
+
+
 					shinyWidgets::actionBttn(
 						ns("sur_analysis_bt_multi"), "Run",
 				        style = "gradient",
@@ -116,11 +171,15 @@ ui.modules_pancan_sur_o2m = function(id) {
 					),
 
 					h4(strong("S3.3 Download results")), 
+
 				    fluidRow(
 				    	column(3, downloadButton(ns("save_plot_bt"), "Figure")),
 				    	column(3, offset = 0, downloadButton(ns("save_data_raw"), "Raw data(.csv)")),
 				    	column(3, offset = 1, downloadButton(ns("save_data_res"), "Analyzed data(.csv)"))
 				    ),
+
+
+
 
 				    br(),
 				    fluidRow(
@@ -263,16 +322,16 @@ server.modules_pancan_sur_o2m = function(input, output, session) {
 		  	fluidRow(
 		  		column(3,colourpicker::colourInput(ns("multi_log_color1"), "Color (Group 1):", "#d53e4f")),
 		  		column(3,colourpicker::colourInput(ns("multi_log_color2"), "Color (Group 1):", "#3288bd")),
-		  		column(3, numericInput(ns("multi_log_line"), "Add line(P):", 0.05)),
-		  		column(3, selectInput(ns("multi_log_label"),"Add text:",
-		  			choices = c("Signif.(symbol)", "Signif.(value)"),selected = "Signif.(symbol)"))	
+		  		# column(3, numericInput(ns("multi_log_line"), "Add line(P):", 0.05)),
+		  		# column(3, selectInput(ns("multi_log_label"),"Add text:",
+		  		# 	choices = c("Signif.(symbol)", "Signif.(value)"),selected = "Signif.(symbol)"))	
 		  	)
 		} else if(input$sur_method=="Univariate Cox regression") {
 		  	fluidRow(
 		  		column(4,colourpicker::colourInput(ns("multi_cox_color"), "Color:", "grey")),
-		  		column(4, numericInput(ns("multi_cox_line"), "Add line(P):", 0.05)),
-		  		column(4, selectInput(ns("multi_cox_label"),"Add text:",
-		  			choices = c("HR value", "Signif.(symbol)", "Signif.(value)"),selected = "HR value"))	
+		  		# column(4, numericInput(ns("multi_cox_line"), "Add line(P):", 0.05)),
+		  		# column(4, selectInput(ns("multi_cox_label"),"Add text:",
+		  		# 	choices = c("HR value", "Signif.(symbol)", "Signif.(value)"),selected = "HR value"))	
 		  	)
 		}
 	)
@@ -358,17 +417,20 @@ server.modules_pancan_sur_o2m = function(input, output, session) {
 			  ggplot(aes(x = Cancer, y = pval_log, fill = Risk)) + 
 			  geom_col() +
 			  scale_fill_manual(values = fill_cols) + 
-			  xlab(NULL) + ylab("- log10(P-value)") +
+			  xlab(NULL) + ylab(isolate(input$x_name)) +
+			  ggtitle(label = isolate(input$title_name)) +
 			  geom_hline(yintercept = -log10(input$multi_log_line), color = "red") +
 			  coord_flip() +
 			  theme_minimal() +
 			  theme(legend.position = "top",
 			        plot.margin = margin(0,0,0,0),
-			        text = element_text(size=15))  
+			        text = element_text(size=input$axis_size),
+					plot.title = element_text(size=isolate(input$title_size), hjust = 0.5)
+			        )  
 			if(input$multi_log_label=="Signif.(value)"){
 				p2 =  ggplot(pval_df) +
 				  geom_text(aes(label=formatC(p.value, format = "e", digits = 2),
-				                x=Cancer,y=1),) +
+				                x=Cancer,y=1),size = isolate(input$label_size)) +
 				  coord_flip()
 			} else if (input$multi_log_label=="Signif.(symbol)"){
 				p2 = pval_df %>%
@@ -378,7 +440,8 @@ server.modules_pancan_sur_o2m = function(input, output, session) {
 				    p.value  < 0.05 ~ "*",
 				    TRUE ~ "ns"
 				  )) %>% ggplot() +
-				  geom_text(aes(label=p.label,x=Cancer,y=1)) + coord_flip()
+				  geom_text(aes(label=p.label,x=Cancer,y=1),size = isolate(input$label_size)) + 
+				  coord_flip()
 			}
 			p2 = p2 +
 			  theme_minimal() +
@@ -422,23 +485,26 @@ server.modules_pancan_sur_o2m = function(input, output, session) {
 			  ggplot(aes(x = Cancer, y = pval_log, fill = Group)) + 
 			  geom_col(position="dodge") + 
 			  scale_fill_manual(values = fill_cols) + 
-			  xlab(NULL) + ylab("- log10(P-value)") +
+			  xlab(NULL) + ylab(isolate(input$x_name_2)) +
+			  ggtitle(label = isolate(input$title_name_2)) +
 			  geom_hline(yintercept = -log10(input$multi_cox_line), color = "red") +
 			  coord_flip() +
 			  theme_minimal() +
 			  theme(legend.position = "top",
-			        text = element_text(size=15))  
+			        text = element_text(size=input$axis_size_2),
+					plot.title = element_text(size=isolate(input$title_size_2), hjust = 0.5)
+			        )  
 			if(input$multi_cox_label=="HR value"){
 				p = p1 + 
-				  geom_text(aes(y = max(pval_log),label = HR.label),
+				  geom_text(aes(y = max(pval_log),label = HR.label), size = isolate(input$label_size_2),
 				          position=position_dodge(width=0.9), hjust = 1)
 			} else if (input$multi_cox_label=="Signif.(symbol)"){
 				p = p1 + 
-				  geom_text(aes(y = max(pval_log),label = p.value_symbol),
+				  geom_text(aes(y = max(pval_log),label = p.value_symbol), size = isolate(input$label_size_2),
 				          position=position_dodge(width=0.9), hjust = 1)
 			} else if (input$multi_cox_label=="Signif.(value)"){
 				p = p1 + 
-				  geom_text(aes(y = max(pval_log),label = p.value_label),
+				  geom_text(aes(y = max(pval_log),label = p.value_label), size = isolate(input$label_size_2),
 				          position=position_dodge(width=0.9), hjust = 1)
 			}
 		}
