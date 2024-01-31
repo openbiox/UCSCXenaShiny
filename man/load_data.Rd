@@ -48,6 +48,7 @@ load_data(name)
 \item \code{pancancer_conserved_immune_subtype}: Pan-cancer conserved immune subtypes.
 \item \code{pcawg_TIL}: PCAWG TIL data.
 \item \code{pcawg_PW}: ssGSEA scores of HALLMARK, KEGG, IOBR terms for PCAWG samples.
+\item ...
 }}
 }
 \value{

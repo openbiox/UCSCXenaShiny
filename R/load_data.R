@@ -42,6 +42,7 @@
 #'   - `pancancer_conserved_immune_subtype`: Pan-cancer conserved immune subtypes.
 #'   - `pcawg_TIL`: PCAWG TIL data.
 #'   - `pcawg_PW`: ssGSEA scores of HALLMARK, KEGG, IOBR terms for PCAWG samples.
+#'   - ...
 
 #'   
 #' @return a dataset, typically a `data.frame`.
@@ -79,6 +80,11 @@ load_data <- function(name) {
       # Download it to inst/extdata from zenodo
       # Then load it
       data_url <- file.path("https://zenodo.org/record/10340116/files", name2)
+      if (tryCatch(httr::status_code(httr::HEAD(data_url)), 
+                   error = function(e) 404) != 200) {
+        # Use an alternative OSS approach
+        data_url <- file.path("https://ucscxenashiny-1301043367.cos.ap-shanghai.myqcloud.com", name2)
+      }
       message("Loading data from remote: ", data_url, ", please wait...")
       name <- FALSE
       tryCatch(
