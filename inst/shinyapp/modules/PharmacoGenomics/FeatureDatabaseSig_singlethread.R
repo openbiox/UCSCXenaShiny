@@ -113,7 +113,8 @@ serverFeatureDatabaseSig <- function(input, output, session){
           if(fea_nrow == 0 | length(intersected_cells) == 0){next}
           # Calculate
           re <- lapply(1:nrow(db), function(x){
-            re2 <- tryCatch(cor.test(fea, as.numeric(db[x,])),
+            re2 <- tryCatch(cor.test(fea, as.numeric(db[x,]),
+                                     method = "spearman"),
                             error = function(x){NA})
             if(all(is.na(re2))){
               re3 <- data.frame(
@@ -170,7 +171,7 @@ serverFeatureDatabaseSig <- function(input, output, session){
             } else {
               re3 <- data.frame(
                 p = re2$p.value,
-                effect = re2$statistic
+                effect = log2(re2$statistic)
               )
             }
             re3

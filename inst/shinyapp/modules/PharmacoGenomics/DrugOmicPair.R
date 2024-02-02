@@ -99,7 +99,7 @@ serverDrugOmicPair <- function(input, output, session){
           drugs = sel_drugs
         )
         p <- ggscatter(cor_df, x = "genes", y = "drugs") + 
-          stat_cor(size = 6) + stat_smooth(method = "lm") + theme_bw() + 
+          stat_cor(size = 6, method = "spearman") + stat_smooth(method = "lm") + theme_bw() + 
           theme(
             axis.title = element_blank(),
             title = element_text(size = 15, face = "bold"),
