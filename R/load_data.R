@@ -9,9 +9,12 @@
 #' **Builtin datasets**:
 #'   - `ccle_absolute`: CCLE ABSOLUTE result.
 #'   - `ccle_info`: CCLE information.
+#'   - `ccle_info_fine`: cleaned CCLE information for TPC analysis.
 #'   - `pcawg_info`: PCAWG information.
+#'   - `pcawg_info_fine`: cleaned PCAWG information for TPC analysis.
 #'   - `pcawg_purity`: PCAWG tumor purity, ploidy and WGD data.
 #'   - `tcga_clinical`: TCGA clinical data.
+#'   - `tcga_clinical_fine`: cleaned TCGA information for TPC analysis.
 #'   - `tcga_genome_instability`: TCGA genome instability data.
 #'   - `tcga_gtex`: TCGA and GTEX sample info.
 #'   - `tcga_purity`: TCGA tumor purity data.
@@ -31,10 +34,16 @@
 #'   - `tcga_pan_immune_signature`: TCGA pan-cancer immune signature.
 #'   - `tcga_stemness`: TCGA tumor stemness data.
 #'   - `tcga_TIL`: TCGA TIL data.
+#'   - `tcga_PW`: ssGSEA scores of HALLMARK, KEGG, IOBR terms for TCGA samples.
+#'   - `tcga_PW_meta`: metadata annotation for HALLMARK, KEGG, IOBR terms.
 #'   - `tcga_tmb`: TCGA TMB data.
 #'   - `tcga_armcalls`: TCGA arm alteration calls and Aneuploidy data.
 #'   - `tcga_dna_repair`: TCGA DNA repair data.
 #'   - `pancancer_conserved_immune_subtype`: Pan-cancer conserved immune subtypes.
+#'   - `pcawg_TIL`: PCAWG TIL data.
+#'   - `pcawg_PW`: ssGSEA scores of HALLMARK, KEGG, IOBR terms for PCAWG samples.
+#'   - ...
+
 #'   
 #' @return a dataset, typically a `data.frame`.
 #' @export
@@ -71,6 +80,11 @@ load_data <- function(name) {
       # Download it to inst/extdata from zenodo
       # Then load it
       data_url <- file.path("https://zenodo.org/record/10554197/files", name2)
+      if (tryCatch(httr::status_code(httr::HEAD(data_url)), 
+                   error = function(e) 404) != 200) {
+        # Use an alternative OSS approach
+        data_url <- file.path("https://ucscxenashiny-1301043367.cos.ap-shanghai.myqcloud.com", name2)
+      }
       message("Loading data from remote: ", data_url, ", please wait...")
       name <- FALSE
       tryCatch(

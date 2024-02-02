@@ -281,17 +281,22 @@ group_samples_Server = function(input, output, session, database = "toil",
           dplyr::filter(Sample %in% samples())
       }
     }
-    x_data$level1 = L1_x
-    x_data$cancer = clinical_phe[,2,drop=T][match(x_data$Sample, clinical_phe$Sample)]
-    x_data = x_data[,c("id","level1","level2","Sample","value","cancer")] %>%
-      dplyr::arrange(cancer, Sample)
-    x_data
+    # req(nrow(x_data)>0)
+    if(nrow(x_data)>0){
+      x_data$level1 = L1_x
+      x_data$cancer = clinical_phe[,2,drop=T][match(x_data$Sample, clinical_phe$Sample)]
+      x_data = x_data[,c("id","level1","level2","Sample","value","cancer")] %>%
+        dplyr::arrange(cancer, Sample)
+      x_data
+    } else {
+      NULL
+    }
+
   })
   # output$condi_dist = renderPrint({head(condi_data())})
 
   output$condi_dist = renderPrint({
-    if(is.null(condi_data())) return("No item is chosen.")
-
+    if(is.null(condi_data())) return("No valid sammple for the identifier.")
     if(class(condi_data()[,"value",drop=TRUE])=="numeric"){
       summary(condi_data()[,"value",drop=TRUE])
     } else {
@@ -301,6 +306,7 @@ group_samples_Server = function(input, output, session, database = "toil",
 
 
   output$set_quantile.ui = renderUI({
+    req(!is.null(condi_data()))
     choice_chrs = condi_data()$value
     if(class(choice_chrs)!="character"){
       materialSwitch(ns("set_quantile"),"Whether group by percentile?",value = TRUE)
@@ -311,6 +317,7 @@ group_samples_Server = function(input, output, session, database = "toil",
   # 创建两分组
 
   output$set_group1.ui = renderUI({
+    req(!is.null(condi_data()))
     choice_chrs = condi_data()$value
     fluidRow(
       if(class(choice_chrs)=="character"){
@@ -339,6 +346,7 @@ group_samples_Server = function(input, output, session, database = "toil",
   })
 
   output$set_group2.ui = renderUI({
+    req(!is.null(condi_data()))
     choice_chrs = condi_data()$value
     fluidRow(
       if(class(choice_chrs)=="character"){

@@ -144,7 +144,7 @@ observeEvent(req(input$navbar=="CCLE: Comparison Analysis"),{
 
 
 # # identifier help
-observeEvent(req(input$navbar=="Id reference"),{
+observeEvent(req(input$navbar=="ID Query"),{
 	callModule(server.modules_id_reference, "modules_id_reference")
 }, once = TRUE) 
 

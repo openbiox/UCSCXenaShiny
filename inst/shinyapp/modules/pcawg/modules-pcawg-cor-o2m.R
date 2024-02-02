@@ -95,9 +95,28 @@ ui.modules_pcawg_cor_o2m = function(id) {
 					h4(strong("S3.1 Set analysis parameters")), 
 					selectInput(ns("cor_method"), "Correlation method:",choices = c("Pearson", "Spearman")),
 					h4(strong("S3.2 Set visualization parameters")), 
-					column(3, colourpicker::colourInput(inputId = ns("positive_color"), "Positive color:", "#d53e4f")),
-					column(3, colourpicker::colourInput(inputId = ns("negative_color"), "Negative color:", "#3288bd")),
-			      	br(),br(),
+					fluidRow(
+						column(3, colourpicker::colourInput(inputId = ns("positive_color"), "Positive color:", "#d53e4f")),
+						column(3, colourpicker::colourInput(inputId = ns("negative_color"), "Negative color:", "#3288bd")),
+					),
+					dropMenu(
+						actionButton(ns("more_visu"), "Set more visualization params"),
+						div(h3("1. Adjust text size:"),style="width:400px;"),
+						fluidRow(
+							column(4, numericInput(inputId = ns("axis_size"), label = "Text size:", value = 18, step = 0.5)),
+							column(4, numericInput(inputId = ns("title_size"), label = "Title size:", value = 20, step = 0.5)),
+							column(4, numericInput(inputId = ns("label_size"), label = "Label size:", value = 5, step = 0.5)),
+						),				
+						div(h3("2. Adjust lab and title name:"),style="width:400px;"),
+						fluidRow(
+							column(4, textInput(inputId = ns("x_name"), label = "X-axis name:", 
+								value = "estimate coefficient")),
+							column(4, textInput(inputId = ns("title_name"), label = "Title name:",
+								value = NULL))
+						),	
+						div(h5("Note: You can download the raw data and plot in local R environment for more detailed adjustment.")),
+					),
+					br(),
 
 					shinyWidgets::actionBttn(
 						ns("step3_plot_bar"), "Run",
@@ -253,16 +272,7 @@ server.modules_pcawg_cor_o2m = function(input, output, session) {
 		cor_method = switch(isolate(input$cor_method),
 			Pearson = "parametric", Spearman = "nonparametric")
 		valid_cancer_choose = sort(unique(merge_data_bar$cancer))
-		# stat_cor = lapply(valid_cancer_choose, function(tcga_type){
-		#   p = ggscatterstats(
-		#     subset(merge_data_bar, cancer==tcga_type),
-		#     x = "x_value",
-		#     y = "y_value",
-		#     type = cor_method)
-		#   extract_stats(p)$subtitle_data
-		# }) %>% do.call(rbind, .) %>% 
-		# dplyr::select(!expression) %>% 
-		# dplyr::mutate(cancer = valid_cancer_choose, .before=1)
+
 		withProgress(message = "Please wait for a while.",{
 			stat_cor = lapply(seq(valid_cancer_choose), function(i){
 			  tcga_type = valid_cancer_choose[i]
@@ -294,13 +304,15 @@ server.modules_pcawg_cor_o2m = function(input, output, session) {
 		  ggplot(aes(x=cancer, y=estimate, fill=group)) + 
 		  geom_col(color="black") + 
 		  geom_text(aes(y=0,label=format(round(estimate,2), nsmall =2),
-		                hjust = ifelse(estimate >= 0, 1.5, -0.5))) +
-		  xlab("") + ylab("estimate coefficient") +
+		                hjust = ifelse(estimate >= 0, 1.5, -0.5)),
+		  			size = isolate(input$label_size)) +
+		  xlab("") + ylab(isolate(input$x_name)) + #转置
+		  ggtitle(label = isolate(input$title_name)) +
 		  coord_flip() +
 		  scale_fill_manual(values = c(isolate(input$negative_color),isolate(input$positive_color))) +
 		  theme_minimal() + 
-		  theme(legend.position = "none",
-		        text = element_text(size=18))
+		  theme(legend.position = "none", text = element_text(size=isolate(input$axis_size)),
+				plot.title = element_text(size=isolate(input$title_size), hjust = 0.5))
 		return(p)
 	})
 

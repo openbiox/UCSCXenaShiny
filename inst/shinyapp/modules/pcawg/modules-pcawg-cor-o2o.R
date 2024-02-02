@@ -96,10 +96,27 @@ ui.modules_pcawg_cor_o2o = function(id) {
 						column(3, colourpicker::colourInput(inputId = ns("x_hist_color"), "Hist color(x):", "#009E73")),
 						column(3, colourpicker::colourInput(inputId = ns("y_hist_color"), "Hist color(y):", "#D55E00"))
 					),
-					fluidRow(
-						column(3, numericInput(inputId = ns("point_size"), label = "Point size:", value = 3, step = 0.5)),
-						column(3, numericInput(inputId = ns("point_alpha"), label = "Point alpha:", value = 0.4, step = 0.1, min = 0, max = 1))
+					dropMenu(
+						actionButton(ns("more_visu"), "Set more visualization params"),
+						div(h3("1. Adjust points:"),style="width:400px;"),
+						fluidRow(
+							column(4, numericInput(inputId = ns("point_size"), label = "Point size:", value = 3, step = 0.5)),
+							column(3, numericInput(inputId = ns("point_alpha"), label = "Point alpha:", value = 0.4, step = 0.1, min = 0, max = 1))
+						),
+						div(h3("2. Adjust text size:"),style="width:400px;"),
+						fluidRow(
+							column(4, numericInput(inputId = ns("axis_size"), label = "Text size:", value = 18, step = 0.5)),
+							column(4, numericInput(inputId = ns("title_size"), label = "Title size:", value = 20, step = 0.5))
+						),				
+						div(h3("3. Adjust lab and title name:"),style="width:400px;"),
+						fluidRow(
+							column(4, textInput(inputId = ns("x_name"), label = "X-axis name:")),
+							column(4, textInput(inputId = ns("y_name"), label = "Y-axis name:")),
+							column(4, textInput(inputId = ns("title_name"), label = "Title name:"))
+						),	
+						div(h5("Note: You can download the raw data and plot in local R environment for more detailed adjustment.")),
 					),
+					br(),
 					shinyWidgets::actionBttn(
 						ns("step3_plot_sct"), "Run",
 				        style = "gradient",
@@ -245,6 +262,12 @@ server.modules_pcawg_cor_o2o = function(input, output, session) {
 		data
 	})
 
+	observe({
+		updateTextInput(session, "x_name", value = unique(x_axis_data()$id))
+		updateTextInput(session, "y_name", value = unique(y_axis_data()$id))
+		updateTextInput(session, "title_name", value = cancer_choose$name)
+	})
+
 	cor_plot_sct = eventReactive(input$step3_plot_sct, {
 		shiny::validate(
 			need(try(nrow(merge_data_sct())>0), 
@@ -259,9 +282,9 @@ server.modules_pcawg_cor_o2o = function(input, output, session) {
 		  merge_data_sct,
 		  x = "x_value",
 		  y = "y_value",
-		  xlab = unique(merge_data_sct$x_id),
-		  ylab = unique(merge_data_sct$y_id),
-		  title = unique(merge_data_sct$cancer),
+		  xlab = isolate(input$x_name),
+		  ylab = isolate(input$y_name),
+		  title = isolate(input$title_name),
 		  type = cor_method,
 		  point.args = list(size = isolate(input$point_size), alpha = isolate(input$point_alpha)),
 		  smooth.line.args = list(color = isolate(input$line_color),linewidth = 1.5,method = "lm",formula = y ~ x),
@@ -269,8 +292,8 @@ server.modules_pcawg_cor_o2o = function(input, output, session) {
 		  ysidehistogram.args = list(fill = isolate(input$y_hist_color), color = "black", na.rm = TRUE),
 		  bf.message = FALSE
 		) + 
-			theme(text = element_text(size=18),
-				  plot.title = element_text(size=20, hjust = 0.5))
+			theme(text = element_text(size=isolate(input$axis_size)),
+				  plot.title = element_text(size=isolate(input$title_size), hjust = 0.5))
 		return(p)
 	})
 	output$cor_plot_sct = renderPlot({cor_plot_sct()})

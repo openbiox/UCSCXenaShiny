@@ -98,10 +98,10 @@ with:
 remotes::install_github("openbiox/UCSCXenaShiny")
 ```
 
-Or Gitee (for Chinese users):
+Or r-universe:
 
 ```r
-remotes::install_git("https://gitee.com/XenaShiny/UCSCXenaShiny")
+install.packages("UCSCXenaShiny", repos = c("https://openbiox.r-universe.dev", "https://cran.r-project.org"))
 ```
 
 Other dependent R packages specific to the Shiny application will be automatically installed when you start with `app_run()` command. If you failed to install **UCSCXenaShiny**, please check if the following system dependencies have been properly installed or see [**Troubleshooting**](#hammer_and_wrench-troubleshooting) section for specific installation issues.

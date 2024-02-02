@@ -23,7 +23,7 @@ if (xena.runMode == "server") {
 }
 
 # Load necessary packages ----------------------------------
-message("Checking depedencies...")
+message("Checking dependencies...")
 
 if (!requireNamespace("pacman")) {
   install.packages("pacman", repos = "http://cran.r-project.org")

@@ -1,4 +1,4 @@
-#' Group TCGA samples by build-in or custom phenotype and support filtering or merging operations
+#' Group TPC samples by build-in or custom phenotype and support filtering or merging operations
 #'
 #' @param cancer select cancer cohort(s)
 #' @param custom upload custom phenotype data

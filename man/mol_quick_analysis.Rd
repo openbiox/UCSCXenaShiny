@@ -2,7 +2,7 @@
 % Please edit documentation in R/query_general.R
 \name{mol_quick_analysis}
 \alias{mol_quick_analysis}
-\title{Title quick molecule analysis and report generation}
+\title{Quick molecule analysis and report generation}
 \usage{
 mol_quick_analysis(molecule, data_type, out_dir = ".", out_report = FALSE)
 }
@@ -21,5 +21,5 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 a list.
 }
 \description{
-Title quick molecule analysis and report generation
+Quick molecule analysis and report generation
 }

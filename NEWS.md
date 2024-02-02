@@ -6,13 +6,44 @@ https://github.com/openbiox/UCSCXenaShiny/commit/147f4612943df940d3bbd409e82a492
 
 ### Datasets
 
+- `load_data("tcga_PW")`: ssGSEA scores of HALLMARK, KEGG, IOBR terms for TCGA samples.
+- `load_data("tcga_PW_meta")`: metadata annotation for HALLMARK, KEGG, IOBR terms.
+- `load_data("pcawg_TIL")`: PCAWG TIL data.
+- `load_data("pcawg_PW")`: ssGSEA scores of HALLMARK, KEGG, IOBR terms for PCAWG samples.
+
 ### R Package Functions
 
-- `vis_dim_dist()` function and corresponding shiny module.
+- `.opt_pancan` : Default setting for alternative TPC datasets.
+- `mol_quick_analysis()`: Quick molecule analysis and report generation based on TCGA dataset.
+- `query_tcga_group()`: Group TPC samples by build-in or custom phenotype and support filtering or merging operations.
+- `vis_dim_dist()`: Visualize the distribution difference of TCGA samples after dimension reduction analysis.
+- `vis_identifier_dim_dist()`: Visualize the distribution difference of samples after Molecule Identifier dimension reduction analysis.
+- `vis_toil_Mut()`: Visualize molecular profile difference between mutation and wild status of queried gene.
+- `vis_toil_Mut_cancer()`: Visualize molecular profile difference between mutation and wild status of queried gene in Single Cancer Type
 
 ### Shiny application
 
-- abc
+- Homepage
+  - Added slicker gallery to display page summary;
+  - Added report generation for TCGA pan-cancer exploration.
+  
+- General Dataset  Analysis
+
+  - Added one general dimension reduction analysis module.
+
+- Quick TPC Analysis
+
+  - Added one module for association analysis between molecule and pathway;
+  - Added one module for association analysis between molecule and mutation;
+  - Added one module for dimension reduction analysis.
+
+- Personalized Analysis
+
+  - Designed personalized TPC analysis pipelines for based on 3 methods and 3 modes.
+
+- Download
+
+  - Added two modules for exact subset of integrated TPC data and UCSCXena datasets.
 
 ## Enhancements
 
@@ -25,6 +56,10 @@ UCSCXenaShiny::get_pancan_methylation_value(
   aggr = "Q75"
 )
 ```
+
+- Supported installing the package from r-universe (<https://openbiox.r-universe.dev/UCSCXenaShiny>).
+
+- Supported alternative molecular profiling datasets for quick and personalized TPC analysis.
 
 ## Bug Fixes
 
