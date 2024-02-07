@@ -60,11 +60,14 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">vis_gene_pw_cor</span><span class="op">(</span></span>
 <span>  Gene <span class="op">=</span> <span class="st">"TP53"</span>,</span>
 <span>  data_type <span class="op">=</span> <span class="st">"mRNA"</span>,</span>
-<span>  pw_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  Cancer <span class="op">=</span> <span class="st">"ACC"</span>,</span>
-<span>  cor_method <span class="op">=</span> <span class="st">"pearson"</span>,</span>
-<span>  cor_cutoff <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>r <span class="op">=</span> <span class="fl">0.3</span>, p <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>,</span>
-<span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  pw_name <span class="op">=</span> <span class="st">"HALLMARK_ADIPOGENESIS"</span>,</span>
+<span>  cancer_choose <span class="op">=</span> <span class="st">"GBM"</span>,</span>
+<span>  use_regline <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  cor_method <span class="op">=</span> <span class="st">"spearman"</span>,</span>
+<span>  use_all <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  alpha <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  color <span class="op">=</span> <span class="st">"#000000"</span>,</span>
+<span>  filter_tumor <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  opt_pancan <span class="op">=</span> <span class="va">.opt_pancan</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -85,20 +88,32 @@ specifying genomic signature ("TP53 + 2 * KRAS - 1.3 * PTEN").</p></dd>
 <dd><p>the queried Pathway name, see the supported pathway from 'load("toil_sig_score")'default is NULL</p></dd>
 
 
-<dt>Cancer</dt>
+<dt>cancer_choose</dt>
 <dd><p>select cancer cohort(s)</p></dd>
+
+
+<dt>use_regline</dt>
+<dd><p>if TRUE, add regression line.</p></dd>
 
 
 <dt>cor_method</dt>
 <dd><p>select correlation coefficient (pearson/spearman)</p></dd>
 
 
-<dt>cor_cutoff</dt>
-<dd><p>a list with 2 elements names 'r' and 'p' to define significant correlations</p></dd>
+<dt>use_all</dt>
+<dd><p>use all sample, default FALSE.</p></dd>
 
 
-<dt>plot</dt>
-<dd><p>output the plot directly (default) or raw data.frame</p></dd>
+<dt>alpha</dt>
+<dd><p>dot alpha.</p></dd>
+
+
+<dt>color</dt>
+<dd><p>dot color.</p></dd>
+
+
+<dt>filter_tumor</dt>
+<dd><p>whether use tumor sample only, default TRUE</p></dd>
 
 
 <dt>opt_pancan</dt>
@@ -115,19 +130,9 @@ specifying genomic signature ("TP53 + 2 * KRAS - 1.3 * PTEN").</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="va">p1_1</span> <span class="op">&lt;-</span> <span class="fu">vis_gene_pw_cor</span><span class="op">(</span>Gene <span class="op">=</span> <span class="st">"TP53"</span>, data_type <span class="op">=</span> <span class="st">"mRNA"</span>, Cancer <span class="op">=</span> <span class="st">"ACC"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">p1_1_data</span> <span class="op">&lt;-</span> <span class="fu">vis_gene_pw_cor</span><span class="op">(</span>Gene <span class="op">=</span> <span class="st">"CD4"</span>, data_type <span class="op">=</span> <span class="st">"mRNA"</span>, Cancer <span class="op">=</span> <span class="st">"ACC"</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">p1_2</span> <span class="op">&lt;-</span> <span class="fu">vis_gene_pw_cor</span><span class="op">(</span>Gene <span class="op">=</span> <span class="st">"hsa-miR-1228-3p"</span>, data_type <span class="op">=</span> <span class="st">"miRNA"</span>, Cancer <span class="op">=</span> <span class="st">"ACC"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu">vis_gene_pw_cor</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  Gene <span class="op">=</span> <span class="st">"TP53"</span>, data_type <span class="op">=</span> <span class="st">"mRNA"</span>, Cancer <span class="op">=</span> <span class="st">"ACC"</span>,</span></span>
-<span class="r-in"><span>  pw_name <span class="op">=</span> <span class="st">"KEGG_VEGF_SIGNALING_PATHWAY"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu">vis_gene_pw_cor</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  Gene <span class="op">=</span> <span class="st">"TP53"</span>, data_type <span class="op">=</span> <span class="st">"mRNA"</span>, Cancer <span class="op">=</span> <span class="st">"Overall"</span>,</span></span>
-<span class="r-in"><span>  pw_name <span class="op">=</span> <span class="st">"KEGG_VEGF_SIGNALING_PATHWAY"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">vis_gene_pw_cor</span><span class="op">(</span>Gene <span class="op">=</span> <span class="st">"TP53"</span>, data_type <span class="op">=</span> <span class="st">"mRNA"</span>, </span></span>
+<span class="r-in"><span>                pw_name <span class="op">=</span> <span class="st">"HALLMARK_ADIPOGENESIS"</span>,</span></span>
+<span class="r-in"><span>                cancer_choose <span class="op">=</span> <span class="st">"BRCA"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>

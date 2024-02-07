@@ -60,13 +60,11 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">vis_dim_dist</span><span class="op">(</span></span>
 <span>  ids <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TP53"</span>, <span class="st">"KRAS"</span>, <span class="st">"PTEN"</span>, <span class="st">"MDM2"</span>, <span class="st">"CDKN1A"</span><span class="op">)</span>,</span>
 <span>  data_type <span class="op">=</span> <span class="st">"mRNA"</span>,</span>
-<span>  return.data <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  group_info <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  DR_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PCA"</span>, <span class="st">"UMAP"</span>, <span class="st">"tSNE"</span><span class="op">)</span>,</span>
 <span>  palette <span class="op">=</span> <span class="st">"Set1"</span>,</span>
 <span>  add_margin <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  group_levels <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  opt_pancan <span class="op">=</span> <span class="va">.opt_pancan</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  opt_pancan <span class="op">=</span> <span class="va">.opt_pancan</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -80,8 +78,8 @@
 <dd><p>molecular types, refer to query_pancan_value() function</p></dd>
 
 
-<dt>return.data</dt>
-<dd><p>whether to reture the raw meta/matrix data (list) instead of plot</p></dd>
+<dt>group_info</dt>
+<dd><p>two-column grouping information with names 'Sample','Group'</p></dd>
 
 
 <dt>DR_method</dt>
@@ -96,16 +94,8 @@
 <dd><p>the marginal plot (NULL, "density", "boxplot")</p></dd>
 
 
-<dt>group_levels</dt>
-<dd><p>group levels setting</p></dd>
-
-
 <dt>opt_pancan</dt>
 <dd><p>specify one dataset for some molercular profiles</p></dd>
-
-
-<dt>...</dt>
-<dd><p>parameters refer to query_tcga_group() function</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -118,31 +108,16 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="fu">vis_dim_dist</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  ids <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TP53"</span>, <span class="st">"KRAS"</span>, <span class="st">"PTEN"</span>, <span class="st">"MDM2"</span>, <span class="st">"CDKN1A"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  cancer <span class="op">=</span> <span class="st">"BRCA"</span>,</span></span>
-<span class="r-in"><span>  group <span class="op">=</span> <span class="st">"Gender"</span>,</span></span>
-<span class="r-in"><span>  group_levels <span class="op">=</span> <span class="cn">NULL</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">group_info</span> <span class="op">=</span> <span class="va">tcga_clinical_fine</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> </span></span>
+<span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Cancer</span><span class="op">==</span><span class="st">"BRCA"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> </span></span>
+<span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Sample</span>, <span class="va">Code</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> </span></span>
+<span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>Group<span class="op">=</span><span class="va">Code</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">vis_dim_dist</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  ids <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TP53"</span>, <span class="st">"KRAS"</span>, <span class="st">"PTEN"</span>, <span class="st">"MDM2"</span>, <span class="st">"CDKN1A"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  cancer <span class="op">=</span> <span class="st">"BRCA"</span>,</span></span>
-<span class="r-in"><span>  group <span class="op">=</span> <span class="st">"Code"</span>,</span></span>
-<span class="r-in"><span>  merge_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Tumor"</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TP"</span>,<span class="st">"TM"</span><span class="op">)</span>,<span class="st">"Normal"</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NT"</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  group_levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Normal"</span>,<span class="st">"Tumor"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  add_margin <span class="op">=</span> <span class="st">"boxplot"</span></span></span>
+<span class="r-in"><span>  group_info <span class="op">=</span> <span class="va">group_info</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">vis_dim_dist</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  ids <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TP53"</span>, <span class="st">"KRAS"</span>, <span class="st">"PTEN"</span>, <span class="st">"MDM2"</span>, <span class="st">"CDKN1A"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  cancer <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"LIHC"</span>,<span class="st">"BRCA"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  group <span class="op">=</span> <span class="st">"Cancer"</span>,</span></span>
-<span class="r-in"><span>  group_levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BRCA"</span>,<span class="st">"LIHC"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  filter_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Code"</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TP"</span><span class="op">)</span>,<span class="st">"+"</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  add_margin <span class="op">=</span> <span class="st">"density"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
