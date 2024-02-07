@@ -5,6 +5,7 @@ ui.modules_ccle_dist <- function(id) {
       column(
         3,
         wellPanel(
+          h4("1. Data", align = "center"),
           div(actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
               style = "margin-bottom: 5px;"),
           conditionalPanel(
@@ -44,6 +45,7 @@ ui.modules_ccle_dist <- function(id) {
           )
         ),
         wellPanel(
+          h4("2. Download", align = "center"),
           numericInput(inputId = ns("height"), label = "Height", value = 5),
           numericInput(inputId = ns("width"), label = "Width", value = 12),
           prettyRadioButtons(
@@ -56,10 +58,11 @@ ui.modules_ccle_dist <- function(id) {
             animation = "jelly",
             fill = TRUE
           ),
+          tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
           downloadBttn(
             outputId = ns("download"),
             style = "gradient",
-            color = "default",
+            color = "primary",
             block = TRUE,
             size = "sm"
           ),
@@ -153,7 +156,9 @@ server.modules_ccle_dist <- function(input, output, session) {
   })
 
   output$tbl <- renderDT(
-    plot_func()$data,
+    plot_func()$data %>%
+      dplyr::rename('Cell_line'='cell','Value'='tpm') %>%
+      dplyr::select(Cell_line, Cell_line_aliases, Site_Primary, Value),
     options = list(lengthChange = FALSE)
   )
 
@@ -163,6 +168,9 @@ server.modules_ccle_dist <- function(input, output, session) {
       paste0(input$ccle_search, "_gene_ccle_dist.csv")
     },
     content = function(file) {
+      data = plot_func()$data %>%
+        dplyr::rename('Cell_line'='cell','Value'='tpm') %>%
+        dplyr::select(Cell_line, Cell_line_aliases, Site_Primary, Value)
       write.csv(plot_func()$data, file, row.names = FALSE)
     }
   )

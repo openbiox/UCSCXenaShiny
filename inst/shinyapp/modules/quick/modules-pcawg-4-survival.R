@@ -3,118 +3,124 @@ ui.modules_pcawg_sur_plot <- function(id) {
   
   fluidPage(
     fluidRow(
-      column(3, wellPanel(
-        div(actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
-            style = "margin-bottom: 5px;"),
-        conditionalPanel(
-          ns = ns,
-          condition = "input.toggleBtn % 2 == 1",
-          mol_origin_UI(ns("mol_origin2quick"), database = "pcawg")
-        ),
-        selectInput(
-          inputId = ns("dataset"), label = "Choose a dataset:",
-          choices = unique(pcawg_info$dcc_project_code)
-        ),
-        shinyWidgets::prettyRadioButtons(
-          inputId = ns("profile"), label = "Select a genomic profile:",
-          choiceValues = c(
-            "mRNA", "miRNA",
-            "promoter", "fusion", "APOBEC"
-          ),
-          choiceNames = c(
-            "mRNA Expression", "miRNA Expression",
-            "Promoter Activity", "Gene Fusion",
-            "APOBEC mutagenesis"
-          ),
-          animation = "jelly"
-        ),
-        virtualSelectInput(
-          inputId = ns("item_input"),
-          label = "Item:",
-          choices = NULL,
-          width = "100%",
-          search = TRUE,
-          allowNewOption = FALSE,
-          dropboxWidth = "200%"
-        ),
-        
-        shinyWidgets::actionBttn(
-          inputId = ns("submit_bt"), label = "Submit",
-          style = "gradient",
-          icon = icon("check"),
-          color = "primary",
-          block = TRUE,
-          size = "sm"
-        ),
-        br(),
-        htmlOutput(ns("pre_re")),
-        hr(),
-        h4("NOTEs:"),
-        h5("The default option <Auto> will return the best p value, if you do not want to do so please choose <Custom>."),
-      )),
-
-      shinyjs::hidden(
-        column(3, id = ns("parameter"), wellPanel(
-          sliderInput(
-            inputId = ns("age"), label = "Age",
-            min = 0, max = 100, value = c(0, 100)
-          ),
-          shinyWidgets::prettyCheckboxGroup(
-            inputId = ns("sex"), label = "Sex",
-            choices = c("Female" = "female", "Male" = "male" ),
-            selected = c("female", "male"),
-            status = "primary",
-            animation = "jelly",
-            inline = TRUE
-          ),
-
-
-          uiOutput(ns("parameter_sub1")),
-          uiOutput(ns("parameter_sub2")),
-
-          selectInput(ns("color_palette"), "Color palette:",
-                      choices = c("npg", "aaas", "lancet", "jco", "ucscgb", "uchicago", "simpsons", "rickandmorty", "custom"),
-                      selected = "aaas"
-          ),
+      column(3, 
+        wellPanel(
+          h4("1. Data", align = "center"),
+          div(actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
+              style = "margin-bottom: 5px;"),
           conditionalPanel(
-            condition = "input.color_palette == 'custom'", ns = ns,
-            colourpicker::colourInput(inputId = ns("custom_col_1"), "Color for 1st group", "#0000FF"),
-            colourpicker::colourInput(inputId = ns("custom_col_2"), "Color for 2nd group", "#FF0000"),
-            colourpicker::colourInput(inputId = ns("custom_col_3"), "Color for 3rd group", "#BEBEBE"),
-            hr()
+            ns = ns,
+            condition = "input.toggleBtn % 2 == 1",
+            mol_origin_UI(ns("mol_origin2quick"), database = "pcawg")
           ),
+          selectInput(
+            inputId = ns("dataset"), label = "Choose a dataset:",
+            choices = unique(pcawg_info$dcc_project_code)
+          ),
+          shinyWidgets::prettyRadioButtons(
+            inputId = ns("profile"), label = "Select a genomic profile:",
+            choiceValues = c(
+              "mRNA", "miRNA",
+              "promoter", "fusion", "APOBEC"
+            ),
+            choiceNames = c(
+              "mRNA Expression", "miRNA Expression",
+              "Promoter Activity", "Gene Fusion",
+              "APOBEC mutagenesis"
+            ),
+            animation = "jelly"
+          ),
+          virtualSelectInput(
+            inputId = ns("item_input"),
+            label = "Item:",
+            choices = NULL,
+            width = "100%",
+            search = TRUE,
+            allowNewOption = FALSE,
+            dropboxWidth = "200%"
+          ),
+          
           shinyWidgets::actionBttn(
-            inputId = ns("go"), label = " GO!",
+            inputId = ns("submit_bt"), label = "Submit",
             style = "gradient",
             icon = icon("check"),
             color = "primary",
             block = TRUE,
             size = "sm"
           ),
-          tags$br(),
-          numericInput(inputId = ns("height"), label = "Height", value = 25),
-          numericInput(inputId = ns("width"), label = "Width", value = 20),
-          column(
-            width = 12, align = "center",
-            prettyRadioButtons(
-              inputId = ns("device"),
-              label = "Choose plot format",
-              choices = c("png", "pdf"),
-              selected = "png",
-              inline = TRUE,
-              icon = icon("check"),
+          br(),
+          htmlOutput(ns("pre_re")),
+          hr(),
+          h4("NOTEs:"),
+          h5("The default option <Auto> will return the best p value, if you do not want to do so please choose <Custom>."),
+        )  
+      ),
+
+      shinyjs::hidden(
+        column(3, 
+          id = ns("parameter"), 
+          wellPanel(
+            h4("2. Parameters", align = "center"),
+            sliderInput(
+              inputId = ns("age"), label = "Age",
+              min = 0, max = 100, value = c(0, 100)
+            ),
+            shinyWidgets::prettyCheckboxGroup(
+              inputId = ns("sex"), label = "Sex",
+              choices = c("Female" = "female", "Male" = "male" ),
+              selected = c("female", "male"),
+              status = "primary",
               animation = "jelly",
-              fill = TRUE
-            )
+              inline = TRUE
+            ),
+            uiOutput(ns("parameter_sub1")),
+            uiOutput(ns("parameter_sub2")),
+            selectInput(ns("color_palette"), "Color palette:",
+                        choices = c("npg", "aaas", "lancet", "jco", "ucscgb", "uchicago", "simpsons", "rickandmorty", "custom"),
+                        selected = "aaas"
+            ),
+            conditionalPanel(
+              condition = "input.color_palette == 'custom'", ns = ns,
+              colourpicker::colourInput(inputId = ns("custom_col_1"), "Color for 1st group", "#0000FF"),
+              colourpicker::colourInput(inputId = ns("custom_col_2"), "Color for 2nd group", "#FF0000"),
+              colourpicker::colourInput(inputId = ns("custom_col_3"), "Color for 3rd group", "#BEBEBE"),
+              hr()
+            ),
+            shinyWidgets::actionBttn(
+              inputId = ns("go"), label = " GO!",
+              style = "gradient",
+              icon = icon("check"),
+              color = "primary",
+              block = TRUE,
+              size = "sm"
+            ),
           ),
-          downloadBttn(
-            outputId = ns("download"),
-            style = "gradient",
-            color = "default",
-            block = TRUE,
-            size = "sm"
+          wellPanel(
+            h4("3. Download", align = "center"),
+            numericInput(inputId = ns("height"), label = "Height", value = 25),
+            numericInput(inputId = ns("width"), label = "Width", value = 20),
+            column(
+              width = 12, align = "center",
+              prettyRadioButtons(
+                inputId = ns("device"),
+                label = "Choose plot format",
+                choices = c("png", "pdf"),
+                selected = "png",
+                inline = TRUE,
+                icon = icon("check"),
+                animation = "jelly",
+                fill = TRUE
+              )
+            ),
+            downloadBttn(
+              outputId = ns("download"),
+              style = "gradient",
+              color = "default",
+              block = TRUE,
+              size = "sm"
+            )
           )
-        ))
+        )
       ),
       column(
         6,
@@ -364,7 +370,11 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
   )
   
   output$tbl <- renderDT(
-    return_data(),
+    return_data() %>%
+      dplyr::rename('Sample'='sampleID','Value'='value',
+        'Status'='status', 'Time'='time') %>%
+      dplyr::mutate(Cancer = input$dataset,Event = "OS") %>%
+      dplyr::select(Cancer, Sample, Event, Status, Time, Value),
     options = list(lengthChange = FALSE)
   )
   
@@ -374,7 +384,12 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
       paste0(input$item_input, "_", input$profile, "_sur.csv")
     },
     content = function(file) {
-      write.csv(return_data(), file, row.names = FALSE)
+      data = return_data() %>%
+        dplyr::rename('Sample'='sampleID','Value'='value',
+          'Status'='status', 'Time'='time') %>%
+        dplyr::mutate(Cancer = input$dataset,Event = "OS") %>%
+        dplyr::select(Cancer, Sample, Event, Status, Time, Value)
+      write.csv(data, file, row.names = FALSE)
     }
   )
 }

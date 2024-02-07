@@ -7,13 +7,11 @@
 vis_dim_dist(
   ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
   data_type = "mRNA",
-  return.data = FALSE,
+  group_info = NULL,
   DR_method = c("PCA", "UMAP", "tSNE"),
   palette = "Set1",
   add_margin = NULL,
-  group_levels = NULL,
-  opt_pancan = .opt_pancan,
-  ...
+  opt_pancan = .opt_pancan
 )
 }
 \arguments{
@@ -21,7 +19,7 @@ vis_dim_dist(
 
 \item{data_type}{molecular types, refer to query_pancan_value() function}
 
-\item{return.data}{whether to reture the raw meta/matrix data (list) instead of plot}
+\item{group_info}{two-column grouping information with names 'Sample','Group'}
 
 \item{DR_method}{the dimension reduction method}
 
@@ -29,11 +27,7 @@ vis_dim_dist(
 
 \item{add_margin}{the marginal plot (NULL, "density", "boxplot")}
 
-\item{group_levels}{group levels setting}
-
 \item{opt_pancan}{specify one dataset for some molercular profiles}
-
-\item{...}{parameters refer to query_tcga_group() function}
 }
 \value{
 a ggplot object or rawdata list
@@ -43,31 +37,16 @@ Visualize the distribution difference of samples after dimension reduction analy
 }
 \examples{
 \dontrun{
-vis_dim_dist(
-  ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
-  cancer = "BRCA",
-  group = "Gender",
-  group_levels = NULL
-)
-
+group_info = tcga_clinical_fine \%>\% 
+  dplyr::filter(Cancer=="BRCA") \%>\% 
+  dplyr::select(Sample, Code) \%>\% 
+  dplyr::rename(Group=Code)
 
 vis_dim_dist(
   ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
-  cancer = "BRCA",
-  group = "Code",
-  merge_by = list("Tumor"=c("TP","TM"),"Normal"=c("NT")),
-  group_levels = c("Normal","Tumor"),
-  add_margin = "boxplot"
+  group_info = group_info
 )
 
-vis_dim_dist(
-  ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
-  cancer = c("LIHC","BRCA"),
-  group = "Cancer",
-  group_levels = c("BRCA","LIHC"),
-  filter_by = list(c("Code",c("TP"),"+")),
-  add_margin = "density"
-)
 }
 
 }

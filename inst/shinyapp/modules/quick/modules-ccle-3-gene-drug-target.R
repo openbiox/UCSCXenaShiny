@@ -5,6 +5,7 @@ ui.modules_ccle_drug_target_asso <- function(id) {
       column(
         width = 3,
         wellPanel(
+          h4("1. Data", align = "center"),
           virtualSelectInput(
             inputId = ns("ccle_search"),
             label = "Input a gene or list (as signature)",
@@ -15,6 +16,9 @@ ui.modules_ccle_drug_target_asso <- function(id) {
             allowNewOption = TRUE,
             dropboxWidth = "200%"
           ),
+        ),
+        wellPanel(
+          h4("2. Parameters", align = "center"),
           selectInput(
             inputId = ns("output_form"),
             label = "Plot output form",
@@ -39,6 +43,7 @@ ui.modules_ccle_drug_target_asso <- function(id) {
           )
         ),
         wellPanel(
+          h4("3. Download", align = "center"),
           numericInput(inputId = ns("height"), label = "Height", value = 6),
           numericInput(inputId = ns("width"), label = "Width", value = 8),
           prettyRadioButtons(
@@ -51,10 +56,11 @@ ui.modules_ccle_drug_target_asso <- function(id) {
             animation = "jelly",
             fill = TRUE
           ),
+          tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
           downloadBttn(
             outputId = ns("download"),
             style = "gradient",
-            color = "default",
+            color = "primary",
             block = TRUE,
             size = "sm"
           )

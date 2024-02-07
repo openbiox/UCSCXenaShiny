@@ -4,6 +4,7 @@ ui.modules_ccle_drug_response_diff <- function(id) {
     fluidRow(
       column(3,
         wellPanel(
+          h4("1. Data", align = "center"),
           virtualSelectInput(
             inputId = ns("ccle_search"),
             label = "Input a gene or list (as signature)",
@@ -14,6 +15,9 @@ ui.modules_ccle_drug_response_diff <- function(id) {
             allowNewOption = TRUE,
             dropboxWidth = "200%"
           ),
+        ),
+        wellPanel(
+          h4("2. Parameters", align = "center"),
           materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = TRUE),
           colourpicker::colourInput(inputId = ns("high_col"), "High group color", "#DF2020"),
           colourpicker::colourInput(inputId = ns("low_col"), "Low group color", "#DDDF21"),
@@ -45,6 +49,7 @@ ui.modules_ccle_drug_response_diff <- function(id) {
           )
         ),
         wellPanel(
+          h4("3. Download", align = "center"),
           numericInput(inputId = ns("height"), label = "Height", value = 8),
           numericInput(inputId = ns("width"), label = "Width", value = 12),
           prettyRadioButtons(

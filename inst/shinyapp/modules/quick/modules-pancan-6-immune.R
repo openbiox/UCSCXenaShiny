@@ -4,83 +4,89 @@ ui.modules_pancan_immune <- function(id) {
     fluidRow(
       column(3,
              wellPanel(
-            div(actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
-                style = "margin-bottom: 5px;"),
-            conditionalPanel(
-              ns = ns,
-              condition = "input.toggleBtn % 2 == 1",
-              mol_origin_UI(ns("mol_origin2quick"), database = "toil")
-            ),
-            shinyWidgets::prettyRadioButtons(
-              inputId = ns("profile"), label = "Select a genomic profile:",
-              choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv"),
-              choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
-              animation = "jelly"
-            ),
-            virtualSelectInput(
-              inputId = ns("Pancan_search"),
-              label = "Input a gene or formula (as signature)",
-              choices = NULL,
-              width = "100%",
-              search = TRUE,
-              allowNewOption = TRUE,
-              dropboxWidth = "200%"
-          ),
-        selectInput(
-          inputId = ns("immune_sig"), "Select the immune signature source", selected = "Cibersort",
-          choices = c("Yasin", "Wolf", "Attractors", "ICR", "c7atoms", "Bindea", "Cibersort")
-        ),
-        selectInput(
-          inputId = ns("cor_method"),
-          label = "Select Correlation method",
-          choices = c("spearman", "pearson"),
-          selected = "spearman"
-        ),
-        numericInput(inputId = ns("height"), label = "Height", value = 8),
-        numericInput(inputId = ns("width"), label = "Width", value = 12),
-        tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
-        shinyWidgets::actionBttn(
-          inputId = ns("search_bttn"),
-          label = "Go!",
-          style = "gradient",
-          icon = icon("search"),
-          color = "primary",
-          block = TRUE,
-          size = "sm"
-        )),
-        wellPanel(
-        prettyRadioButtons(
-          inputId = ns("device"),
-          label = "Choose plot format",
-          choices = c("pdf", "png"),
-          selected = "pdf",
-          inline = TRUE,
-          icon = icon("check"),
-          animation = "jelly",
-          fill = TRUE
-        ),
-        downloadBttn(
-          outputId = ns("download"),
-          style = "gradient",
-          color = "default",
-          block = TRUE,
-          size = "sm"
-        )),
+               h4("1. Data", align = "center"),
+               div(actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
+                   style = "margin-bottom: 5px;"),
+               conditionalPanel(
+                 ns = ns,
+                 condition = "input.toggleBtn % 2 == 1",
+                 mol_origin_UI(ns("mol_origin2quick"), database = "toil")
+               ),
+               shinyWidgets::prettyRadioButtons(
+                 inputId = ns("profile"), label = "Select a genomic profile:",
+                 choiceValues = c("mRNA", "transcript", "methylation", "protein", "miRNA", "cnv"),
+                 choiceNames = c("mRNA Expression", "Transcript Expression", "DNA Methylation", "Protein Expression", "miRNA Expression", "Copy Number Variation"),
+                 animation = "jelly"
+               ),
+               virtualSelectInput(
+                 inputId = ns("Pancan_search"),
+                 label = "Input a gene or formula (as signature)",
+                 choices = NULL,
+                 width = "100%",
+                 search = TRUE,
+                 allowNewOption = TRUE,
+                 dropboxWidth = "200%"
+               ),
+               selectInput(
+                 inputId = ns("immune_sig"), "Select the immune signature source", selected = "Cibersort",
+                 choices = c("Yasin", "Wolf", "Attractors", "ICR", "c7atoms", "Bindea", "Cibersort")
+               ),
+              ),
+              wellPanel(
+               h4("2. Parameters", align = "center"),
+               selectInput(
+                 inputId = ns("cor_method"),
+                 label = "Select Correlation method",
+                 choices = c("spearman", "pearson"),
+                 selected = "spearman"
+               ),
+               tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
+               shinyWidgets::actionBttn(
+                 inputId = ns("search_bttn"),
+                 label = "Go!",
+                 style = "gradient",
+                 icon = icon("search"),
+                 color = "primary",
+                 block = TRUE,
+                 size = "sm"
+               )),
+             wellPanel(
+               h4("3. Download", align = "center"),
+               numericInput(inputId = ns("height"), label = "Height", value = 8),
+               numericInput(inputId = ns("width"), label = "Width", value = 12),
+               prettyRadioButtons(
+                 inputId = ns("device"),
+                 label = "Choose plot format",
+                 choices = c("pdf", "png"),
+                 selected = "pdf",
+                 inline = TRUE,
+                 icon = icon("check"),
+                 animation = "jelly",
+                 fill = TRUE
+               ),
+               tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
+               downloadBttn(
+                 outputId = ns("download"),
+                 style = "gradient",
+                 color = "primary",
+                 block = TRUE,
+                 size = "sm"
+               )),
       ),
       column(9,
-        plotOutput(ns("hm_gene_immune_cor"), height = "500px"),
-        hr(),
-        h5("NOTEs:"),
-        tags$a(href = "https://pancanatlas.xenahubs.net/", "Genomic profile data source"),
-        tags$br(),
-        tags$a(href = "https://gdc.cancer.gov/about-data/publications/panimmune/", "Immune signature data source"),
-        DT::DTOutput(outputId = ns("tbl")),
-        shinyjs::hidden(
-          wellPanel(
-            id = ns("save_csv"),
-            downloadButton(ns("downloadTable"), "Save as csv")
-          )
-        )
+             plotOutput(ns("hm_gene_immune_cor"), height = "500px"),
+             hr(),
+             h5("NOTEs:"),
+             tags$a(href = "https://pancanatlas.xenahubs.net/", "Genomic profile data source"),
+             tags$br(),
+             tags$a(href = "https://gdc.cancer.gov/about-data/publications/panimmune/", "Immune signature data source"),
+             DT::DTOutput(outputId = ns("tbl")),
+             shinyjs::hidden(
+               wellPanel(
+                 id = ns("save_csv"),
+                 downloadButton(ns("downloadTable"), "Save as csv")
+               )
+             )
       )
     )
   )
@@ -88,20 +94,20 @@ ui.modules_pancan_immune <- function(id) {
 
 server.modules_pancan_immune <- function(input, output, session) {
   ns <- session$ns
-
-
+  
+  
   profile_choices <- reactive({
     switch(input$profile,
-      mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
-      methylation = list(all = pancan_identifiers$gene, default = "TP53"),
-      protein = list(all = pancan_identifiers$protein, default = "P53"),
-      transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
-      miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-      cnv = list(all = pancan_identifiers$gene, default = "TP53"),
-      list(all = "NONE", default = "NONE")
+           mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
+           methylation = list(all = pancan_identifiers$gene, default = "TP53"),
+           protein = list(all = pancan_identifiers$protein, default = "P53"),
+           transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
+           miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+           cnv = list(all = pancan_identifiers$gene, default = "TP53"),
+           list(all = "NONE", default = "NONE")
     )
   })
-
+  
   observe({
     updateVirtualSelect(
       "Pancan_search",
@@ -109,13 +115,13 @@ server.modules_pancan_immune <- function(input, output, session) {
       selected = profile_choices()$default
     )
   })
-
+  
   opt_pancan = callModule(mol_origin_Server, "mol_origin2quick", database = "toil")
-
-
+  
+  
   # Show waiter for plot
   w <- waiter::Waiter$new(id = ns("hm_gene_immune_cor"), html = waiter::spin_hexdots(), color = "white")
-
+  
   plot_func <- eventReactive(input$search_bttn, {
     if (nchar(input$Pancan_search) >= 1) {
       p <- vis_gene_immune_cor(
@@ -128,14 +134,14 @@ server.modules_pancan_immune <- function(input, output, session) {
     }
     return(p)
   })
-
-
+  
+  
   output$hm_gene_immune_cor <- renderPlot({
     w$show() # Waiter add-ins
     plot_func()
   })
-
-
+  
+  
   output$download <- downloadHandler(
     filename = function() {
       paste0(input$Pancan_search, "_", input$profile, "_pancan_immune.", input$device)
@@ -153,7 +159,7 @@ server.modules_pancan_immune <- function(input, output, session) {
       }
     }
   )
-
+  
   ## return data
   observeEvent(input$search_bttn, {
     if (nchar(input$Pancan_search) >= 1) {
@@ -162,21 +168,30 @@ server.modules_pancan_immune <- function(input, output, session) {
       shinyjs::hide(id = "save_csv")
     }
   })
-
-
+  
+  
   output$tbl <- renderDT(
-    plot_func()$data,
+    plot_func()$data %>%
+      dplyr::rename('Cancer'='cancer','Cell type'='immune_cells',
+        'Cor'='cor', 'P.value'='p.value') %>%
+      dplyr::select(Cancer, `Cell type`, Cor, P.value) %>%
+      tibble::remove_rownames(),
     options = list(lengthChange = FALSE)
   )
-
-
+  
+  
   ## downloadTable
   output$downloadTable <- downloadHandler(
     filename = function() {
       paste0(input$Pancan_search, "_", input$profile, "_pancan_immune.csv")
     },
     content = function(file) {
-      write.csv(plot_func()$data, file, row.names = FALSE)
+      data = plot_func()$data %>%
+        dplyr::rename('Cancer'='cancer','Cell type'='immune_cells',
+          'Cor'='cor', 'P.value'='p.value') %>%
+        dplyr::select(Cancer, `Cell type`, Cor, P.value) %>%
+        tibble::remove_rownames()
+      write.csv(data, file, row.names = FALSE)
     }
   )
 }

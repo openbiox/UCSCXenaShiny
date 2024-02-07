@@ -5,7 +5,6 @@
 #' genomic signature (`"TP53 + 2 * KRAS - 1.3 * PTEN"`).
 #' @param data_type choose gene profile type,
 #' including "mRNA", "transcript", "methylation", "miRNA".
-#' @param size_cutoff the minimum group size for a specific cancer
 #' @param Mode choose one visualize mode to represent data
 #' @param Show.P.value  `TRUE` or `FALSE` whether to count P value
 #' @param Show.P.label `TRUE` or `FALSE` present p value with number or label `*`, `**`, `***` and `****`
@@ -13,7 +12,6 @@
 #' @param values the color to fill mutation or wild status
 #' @param draw_quantiles draw quantiles for violinplot
 #' @param trim whether to trim the violin
-#' @param plot Whether to return the plot or replace it with a p-value table
 #' @param opt_pancan specify one dataset for some molercular profiles
 
 #' @return a `ggplot` object or a tibble data.frame
@@ -28,12 +26,12 @@
 #' @export
 
 vis_toil_Mut <- function(mut_Gene = "TP53", Gene = NULL, data_type = NULL,
-                         size_cutoff = 3, Mode = c("Boxplot", "Violinplot"),
+                         Mode = c("Boxplot", "Violinplot"),
                          Show.P.value = TRUE, Show.P.label = TRUE,
                          Method = c("wilcox.test", "t.test"),
                          values = c("#DF2020", "#DDDF21"),
                          draw_quantiles = c(0.25, 0.5, 0.75),
-                         trim = TRUE, plot = TRUE, opt_pancan=.opt_pancan) {
+                         trim = TRUE, opt_pancan=.opt_pancan) {
   Mode <- match.arg(Mode)
   Method <- match.arg(Method)
 
@@ -64,9 +62,9 @@ vis_toil_Mut <- function(mut_Gene = "TP53", Gene = NULL, data_type = NULL,
   exp_dat <- exp_dat_raw$expression %>%
     as.data.frame() %>%
     tibble::rownames_to_column("sample") %>%
-    dplyr::rename("tpm" = ".") %>%
+    dplyr::rename("expression" = ".") %>%
     dplyr::inner_join(tcga_gtex, .) %>%
-    dplyr::select("sample", "tpm")
+    dplyr::select("sample", "expression")
 
   # merge data
   merge_dat <- dplyr::inner_join(mut_dat, exp_dat) %>%
@@ -75,13 +73,13 @@ vis_toil_Mut <- function(mut_Gene = "TP53", Gene = NULL, data_type = NULL,
       mut = factor(.data$mut, levels = c(1, 0), labels  = c("Mutation", "Wild"))
     )
   group_stat <- table(merge_dat$tissue, merge_dat$mut)
-  tcga_discard <- rownames(group_stat)[apply(group_stat, 1, min) < size_cutoff]
+  tcga_discard <- rownames(group_stat)[apply(group_stat, 1, min) < 3]
   if (length(tcga_discard) == length(group_stat)) {
-    stop("No one valid cancer type has enough grouping samples for comparsion.")
+    stop("No one valid cancer type has enough grouping samples (<3) for comparsion.")
   } else {
     message(
       paste(tcga_discard, collapse = " "), " was/were discarded due to less than ",
-      size_cutoff, " samples in one group."
+      3, " samples in one group."
     )
   }
   merge_dat <- merge_dat %>%
@@ -92,27 +90,27 @@ vis_toil_Mut <- function(mut_Gene = "TP53", Gene = NULL, data_type = NULL,
   # calculate p value significantce
   tmp_dat <- merge_dat %>%
     dplyr::group_by(.data$tissue, .data$mut) %>%
-    dplyr::summarise(tpm = mean(.data$tpm)) %>%
-    tidyr::pivot_wider(names_from = "mut", values_from = "tpm")
+    dplyr::summarise(expression = mean(.data$expression)) %>%
+    tidyr::pivot_wider(names_from = "mut", values_from = "expression")
 
   pv <- merge_dat %>%
-    ggpubr::compare_means(tpm ~ mut, data = ., method = Method, group.by = "tissue") %>%
+    ggpubr::compare_means(expression ~ mut, data = ., method = Method, group.by = "tissue") %>%
     dplyr::select(c("tissue", "p", "p.signif", "p.adj")) %>%
     dplyr::mutate(Gene = Gene, .before = 1) %>%
     dplyr::arrange(p) %>%
     dplyr::inner_join(tmp_dat)
 
-  if (!plot) {
-    return(pv)
-  }
+  # if (!plot) {
+  #   return(pv)
+  # }
 
   # visualization
   if (Mode == "Boxplot") {
-    p <- ggplot2::ggplot(merge_dat, aes_string(x = "tissue", y = "tpm", fill = "mut")) +
+    p <- ggplot2::ggplot(merge_dat, aes_string(x = "tissue", y = "expression", fill = "mut")) +
       ggplot2::geom_boxplot()
   } else if (Mode == "Violinplot") {
     p <- ggplot2::ggplot(
-      merge_dat, aes_string(x = "tissue", y = "tpm", fill = "mut")
+      merge_dat, aes_string(x = "tissue", y = "expression", fill = "mut")
     ) +
       geom_split_violin(
         draw_quantiles = draw_quantiles,
@@ -141,7 +139,7 @@ vis_toil_Mut <- function(mut_Gene = "TP53", Gene = NULL, data_type = NULL,
     p <- p + ggplot2::geom_text(
       aes(
         x = .data$tissue,
-        y = max(merge_dat$tpm) * 1.1,
+        y = max(merge_dat$expression) * 1.1,
         label = .data$p.signif
       ),
       data = pv,
@@ -153,7 +151,7 @@ vis_toil_Mut <- function(mut_Gene = "TP53", Gene = NULL, data_type = NULL,
     p <- p + ggplot2::geom_text(
       aes(
         x = .data$tissue,
-        y = max(merge_dat$tpm) * 1.1,
+        y = max(merge_dat$expression) * 1.1,
         label = as.character(signif(.data$p, 2))
       ),
       data = pv,
@@ -174,12 +172,12 @@ vis_toil_Mut <- function(mut_Gene = "TP53", Gene = NULL, data_type = NULL,
 #' @export
 #'
 vis_toil_Mut_cancer <- function(mut_Gene = "TP53", Gene = NULL, data_type = NULL,
-                                size_cutoff = 3, Mode = c("Dotplot", "Violinplot"),
+                                Mode = c("Dotplot", "Violinplot"),
                                 Show.P.value = TRUE, Show.P.label = TRUE,
                                 Method = c("wilcox.test", "t.test"),
                                 values = c("#DF2020", "#DDDF21"),
                                 draw_quantiles = c(0.25, 0.5, 0.75),
-                                trim = TRUE, plot = TRUE, Cancer = "ACC") {
+                                trim = TRUE, Cancer = "ACC", opt_pancan=.opt_pancan) {
   Mode <- match.arg(Mode)
   Method <- match.arg(Method)
 
@@ -210,9 +208,9 @@ vis_toil_Mut_cancer <- function(mut_Gene = "TP53", Gene = NULL, data_type = NULL
   exp_dat <- exp_dat_raw$expression %>%
     as.data.frame() %>%
     tibble::rownames_to_column("sample") %>%
-    dplyr::rename("tpm" = ".") %>%
+    dplyr::rename("expression" = ".") %>%
     dplyr::inner_join(tcga_gtex, .) %>%
-    dplyr::select("sample", "tpm")
+    dplyr::select("sample", "expression")
 
   # merge data
   merge_dat <- dplyr::inner_join(mut_dat, exp_dat) %>%
@@ -225,37 +223,37 @@ vis_toil_Mut_cancer <- function(mut_Gene = "TP53", Gene = NULL, data_type = NULL
 
 
   group_stat <- table(merge_dat$mut)
-  if (min(group_stat) < size_cutoff) {
-    stop("The cancer type does not has enough grouping samples for comparsion.")
+  if (min(group_stat) < 3) {
+    stop("The cancer type does not has enough grouping samples (<3) for comparsion.")
   }
 
 
   # calculate p value significantce
   tmp_dat <- merge_dat %>%
     dplyr::group_by(.data$tissue, .data$mut) %>%
-    dplyr::summarise(tpm = mean(.data$tpm)) %>%
-    tidyr::pivot_wider(names_from = "mut", values_from = "tpm")
+    dplyr::summarise(expression = mean(.data$expression)) %>%
+    tidyr::pivot_wider(names_from = "mut", values_from = "expression")
 
   pv <- merge_dat %>%
-    ggpubr::compare_means(tpm ~ mut, data = ., method = Method, group.by = "tissue") %>%
+    ggpubr::compare_means(expression ~ mut, data = ., method = Method, group.by = "tissue") %>%
     dplyr::select(c("tissue", "p", "p.signif")) %>%
     dplyr::mutate(Gene = Gene, .before = 1) %>%
     dplyr::arrange(p) %>%
     dplyr::inner_join(tmp_dat)
 
-  if (!plot) {
-    return(pv)
-  }
+  # if (!plot) {
+  #   return(pv)
+  # }
 
   if (Mode == "Dotplot") {
     p <- ggpubr::ggdotplot(
       merge_dat,
-      x = "mut", y = "tpm", fill = "mut", color = "mut", size = 0.6, binwidth = 0.2
+      x = "mut", y = "expression", fill = "mut", color = "mut", size = 0.6, binwidth = 0.2
     )
   } else if (Mode == "Violinplot") {
     p <- ggplot2::ggplot(
       merge_dat,
-      aes_string(x = "mut", y = "tpm", fill = "mut")
+      aes_string(x = "mut", y = "expression", fill = "mut")
     ) +
       ggplot2::geom_violin(trim = FALSE) +
       ggplot2::geom_boxplot(width = 0.1, fill = "white")
@@ -274,7 +272,7 @@ vis_toil_Mut_cancer <- function(mut_Gene = "TP53", Gene = NULL, data_type = NULL
     p <- p + ggplot2::geom_text(
       aes(
         x = 1.5,
-        y = max(merge_dat$tpm) * 1.1,
+        y = max(merge_dat$expression) * 1.1,
         label = .data$p.signif
       ),
       data = pv,
@@ -286,7 +284,7 @@ vis_toil_Mut_cancer <- function(mut_Gene = "TP53", Gene = NULL, data_type = NULL
     p <- p + ggplot2::geom_text(
       aes(
         x = 1.5,
-        y = max(merge_dat$tpm) * 1.1,
+        y = max(merge_dat$expression) * 1.1,
         label = as.character(signif(.data$p, 2))
       ),
       data = pv,
