@@ -5,6 +5,7 @@ ui.modules_pw_cor = function(id){
 			column(
 				3,
 				wellPanel(
+          			h4("1. Data", align = "center"),
 		            div(actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
 		                style = "margin-bottom: 5px;"),
 		            conditionalPanel(
@@ -26,46 +27,57 @@ ui.modules_pw_cor = function(id){
 		              search = TRUE,
 		              allowNewOption = TRUE,
 		              dropboxWidth = "200%"
-		          	)
+		          	),
+		          	virtualSelectInput(
+		          		inputId = ns("pw_name"), 
+		          		label = "Select one pathway",
+		          		choices = sort(PW_meta$ID),
+		          		selected = "HALLMARK_ADIPOGENESIS", 
+		                width = "100%",
+		          		search = TRUE,
+		          		dropboxWidth = "200%"
+		          	),
 		        ),
 		        wellPanel(
-		            shinyWidgets::prettyRadioButtons(
-		              inputId = ns("Mode"), label = "Select analysis mode:",
-		              choiceValues = c("one_many", "one_one", "many_one"),
-		              choiceNames = c("One caner--Many pathways", "One cancer--One pathway", "Many cancers--One pathway"),
-		              animation = "jelly"
-		            ),
-					tabsetPanel(
-					  id = ns("mode_params"),
-					  type = "hidden",
-					  tabPanel("one_many", 
-					  	selectInput(ns("Cancer1"), "(1) Select one cancer",sort(tcga_cancer_choices)),
-					  	selectInput(ns("cor_method1"), "(2) Select correlation method",c('pearson','spearman')),
-					    numericInput(inputId = ns("cor_coef1"), label = "(3) Set absolute coefficient cutoff", value = 0.3, min=0, max=1),
-				        numericInput(inputId = ns("cor_pval1"), label = "(4) Set P value cutoff", value = 0.01, min=0, max=1),
-					  ),
-					  tabPanel("one_one",
-					  	selectInput(ns("Cancer2"), "(1) Select one cancer",sort(tcga_cancer_choices)),
-					  	selectInput(ns("pw_name2"), "(2) Select one pathway",PW_meta$ID),
-					  	selectInput(ns("cor_method2"), "(3) Select correlation method",c('pearson','spearman')),
-					  ),
-					  tabPanel("many_one",
-					  	selectInput(ns("Cancer3"), "(1) Select multiple cancers",c("Overall",sort(tcga_cancer_choices))),
-					  	selectInput(ns("pw_name3"), "(2) Select one pathway",PW_meta$ID),
-					  	selectInput(ns("cor_method3"), "(3) Select correlation method",c('pearson','spearman')),
-					  )
-					),
-				    shinyWidgets::actionBttn(
-				      inputId = ns("plot_bttn"),
-				      label = "Plot",
-				      style = "gradient",
-				      # icon = icon("search"),
-				      color = "default",
-				      block = TRUE,
-				      size = "sm"
-					)  
+          			h4("2. Parameters", align = "center"),
+			        selectInput(inputId = ns("use_all"), label = "Use All Cancer Types", choices = c("TRUE", "FALSE"), selected = "FALSE"),
+			        selectInput(
+			          inputId = ns("Cancer"), label = "Filter Cancer",
+			          choices = tcga_cancer_choices,
+			          selected = "ACC", multiple = TRUE
+			        ),
+			        materialSwitch(ns("use_regline"), "Use regression line", inline = TRUE),
+			        selectInput(
+			          inputId = ns("cor_method"),
+			          label = "Select Correlation method",
+			          choices = c("spearman", "pearson"),
+			          selected = "spearman"
+			        ),
+			        sliderTextInput(
+			          inputId = ns("alpha"),
+			          label = "Choose a transparent value",
+			          choices = seq(
+			            from = 0,
+			            to = 1,
+			            by = 0.1
+			          ),
+			          selected = "0.5",
+			          grid = TRUE
+			        ),
+			        colourpicker::colourInput(inputId = ns("color"), "Point color", "#000000"),
+			        tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
+			        shinyWidgets::actionBttn(
+			          inputId = ns("search_bttn"),
+			          label = "Go!",
+			          style = "gradient",
+			          icon = icon("search"),
+			          color = "primary",
+			          block = TRUE,
+			          size = "sm"
+			        )
 				),
 		        wellPanel(
+          			h4("3. Download", align = "center"),
 			        numericInput(inputId = ns("height"), label = "Height", value = 6),
 			        numericInput(inputId = ns("width"), label = "Width", value = 6),
 			        prettyRadioButtons(
@@ -78,11 +90,12 @@ ui.modules_pw_cor = function(id){
 			          animation = "jelly",
 			          fill = TRUE
 			        ),
+			        tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
 			        downloadBttn(
 			          outputId = ns("download"),
 			          label = "Download",
 			          style = "gradient",
-			          color = "default",
+			          color = "primary",
 			          block = TRUE,
 			          size = "sm"
 			        )
@@ -91,16 +104,21 @@ ui.modules_pw_cor = function(id){
 			),
 			column(
 			    9,
-			    plotOutput(ns("pw_plot"), height = "600px",width = "600px"),
+			    fluidRow(
+			    	column(6, offset = 3,
+			    		plotOutput(ns("pw_plot"), height = "600px",width = "600px"))
+			    ),
 			    hr(),
 			    h5("NOTEs:"),
-			    p("1. 500 common patwhay genesets from 3 resources(50 HALLMARK, 186 KEGG, 264 IOBR) were collected."),
+			    p("1. 500 common pathway genesets from 3 resources(50 HALLMARK, 186 KEGG, 264 IOBR) were collected."),
 			    p("2. Pathway scores of TCGA(toil) tumor patients were calculated using ssGSEA method."),
-			    DT::DTOutput(ns("pw_data")),
+			    DT::DTOutput(ns("tbl")),
 		        shinyjs::hidden(
 		          wellPanel(
 		            id = ns("save_csv"),
-		            downloadButton(ns("downloadTable"), "Save as csv")))
+		            downloadButton(ns("downloadTable"), "Save as csv")
+		          )
+		        )
 			),
 
 		)
@@ -143,41 +161,47 @@ server.modules_pw_cor = function(input, output, session){
 	w <- waiter::Waiter$new(id = ns("pw_plot"), html = waiter::spin_hexdots(), color = "white")
 
 
-	plot_func <- eventReactive(input$plot_bttn, {
-		p = switch(input$Mode,
-			one_many=vis_gene_pw_cor(Gene=input$Pancan_search,data_type=input$profile,Cancer=input$Cancer1,
-									 cor_cutoff = list(r=input$cor_coef1, p=input$cor_pval1),cor_method = input$cor_method1,opt_pancan=opt_pancan()),
-			one_one=vis_gene_pw_cor(Gene=input$Pancan_search,data_type=input$profile,Cancer=input$Cancer2,
-									pw_name=input$pw_name2,cor_method = input$cor_method2,opt_pancan=opt_pancan()),
-			many_one=vis_gene_pw_cor(Gene=input$Pancan_search,data_type=input$profile,Cancer=input$Cancer3,
-									pw_name=input$pw_name3,cor_method = input$cor_method3,opt_pancan=opt_pancan())
-		)
+	plot_func <- eventReactive(input$search_bttn, {
+	  if (nchar(input$Pancan_search)>=1) {
+	    p <- vis_gene_pw_cor(
+	      Gene = input$Pancan_search,
+	      data_type = input$profile,
+          pw_name = input$pw_name,
+	      cancer_choose = input$Cancer,
+	      cor_method = input$cor_method,
+	      use_regline = input$use_regline,
+	      color = input$color,
+	      alpha = input$alpha,
+	      use_all = as.logical(input$use_all),
+	      opt_pancan = opt_pancan()
+	    )
+	  }
+	  p <- p + theme_classic(base_size = 20) +
+	    ggplot2::theme(legend.position = "none")
+
 	  return(p)
 	})
 
-	data_func <- eventReactive(input$plot_bttn, {
-		p_dat = switch(input$Mode,
-			one_many=vis_gene_pw_cor(Gene=input$Pancan_search,data_type=input$profile,Cancer=input$Cancer1,
-									 cor_cutoff = list(r=input$cor_coef1, p=input$cor_pval1),cor_method = input$cor_method1, plot=FALSE,opt_pancan=opt_pancan()),
-			one_one=vis_gene_pw_cor(Gene=input$Pancan_search,data_type=input$profile,Cancer=input$Cancer2,
-									pw_name=input$pw_name2,cor_method = input$cor_method2, plot=FALSE,opt_pancan=opt_pancan()),
-			many_one=vis_gene_pw_cor(Gene=input$Pancan_search,data_type=input$profile,Cancer=input$Cancer3,
-									pw_name=input$pw_name3,cor_method = input$cor_method3, plot=FALSE,opt_pancan=opt_pancan())
-		)
-	  return(p_dat)
-	})
+	## downloadTable
+	output$downloadTable <- downloadHandler(
+	  filename = function() {
+	    paste0(input$Pancan_search1, "_", input$profile1, "_", input$Pancan_search2, "_", input$profile2, "_pancan_gene_cor.csv")
+	  },
+	  content = function(file) {
+	    write.csv(plot_func()$data, file, row.names = FALSE)
+	  }
+	)
 
 	output$pw_plot <- renderPlot({
 	  w$show() # Waiter add-ins
 	  plot_func()
 	})
-	output$pw_data <- renderDT({
-	  data_func()
-	})
 
+
+	# download module
 	output$download <- downloadHandler(
 	  filename = function() {
-	    paste0(input$Pancan_search,"_", input$profile,"_",input$Mode,".", input$device)
+	    paste0(input$Pancan_search, "_", input$profile, "_", input$pw_name , "_cor.", input$device)
 	  },
 	  content = function(file) {
 	    p <- plot_func()
@@ -192,16 +216,24 @@ server.modules_pw_cor = function(input, output, session){
 	    }
 	  }
 	)
-	observeEvent(input$plot_bttn, {
-		shinyjs::show(id = "save_csv")
-	})
-	output$downloadTable <- downloadHandler(
-	  filename = function() {
-	    paste0(input$Pancan_search,"_", input$profile,"_",input$Mode,".csv")
-	  },
-	  content = function(file) {
-	    write.csv(data_func(), file, row.names = FALSE)
+
+
+	## return data
+	observeEvent(input$search_bttn, {
+	  if (nchar(input$Pancan_search) >= 1) {
+	    shinyjs::show(id = "save_csv")
+	  } else {
+	    shinyjs::hide(id = "save_csv")
 	  }
+	})
+
+
+	output$tbl <- renderDT(
+	  plot_func()$data %>%
+	  	dplyr::select(Cancer, Sample, identifier, values, pw_name, pw_score) %>%
+	  	dplyr::rename("Molecule"="identifier", "Expression"="values",
+	  				  "Pathway"="pw_name", "ssGSEA"="pw_score"),
+	  options = list(lengthChange = FALSE)
 	)
 
 }

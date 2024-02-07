@@ -1,12 +1,12 @@
 # # quick module
 # # callModule(server.combo.sg.pancan.analysis, "combo.sg.pancan.analysis")
-observeEvent(req(input$navbar=="TCGA+GTEx: Molecular Profile Distribution Across Cancer Types (Tumor VS Normal)"),{
+observeEvent(req(input$navbar=="TCGA+GTEx: Molecular Profile Distribution (Tumor VS Normal)"),{
   callModule(server.modules_pancan_dist, "module_gene_pancan_dist")
 }, once = TRUE)  
 
-observeEvent(req(input$navbar=="TCGA+GTEx: Molecular Profile Distribution (Tumor VS Normal)"),{
-  callModule(server.modules_cancer_dist, "modules_cancer_dist")
-}, once = TRUE)  
+# observeEvent(req(input$navbar=="TCGA+GTEx: Molecular Profile Distribution (Tumor VS Normal)"),{
+#   callModule(server.modules_cancer_dist, "modules_cancer_dist")
+# }, once = TRUE)  
 
 observeEvent(req(input$navbar=="TCGA+GTEx: Molecular Profile Anatomy"),{
   callModule(server.modules_pancan_anatomy, "modules_pancan_anatomy")
@@ -16,9 +16,6 @@ observeEvent(req(input$navbar=="TCGA: Molecule-Molecule Correlation"),{
   callModule(server.modules_pancan_gene_cor, "modules_pancan_gene_cor")
 }, once = TRUE)  
 
-observeEvent(req(input$navbar=="TCGA: Molecular Profile Cox Analysis"),{
-  callModule(server.modules_pancan_unicox, "modules_pancan_unicox")
-}, once = TRUE)  
 
 observeEvent(req(input$navbar=="TCGA: Association Between Molecular Profile and Immune Signature"),{
   callModule(server.modules_pancan_immune, "modules_pancan_immune")
@@ -40,7 +37,11 @@ observeEvent(req(input$navbar=="TCGA: Association Between Molecular Profile and 
   callModule(server.modules_pancan_mut, "modules_pancan_mut")
 }, once = TRUE)  
 
-observeEvent(req(input$navbar=="TCGA: Survival Analysis"),{
+observeEvent(req(input$navbar=="TCGA: Molecular Profile Cox Analysis"),{
+  callModule(server.modules_pancan_unicox, "modules_pancan_unicox")
+}, once = TRUE)  
+
+observeEvent(req(input$navbar=="TCGA: Molecular Profile Log-rank Analysis"),{
   callModule(server.modules_sur_plot, "modules_sur_plot")
 }, once = TRUE)  
 
@@ -78,7 +79,7 @@ observeEvent(req(input$navbar=="PCAWG: Molecule-Molecule Correlation"),{
   callModule(server.modules_pcawg_gene_cor, "modules_pcawg_gene_cor")
 }, once = TRUE)  
 
-observeEvent(req(input$navbar=="PCAWG: Survival Analysis"),{
+observeEvent(req(input$navbar=="PCAWG: Molecular Profile Log-rank Analysis"),{
   callModule(server.modules_pcawg_sur_plot, "modules_pcawg_sur_plot")
 }, once = TRUE)  
 
@@ -161,3 +162,7 @@ observeEvent(req(input$navbar=="Based on Repository Datasets"),{
 }, once = TRUE) 
 
 
+
+
+
+callModule(server.home_search_box, "homepage_pancan_search")

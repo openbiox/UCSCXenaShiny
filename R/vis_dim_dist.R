@@ -2,12 +2,10 @@
 #'
 #' @param ids molecular identifiers (>=3)
 #' @param data_type molecular types, refer to query_pancan_value() function
-#' @param return.data whether to reture the raw meta/matrix data (list) instead of plot
+#' @param group_info two-column grouping information with names 'Sample','Group'
 #' @param DR_method the dimension reduction method
 #' @param palette the color setting of RColorBrewer
 #' @param add_margin the marginal plot (NULL, "density", "boxplot")
-#' @param ... parameters refer to query_tcga_group() function
-#' @param group_levels group levels setting
 #' @param opt_pancan specify one dataset for some molercular profiles
 
 #' @return a ggplot object or rawdata list
@@ -15,41 +13,25 @@
 #'
 #' @examples
 #' \dontrun{
-#' vis_dim_dist(
-#'   ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
-#'   cancer = "BRCA",
-#'   group = "Gender",
-#'   group_levels = NULL
-#' )
-#' 
+#' group_info = tcga_clinical_fine %>% 
+#'   dplyr::filter(Cancer=="BRCA") %>% 
+#'   dplyr::select(Sample, Code) %>% 
+#'   dplyr::rename(Group=Code)
 #' 
 #' vis_dim_dist(
 #'   ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
-#'   cancer = "BRCA",
-#'   group = "Code",
-#'   merge_by = list("Tumor"=c("TP","TM"),"Normal"=c("NT")),
-#'   group_levels = c("Normal","Tumor"),
-#'   add_margin = "boxplot"
+#'   group_info = group_info
 #' )
 #' 
-#' vis_dim_dist(
-#'   ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
-#'   cancer = c("LIHC","BRCA"),
-#'   group = "Cancer",
-#'   group_levels = c("BRCA","LIHC"),
-#'   filter_by = list(c("Code",c("TP"),"+")),
-#'   add_margin = "density"
-#' )
 #' }
 #' 
 vis_dim_dist <- function(ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
                           data_type = "mRNA", 
-                          return.data = FALSE,
+                          group_info = NULL, 
                           DR_method = c("PCA", "UMAP", "tSNE"),
-                          palette = "Set1", add_margin = NULL,
-                          group_levels = NULL, 
-                          opt_pancan = .opt_pancan,
-                          ...) {
+                          palette = "Set1", 
+                          add_margin = NULL,
+                          opt_pancan = .opt_pancan) {
   # Mode <- match.arg(Mode)
   DR_method <- match.arg(DR_method)
   
@@ -61,38 +43,37 @@ vis_dim_dist <- function(ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
     # x = ids[1]
     data <- query_pancan_value(x, data_type = data_type, opt_pancan=opt_pancan)
     data <- data[[1]]
-    data <- dplyr::tibble(sample = names(data), y = as.numeric(data))
+    data <- dplyr::tibble(Sample = names(data), y = as.numeric(data))
     colnames(data)[2] <- x
     data
-  }) %>% purrr::reduce(dplyr::full_join, by = "sample")
+  }) %>% purrr::reduce(dplyr::full_join, by = "Sample")
   
   
-  meta_raw = query_tcga_group(...)$data
-  meta_data = meta_raw %>% dplyr::filter(.data$Sample %in% exp_raw$sample)
-  group = tail(colnames(meta_data),1)
-  if (!is.factor(meta_data[,group,drop=TRUE])) {
-    if(is.null(group_levels)){
-      group_levels = unique(meta_data[,group,drop=TRUE])
-    }
-    meta_data = meta_data[meta_data[,group,drop=TRUE] %in% group_levels,]
-    meta_data[,group] = factor(meta_data[,group,drop=TRUE], levels=group_levels)  
+  # meta_raw = query_tcga_group(...)$data
+  if (is.null(group_info)) {
+    stop("Please input valid grouping information for `group_info` parameter.")
+  }
+  if(!all(colnames(group_info) == c("Sample", "Group"))){
+    stop("The group_info should have two colnames named `Sample` and `Group`.")
+  }
+  meta_raw = group_info
+  meta_data = meta_raw %>% dplyr::filter(.data$Sample %in% exp_raw$Sample)
+
+  if(nrow(meta_data)==0){
+    stop("No intersected samples are detected for the group_info.")
+  }
+  if(length(unique(meta_data$Group))<2){
+    stop("Less two valid groups are detected for the group_info.")
   }
 
   
-  exp_data = exp_raw[match(meta_data$Sample, exp_raw$sample), ]
+  exp_data = exp_raw[match(meta_data$Sample, exp_raw$Sample), ]
   ids_NAN <- colnames(exp_data[, -1])[apply(exp_data[, -1], 2, function(x) all(is.na(x)))]
   ids_SD0 <- colnames(exp_data[, -1])[apply(exp_data[, -1], 2, function(x) stats::sd(x) == 0)] %>% na.omit()
   ids_OK <- setdiff(ids, c(ids_NAN, ids_SD0))
   # message(paste0((length(ids_OK)/length(ids))*100, "%"), " of input ids were obtained")
   exp_data <- exp_data[, which(!colnames(exp_data) %in% c(ids_NAN, ids_SD0))]
 
-
-  if (return.data) {
-    return(list(exp=exp_data, meta=meta_data))
-  }
-
-  
-  # identical(exp_data$sample, meta_data$Sample)
   
   if (DR_method == "PCA") {
     pca_obj <- prcomp(exp_data[, ids_OK], center = TRUE, scale = TRUE)
@@ -124,10 +105,16 @@ vis_dim_dist <- function(ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
       dplyr::rename("UMAP_1" = "V1", "UMAP_2" = "V2")
   }
   
-  res_dims <- cbind(res_dims, meta_data)
+  res_dims <- cbind(res_dims, meta_data) %>%
+    dplyr::inner_join(exp_data)
   
   
   ## Step5: ggplot scatter plot
+
+
+  group_levels = unique(res_dims$Group)
+
+
   if (length(group_levels) > 6) {
     colors <- grDevices::hcl(
       h = seq(15, 375, length = length(group_levels) + 1),
@@ -140,18 +127,19 @@ vis_dim_dist <- function(ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
   }
   
   
-  p <- ggplot2::ggplot(res_dims, aes_string(colnames(res_dims)[1], colnames(res_dims)[2], color = group, shape = group)) +
+  p <- ggplot2::ggplot(res_dims, aes_string(colnames(res_dims)[1], colnames(res_dims)[2], color = "Group", shape = "Group")) +
     ggplot2::geom_point() +
     ggplot2::stat_ellipse() +
-    ggplot2::theme_classic(base_size = 20) +
+    ggplot2::theme_bw(base_size = 20) +
     ggplot2::guides(
       color = guide_legend(title = NULL),
       shape = guide_legend(title = NULL)
     ) +
     ggplot2::theme(
-      legend.background = element_blank(),
-      legend.position = c(0, 0),
-      legend.justification = c(0, 0)
+      # legend.background = element_blank(),
+      # legend.position = c(0, 0),
+      # legend.justification = c(0, 0)
+      legend.position = "bottom"
     ) +
     ggplot2::scale_color_manual(values = colors) +
     ggplot2::scale_shape_manual(values = shapes)
@@ -165,13 +153,13 @@ vis_dim_dist <- function(ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
     
     p_right <- cowplot::axis_canvas(p, axis = "x") +
       geom_type(
-        data = p$data, aes_string(x = colnames(p$data)[1], fill = group),
+        data = p$data, aes_string(x = colnames(p$data)[1], fill = "Group"),
         alpha = 0.8, linewidth = 0.3
       ) +
       ggplot2::scale_fill_manual(values = colors)
     p_top <- cowplot::axis_canvas(p, axis = "y", coord_flip = TRUE) +
       geom_type(
-        data = p$data, aes_string(x = colnames(p$data)[2], fill = group),
+        data = p$data, aes_string(x = colnames(p$data)[2], fill = "Group"),
         alpha = 0.8, linewidth = 0.3
       ) +
       coord_flip() +

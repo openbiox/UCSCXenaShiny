@@ -21,6 +21,7 @@ ui.modules_ccle_genecor <- function(id) {
       column(
         3,
         wellPanel(
+          h4("1. Data", align = "center"),
           div(actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
               style = "margin-bottom: 5px;"),
           conditionalPanel(
@@ -63,6 +64,11 @@ ui.modules_ccle_genecor <- function(id) {
             content = "Enter a gene symbol to show its distribution, e.g. TP53",
             placement = "right", options = list(container = "body")
           ),
+        )),
+      column(
+        3,
+        wellPanel(
+          h4("2. Parameters", align = "center"),   
           selectInput(
             inputId = ns("cor_method"),
             label = "Select Correlation method",
@@ -70,10 +76,6 @@ ui.modules_ccle_genecor <- function(id) {
             selected = "spearman"
           ),
           selectInput(inputId = ns("use_all"), label = "Use All Primary Sites", choices = c("TRUE", "FALSE"), selected = "FALSE"),
-        )),
-      column(
-        3,
-        wellPanel(
           selectInput(
             inputId = ns("SitePrimary"), label = "Filter Primary Site",
             choices = choices_primary_site, selected = "prostate", multiple = TRUE
@@ -105,6 +107,7 @@ ui.modules_ccle_genecor <- function(id) {
           )
         ),
         wellPanel(
+          h4("3. Download", align = "center"),   
           numericInput(inputId = ns("height"), label = "Height", value = 8),
           numericInput(inputId = ns("width"), label = "Width", value = 8),
           prettyRadioButtons(
@@ -117,10 +120,11 @@ ui.modules_ccle_genecor <- function(id) {
             animation = "jelly",
             fill = TRUE
           ),
+          tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
           downloadBttn(
             outputId = ns("download"),
             style = "gradient",
-            color = "default",
+            color = "primary",
             block = TRUE,
             size = "sm"
           ),
@@ -242,7 +246,10 @@ server.modules_ccle_genecor <- function(input, output, session) {
 
 
   output$tbl <- renderDT(
-    plot_func()$data,
+    plot_func()$data %>%
+      dplyr::rename('Cell_line'='sample',
+        'Molecule1'='gene1', 'Molecule2'='gene2') %>%
+      dplyr::select(Cell_line,Site_Primary,Molecule1,Molecule2),
     options = list(lengthChange = FALSE)
   )
 
@@ -252,7 +259,11 @@ server.modules_ccle_genecor <- function(input, output, session) {
       paste0(input$ccle_search1, "_", input$profile1, "_", input$ccle_search2, "_", input$profile2, "_gene_ccle_genecor.csv")
     },
     content = function(file) {
-      write.csv(plot_func()$data, file, row.names = FALSE)
+      data = plot_func()$data %>%
+        dplyr::rename('Cell_line'='sample',
+          'Molecule1'='gene1', 'Molecule2'='gene2') %>%
+        dplyr::select(Cell_line,Site_Primary,Molecule1,Molecule2)
+      write.csv(data, file, row.names = FALSE)
     }
   )
 }

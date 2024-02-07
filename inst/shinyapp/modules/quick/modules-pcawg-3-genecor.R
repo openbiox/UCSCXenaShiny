@@ -5,6 +5,7 @@ ui.modules_pcawg_gene_cor <- function(id) {
       column(
         3,
         wellPanel(
+          h4("1. Data", align = "center"),
           div(actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
               style = "margin-bottom: 5px;"),
           conditionalPanel(
@@ -60,6 +61,7 @@ ui.modules_pcawg_gene_cor <- function(id) {
       column(
         3,
         wellPanel(
+          h4("2. Parameters", align = "center"),
           materialSwitch(ns("purity_adj"), "Adjust Purity", inline = TRUE),
           selectInput(inputId = ns("use_all"), label = "Use All Cancer Types", choices = c("TRUE", "FALSE"), selected = "FALSE"),
           selectInput(
@@ -99,6 +101,7 @@ ui.modules_pcawg_gene_cor <- function(id) {
           )
         ),
         wellPanel(
+          h4("3. Download", align = "center"),
           numericInput(inputId = ns("height"), label = "Height", value = 8),
           numericInput(inputId = ns("width"), label = "Width", value = 8),
           prettyRadioButtons(
@@ -111,10 +114,11 @@ ui.modules_pcawg_gene_cor <- function(id) {
             animation = "jelly",
             fill = TRUE
           ),
+          tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
           downloadBttn(
             outputId = ns("download"),
             style = "gradient",
-            color = "default",
+            color = "primary",
             block = TRUE,
             size = "sm"
           )
@@ -233,7 +237,11 @@ server.modules_pcawg_gene_cor <- function(input, output, session) {
       paste0(input$Pancan_search1, "_", input$profile1, "_", input$Pancan_search2, "_", input$profile2, "_pcawg_gene_cor.csv")
     },
     content = function(file) {
-      write.csv(plot_func()$data, file, row.names = FALSE)
+      data = plot_func()$data %>%
+        dplyr::rename('Project'='dcc_project_code','Sample'='icgc_specimen_id', 'Group'='type2',
+          'Purity'='purity','Molecule1'='gene1', 'Molecule2'='gene2') %>%
+        dplyr::select(Project, Sample, Group, Molecule1, Molecule2, Purity)
+      write.csv(data, file, row.names = FALSE)
     }
   )
 
@@ -272,7 +280,10 @@ server.modules_pcawg_gene_cor <- function(input, output, session) {
 
 
   output$tbl <- renderDT(
-    plot_func()$data,
+    plot_func()$data %>%
+      dplyr::rename('Project'='dcc_project_code','Sample'='icgc_specimen_id', 'Group'='type2',
+        'Purity'='purity','Molecule1'='gene1', 'Molecule2'='gene2') %>%
+      dplyr::select(Project, Sample, Group, Molecule1, Molecule2, Purity),
     options = list(lengthChange = FALSE)
   )
 }

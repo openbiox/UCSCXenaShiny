@@ -4,6 +4,7 @@ ui.modules_sur_plot <- function(id) {
   fluidPage(
     fluidRow(
       column(3, wellPanel(
+        h4("1. Data", align = "center"),
         div(actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
             style = "margin-bottom: 5px;"),
         conditionalPanel(
@@ -73,112 +74,116 @@ ui.modules_sur_plot <- function(id) {
         tags$a(href = "https://pancanatlas.xenahubs.net", "Data source from Pan-Cancer Atlas Hub")
       )),
       shinyjs::hidden(
-        column(3, id = ns("parameter"), wellPanel(
-          sliderInput(
-            inputId = ns("age"), label = "Age",
-            min = 0, max = 100, value = c(0, 100)
-          ),
-          shinyWidgets::prettyCheckboxGroup(
-            inputId = ns("sex"), label = "Sex",
-            choices = c("Female" = "FEMALE", "Male" = "MALE", "Unknown" = "Unknown"),
-            selected = c("FEMALE", "MALE", "Unknown"),
-            status = "primary",
-            animation = "jelly"
-          ),
-          shinyWidgets::prettyCheckboxGroup(
-            inputId = ns("stage"), label = "Clinical/Pathological stage",
-            choices = c("I", "II", "III", "IV", "Unknown"),
-            selected = c("I", "II", "III", "IV", "Unknown"),
-            status = "primary",
-            animation = "jelly"
-          ),
-          shinyWidgets::prettyRadioButtons(
-            inputId = ns("endpoint"),
-            label = "Primary endpoint",
-            choices = c("OS", "DSS", "DFI", "PFI"),
-            inline = TRUE,
-            icon = icon("check"),
-            animation = "jelly"
-          ),
-          conditionalPanel(
-            condition = "input.profile == 'mRNA' | input.profile == 'protein' | input.profile == 'miRNA' | input.profile == 'methylation' | input.profile == 'transcript'",
-            ns = ns,
+        column(3, id = ns("parameter"), 
+          wellPanel(
+            h4("2. Parameters", align = "center"),
+            sliderInput(
+              inputId = ns("age"), label = "Age",
+              min = 0, max = 100, value = c(0, 100)
+            ),
+            shinyWidgets::prettyCheckboxGroup(
+              inputId = ns("sex"), label = "Sex",
+              choices = c("Female" = "FEMALE", "Male" = "MALE", "Unknown" = "Unknown"),
+              selected = c("FEMALE", "MALE", "Unknown"),
+              status = "primary",
+              animation = "jelly"
+            ),
+            shinyWidgets::prettyCheckboxGroup(
+              inputId = ns("stage"), label = "Clinical/Pathological stage",
+              choices = c("I", "II", "III", "IV", "Unknown"),
+              selected = c("I", "II", "III", "IV", "Unknown"),
+              status = "primary",
+              animation = "jelly"
+            ),
             shinyWidgets::prettyRadioButtons(
-              inputId = ns("cutoff_mode"),
-              label = "Cutoff mode",
-              choices = c("Auto", "Custom"),
+              inputId = ns("endpoint"),
+              label = "Primary endpoint",
+              choices = c("OS", "DSS", "DFI", "PFI"),
               inline = TRUE,
               icon = icon("check"),
               animation = "jelly"
             ),
             conditionalPanel(
-              condition = "input.cutoff_mode == 'Custom'", ns = ns,
-              sliderInput(
-                inputId = ns("cutpoint"), label = "Cutoff (%)",
-                min = 25, max = 75, value = c(50, 50)
+              condition = "input.profile == 'mRNA' | input.profile == 'protein' | input.profile == 'miRNA' | input.profile == 'methylation' | input.profile == 'transcript'",
+              ns = ns,
+              shinyWidgets::prettyRadioButtons(
+                inputId = ns("cutoff_mode"),
+                label = "Cutoff mode",
+                choices = c("Auto", "Custom"),
+                inline = TRUE,
+                icon = icon("check"),
+                animation = "jelly"
               ),
-              textOutput(ns("cutoff1")),
-              textOutput(ns("cutoff2")),
+              conditionalPanel(
+                condition = "input.cutoff_mode == 'Custom'", ns = ns,
+                sliderInput(
+                  inputId = ns("cutpoint"), label = "Cutoff (%)",
+                  min = 25, max = 75, value = c(50, 50)
+                ),
+                textOutput(ns("cutoff1")),
+                textOutput(ns("cutoff2")),
+                hr()
+              )
+            ),
+            conditionalPanel(
+              condition = "input.profile == 'mutation'", ns = ns,
+              tags$p("Note: In TCGA somatic mutation (SNP and INDEL) dataset, mutation type is represented by 1 and wild type is 0.")
+            ),
+            conditionalPanel(
+              condition = "input.profile == 'cnv'", ns = ns,
+              awesomeCheckboxGroup(
+                inputId = ns("cs_cnv"),
+                label = "Select CNV type.",
+                choices = c("Normal", "Duplicated", "Deleted"),
+                selected = c("Normal", "Duplicated", "Deleted"),
+                width = "120%",
+                inline = TRUE
+              )
+            ),
+            selectInput(ns("color_palette"), "Color palette:",
+                        choices = c("npg", "aaas", "lancet", "jco", "ucscgb", "uchicago", "simpsons", "rickandmorty", "custom"),
+                        selected = "aaas"
+            ),
+            conditionalPanel(
+              condition = "input.color_palette == 'custom'", ns = ns,
+              colourpicker::colourInput(inputId = ns("custom_col_1"), "Color for 1st group", "#0000FF"),
+              colourpicker::colourInput(inputId = ns("custom_col_2"), "Color for 2nd group", "#FF0000"),
+              colourpicker::colourInput(inputId = ns("custom_col_3"), "Color for 3rd group", "#BEBEBE"),
               hr()
-            )
-          ),
-          conditionalPanel(
-            condition = "input.profile == 'mutation'", ns = ns,
-            tags$p("Note: In TCGA somatic mutation (SNP and INDEL) dataset, mutation type is represented by 1 and wild type is 0.")
-          ),
-          conditionalPanel(
-            condition = "input.profile == 'cnv'", ns = ns,
-            awesomeCheckboxGroup(
-              inputId = ns("cs_cnv"),
-              label = "Select CNV type.",
-              choices = c("Normal", "Duplicated", "Deleted"),
-              selected = c("Normal", "Duplicated", "Deleted"),
-              width = "120%",
-              inline = TRUE
-            )
-          ),
-          selectInput(ns("color_palette"), "Color palette:",
-                      choices = c("npg", "aaas", "lancet", "jco", "ucscgb", "uchicago", "simpsons", "rickandmorty", "custom"),
-                      selected = "aaas"
-          ),
-          conditionalPanel(
-            condition = "input.color_palette == 'custom'", ns = ns,
-            colourpicker::colourInput(inputId = ns("custom_col_1"), "Color for 1st group", "#0000FF"),
-            colourpicker::colourInput(inputId = ns("custom_col_2"), "Color for 2nd group", "#FF0000"),
-            colourpicker::colourInput(inputId = ns("custom_col_3"), "Color for 3rd group", "#BEBEBE"),
-            hr()
-          ),
-          shinyWidgets::actionBttn(
-            inputId = ns("go"), label = " GO!",
-            style = "gradient",
-            icon = icon("check"),
-            color = "primary",
-            block = TRUE,
-            size = "sm"
-          ),
-          tags$br(),
-          numericInput(inputId = ns("height"), label = "Height", value = 25),
-          numericInput(inputId = ns("width"), label = "Width", value = 20),
-          column(
-            width = 12, align = "center",
-            prettyRadioButtons(
-              inputId = ns("device"),
-              label = "Choose plot format",
-              choices = c("png", "pdf"),
-              selected = "png",
-              inline = TRUE,
+            ),
+            shinyWidgets::actionBttn(
+              inputId = ns("go"), label = " GO!",
+              style = "gradient",
               icon = icon("check"),
-              animation = "jelly",
-              fill = TRUE
-            )
+              color = "primary",
+              block = TRUE,
+              size = "sm"
+            ),
           ),
-          downloadBttn(
-            outputId = ns("download"),
-            style = "gradient",
-            color = "default",
-            block = TRUE,
-            size = "sm"
-          )
+          wellPanel(
+            h4("3. Download", align = "center"),
+            numericInput(inputId = ns("height"), label = "Height", value = 25),
+            numericInput(inputId = ns("width"), label = "Width", value = 20),
+            column(
+              width = 12, align = "center",
+              prettyRadioButtons(
+                inputId = ns("device"),
+                label = "Choose plot format",
+                choices = c("png", "pdf"),
+                selected = "png",
+                inline = TRUE,
+                icon = icon("check"),
+                animation = "jelly",
+                fill = TRUE
+              )
+            ),
+            downloadBttn(
+              outputId = ns("download"),
+              style = "gradient",
+              color = "default",
+              block = TRUE,
+              size = "sm"
+            )
         ))
       ),
       column(
@@ -392,7 +397,11 @@ server.modules_sur_plot <- function(input, output, session) {
   )
 
   output$tbl <- renderDT(
-    return_data(),
+    return_data() %>%
+      dplyr::rename('Sample'='sampleID','Value'='value',
+        'Status'='status', 'Time'='time') %>%
+      dplyr::mutate(Cancer = input$dataset,Event = input$endpoint) %>%
+      dplyr::select(Cancer, Sample, Event, Status, Time, Value),
     options = list(lengthChange = FALSE)
   )
 
@@ -407,7 +416,12 @@ server.modules_sur_plot <- function(input, output, session) {
       paste0(item_show, "_", input$profile, "_sur.csv")
     },
     content = function(file) {
-      write.csv(return_data(), file, row.names = FALSE)
+      data = return_data() %>%
+        dplyr::rename('Sample'='sampleID','Value'='value',
+          'Status'='status', 'Time'='time') %>%
+        dplyr::mutate(Cancer = input$dataset,Event = input$endpoint) %>%
+        dplyr::select(Cancer, Sample, Event, Status, Time, Value)
+      write.csv(data, file, row.names = FALSE)
     }
   )
 }

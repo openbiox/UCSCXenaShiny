@@ -8,7 +8,6 @@ vis_toil_Mut(
   mut_Gene = "TP53",
   Gene = NULL,
   data_type = NULL,
-  size_cutoff = 3,
   Mode = c("Boxplot", "Violinplot"),
   Show.P.value = TRUE,
   Show.P.label = TRUE,
@@ -16,7 +15,6 @@ vis_toil_Mut(
   values = c("#DF2020", "#DDDF21"),
   draw_quantiles = c(0.25, 0.5, 0.75),
   trim = TRUE,
-  plot = TRUE,
   opt_pancan = .opt_pancan
 )
 }
@@ -28,8 +26,6 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 
 \item{data_type}{choose gene profile type,
 including "mRNA", "transcript", "methylation", "miRNA".}
-
-\item{size_cutoff}{the minimum group size for a specific cancer}
 
 \item{Mode}{choose one visualize mode to represent data}
 
@@ -44,8 +40,6 @@ including "mRNA", "transcript", "methylation", "miRNA".}
 \item{draw_quantiles}{draw quantiles for violinplot}
 
 \item{trim}{whether to trim the violin}
-
-\item{plot}{Whether to return the plot or replace it with a p-value table}
 
 \item{opt_pancan}{specify one dataset for some molercular profiles}
 }

@@ -3,6 +3,7 @@ ui.modules_cancer_dist <- function(id) {
   fluidPage(
     fluidRow(column(3,
        wellPanel(
+        h4("1. Data", align = "center"),
         div(actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
             style = "margin-bottom: 5px;"),
         conditionalPanel(
@@ -30,18 +31,21 @@ ui.modules_cancer_dist <- function(id) {
           content = "Enter a gene symbol to show its distribution, e.g. TP53",
           placement = "right", options = list(container = "body")
         ),
+        selectInput(
+          inputId = ns("Cancer"),
+          label = "Filter Cancer",
+          choices = tcga_cancer_choices,
+          selected = "ACC", multiple = TRUE
+        )
+      ),
+      wellPanel(
+        h4("2. Parameters", align = "center"),
         materialSwitch(ns("pdist_mode"), "Show Dot plot", inline = TRUE),
         materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = FALSE),
         materialSwitch(ns("pdist_show_p_label"), "Show P label", inline = FALSE),
         materialSwitch(ns("pdist_dataset"), "TCGA Dataset only", inline = FALSE),
         colourpicker::colourInput(inputId = ns("tumor_col"), "Tumor sample color", "#DF2020"),
         colourpicker::colourInput(inputId = ns("normal_col"), "Normal sample color", "#DDDF21"),
-        selectInput(
-          inputId = ns("Cancer"),
-          label = "Filter Cancer",
-          choices = tcga_cancer_choices,
-          selected = "ACC", multiple = TRUE
-        ),
         tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
         shinyWidgets::actionBttn(
           inputId = ns("search_bttn"),
@@ -54,6 +58,7 @@ ui.modules_cancer_dist <- function(id) {
         )
       ),
       wellPanel(
+        h4("3. Download", align = "center"),
         numericInput(inputId = ns("height"), label = "Height", value = 5),
         numericInput(inputId = ns("width"), label = "Width", value = 5),
         prettyRadioButtons(
@@ -66,10 +71,11 @@ ui.modules_cancer_dist <- function(id) {
           animation = "jelly",
           fill = TRUE
         ),
+        tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
         downloadBttn(
           outputId = ns("download"),
           style = "gradient",
-          color = "default",
+          color = "primary",
           block = TRUE,
           size = "sm"
         )

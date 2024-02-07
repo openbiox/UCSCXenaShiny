@@ -7,13 +7,13 @@ ui.page_pancan_quick <- function() {
     #   ui.combo.sg.pancan.analysis("combo.sg.pancan.analysis")
     # ),
     tabPanel(
-      "TCGA+GTEx: Molecular Profile Distribution Across Cancer Types (Tumor VS Normal)",
+      "TCGA+GTEx: Molecular Profile Distribution (Tumor VS Normal)",
       ui.modules_pancan_dist("module_gene_pancan_dist")
     ),
-    tabPanel(
-      "TCGA+GTEx: Molecular Profile Distribution (Tumor VS Normal)",
-      ui.modules_cancer_dist("modules_cancer_dist")
-    ),
+    # tabPanel(
+    #   "TCGA+GTEx: Molecular Profile Distribution (Tumor VS Normal)",
+    #   ui.modules_cancer_dist("modules_cancer_dist")
+    # ),
     tabPanel(
       "TCGA+GTEx: Molecular Profile Anatomy",
       ui.modules_pancan_anatomy("modules_pancan_anatomy")
@@ -21,10 +21,6 @@ ui.page_pancan_quick <- function() {
     tabPanel(
       "TCGA: Molecule-Molecule Correlation",
       ui.modules_pancan_gene_cor("modules_pancan_gene_cor")
-    ),
-    tabPanel(
-      "TCGA: Molecular Profile Cox Analysis",
-      ui.modules_pancan_unicox("modules_pancan_unicox")
     ),
     tabPanel(
       "TCGA: Association Between Molecular Profile and Immune Signature",
@@ -47,7 +43,11 @@ ui.page_pancan_quick <- function() {
         ui.modules_pancan_mut("modules_pancan_mut")
     ),
     tabPanel(
-      "TCGA: Survival Analysis",
+      "TCGA: Molecular Profile Cox Analysis",
+      ui.modules_pancan_unicox("modules_pancan_unicox")
+    ),
+    tabPanel(
+      "TCGA: Molecular Profile Log-rank Analysis",
       ui.modules_sur_plot("modules_sur_plot")
     ),
     tabPanel(
@@ -59,15 +59,15 @@ ui.page_pancan_quick <- function() {
       ui.modules_pcawg_dist("modules_pcawg_dist")
     ),
     tabPanel(
-      "PCAWG: Molecular Profile Cox Analysis",
-      ui.modules_pcawg_unicox("modules_pcawg_unicox")
-    ),
-    tabPanel(
       "PCAWG: Molecule-Molecule Correlation",
       ui.modules_pcawg_gene_cor("modules_pcawg_gene_cor")
     ),
     tabPanel(
-      "PCAWG: Survival Analysis",
+      "PCAWG: Molecular Profile Cox Analysis",
+      ui.modules_pcawg_unicox("modules_pcawg_unicox")
+    ),
+    tabPanel(
+      "PCAWG: Molecular Profile Log-rank Analysis",
       ui.modules_pcawg_sur_plot("modules_pcawg_sur_plot")
     ),
     tabPanel(
