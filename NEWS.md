@@ -45,9 +45,6 @@ https://github.com/openbiox/UCSCXenaShiny/commit/147f4612943df940d3bbd409e82a492
 
   - Added two modules for exact subset of integrated TPC data and UCSCXena datasets.
 
-  
-
-
 ## Enhancements
 
 - Supported getting more flexible methylation value.
@@ -59,6 +56,8 @@ UCSCXenaShiny::get_pancan_methylation_value(
   aggr = "Q75"
 )
 ```
+
+- Supported installing the package from r-universe (<https://openbiox.r-universe.dev/UCSCXenaShiny>).
 
 - Supported alternative molecular profiling datasets for quick and personalized TPC analysis.
 
