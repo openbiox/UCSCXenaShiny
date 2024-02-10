@@ -429,7 +429,8 @@ server.modules_pancan_sur_m2o = function(input, output, session) {
 
 	output$sur_stat_tb.ui = renderUI({
 		output$sur_stat_tb = renderDataTable({
-			sur_stat_ = sur_stat()
+			sur_stat_ = sur_stat() %>%
+				dplyr::rename("Batch identifiers"="id")
 			sur_stat_$p.value = format(sur_stat_$p.value, scientific=T, digits = 3)
 
 			dt = datatable(sur_stat_,
@@ -463,7 +464,7 @@ server.modules_pancan_sur_m2o = function(input, output, session) {
 	)
 	output$sur_batch_res = downloadHandler(
 		filename = function(){
-			paste0("Batch_comparison_result_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
+			paste0("Batch_survival_result_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
 		},
 		content = function(file){
 			sur_stat_ = sur_stat()

@@ -304,6 +304,11 @@ server.modules_pancan_cor_o2o = function(input, output, session) {
 		) + 
 			theme(text = element_text(size=isolate(input$axis_size)),
 				  plot.title = element_text(size=isolate(input$title_size), hjust = 0.5))
+
+		pval = formatC(extract_stats(p)$subtitle_data$p.value, digits = 3, format = 'e')
+		r = round(extract_stats(p)$subtitle_data$estimate,3)
+		p$labels$subtitle = bquote(paste(widehat(italic(r))[.(input$cor_method)] == .(r), ', ' ,italic(p) == .(pval)))
+
 		return(p)
 	})
 	output$cor_plot_sct = renderPlot({cor_plot_sct()})
