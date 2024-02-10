@@ -239,7 +239,8 @@ server.modules_pcawg_cor_m2o = function(input, output, session) {
 
 	output$cor_stat_tb.ui = renderUI({
 		output$cor_stat_tb = renderDataTable({
-			cor_stat_ = cor_stat()
+			cor_stat_ = cor_stat() %>%
+				dplyr::rename("Batch identifiers"="id.x")
 			cor_stat_$p.value = format(cor_stat_$p.value, scientific=T, digits = 3)
 			dt = datatable(cor_stat_,
 				# class = "nowrap row-border",

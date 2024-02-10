@@ -287,6 +287,8 @@ server.modules_ccle_comp_o2o = function(input, output, session) {
 			  theme(text = element_text(size=isolate(input$axis_size)),
 			        plot.title = element_text(size=isolate(input$title_size), hjust = 0.5),
 			        plot.subtitle = element_text(size = 12))
+			pval = formatC(extract_stats(p)$subtitle_data$p.value, digits = 3, format = 'e')
+			p$labels$subtitle = bquote(paste(italic(p) == .(pval)))
 			return(p)
 		}
 	})
