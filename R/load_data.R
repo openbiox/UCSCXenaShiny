@@ -23,7 +23,7 @@
 #'   - `TCGA.organ`: TCGA organ data.
 #'   - `toil_info`: Toil hub information.
 #'
-#' **Remote datasets stored in [Zenodo](https://zenodo.org/record/10340116/)**:
+#' **Remote datasets stored in [Zenodo](https://zenodo.org/record/10554197/)**:
 #'   - `pcawg_promoter_id`: PCAWG promoter identifiers.
 #'   - `transcript_identifier`: Common transcript identifiers.
 #'   - `ccle_expr_and_drug_response`: CCLE expression and drug response data.
@@ -79,7 +79,7 @@ load_data <- function(name) {
     if (!file.exists(data_path)) {
       # Download it to inst/extdata from zenodo
       # Then load it
-      data_url <- file.path("https://zenodo.org/record/10340116/files", name2)
+      data_url <- file.path("https://zenodo.org/record/10554197/files", name2)
       if (tryCatch(httr::status_code(httr::HEAD(data_url)), 
                    error = function(e) 404) != 200) {
         # Use an alternative OSS approach
