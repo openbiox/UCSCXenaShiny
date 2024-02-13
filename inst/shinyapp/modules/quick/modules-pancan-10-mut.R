@@ -4,32 +4,7 @@ ui.modules_pancan_mut = function(id){
 		column(
 			3,
 			wellPanel(
-	            virtualSelectInput(
-	              inputId = ns("mut_Gene"),
-	              label = "Input a gene with mutation ralated grouping",
-	              choices = NULL,
-	              width = "100%",
-	              search = TRUE,
-	              allowNewOption = TRUE,
-	              dropboxWidth = "200%"
-	            ),
-	            shinyWidgets::prettyRadioButtons(
-	              inputId = ns("Mode"), label = "Select analysis cancer(s):",
-	              choiceValues = c("Pan-cancer", "Single-cancer"),
-	              choiceNames = c("Pan-cancer", "Single-cancer"),
-	              animation = "jelly"
-	            ),
-				tabsetPanel(
-				  id = ns("Mode_params"),
-				  type = "hidden",
-				  tabPanel("Single-cancer",
-				  	selectInput(ns("Cancer"), "Select one cancer",sort(tcga_cancer_choices))
-				  ),
-				  tabPanel("Pan-cancer")
-				),
-		        numericInput(inputId = ns("size_cutoff"), label = "Minimum group size", value = 3),
-			),
-			wellPanel(
+                h4("1. Data", align = "center"),
 	            div(actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
 	                style = "margin-bottom: 5px;"),
 	            conditionalPanel(
@@ -52,8 +27,48 @@ ui.modules_pancan_mut = function(id){
 	              allowNewOption = TRUE,
 	              dropboxWidth = "200%"
 	        	),
+	            virtualSelectInput(
+	              inputId = ns("mut_Gene"),
+	              label = "Grouping by gene mutation",
+	              choices = NULL,
+	              width = "100%",
+	              search = TRUE,
+	              allowNewOption = TRUE,
+	              dropboxWidth = "200%"
+	            ),
+	            shinyWidgets::prettyRadioButtons(
+	              inputId = ns("Mode"), label = "Select analysis cancer(s):",
+	              choiceValues = c("Pan-cancer", "Single-cancer"),
+	              choiceNames = c("Pan-cancer", "Single-cancer"),
+	              animation = "jelly"
+	            ),
+				tabsetPanel(
+				  id = ns("Mode_params"),
+				  type = "hidden",
+				  tabPanel("Single-cancer",
+				  	selectInput(ns("Cancer"), "Select one cancer",sort(tcga_cancer_choices))
+				  ),
+				  tabPanel("Pan-cancer")
+				),
+		        tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
+		        shinyWidgets::actionBttn(
+		          inputId = ns("check_bttn"),
+		          label = "Check",
+		          style = "gradient",
+		          # icon = icon("search"),
+		          color = "primary",
+		          block = TRUE,
+		          size = "sm"
+		        ),
+		        br(),
+		        verbatimTextOutput(ns("mut_tip"))
+		        # numericInput(inputId = ns("size_cutoff"), label = "Minimum group size", value = 3),
 			),
+		),
+		column(
+			3,
 			wellPanel(
+                h4("2. Parameters", align = "center"),
 		        materialSwitch(ns("pdist_mode"), "Show violin plot", inline = FALSE),
 		        materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = TRUE),
 		        materialSwitch(ns("pdist_show_p_label"), "Show P label", inline = TRUE),
@@ -72,6 +87,7 @@ ui.modules_pancan_mut = function(id){
 		        )
 			),
 			wellPanel(
+                h4("3. Download", align = "center"),
 		        numericInput(inputId = ns("height"), label = "Height", value = 5),
 		        numericInput(inputId = ns("width"), label = "Width", value = 12),
 		        prettyRadioButtons(
@@ -84,18 +100,19 @@ ui.modules_pancan_mut = function(id){
 		          animation = "jelly",
 		          fill = TRUE
 		        ),
+		        tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
 		        downloadBttn(
 		          outputId = ns("download"),
 		          style = "gradient",
-		          color = "default",
+		          color = "primary",
 		          block = TRUE,
 		          size = "sm"
 		        )
 			)
 		),
 		column(
-		    9,
-		    plotOutput(ns("mut_plot"), height = "600px",width = "600px"),
+		    6,
+		    plotOutput(ns("mut_plot"), height = "600px"),
 		    hr(),
 		    # h5("NOTEs:"),
 		    # p("1. 500 common patwhay genesets from 3 resources(50 HALLMARK, 186 KEGG, 264 IOBR) were collected."),
@@ -156,17 +173,67 @@ server.modules_pancan_mut = function(input, output, session){
 	  themes_list[[input$theme]]
 	})
 
+	mut_tip = eventReactive(input$check_bttn,{
+		mut_dat_raw <- query_pancan_value(input$mut_Gene, data_type = "mutation")
+		# print(str(mut_dat_raw))
+		shiny::validate(
+			need(try(!all(is.na(mut_dat_raw))), 
+				"No mutate information for the gene."),
+		)
+		tcga_gtex <- load_data("tcga_gtex")
+		mut_dat <- mut_dat_raw %>%
+		  as.data.frame() %>%
+		  tibble::rownames_to_column("Sample") %>%
+		  dplyr::rename("mut" = ".") %>% 
+		  dplyr::inner_join(., tcga_gtex, by = c("Sample"="sample")) %>% 
+		  dplyr::filter(.data$type2 == "tumor") %>%
+		  dplyr::select("Sample", "tissue", "mut")
+
+		exp_dat_raw <- query_pancan_value(input$Pancan_search, data_type = input$profile, opt_pancan = opt_pancan())
+		exp_dat <- exp_dat_raw$expression %>%
+		  as.data.frame() %>%
+		  tibble::rownames_to_column("Sample") %>%
+		  dplyr::rename("values" = ".") %>%
+		  dplyr::inner_join(., tcga_gtex, by = c("Sample"="sample")) %>%
+		  dplyr::select("Sample", "values")
+		merge_dat <- dplyr::inner_join(mut_dat, exp_dat) %>%
+		  dplyr::mutate(
+		    tissue = as.character(.data$tissue),
+		    mut = factor(.data$mut, levels = c(1, 0), labels  = c("Mutation", "Wild"))
+		  )
+		if(input$Mode=="Single-cancer"){
+			merge_dat_sub = subset(merge_dat, tissue==input$Cancer)
+			subtest = subset(merge_dat_sub, mut=="Mutation")
+			if(nrow(subtest)<=3){
+				mut_tips = paste0("Warning: Less than 3 valid samples in Mutation group.")
+			} else {
+				mut_tips = paste0("Note: ", nrow(subtest)," valid samples in Mutation group.")
+			}
+		} else {
+			subtest = subset(merge_dat, mut=="Mutation")
+			subtest_stat = names(table(subtest$tissue)[table(subtest$tissue)>3])
+			mut_tips = paste0("Note: ",length(subtest_stat)," cancers with Mutation group above 3.")
+		}
+		mut_tips
+	})
+	output$mut_tip = renderPrint({
+		cat(mut_tip())
+	})
+
+
+
+
 	w <- waiter::Waiter$new(id = ns("mut_plot"), html = waiter::spin_hexdots(), color = "white")
 
 	plot_func = eventReactive(input$plot_bttn, {
 		p = switch(input$Mode,
 			`Pan-cancer`=vis_toil_Mut(mut_Gene = input$mut_Gene, Gene = input$Pancan_search,
-				data_type=input$profile, size_cutoff=input$size_cutoff, Mode =ifelse(input$pdist_mode,"Violinplot", "Boxplot"),
+				data_type=input$profile, Mode =ifelse(input$pdist_mode,"Violinplot", "Boxplot"),
 				Show.P.value = input$pdist_show_p_value, Show.P.label = input$pdist_show_p_label,
 				values = colors(), opt_pancan = opt_pancan()
 				),
 			`Single-cancer`=vis_toil_Mut_cancer(mut_Gene = input$mut_Gene, Gene = input$Pancan_search,
-				data_type=input$profile, size_cutoff=input$size_cutoff, Mode =ifelse(input$pdist_mode,"Violinplot", "Dotplot"),
+				data_type=input$profile, Mode =ifelse(input$pdist_mode,"Violinplot", "Dotplot"),
 				Show.P.value = input$pdist_show_p_value, Show.P.label = input$pdist_show_p_label,
 				values = colors(), Cancer=input$Cancer, opt_pancan = opt_pancan()
 				)
@@ -174,28 +241,16 @@ server.modules_pancan_mut = function(input, output, session){
 	  return(p)
 	})
 
-	data_func = eventReactive(input$plot_bttn, {
-		p_dat = switch(input$Mode,
-			`Pan-cancer`=vis_toil_Mut(mut_Gene = input$mut_Gene, Gene = input$Pancan_search,
-				data_type=input$profile, size_cutoff=input$size_cutoff, Mode =ifelse(input$pdist_mode,"Violinplot", "Boxplot"),
-				Show.P.value = input$pdist_show_p_value, Show.P.label = input$pdist_show_p_label,
-				values = colors(), plot = FALSE, opt_pancan = opt_pancan()
-				),
-			`Single-cancer`=vis_toil_Mut_cancer(mut_Gene = input$mut_Gene, Gene = input$Pancan_search,
-				data_type=input$profile, size_cutoff=input$size_cutoff, Mode =ifelse(input$pdist_mode,"Violinplot", "Boxplot"),
-				Show.P.value = input$pdist_show_p_value, Show.P.label = input$pdist_show_p_label,
-				values = colors(), Cancer=input$Cancer, plot = FALSE, opt_pancan = opt_pancan()
-				)
-		)
-	  return(p_dat)
-	})
 
 	output$mut_plot <- renderPlot({
 	  w$show() # Waiter add-ins
 	  plot_func()
 	})
 	output$mut_data <- renderDT({
-	  data_func()
+	  plot_func()$data %>%
+	  	dplyr::rename('Cancer'='tissue', 'Sample'='sample',
+	  		'Group'='mut', 'Expression'='expression') %>%
+		dplyr::arrange(Sample)
 	})
 	output$download <- downloadHandler(
 	  filename = function() {
@@ -222,7 +277,11 @@ server.modules_pancan_mut = function(input, output, session){
 	    paste0(input$Pancan_search,"_", input$profile,"_",input$mut_Gene,"_mutation.csv")
 	  },
 	  content = function(file) {
-	    write.csv(data_func(), file, row.names = FALSE)
+	  	data = plot_func()$data %>%
+		  	dplyr::rename('Cancer'='tissue', 'Sample'='sample',
+		  		'Group'='mut', 'Expression'='expression') %>%
+		  	dplyr::arrange(Sample)
+	    write.csv(data, file, row.names = FALSE)
 	  }
 	)
 

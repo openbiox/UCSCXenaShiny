@@ -5,6 +5,7 @@ ui.modules_pcawg_unicox <- function(id) {
       column(
         3,
         wellPanel(
+          h4("1. Data", align = "center"),
           div(actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
               style = "margin-bottom: 5px;"),
           conditionalPanel(
@@ -34,6 +35,9 @@ ui.modules_pcawg_unicox <- function(id) {
             allowNewOption = TRUE,
             dropboxWidth = "200%"
           ),
+        ),
+        wellPanel(
+          h4("2. Parameters", align = "center"),
           # selectInput(inputId = ns("measure"), label = "Select Measure for plot", choices = c("OS", "PFI", "DSS", "DFI"), selected = "OS"),
           selectInput(inputId = ns("threshold"), label = "Select Threshold for plot", choices = c(0.25, 0.5), selected = 0.5),
           colourpicker::colourInput(inputId = ns("first_col"), "First color", "#6A6F68"),
@@ -50,6 +54,7 @@ ui.modules_pcawg_unicox <- function(id) {
             size = "sm"
           )),
           wellPanel(
+            h4("3. Download", align = "center"),
             numericInput(inputId = ns("height"), label = "Height", value = 8),
             numericInput(inputId = ns("width"), label = "Width", value = 6),
             prettyRadioButtons(
@@ -62,10 +67,11 @@ ui.modules_pcawg_unicox <- function(id) {
               animation = "jelly",
               fill = TRUE
             ),
+            tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
             downloadBttn(
               outputId = ns("download"),
               style = "gradient",
-              color = "default",
+              color = "primary",
               block = TRUE,
               size = "sm"
             )
@@ -73,7 +79,11 @@ ui.modules_pcawg_unicox <- function(id) {
         ),
       column(
         9,
-        plotOutput(ns("unicox_gene_tree"), height = "500px",width = "350px"),
+        fluidRow(
+         column(6, offset = 3,
+          plotOutput(ns("unicox_gene_tree"), height = "600px")
+         )
+        ),
         hr(),
         h5("NOTEs:"),
         p("1. We define gene in certain cancer type as risky (log(Hazard Ratio) > 0) or protective (log(Hazard Ratio) < 0) or NS (No statistical significance, P value > 0.05)"),
@@ -180,7 +190,11 @@ server.modules_pcawg_unicox <- function(input, output, session) {
 
 
   output$tbl <- renderDT(
-    plot_func()$data,
+    plot_func()$data %>%
+      dplyr::rename('Project'='cancer', 'Event'='measure','Samples'='n_ref',
+        'P.value' = 'p.value') %>%
+      dplyr::select(Project,Event,Samples,HR_log,lower_95_log,upper_95_log,Type,P.value),
+
     options = list(lengthChange = FALSE)
   )
 
@@ -189,7 +203,11 @@ server.modules_pcawg_unicox <- function(input, output, session) {
       paste0(input$Pancan_search, "_", input$profile, "_", input$measure, "_pcawg_unicox.csv")
     },
     content = function(file) {
-      write.csv(plot_func()$data, file, row.names = FALSE)
+      data =  plot_func()$data %>%
+        dplyr::rename('Project'='cancer', 'Event'='measure','Samples'='n_ref',
+          'P.value' = 'p.value') %>%
+        dplyr::select(Project,Event,Samples,HR_log,lower_95_log,upper_95_log,Type,P.value)
+      write.csv(data, file, row.names = FALSE)
     }
   )
 }

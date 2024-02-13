@@ -3,6 +3,7 @@ ui.page_home <- function() {
     title = "Home",
     icon = icon("home"), # create icon http://shiny.rstudio.com/reference/shiny/latest/icon.html
     fluidPage(
+      useShinydashboard(),
       tags$head(
         tags$link(rel = "stylesheet", type = "text/css", href = "bootstrap4.css")
       ),
@@ -58,148 +59,189 @@ ui.page_home <- function() {
         )
       ),
       tags$br(),
+      h2(strong("※ Shiny Page Gallery")),
+      tags$hr(style = "border:none; border-top:5px solid #5E81AC;"),
       fluidRow(
         column(
           12,
           slickR::slickROutput("slick_output", width = "90%", height = "700px")
         )
       ),
-      # fluidRow(
-      #   column(
-      #     6,
-      #     tags$div(
-      #       column(
-      #         12,
-      #         ui.home_search_box("homepage_pancan_search"),
-      #         tags$h2("Data Portal Summary"),
-      #         tags$b(paste0(
-      #           "UCSCXenaShiny v", packageVersion("UCSCXenaShiny"),
-      #           " based on ",
-      #           "UCSCXenaTools v", packageVersion("UCSCXenaTools"),
-      #           " (We are working on XenaShiny v2, so the app may be not stable. Any question please report to the Github issue.)"
-      #         )),
-      #         tags$br(),
-      #         tags$b("Data source: "),
-      #         tags$a(href = "https://xenabrowser.net/datapages/", "UCSC Xena"),
-      #         " or ",
-      #         tags$a(href = "https://xena.hiplot.com.cn/datapages/", "Hiplot mirror"),
-      #         tags$hr(),
-      #         tags$div(
-      #           class = "card-deck text-center block-center",
-      #           tags$div(
-      #             class = "card",
-      #             tags$div(
-      #               class = "card-body",
-      #               tags$img(src = "host.png", alt = "logo", style = "width: 30% ; margin: 0 auto "),
-      #               tags$h5("DATA HUBS")
-      #             ),
-      #             tags$div(
-      #               class = "card-footer",
-      #               tags$h4(Data_hubs_number)
-      #             )
-      #           ),
-      #           tags$div(
-      #             class = "card",
-      #             tags$div(
-      #               tags$img(src = "cohort.png", alt = "logo", style = "width: 30% ; margin: 0 auto "),
-      #               class = "card-body",
-      #               tags$h5("COHORTS")
-      #             ),
-      #             tags$div(
-      #               class = "card-footer",
-      #               tags$h4(Cohorts_number)
-      #             )
-      #           ),
-      #           tags$div(
-      #             class = "card",
-      #             tags$div(
-      #               class = "card-body",
-      #               tags$img(src = "dataset.png", alt = "logo", style = "width: 30% ; margin: 0 auto "),
-      #               tags$h5("DATASETS")
-      #             ),
-      #             tags$div(
-      #               class = "card-footer",
-      #               tags$h4(Datasets_number)
-      #             )
-      #           )
-      #         ),
-      #         tags$br(),
-      #         tags$div(
-      #           class = "card-deck text-center block-center",
-      #           tags$div(
-      #             class = "card",
-      #             tags$div(
-      #               class = "card-body",
-      #               tags$img(src = "sample.png", alt = "logo", style = "width: 30% ; margin: 0 auto "),
-      #               tags$h5("SAMPLES")
-      #             ),
-      #             tags$div(
-      #               class = "card-footer",
-      #               tags$h4(Samples_number)
-      #             )
-      #           ),
-      #           tags$div(
-      #             class = "card",
-      #             tags$div(
-      #               class = "card-body",
-      #               tags$img(src = "site.png", alt = "logo", style = "width: 30% ; margin: 0 auto "),
-      #               tags$h5("PRIMARY SITES")
-      #             ),
-      #             tags$div(
-      #               class = "card-footer",
-      #               tags$h4(Primary_sites_number)
-      #             )
-      #           ),
-      #           tags$div(
-      #             class = "card",
-      #             tags$div(
-      #               class = "card-body",
-      #               tags$img(src = "file.png", alt = "logo", style = "width: 30% ; margin: 0 auto "),
-      #               tags$h5("DATA SUBTYPES")
-      #             ),
-      #             tags$div(
-      #               class = "card-footer",
-      #               tags$h4(Data_subtypes_number)
-      #             )
-      #           )
-      #         )
-      #       )
-      #     )
-      #   ),
-      #   column(
-      #     6,
-      #     tags$br(),
-      #     tags$br(),
-      #     tags$br(),
-      #     tags$br(),
-      #     tags$br(),
-      #     tags$br(),
-      #     tabsetPanel(
-      #       tabPanel(
-      #         "Cohort number",
-      #         tags$br(),
-      #         # plotly::plotlyOutput("Xenasummary1", height = "100%")
-      #         plotOutput("Xenasummary1")
-
-      #       ),
-      #       tabPanel(
-      #         "Dataset number",
-      #         tags$br(),
-      #         # plotly::plotlyOutput("Xenasummary2", height = "100%")
-      #         plotOutput("Xenasummary2")
-
-      #       )
-      #     )
-      #   )
-      # ),
-
-      # tags$div(
-      #   class = "text-center",
-      #   tags$div(
-      #     class = "bg-dark text-white",
-      #     tags$p("The goal of XenaShiny is to provide a web app for downloading, analyzing and visualizing datasets from UCSC Xena hubs.")
-      #   )
-      # )
+      br(),br(),
+      h2(strong("※ Quick TCGA modules with specific functions")),
+      tags$hr(style = "border:none; border-top:5px solid #5E81AC;"),
+      fluidRow(
+        column(
+          2,
+          shinydashboard::box(
+            title = "TCGA-Comparison", 
+            solidHeader = TRUE, status="primary",
+            width = 12, height = 200,
+            p("Compare one multi-omics molecular expression between tumor and normal (including GTEx) samples."),
+            actionLink("link_to_q1", "Go >>>"),
+          ),
+        ),
+        column(
+          2,
+          shinydashboard::box(
+            title = "TCGA-Comparison", 
+            solidHeader = TRUE, status="primary",
+            width = 12, height = 200,
+            p("Observe molecular expression between tumor and normal (including GTEx) samples via anatomy plot."),
+            actionLink("link_to_q2", "Go >>>"),
+          ),
+        ),
+        column(
+          2,
+          shinydashboard::box(
+            title = "TCGA-Comparison", 
+            solidHeader = TRUE, status="primary",
+            width = 12, height = 200,
+            p("Compare one multi-omics molecular expression between gene mutation and wild of tumor samples."),
+            actionLink("link_to_q9", "Go >>>"),
+          )
+        ),
+        column(
+          2,
+          shinydashboard::box(
+            title = "TCGA-Correlation", 
+            solidHeader = TRUE, status="success",
+            width = 12, height = 200,
+            p("Calculate the correlation of two multi-omics molecules acccording to their expression values."),
+            actionLink("link_to_q3", "Go >>>"),
+          ),
+        ),
+        column(
+          2,
+          shinydashboard::box(
+            title = "TCGA-Correlation", 
+            solidHeader = TRUE, status="success",
+            width = 12, height = 200,
+            p("Calculate the correlation between one multi-omics molecule and immune signature scores across cancers"),
+            actionLink("link_to_q5", "Go >>>"),
+          ),
+        ),
+        column(
+          2,
+          shinydashboard::box(
+            title = "TCGA-Correlation", 
+            solidHeader = TRUE, status="success",
+            width = 12, height = 200,
+            p("Calculate the correlation between one multi-omics molecule and tumor immune infiltration across cancers"),
+            actionLink("link_to_q6", "Go >>>"),
+          ),
+        ),
+      ),
+      fluidRow(
+        column(
+          2,
+          shinydashboard::box(
+            title = "TCGA-Correlation", 
+            solidHeader = TRUE, status="success",
+            width = 12, height = 200,
+            p("Calculate the correlation between one multi-omics molecule and TMB/Stemness/MSI across cancers"),
+            actionLink("link_to_q7", "Go >>>"),
+          )
+        ),
+        column(
+          2,
+          shinydashboard::box(
+            title = "TCGA-Correlation", 
+            solidHeader = TRUE, status="success",
+            width = 12, height = 200,
+            p("Calculate the correlation between one multi-omics molecule and pathway score across cancers"),
+            actionLink("link_to_q8", "Go >>>"),
+          )
+        ),
+        column(
+          2,
+          shinydashboard::box(
+            title = "TCGA-Survival", 
+            solidHeader = TRUE, status="info",
+            width = 12, height = 200,
+            p("Calculate the log-rank test analysis of one multi-omics molecule in one cancer."),
+            actionLink("link_to_q10", "Go >>>"),
+          )
+        ),
+        column(
+          2,
+          shinydashboard::box(
+            title = "TCGA-Survival", 
+            solidHeader = TRUE, status="info",
+            width = 12, height = 200,
+            p("Performe the univariate cox regreesion analysis of one multi-omics molecule across cancers."),
+            actionLink("link_to_q4", "Go >>>"),
+          ),
+        ),
+        column(
+          2,
+          shinydashboard::box(
+            title = "TCGA-Dimension", 
+            solidHeader = TRUE, status="warning",
+            width = 12, height = 200,
+            p("Perform dimension reduction analysis for multiple molecules of samples in one phenotype."),
+            actionLink("link_to_q11", "Go >>>"),
+          )
+        ),
+        column(
+          2,
+          shinydashboard::box(
+            title = "PCAWG/CCLE", 
+            solidHeader = TRUE, status="danger",
+            width = 12, height = 200,
+            p("Enter 'Quick T·P·C Analysis' page to explore similar modules designed for PCAWG and CCLE databases.")
+          )
+        ),
+      ),
+      br(),
+      h2(strong("※ General TCGA pipelines with personalized operations")),
+      tags$hr(style = "border:none; border-top:5px solid #5E81AC;"),
+      fluidRow(
+        column(
+          3,
+          shinydashboard::box(
+            title = "TCGA-Comparison", 
+            solidHeader = TRUE, status="primary",
+            width = 12, height = 200,
+            p(paste0("Perform versatile comparison analysis (3 modes) for one identifier from the comprehensive tumor ",
+              "omics and non-omics data together with user-defined metadata based on custom grouping after optional sample filtering step.")),
+            actionLink("link_to_p1", "Go >>>"),
+          )
+        ),
+        column(
+          3,
+          shinydashboard::box(
+            title = "TCGA-Correlation", 
+            solidHeader = TRUE, status="success",
+            width = 12, height = 200,
+            p(paste0("Perform versatile correlation analysis (3 modes) between two random identifiers from the comprehensive tumor ",
+              "omics and non-omics data together with user-defined metadata after optional sample filtering step.")),
+            actionLink("link_to_p2", "Go >>>"),
+          )
+        ),
+        column(
+          3,
+          shinydashboard::box(
+            title = "TCGA-Survival", 
+            solidHeader = TRUE, status="info",
+            width = 12, height = 200,
+            p(paste0("Perform versatile log-rank test or univariate cox regreesion survival analysis (3 modes) for one identifier from the comprehensive tumor ",
+              "omics and non-omics data together with user-defined metadata after optional sample filtering step.")),
+            actionLink("link_to_p3", "Go >>>"),
+          )
+        ),
+        column(
+          3,
+          shinydashboard::box(
+            title = "PCAWG/CCLE", 
+            solidHeader = TRUE, status="danger",
+            width = 12, height = 200,
+            p(paste0("Enter 'personalized T·P·C Analysis' page to explore ",
+              "similar versatile pipeline analyses (including comparison, correlation, survival) with  personalized operations for PCAWG and CCLE databases."))
+          )
+        )
+      )
     )
   )
 }
+

@@ -5,6 +5,7 @@ ui.modules_pcawg_dist <- function(id) {
       column(
         3,
         wellPanel(
+          h4("1. Data", align = "center"),
           div(actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
               style = "margin-bottom: 5px;"),
           conditionalPanel(
@@ -39,6 +40,9 @@ ui.modules_pcawg_dist <- function(id) {
             content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
             placement = "right", options = list(container = "body")
           ),
+        ),
+        wellPanel(
+          h4("2. Parameters", align = "center"),
           materialSwitch(ns("pdist_mode"), "Show violin plot", inline = FALSE),
           materialSwitch(ns("pdist_show_p_value"), "Show P value", inline = TRUE),
           materialSwitch(ns("pdist_show_p_label"), "Show P label", inline = TRUE),
@@ -57,6 +61,7 @@ ui.modules_pcawg_dist <- function(id) {
           )
         ),
         wellPanel(
+          h4("3. Download", align = "center"),
           numericInput(inputId = ns("height"), label = "Height", value = 5),
           numericInput(inputId = ns("width"), label = "Width", value = 12),
           prettyRadioButtons(
@@ -69,10 +74,11 @@ ui.modules_pcawg_dist <- function(id) {
             animation = "jelly",
             fill = TRUE
           ),
+          tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
           downloadBttn(
             outputId = ns("download"),
             style = "gradient",
-            color = "default",
+            color = "primary",
             block = TRUE,
             size = "sm"
           )
@@ -175,7 +181,11 @@ server.modules_pcawg_dist <- function(input, output, session) {
       paste0(input$Pancan_search, "_", input$profile, "_pcawg_dist.csv")
     },
     content = function(file) {
-      write.csv(plot_func()$data, file, row.names = FALSE)
+      data = plot_func()$data %>%
+        dplyr::rename('Project'='dcc_project_code','Sample'='icgc_specimen_id',
+          'Group'='type2', 'Value'='tpm') %>%
+        dplyr::select(Project, Sample, Group,Value)
+      write.csv(data, file, row.names = FALSE)
     }
   )
 
@@ -207,7 +217,10 @@ server.modules_pcawg_dist <- function(input, output, session) {
 
 
   output$tbl <- renderDT(
-    plot_func()$data,
+    plot_func()$data %>%
+      dplyr::rename('Project'='dcc_project_code','Sample'='icgc_specimen_id',
+        'Group'='type2', 'Value'='tpm') %>%
+      dplyr::select(Project, Sample, Group,Value),
     options = list(lengthChange = FALSE)
   )
 }

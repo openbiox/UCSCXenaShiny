@@ -7,11 +7,14 @@
 vis_gene_pw_cor(
   Gene = "TP53",
   data_type = "mRNA",
-  pw_name = NULL,
-  Cancer = "ACC",
-  cor_method = "pearson",
-  cor_cutoff = list(r = 0.3, p = 0.01),
-  plot = TRUE,
+  pw_name = "HALLMARK_ADIPOGENESIS",
+  cancer_choose = "GBM",
+  use_regline = TRUE,
+  cor_method = "spearman",
+  use_all = FALSE,
+  alpha = 0.5,
+  color = "#000000",
+  filter_tumor = TRUE,
   opt_pancan = .opt_pancan
 )
 }
@@ -24,13 +27,19 @@ specifying genomic signature ("TP53 + 2 * KRAS - 1.3 * PTEN").}
 
 \item{pw_name}{the queried Pathway name, see the supported pathway from 'load("toil_sig_score")'default is NULL}
 
-\item{Cancer}{select cancer cohort(s)}
+\item{cancer_choose}{select cancer cohort(s)}
+
+\item{use_regline}{if TRUE, add regression line.}
 
 \item{cor_method}{select correlation coefficient (pearson/spearman)}
 
-\item{cor_cutoff}{a list with 2 elements names 'r' and 'p' to define significant correlations}
+\item{use_all}{use all sample, default FALSE.}
 
-\item{plot}{output the plot directly (default) or raw data.frame}
+\item{alpha}{dot alpha.}
+
+\item{color}{dot color.}
+
+\item{filter_tumor}{whether use tumor sample only, default TRUE}
 
 \item{opt_pancan}{specify one dataset for some molercular profiles}
 }
@@ -42,18 +51,8 @@ Visualize Correlation between Gene and Pathway signature Score
 }
 \examples{
 \dontrun{
-p1_1 <- vis_gene_pw_cor(Gene = "TP53", data_type = "mRNA", Cancer = "ACC")
-p1_1_data <- vis_gene_pw_cor(Gene = "CD4", data_type = "mRNA", Cancer = "ACC", plot = FALSE)
-p1_2 <- vis_gene_pw_cor(Gene = "hsa-miR-1228-3p", data_type = "miRNA", Cancer = "ACC")
-
-p2 <- vis_gene_pw_cor(
-  Gene = "TP53", data_type = "mRNA", Cancer = "ACC",
-  pw_name = "KEGG_VEGF_SIGNALING_PATHWAY"
-)
-
-p3 <- vis_gene_pw_cor(
-  Gene = "TP53", data_type = "mRNA", Cancer = "Overall",
-  pw_name = "KEGG_VEGF_SIGNALING_PATHWAY"
-)
+vis_gene_pw_cor(Gene = "TP53", data_type = "mRNA", 
+                pw_name = "HALLMARK_ADIPOGENESIS",
+                cancer_choose = "BRCA")
 }
 }

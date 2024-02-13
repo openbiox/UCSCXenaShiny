@@ -305,7 +305,9 @@ server.modules_pcawg_comp_o2m = function(input, output, session) {
 			  return(extract_stats(p)$subtitle_data)
 			}) %>% do.call(rbind, .) %>% 
 			dplyr::select(!expression) %>% 
-			dplyr::mutate(cancer = valid_cancer_choose, .before=1)
+			dplyr::mutate(cancer = valid_cancer_choose, .before=1) %>% 
+			dplyr::arrange(desc(cancer)) %>%
+			dplyr::mutate(cancer = factor(cancer, levels = unique(cancer)))
 			stat_comp
 		})
 	})
@@ -321,7 +323,9 @@ server.modules_pcawg_comp_o2m = function(input, output, session) {
 				"Please inspect whether to set groups or download variable data in S2 or S3 step."),
 		)
 		merge_data_line_sub = merge_data_line() %>%
-			dplyr::filter(cancer %in% unique(merge_data_line()$cancer))
+			dplyr::filter(cancer %in% unique(merge_data_line()$cancer)) %>%
+			dplyr::arrange(desc(cancer)) %>%
+			dplyr::mutate(cancer = factor(cancer, levels = unique(cancer)))
 
 		p1 = ggplot(merge_data_line_sub) + 
 		  stat_summary(aes(x=cancer, y=value, color=group),

@@ -5,6 +5,7 @@ ui.modules_pancan_radar <- function(id) {
       column(
         3,
         wellPanel(
+          h4("1. Data", align = "center"),
           div(actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
               style = "margin-bottom: 5px;"),
           conditionalPanel(
@@ -29,6 +30,9 @@ ui.modules_pancan_radar <- function(id) {
             dropboxWidth = "200%"
           ),
           selectInput(inputId = ns("Type"), label = "Select a feature", choices = c("stemness", "TMB", "MSI"), selected = "stemness"),
+        ),
+        wellPanel( 
+          h4("2. Parameters", align = "center"), 
           selectInput(
             inputId = ns("cor_method"),
             label = "Select Correlation method",
@@ -47,9 +51,9 @@ ui.modules_pancan_radar <- function(id) {
           )
         ),
         wellPanel(
+          h4("3. Download", align = "center"),
           numericInput(inputId = ns("height"), label = "Height", value = 5),
           numericInput(inputId = ns("width"), label = "Width", value = 12),
-          tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
           prettyRadioButtons(
             inputId = ns("device"),
             label = "Choose plot format",
@@ -60,10 +64,11 @@ ui.modules_pancan_radar <- function(id) {
             animation = "jelly",
             fill = TRUE
           ),
+          tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
           downloadBttn(
             outputId = ns("download"),
             style = "gradient",
-            color = "default",
+            color = "primary",
             block = TRUE,
             size = "sm"
           )
@@ -189,7 +194,11 @@ server.modules_pancan_radar <- function(input, output, session) {
   )
 
   output$tbl <- renderDT(
-    plot_func()$data,
+    plot_func()$data %>%
+      dplyr::rename('Cancer'='cancer',
+        'Cor'='cor', 'P.value'='p.value') %>%
+      dplyr::select(Cancer, Cor, P.value) %>%
+      tibble::remove_rownames(),
     options = list(lengthChange = FALSE)
   )
 
@@ -207,6 +216,11 @@ server.modules_pancan_radar <- function(input, output, session) {
       paste0(input$Pancan_search, "_", input$profile, "_", input$Type, "_pancan_radar.csv")
     },
     content = function(file) {
+      data = plot_func()$data %>%
+        dplyr::rename('Cancer'='cancer',
+          'Cor'='cor', 'P.value'='p.value') %>%
+        dplyr::select(Cancer, Cor, P.value) %>%
+        tibble::remove_rownames()
       write.csv(plot_func()$data, file, row.names = FALSE)
     }
   )

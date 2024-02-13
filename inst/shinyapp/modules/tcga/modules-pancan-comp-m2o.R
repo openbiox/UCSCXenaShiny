@@ -255,7 +255,8 @@ server.modules_pancan_comp_m2o = function(input, output, session) {
 	output$comp_stat_tb.ui = renderUI({
 		output$comp_stat_tb = renderDataTable({
 			# comp_stat()
-			comp_stat_ = comp_stat()
+			comp_stat_ = comp_stat() %>%
+				dplyr::rename("Batch identifiers"="id")
 			comp_stat_$p.value = format(comp_stat_$p.value, scientific=T, digits = 3)
 			dt = datatable(comp_stat_,
 				# class = "nowrap row-border",

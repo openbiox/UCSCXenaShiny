@@ -2,8 +2,9 @@ ui.modules_pancan_anatomy <- function(id) {
   ns <- NS(id)
   fluidPage(
     fluidRow(
-      column(
+      column(3,
         wellPanel(
+            h4("1. Data", align = "center"),
             div(actionButton(ns("toggleBtn"), "Modify datasets[opt]",icon = icon("folder-open")),
                 style = "margin-bottom: 5px;"),
             conditionalPanel(
@@ -26,50 +27,58 @@ ui.modules_pancan_anatomy <- function(id) {
               allowNewOption = TRUE,
               dropboxWidth = "200%"
             ),
-
-        shinyBS::bsPopover(ns("Pancan_search"),
-          title = "Tips",
-          content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
-          placement = "right", options = list(container = "body")
-        ),
-        selectInput(inputId = ns("Gender"), label = "Select Gender for plot", choices = c("Male", "Female"), selected = "Female"),
-        tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
-        shinyWidgets::actionBttn(
-          inputId = ns("search_bttn"),
-          label = "Go!",
-          style = "gradient",
-          icon = icon("search"),
-          color = "primary",
-          block = TRUE,
-          size = "sm"
-        )
+            shinyBS::bsPopover(ns("Pancan_search"),
+              title = "Tips",
+              content = "Enter a gene symbol to show its pan-can distribution, e.g. TP53",
+              placement = "right", options = list(container = "body")
+            ),
         ),
         wellPanel(
-        numericInput(inputId = ns("height"), label = "Height", value = 5),
-        numericInput(inputId = ns("width"), label = "Width", value = 10),
-        prettyRadioButtons(
-          inputId = ns("device"),
-          label = "Choose plot format",
-          choices = c("pdf", "png"),
-          selected = "pdf",
-          inline = TRUE,
-          icon = icon("check"),
-          animation = "jelly",
-          fill = TRUE
+          h4("2. Parameters", align = "center"),
+          selectInput(inputId = ns("Gender"), label = "Select Gender for plot", choices = c("Male", "Female"), selected = "Female"),
+          tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
+          shinyWidgets::actionBttn(
+            inputId = ns("search_bttn"),
+            label = "Go!",
+            style = "gradient",
+            icon = icon("search"),
+            color = "primary",
+            block = TRUE,
+            size = "sm"
+          )
         ),
-        downloadBttn(
-          outputId = ns("download"),
-          style = "gradient",
-          color = "default",
-          block = TRUE,
-          size = "sm"
+        wellPanel(
+          h4("3. Download", align = "center"),
+          numericInput(inputId = ns("height"), label = "Height", value = 5),
+          numericInput(inputId = ns("width"), label = "Width", value = 10),
+          prettyRadioButtons(
+            inputId = ns("device"),
+            label = "Choose plot format",
+            choices = c("pdf", "png"),
+            selected = "pdf",
+            inline = TRUE,
+            icon = icon("check"),
+            animation = "jelly",
+            fill = TRUE
+          ),
+          tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
+          downloadBttn(
+            outputId = ns("download"),
+            style = "gradient",
+            color = "primary",
+            block = TRUE,
+            size = "sm"
+          ),
         ),
-        ),
-        tags$a(href = "https://toil.xenahubs.net/", "Genomic profile data source"),
-        width = 3
+        # tags$a(href = "https://toil.xenahubs.net/", "Genomic profile data source"),
+        # width = 3
       ),
       column(
-        plotOutput(ns("pancan_anatomy"), height = "500px",width = "650px"),
+        fluidRow(
+          column(6, offset = 3,
+            plotOutput(ns("pancan_anatomy"), height = "500px"))
+        ),
+        
         hr(),
         h5("NOTEs:"),
         # p("1. GISTIC2 thresholded copy number -2,-1,0,1,2, representing homozygous deletion,single copy deletion,diploid normal copy,low-level copy number amplification,or high-level copy number amplification"),
@@ -138,7 +147,9 @@ server.modules_pancan_anatomy <- function(input, output, session) {
   })
 
   output$tbl <- renderDT(
-    plot_func()$data,
+    plot_func()$data %>%
+      dplyr::rename('Cancer'='tissue', 'Group'='type.x','Organ'='organ','Value'='value') %>%
+      dplyr::select(Cancer, Group, Organ, Value),
     options = list(lengthChange = FALSE)
   )
 
@@ -147,7 +158,10 @@ server.modules_pancan_anatomy <- function(input, output, session) {
       paste0(input$Pancan_search, "_", input$profile, "_pancan_anatomy.csv")
     },
     content = function(file) {
-      write.csv(plot_func()$data, file, row.names = FALSE)
+      data = plot_func()$data %>%
+        dplyr::rename('Cancer'='tissue', 'Group'='type.x','Organ'='organ','Value'='value') %>%
+        dplyr::select(Cancer, Group, Organ, Value)
+      write.csv(data, file, row.names = FALSE)
     }
   )
 
