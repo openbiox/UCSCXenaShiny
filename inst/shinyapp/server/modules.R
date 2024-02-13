@@ -161,8 +161,20 @@ observeEvent(req(input$navbar=="Based on Repository Datasets"),{
 }, once = TRUE) 
 
 # PharmacoGenomics
-callModule(serverDrugOmicPair, "DrugOmicPair")
-callModule(serverFeatureAcrossType, "FeatureAcrossType")
-callModule(serverProfileDrugSens, "ProfileDrugSens")
-callModule(serverFeatureDatabaseSig, "FeatureDatabaseSig")
-callModule(serverStatAnno, "StatAnno")
+observeEvent(req(input$navbar %in% c(
+  "Drugs-omics pairs Analysis",
+  "Profiles Display: Features across different types",
+  "Profiles Display: Profile of drug sensitivity",
+  "Features database significant analysis",
+  "Statistics and Annotations"
+)),{
+  message("Preprocessing drug omics data...")
+  source(system.file("shinyapp/PGdata.R", package = "UCSCXenaShiny"))
+  
+  callModule(serverDrugOmicPair, "DrugOmicPair")
+  callModule(serverFeatureAcrossType, "FeatureAcrossType")
+  callModule(serverProfileDrugSens, "ProfileDrugSens")
+  callModule(serverFeatureDatabaseSig, "FeatureDatabaseSig")
+  callModule(serverStatAnno, "StatAnno")
+  message("Done for loading data and modules.")
+}, once = TRUE) 
