@@ -30,6 +30,7 @@ ui.home_search_box <- function(id) {
         )
       )
     ),
+    br(),
     fluidRow(
       column(11, offset = 1,
         h5(strong("2.Run two explorations:"))
@@ -214,7 +215,7 @@ server.home_search_box <- function(input, output, session) {
               br(),
               h3("NOTEs:"),
               h4("1. It will take about ",strong("one minute",style="color:red")," for the general analysis which includes the relationships between queried molecule and ",
-                "(1) chinical phenotypes, (2) survival influence, (3) tumor index (4) immune infiltration, (5) pathway activity.",
+                "(1) clinical phenotypes, (2) survival influence, (3) tumor index (4) immune infiltration, (5) pathway activity.",
                 "You can see the ",a("example report", href = "https://lishensuo.github.io/book_test/UCSCXenaShiny_example_report.html")," while waiting."),
               h4("2. It will take about ", strong("10 seconds",style="color:red"), " for the generation of organized report in html format."),
               h4("3. Final, the analyzed result under the report can be directly downloaded in zip format.")

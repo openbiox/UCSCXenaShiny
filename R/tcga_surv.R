@@ -44,7 +44,7 @@ tcga_surv_get <- function(item,
     install.packages("stringr")
   }
 
-  print(head(TCGA_cli_data))
+  # print(head(TCGA_cli_data))
   # type 有几种额外的 Xena 做过聚合的结果
   # "COADREAD" "FPPP"     "GBMLGG"   "LUNG"     "PANCAN"
   # FPPP 好像不是正常的样本，不推荐使用，已去除

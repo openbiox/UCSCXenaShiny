@@ -183,4 +183,4 @@ observeEvent(req(input$navbar %in% c(
 
 
 callModule(server.home_search_box, "homepage_pancan_search")
-
+callModule(server.home_daily_gene, "homepage_daily_gene")
