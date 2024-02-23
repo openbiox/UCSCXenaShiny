@@ -8,7 +8,7 @@ ui.page_home <- function() {
         tags$link(rel = "stylesheet", type = "text/css", href = "bootstrap4.css")
       ),
       fluidRow(
-        column(5,
+        column(4,
           tags$div(
             column(
               12,
@@ -36,27 +36,19 @@ ui.page_home <- function() {
         ),
         column(4,
           wellPanel(
+            style = "background: #b3cde3",
+            h3("❤ Daily Gene", icon = "dice", align = "center"),
+            ui.home_daily_gene("homepage_daily_gene"),
+          )
+        ),
+        column(4,
+          wellPanel(
             style = "background: #a6cee3",
-            h2("TCGA Pan-Cancer Query!", align = "center"),
+            h3("❤ Pan-Cancer Query", align = "center"),
             # br(),
             ui.home_search_box("homepage_pancan_search"),
           )
         ),
-        column(3,
-          wellPanel(
-            style = "background: #b3cde3",
-            h2("Latest Release Notes", align = "center"),
-            br(),
-            tags$ul(
-              tags$li("2024-01-21: Adjust homepge with slick gallery to show basic page help.",style = "font-size: 14px;"),
-              tags$li("2024-01-16: Introduce MSigDB genesets  for molecule batch analysis.",style = "font-size: 14px;"),
-              tags$li("2023-12-20: Add  download modules that support data requisition.",style = "font-size: 14px;"),
-              tags$li("See more update logs in", 
-                a("Github", href="https://github.com/openbiox/UCSCXenaShiny"),
-                style = "font-size: 16px;")
-            )
-          )
-        )
       ),
       tags$br(),
       h2(strong("※ Shiny Page Gallery")),
@@ -68,7 +60,7 @@ ui.page_home <- function() {
         )
       ),
       br(),br(),
-      h2(strong("※ Quick TCGA modules with specific functions")),
+      h2(strong("※ Custom TCGA modules with specific functions")),
       tags$hr(style = "border:none; border-top:5px solid #5E81AC;"),
       fluidRow(
         column(
@@ -240,8 +232,28 @@ ui.page_home <- function() {
               "similar versatile pipeline analyses (including comparison, correlation, survival) with  personalized operations for PCAWG and CCLE databases."))
           )
         )
+      ),
+      br(),
+      h2(strong("※ Latest significant release notes")),
+      tags$hr(style = "border:none; border-top:5px solid #5E81AC;"),
+      fluidRow(
+        column(12, #offset = 1,
+          tags$ul(
+            tags$li("2024-02-14: Incorporate the PharmacoGenomics analysis modules",style = "font-size: 20px;"),
+            tags$li("2024-01-21: Adjust homepge with slick gallery to show basic page help.",style = "font-size: 20px;"),
+            tags$li("2024-01-16: Introduce MSigDB genesets for molecule batch analysis.",style = "font-size: 20px;"),
+            tags$li("2023-12-20: Add download modules that support data requisition.",style = "font-size: 20px;"),
+            tags$li("See more update logs in our", 
+              a("Github", href="https://github.com/openbiox/UCSCXenaShiny"), ".",
+              "If you have any questions, please report the ",
+              a("issue", href = "https://github.com/openbiox/UCSCXenaShiny/issues"),
+              " or email at lishensuo@163.com. We will get back to you ASAP.",
+              style = "font-size: 20px;")
+          )  
+        )
       )
     )
   )
 }
+
 
