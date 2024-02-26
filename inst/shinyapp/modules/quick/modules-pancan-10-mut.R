@@ -11,7 +11,16 @@ ui.modules_pancan_mut = function(id){
 	              ns = ns,
 	              condition = "input.toggleBtn % 2 == 1",
 	              mol_origin_UI(ns("mol_origin2quick"), database = "toil")
-	            ),
+	            ), br(),
+	            virtualSelectInput(
+	              inputId = ns("mut_Gene"),
+	              label = "Grouping by gene mutation",
+	              choices = NULL,
+	              width = "100%",
+	              search = TRUE,
+	              allowNewOption = TRUE,
+	              dropboxWidth = "200%"
+	            ), br(),
 	            shinyWidgets::prettyRadioButtons(
 	              inputId = ns("profile"), label = "Select affected genomic profile:",
 	              choiceValues = c("mRNA", "transcript", "methylation", "miRNA"),
@@ -27,15 +36,6 @@ ui.modules_pancan_mut = function(id){
 	              allowNewOption = TRUE,
 	              dropboxWidth = "200%"
 	        	),
-	            virtualSelectInput(
-	              inputId = ns("mut_Gene"),
-	              label = "Grouping by gene mutation",
-	              choices = NULL,
-	              width = "100%",
-	              search = TRUE,
-	              allowNewOption = TRUE,
-	              dropboxWidth = "200%"
-	            ),
 	            shinyWidgets::prettyRadioButtons(
 	              inputId = ns("Mode"), label = "Select analysis cancer(s):",
 	              choiceValues = c("Pan-cancer", "Single-cancer"),

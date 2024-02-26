@@ -41,6 +41,9 @@ ui.modules_pcawg_dist <- function(id) {
             placement = "right", options = list(container = "body")
           ),
         ),
+      ),
+      column(
+        3,
         wellPanel(
           h4("2. Parameters", align = "center"),
           materialSwitch(ns("pdist_mode"), "Show violin plot", inline = FALSE),
@@ -82,10 +85,10 @@ ui.modules_pcawg_dist <- function(id) {
             block = TRUE,
             size = "sm"
           )
-        )
+        ),
       ),
       column(
-        9,
+        6,
         plotOutput(ns("gene_pancan_dist"), height = "500px"),
         hr(),
         h5("NOTEs:"),
