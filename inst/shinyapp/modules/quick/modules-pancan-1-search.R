@@ -138,6 +138,10 @@ server.modules_pancan_dist <- function(input, output, session) {
       selected = profile_choices()$default
     )
   })
+
+  observeEvent(input$Mode, {
+    updateTabsetPanel(inputId = "Mode_params", selected = input$Mode)
+  })
   
   opt_pancan = callModule(mol_origin_Server, "mol_origin2quick", database = "toil")
   

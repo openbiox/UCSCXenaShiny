@@ -29,6 +29,9 @@ ui.modules_pancan_unicox <- function(id) {
             dropboxWidth = "200%"
           ),
         ),
+      ),
+      column(
+        3,
         wellPanel(
           h4("2. Parameters", align = "center"),
           selectInput(inputId = ns("measure"), label = "Select Measure for plot", choices = c("OS", "PFI", "DSS", "DFI"), selected = "OS"),
@@ -68,14 +71,16 @@ ui.modules_pancan_unicox <- function(id) {
             color = "primary",
             block = TRUE,
             size = "sm"
-          ))
+          )
+        )
       ),
-      column(9,
+      column(6,
              fluidRow(
-              column(6, offset = 3,
+              column(8, offset = 2,
                plotOutput(ns("unicox_gene_tree"), height = "600px")
               )
              ),
+             # plotOutput(ns("unicox_gene_tree"), height = "600px"),
              hr(),
              h5("NOTEs:"),
              p("1. We define gene in certain cancer type as risky (log(Hazard Ratio) > 0) or protective (log(Hazard Ratio) < 0) or NS (No statistical significance, P value > 0.05)"),
