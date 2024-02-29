@@ -26,7 +26,7 @@ observeEvent(input$link_to_q3, {
 
 observeEvent(input$link_to_q4, {
   updateNavbarPage(inputId = "navbar", 
-    selected = "TCGA: Molecular Profile Cox Analysis")
+    selected = "TCGA: Molecular Profile Cox Regression Analysis")
   shinyjs::runjs("window.scrollTo(0, 0)")
 })
 
@@ -62,7 +62,7 @@ observeEvent(input$link_to_q9, {
 
 observeEvent(input$link_to_q10, {
   updateNavbarPage(inputId = "navbar", 
-    selected = "TCGA: Molecular Profile Log-rank Analysis")
+    selected = "TCGA: Molecular Profile Kaplan-Meier Analysis")
   shinyjs::runjs("window.scrollTo(0, 0)")
 })
 
