@@ -62,7 +62,7 @@ server.home_daily_gene <- function(input, output, session) {
     data = data.list$expression
     shiny::validate(
       need(try(!all(is.na(data))), 
-        "Sorry, no valid value for the sampling gene. Pleaese click the button again."),
+        "Sorry, no valid value for the sampling gene. Please click the button again."),
     )   
     data = data.frame(value=data) %>% 
       tibble::rownames_to_column("sample") %>% 
