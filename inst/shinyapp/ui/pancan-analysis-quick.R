@@ -43,11 +43,11 @@ ui.page_pancan_quick <- function() {
         ui.modules_pancan_mut("modules_pancan_mut")
     ),
     tabPanel(
-      "TCGA: Molecular Profile Log-rank Analysis",
+      "TCGA: Molecular Profile Kaplan-Meier Analysis",
       ui.modules_sur_plot("modules_sur_plot")
     ),
     tabPanel(
-      "TCGA: Molecular Profile Cox Analysis",
+      "TCGA: Molecular Profile Cox Regression Analysis",
       ui.modules_pancan_unicox("modules_pancan_unicox")
     ),
     tabPanel(
@@ -64,11 +64,11 @@ ui.page_pancan_quick <- function() {
       ui.modules_pcawg_gene_cor("modules_pcawg_gene_cor")
     ),
     tabPanel(
-      "PCAWG: Molecular Profile Log-rank Analysis",
+      "PCAWG: Molecular Profile Kaplan-Meier Analysis",
       ui.modules_pcawg_sur_plot("modules_pcawg_sur_plot")
     ),
     tabPanel(
-      "PCAWG: Molecular Profile Cox Analysis",
+      "PCAWG: Molecular Profile Cox Regression Analysis",
       ui.modules_pcawg_unicox("modules_pcawg_unicox")
     ),
 

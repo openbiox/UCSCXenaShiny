@@ -1,3 +1,13 @@
+
+observeEvent(input$bt03, {
+  updateNavbarPage(inputId = "navbar", 
+    selected = "Citation")
+  shinyjs::runjs("window.scrollTo(0, 0)")
+})
+
+
+
+
 output$slick_output <- slickR::renderSlickR({
   imgs = paste0("slick_img/N",1:6,".png")
   x = slickR::slickR(imgs, height = 600, width = "80%", slideType = 'img-lazy')  +
@@ -26,7 +36,7 @@ observeEvent(input$link_to_q3, {
 
 observeEvent(input$link_to_q4, {
   updateNavbarPage(inputId = "navbar", 
-    selected = "TCGA: Molecular Profile Cox Analysis")
+    selected = "TCGA: Molecular Profile Cox Regression Analysis")
   shinyjs::runjs("window.scrollTo(0, 0)")
 })
 
@@ -62,7 +72,7 @@ observeEvent(input$link_to_q9, {
 
 observeEvent(input$link_to_q10, {
   updateNavbarPage(inputId = "navbar", 
-    selected = "TCGA: Molecular Profile Log-rank Analysis")
+    selected = "TCGA: Molecular Profile Kaplan-Meier Analysis")
   shinyjs::runjs("window.scrollTo(0, 0)")
 })
 

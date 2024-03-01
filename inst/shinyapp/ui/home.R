@@ -1,3 +1,13 @@
+home_text.list = list(
+  intro = paste0(
+    "Thank you for using UCSCXenaShiny v",packageVersion("UCSCXenaShiny")," based on ","UCSCXenaTools v", packageVersion("UCSCXenaTools"),
+    ". Our web tool aims to povide a user-friendly platform to explore UCSC Xena datasets for both general and personalized cancer molecular research.",
+    " If you have any questions during use, please do not hesitate to contact us via Github issue.",
+    " If the tool has faciliated your research, welcome to cite our work.  :)"
+  )
+)
+
+
 ui.page_home <- function() {
   tabPanel(
     title = "Home",
@@ -13,23 +23,24 @@ ui.page_home <- function() {
             column(
               12,
               tags$h2("Welcome to UCSCXenaShiny v2!"),
-              tags$p(paste0(
-                "UCSCXenaShiny v", packageVersion("UCSCXenaShiny"),
-                " based on ",
-                "UCSCXenaTools v", packageVersion("UCSCXenaTools"),
-                " (We are still working on XenaShiny v2, so the app may be not stable. Any question please report to the Github issue.)"
-              ),style = "font-size: 20px;"),
-              tags$br(),
-              # tags$b("Data source: "),
-              # tags$a(href = "https://xenabrowser.net/datapages/", "UCSC Xena"),
-              # " or ",
-              # tags$a(href = "https://xena.hiplot.com.cn/datapages/", "Hiplot mirror"),
-              tags$p(paste0("Generally, UCSCXenaShiny v2.0 is a significant advancement that expands ",
-                "upon the capabilities of its initial version, allowing for personalized ",
-                "cancer omics analysis. We are confident that this update will address the ",
-                "limitations of existing web tools for cancer-related omics analysis, ",
-                "benefiting researchers and clinicians seeking a deeper understanding of molecular features."),
-                style = "font-size: 18px;"),
+              tags$p(home_text.list$intro, style = "font-size: 19px;"),
+              fluidRow(
+                column(4, align = "center",
+                  actionBttn("bt01","Github",
+                    style = "bordered", color = "primary", icon = icon("github"),
+                    onclick=paste0("window.open('https://github.com/openbiox/UCSCXenaShiny','_blank')"))
+                ),
+                column(4, align = "center",
+                  actionBttn("bt02","Tutorial",
+                    style = "bordered", color = "primary", icon = icon("book"),
+                    onclick=paste0("window.open('https://lishensuo.github.io/UCSCXenaShiny_Book','_blank')"))
+                ),
+                column(4, align = "center",
+                  actionBttn("bt03","Article",
+                    style = "bordered", color = "primary", icon = icon("newspaper"))
+                ),
+              ),
+              uiOutput("citation"),
               tags$hr(),
             )
           )
@@ -66,61 +77,67 @@ ui.page_home <- function() {
         column(
           2,
           shinydashboard::box(
-            title = "TCGA-Comparison", 
+            title = strong("TCGA-Comparison",style = "font-size: 20px;"), 
             solidHeader = TRUE, status="primary",
-            width = 12, height = 200,
-            p("Compare one multi-omics molecular expression between tumor and normal (including GTEx) samples."),
-            actionLink("link_to_q1", "Go >>>"),
+            width = 12, height = 250,
+            p("Compare one multi-omics molecular value between ",strong("tumor and normal")," (including GTEx) samples.",
+              style = "font-size: 18px;"),
+            actionLink("link_to_q1", p("Go >>>",style = "font-size: 20px;")),
           ),
         ),
         column(
           2,
           shinydashboard::box(
-            title = "TCGA-Comparison", 
+            title = strong("TCGA-Comparison",style = "font-size: 20px;"), 
             solidHeader = TRUE, status="primary",
-            width = 12, height = 200,
-            p("Observe molecular expression between tumor and normal (including GTEx) samples via anatomy plot."),
-            actionLink("link_to_q2", "Go >>>"),
+            width = 12, height = 250,
+            p("Observe molecular value between tumor and normal (including GTEx) samples via ",strong("anatomy plot"),".",
+              style = "font-size: 18px;"),
+            actionLink("link_to_q2", p("Go >>>",style = "font-size: 20px;")),
           ),
         ),
         column(
           2,
           shinydashboard::box(
-            title = "TCGA-Comparison", 
+            title = strong("TCGA-Comparison",style = "font-size: 20px;"),
             solidHeader = TRUE, status="primary",
-            width = 12, height = 200,
-            p("Compare one multi-omics molecular expression between gene mutation and wild of tumor samples."),
-            actionLink("link_to_q9", "Go >>>"),
+            width = 12, height = 250,
+            p("Compare one multi-omics molecular value between gene ",strong("mutation and wild")," of tumor samples.",
+              style = "font-size: 18px;"),
+            actionLink("link_to_q9", p("Go >>>",style = "font-size: 20px;")),
           )
         ),
         column(
           2,
           shinydashboard::box(
-            title = "TCGA-Correlation", 
+            title = strong("TCGA-Correlation", style = "font-size: 20px;"),
             solidHeader = TRUE, status="success",
-            width = 12, height = 200,
-            p("Calculate the correlation of two multi-omics molecules acccording to their expression values."),
-            actionLink("link_to_q3", "Go >>>"),
+            width = 12, height = 250,
+            p("Calculate the correlation of ",strong("two multi-omics molecules")," acccording to their expression values.",
+              style = "font-size: 18px;"),
+            actionLink("link_to_q3", p("Go >>>",style = "font-size: 20px;")),
           ),
         ),
         column(
           2,
           shinydashboard::box(
-            title = "TCGA-Correlation", 
+            title = strong("TCGA-Correlation", style = "font-size: 20px;"),
             solidHeader = TRUE, status="success",
-            width = 12, height = 200,
-            p("Calculate the correlation between one multi-omics molecule and immune signature scores across cancers"),
-            actionLink("link_to_q5", "Go >>>"),
+            width = 12, height = 250,
+            p("Calculate the correlation between one multi-omics molecule and ",strong("tumor immune infiltration")," across cancers",
+              style = "font-size: 18px;"),
+            actionLink("link_to_q6", p("Go >>>",style = "font-size: 20px;")),
           ),
         ),
         column(
           2,
           shinydashboard::box(
-            title = "TCGA-Correlation", 
+            title = strong("TCGA-Correlation", style = "font-size: 20px;"),
             solidHeader = TRUE, status="success",
-            width = 12, height = 200,
-            p("Calculate the correlation between one multi-omics molecule and tumor immune infiltration across cancers"),
-            actionLink("link_to_q6", "Go >>>"),
+            width = 12, height = 250,
+            p("Calculate the correlation between one multi-omics molecule and ",strong("immune signature scores")," across cancers",
+              style = "font-size: 18px;"),
+            actionLink("link_to_q5", p("Go >>>",style = "font-size: 20px;")),
           ),
         ),
       ),
@@ -128,60 +145,66 @@ ui.page_home <- function() {
         column(
           2,
           shinydashboard::box(
-            title = "TCGA-Correlation", 
+            title = strong("TCGA-Correlation", style = "font-size: 20px;"),
             solidHeader = TRUE, status="success",
-            width = 12, height = 200,
-            p("Calculate the correlation between one multi-omics molecule and TMB/Stemness/MSI across cancers"),
-            actionLink("link_to_q7", "Go >>>"),
+            width = 12, height = 250,
+            p("Calculate the correlation between one multi-omics molecule and ",strong("TMB/Stemness/MSI")," across cancers",
+              style = "font-size: 18px;"),
+            actionLink("link_to_q7", p("Go >>>",style = "font-size: 20px;")),
           )
         ),
         column(
           2,
           shinydashboard::box(
-            title = "TCGA-Correlation", 
+            title = strong("TCGA-Correlation", style = "font-size: 20px;"),
             solidHeader = TRUE, status="success",
-            width = 12, height = 200,
-            p("Calculate the correlation between one multi-omics molecule and pathway score across cancers"),
-            actionLink("link_to_q8", "Go >>>"),
+            width = 12, height = 250,
+            p("Calculate the correlation between one multi-omics molecule and ",strong("pathway score")," across cancers",
+              style = "font-size: 18px;"),
+            actionLink("link_to_q8", p("Go >>>",style = "font-size: 20px;")),
           )
         ),
         column(
           2,
           shinydashboard::box(
-            title = "TCGA-Survival", 
+            title = strong("TCGA-Survival", style = "font-size: 20px;"),
             solidHeader = TRUE, status="info",
-            width = 12, height = 200,
-            p("Calculate the log-rank test analysis of one multi-omics molecule in one cancer."),
-            actionLink("link_to_q10", "Go >>>"),
+            width = 12, height = 250,
+            p("Calculate the ",strong("log-rank test")," analysis of one multi-omics molecule in one cancer.",
+              style = "font-size: 18px;"),
+            actionLink("link_to_q10", p("Go >>>",style = "font-size: 20px;")),
           )
         ),
         column(
           2,
           shinydashboard::box(
-            title = "TCGA-Survival", 
+            title = strong("TCGA-Survival", style = "font-size: 20px;"),
             solidHeader = TRUE, status="info",
-            width = 12, height = 200,
-            p("Performe the univariate cox regreesion analysis of one multi-omics molecule across cancers."),
-            actionLink("link_to_q4", "Go >>>"),
+            width = 12, height = 250,
+            p("Performe the ",strong("univariate cox regreesion")," analysis of one multi-omics molecule across cancers.",
+              style = "font-size: 18px;"),
+            actionLink("link_to_q4", p("Go >>>",style = "font-size: 20px;")),
           ),
         ),
         column(
           2,
           shinydashboard::box(
-            title = "TCGA-Dimension", 
+            title = strong("TCGA-Dimension", style = "font-size: 20px;"),
             solidHeader = TRUE, status="warning",
-            width = 12, height = 200,
-            p("Perform dimension reduction analysis for multiple molecules of samples in one phenotype."),
-            actionLink("link_to_q11", "Go >>>"),
+            width = 12, height = 250,
+            p("Perform ",strong("dimension reduction analysis")," for multiple molecules of samples in one phenotype.",
+              style = "font-size: 18px;"),
+            actionLink("link_to_q11", p("Go >>>",style = "font-size: 20px;")),
           )
         ),
         column(
           2,
           shinydashboard::box(
-            title = "PCAWG/CCLE", 
+            title = strong("PCAWG/CCLE", style = "font-size: 20px;"),
             solidHeader = TRUE, status="danger",
-            width = 12, height = 200,
-            p("Enter 'Quick T·P·C Analysis' page to explore similar modules designed for PCAWG and CCLE databases.")
+            width = 12, height = 250,
+            p("Enter ",em(strong("Custom T·P·C Modules"))," page to explore similar modules designed for PCAWG and CCLE databases.",
+              style = "font-size: 18px;")
           )
         ),
       ),
@@ -192,45 +215,50 @@ ui.page_home <- function() {
         column(
           3,
           shinydashboard::box(
-            title = "TCGA-Comparison", 
+            title = strong("TCGA-Comparison", style = "font-size: 20px;"),
             solidHeader = TRUE, status="primary",
-            width = 12, height = 200,
-            p(paste0("Perform versatile comparison analysis (3 modes) for one identifier from the comprehensive tumor ",
-              "omics and non-omics data together with user-defined metadata based on custom grouping after optional sample filtering step.")),
-            actionLink("link_to_p1", "Go >>>"),
+            width = 12, height = 250,
+            p("Perform versatile comparison analysis for one identifier from the comprehensive tumor ",
+              "omics and non-omics data or user-defined metadata based on ",strong("customizable grouping"),".",
+              style = "font-size: 18px;"),
+            actionLink("link_to_p1", p("Go >>>",style = "font-size: 20px;")),
           )
         ),
         column(
           3,
           shinydashboard::box(
-            title = "TCGA-Correlation", 
+            title = strong("TCGA-Correlation", style = "font-size: 20px;"),
             solidHeader = TRUE, status="success",
-            width = 12, height = 200,
-            p(paste0("Perform versatile correlation analysis (3 modes) between two random identifiers from the comprehensive tumor ",
-              "omics and non-omics data together with user-defined metadata after optional sample filtering step.")),
-            actionLink("link_to_p2", "Go >>>"),
+            width = 12, height = 250,
+            p("Perform versatile correlation analysis between ",strong("two random identifiers")," from the comprehensive tumor ",
+              "omics and non-omics data and user-defined metadata.",
+              style = "font-size: 18px;"),
+            actionLink("link_to_p2", p("Go >>>",style = "font-size: 20px;")),
           )
         ),
         column(
           3,
           shinydashboard::box(
-            title = "TCGA-Survival", 
+            title = strong("TCGA-Survival", style = "font-size: 20px;"),
             solidHeader = TRUE, status="info",
-            width = 12, height = 200,
-            p(paste0("Perform versatile log-rank test or univariate cox regreesion survival analysis (3 modes) for one identifier from the comprehensive tumor ",
-              "omics and non-omics data together with user-defined metadata after optional sample filtering step.")),
-            actionLink("link_to_p3", "Go >>>"),
+            width = 12, height = 250,
+            p("Perform ",strong("log-rank test or univariate cox regreesion")," survival analysis for one identifier from the comprehensive tumor ",
+              "omics and non-omics data and user-defined metadata based on ",strong("customizable grouping"),".",
+              style = "font-size: 18px;"),
+            actionLink("link_to_p3", p("Go >>>",style = "font-size: 20px;")),
           )
         ),
         column(
           3,
           shinydashboard::box(
-            title = "PCAWG/CCLE", 
+            title = strong("PCAWG/CCLE", style = "font-size: 20px;"),
             solidHeader = TRUE, status="danger",
-            width = 12, height = 200,
-            p(paste0("Enter 'personalized T·P·C Analysis' page to explore ",
-              "similar versatile pipeline analyses (including comparison, correlation, survival) with  personalized operations for PCAWG and CCLE databases."))
+            width = 12, height = 250,
+            p("Enter ",em(strong("Personalized T·P·C Pipelines"))," page to explore ",
+              "similar versatile pipeline analyses (including comparison, correlation, survival) with  personalized operations for PCAWG and CCLE databases.",
+              style = "font-size: 18px;")
           )
+
         )
       ),
       br(),
@@ -245,9 +273,6 @@ ui.page_home <- function() {
             tags$li("2023-12-20: Add download modules that support data requisition.",style = "font-size: 20px;"),
             tags$li("See more update logs in our", 
               a("Github", href="https://github.com/openbiox/UCSCXenaShiny"), ".",
-              "If you have any questions, please report the ",
-              a("issue", href = "https://github.com/openbiox/UCSCXenaShiny/issues"),
-              " or email at lishensuo@163.com. We will get back to you ASAP.",
               style = "font-size: 20px;")
           )  
         )

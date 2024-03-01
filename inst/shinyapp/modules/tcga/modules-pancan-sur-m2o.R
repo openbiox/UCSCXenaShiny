@@ -395,9 +395,15 @@ server.modules_pancan_sur_m2o = function(input, output, session) {
 					}
 					surv_diff <- survdiff(Surv(time, status) ~ Group, data = datas_sub)
 					pval = 1 - pchisq(surv_diff$chisq, length(surv_diff$n) - 1)
-					sur_res = summary(survfit(Surv(time, status) ~ Group, data = datas_sub))$table %>% 
-						    as.data.frame() %>% dplyr::pull(median)
-					sur_res = c(sur_res,pval)
+					# sur_res = summary(survfit(Surv(time, status) ~ Group, data = datas_sub))$table %>% 
+					# 	    as.data.frame() %>% dplyr::pull(median)
+
+					sur_tab = summary(survfit(Surv(time, status) ~ Group, data = datas_sub))$table %>% 
+						    as.data.frame()
+
+					sur_res = c(sur_tab[paste0("Group=",input$group1_name),"median"],
+								sur_tab[paste0("Group=",input$group2_name),"median"], pval)
+					# sur_res = c(sur_res,pval)
 					names(sur_res) = c(input$group1_name,input$group2_name,"p.value")
 					names(sur_res)[1:2] = paste0(names(sur_res)[1:2],"\nmedian.time")
 				} else if (input$sur_method=="Cox regression"){
