@@ -3,7 +3,7 @@ home_text.list = list(
     "Thank you for using UCSCXenaShiny v",packageVersion("UCSCXenaShiny")," based on ","UCSCXenaTools v", packageVersion("UCSCXenaTools"),
     ". Our web tool aims to povide a user-friendly platform to explore UCSC Xena datasets for both general and personalized cancer molecular research.",
     " If you have any questions during use, please do not hesitate to contact us via Github issue.",
-    " If our tool has faciliated your research, welcome to cite our work.  :)"
+    " If the tool has faciliated your research, welcome to cite our work.  :)"
   )
 )
 
@@ -37,10 +37,10 @@ ui.page_home <- function() {
                 ),
                 column(4, align = "center",
                   actionBttn("bt03","Article",
-                    style = "bordered", color = "primary", icon = icon("newspaper"),
-                    onclick=paste0("window.open('https://pubmed.ncbi.nlm.nih.gov/34323947/','_blank')"))
+                    style = "bordered", color = "primary", icon = icon("newspaper"))
                 ),
               ),
+              uiOutput("citation"),
               tags$hr(),
             )
           )
