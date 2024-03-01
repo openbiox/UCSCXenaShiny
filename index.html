@@ -77,8 +77,8 @@
 </h1></div>
 <p><a href="https://cran.r-project.org/package=UCSCXenaShiny" class="external-link"><img src="https://www.r-pkg.org/badges/version/UCSCXenaShiny" alt="CRAN status"></a> <a href="https://cran.r-project.org/package=UCSCXenaShiny" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/UCSCXenaShiny?color=orange"></a> <a href="https://lifecycle.r-lib.org/articles/stages.html" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-blue.svg" alt="lifecycle"></a> <img src="https://github.com/openbiox/UCSCXenaShiny/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"><a href="https://github.com/openbiox/UCSCXenaShiny/" class="external-link"><img src="https://tokei.rs/b1/github/openbiox/UCSCXenaShiny?category=code" alt="Lines Of Code"></a> <a href="https://biotreasury.rjmart.cn/#/tool?id=61144" class="external-link"><img src="https://img.shields.io/badge/Biotreasury-collected-brightgreen" alt="check in Biotreasury"></a></p>
 <p><strong>UCSCXenaShiny</strong> is an R package for interactively exploring UCSC Xena. It is mainly designed to provide a web app (built on the top of <a href="https://shiny.rstudio.com/" class="external-link"><code>{shiny}</code></a> framework and <a href="https://github.com/ropensci/UCSCXenaTools/" class="external-link"><code>{UCSCXenaTools}</code></a> package) for downloading, analyzing and visualizing datasets from <a href="https://xenabrowser.net/datapages/" class="external-link">UCSC Xena</a>.</p>
-<div class="figure">
-<img src="https://repobeats.axiom.co/api/embed/2f1f0c9a7a5c3c710febb3ee3d1e26f249d5a3ed.svg" title="Repobeats analytics image" alt=""><p class="caption">Alt</p>
+<div class="float">
+<img src="https://repobeats.axiom.co/api/embed/2f1f0c9a7a5c3c710febb3ee3d1e26f249d5a3ed.svg" title="Repobeats analytics image" alt="Alt"><div class="figcaption">Alt</div>
 </div>
 <p>Please cite the following article when you used <strong>UCSCXenaShiny</strong> in your study:</p>
 <hr>
@@ -115,9 +115,9 @@
 </tr></tbody>
 </table>
 <p>Install from <code>conda-forge</code> channel with:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install <span class="at">-c</span> conda-forge r-ucscxenashiny</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="ex">conda</span> install <span class="at">-c</span> conda-forge r-ucscxenashiny</span></code></pre></div>
 <p>It is possible to list all of the versions of <code>r-ucscxenashiny</code> available on your platform with:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> search r-ucscxenashiny <span class="at">--channel</span> conda-forge</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">conda</span> search r-ucscxenashiny <span class="at">--channel</span> conda-forge</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="package-use-with-docker">
@@ -125,17 +125,17 @@
 </h2>
 <p><img alt="Docker Image Version (latest by date)" src="https://img.shields.io/docker/v/shixiangwang/ucscxenashiny?color=blue"><img alt="Docker Image Size (latest by date)" src="https://img.shields.io/docker/image-size/shixiangwang/ucscxenashiny"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/shixiangwang/ucscxenashiny"></p>
 <p>UCSCXenaShiny has corresponding docker image at <a href="https://hub.docker.com/r/shixiangwang/ucscxenashiny/" class="external-link uri">https://hub.docker.com/r/shixiangwang/ucscxenashiny/</a>, you can install the latest version with:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> pull shixiangwang/ucscxenashiny</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">docker</span> pull shixiangwang/ucscxenashiny</span></code></pre></div>
 <p>All versions can be found at <a href="https://hub.docker.com/r/shixiangwang/ucscxenashiny/tags/" class="external-link uri">https://hub.docker.com/r/shixiangwang/ucscxenashiny/tags/</a>. To use a specified version (e.g., <code>v1.0.2</code>), run the following command to install:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> pull shixiangwang/ucscxenashiny:v1.0.2</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">docker</span> pull shixiangwang/ucscxenashiny:v1.0.2</span></code></pre></div>
 <p>Then run the docker image with:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="at">--name</span> xenashiny <span class="at">-p</span> 3838:3838 shixiangwang/ucscxenashiny</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="at">--name</span> xenashiny <span class="at">-p</span> 3838:3838 shixiangwang/ucscxenashiny</span></code></pre></div>
 <p>Now you should find the Shiny when you open URL <code>http://127.0.0.1:3838</code> with your web browser. If you deploy the docker in a public (cloud) Linux server, change <code>127.0.0.1</code> to the host IP.</p>
 <p>You can manage the deployed container with the following commands:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stop the container</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> stop xenashiny</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Start the container</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> start xenashiny</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Stop the container</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="ex">docker</span> stop xenashiny</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co"># Start the container</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="ex">docker</span> start xenashiny</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="arrow_double_down-manual-installation">
@@ -160,11 +160,11 @@
 <p>Please note all commands below are execuated with <code>root</code>.</p>
 </blockquote>
 <p><strong>Ubuntu</strong>:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">apt</span> update <span class="at">-y</span> <span class="kw">&amp;&amp;</span> <span class="ex">apt</span> install <span class="at">-y</span> libcurl4-openssl-dev libssl-dev libxml2-dev <span class="dt">\</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    libgmp3-dev libmpfr-dev</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="ex">apt</span> update <span class="at">-y</span> <span class="kw">&amp;&amp;</span> <span class="ex">apt</span> install <span class="at">-y</span> libcurl4-openssl-dev libssl-dev libxml2-dev <span class="dt">\</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>    libgmp3-dev libmpfr-dev</span></code></pre></div>
 <p><strong>CentOS</strong>:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">yum</span> update <span class="at">-y</span> <span class="kw">&amp;&amp;</span> <span class="ex">yum</span> install <span class="at">-y</span> libcurl-devel openssl-devel libxml2-devel <span class="dt">\</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    gmp-devel mpfr-devel libjpeg-devel cairo-devel</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="ex">yum</span> update <span class="at">-y</span> <span class="kw">&amp;&amp;</span> <span class="ex">yum</span> install <span class="at">-y</span> libcurl-devel openssl-devel libxml2-devel <span class="dt">\</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>    gmp-devel mpfr-devel libjpeg-devel cairo-devel</span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -219,22 +219,22 @@
 <li>
 <p><code>ERROR: dependencies ‘gmp’, ‘Rmpfr’ are not available for package ‘PMCMRplus’</code> or <code>ERROR: dependency ‘pairwiseComparisons’ is not available for package ‘ggstatsplot’</code>.</p>
 <p><strong>Your operating system lacks <code>gmp</code> and <code>Rmpfr</code> development libraries.</strong></p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ubuntu</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="ex">apt</span> install <span class="at">-y</span> libgmp3-dev libmpfr-dev</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># CentOS</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="ex">yum</span> install <span class="at">-y</span> gmp-devel mpfr-devel</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># Ubuntu</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="ex">apt</span> install <span class="at">-y</span> libgmp3-dev libmpfr-dev</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="co"># CentOS</span></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="ex">yum</span> install <span class="at">-y</span> gmp-devel mpfr-devel</span></code></pre></div>
 </li>
 <li>
 <p><code>installation of package ‘gridtext’ had non-zero exit status</code> with error info <code>grid-renderer.h:61:94: error: no matching function for call to ‘Rcpp::Vector&lt;10, Rcpp::PreserveStorage&gt;::Vector(int, bool&amp;, const GraphicsContext&amp;)’</code>.</p>
 <p><strong>You have an older C++ version which cannot support C++11 features. This error seems only happen on CentOS. Install a newer C++ and set it as default compiler for R would fix this problem.</strong></p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">yum</span> install centos-release-scl</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="ex">yum</span> install devtoolset-9</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co"># If you use your non-root account to install packages, </span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co"># change /root to /home/your_id in the following command</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> /root/.R</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="fu">vi</span> /root/.R/Makevars </span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="ex">yum</span> install centos-release-scl</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="ex">yum</span> install devtoolset-9</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="co"># If you use your non-root account to install packages, </span></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="co"># change /root to /home/your_id in the following command</span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> /root/.R</span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="fu">vi</span> /root/.R/Makevars </span></code></pre></div>
 <p><strong>Append content to the openning file.</strong></p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="va">CXX11</span><span class="op">=</span>/opt/rh/devtoolset-9/root/usr/bin/g++ <span class="ex">-std=c++11</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="va">CXX11</span><span class="op">=</span>/opt/rh/devtoolset-9/root/usr/bin/g++ <span class="ex">-std=c++11</span></span></code></pre></div>
 </li>
 <li>
 <p><code>installation of package ‘nloptr’ had non-zero exit status</code> with error info <code>libtool: link: ERROR: no information for variable 'AR' cru</code>.</p>
