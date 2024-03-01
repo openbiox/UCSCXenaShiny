@@ -43,16 +43,19 @@ server.home_daily_gene <- function(input, output, session) {
 
 
   gene_sp = reactive({
+    tcga_gene_all = tcga_id_referrence$id_molecule$id_gene$Level3
+    tcga_gene = pancan_identifiers$gene[pancan_identifiers$gene %in% tcga_gene_all]
+
     if(input$change_gene==0){
       current_date <- Sys.Date()
       formatted_date <- as.integer(format(current_date, "%Y%m%d"))
       set.seed(formatted_date)
-      gene_sp = sample(pancan_identifiers$gene,size = 1)
+      gene_sp = sample(tcga_gene,size = 1)
     } else {
       current_time <- Sys.time()
       total_seconds <- as.integer(difftime(current_time, as.POSIXct("1970-01-01"), units = "secs"))
       set.seed(total_seconds)
-      gene_sp = sample(pancan_identifiers$gene,size = 1)
+      gene_sp = sample(tcga_gene,size = 1)
     } 
     gene_sp
   })
