@@ -317,7 +317,16 @@ server.modules_pancan_sur_o2o = function(input, output, session) {
 			} else {
 				if(class(group_sur_final()$origin) != "character"){ #若原始值为数值型，则寻找最佳阈值
 					res.cut <- surv_cutpoint(sur_res_one$sur_dat, time = "time", event = "status", variables = "origin")
-					sur_res_one$sur_dat$Group = surv_categorize(res.cut)$origin
+					# sur_res_one$sur_dat$Group = surv_categorize(res.cut)$origin
+					groups_1_2 = sur_res_one$sur_dat %>% 
+						  dplyr::group_by(group) %>% 
+						  dplyr::summarise(mean = mean(origin)) %>% 
+						  dplyr::arrange(mean) %>% 
+						  dplyr::pull(group) %>% as.character()
+					print(groups_1_2)
+					print(head(sur_res_one$sur_dat))
+					sur_res_one$sur_dat$Group = ifelse(surv_categorize(res.cut)$origin=="low", groups_1_2[1], groups_1_2[2])
+					sur_res_one$sur_dat$Group = factor(sur_res_one$sur_dat$Group, levels=groups_1_2)
 				} else {
 					sur_res_one$sur_dat$Group = sur_res_one$sur_dat$group # 若不是，则仍使用提供的分组结果
 				}
