@@ -332,11 +332,16 @@ server.modules_pcawg_sur_o2m = function(input, output, session) {
 					# res.cat <- surv_categorize(res.cut)
 					sur_res_multi$sur_dat = lapply(sort(unique(sur_res_multi$sur_dat$Cancer)), function(x) {
 						sur_dat_sub = subset(sur_res_multi$sur_dat, Cancer==x)
+						groups_1_2 = sur_dat_sub %>% 
+							  dplyr::group_by(group) %>% 
+							  dplyr::summarise(mean = mean(origin)) %>% 
+							  dplyr::arrange(mean) %>% 
+							  dplyr::pull(group) %>% as.character()
 						res.cut <- surv_cutpoint(sur_dat_sub, time = "time", event = "status", variables = "origin")
-						sur_dat_sub$Group = factor(surv_categorize(res.cut)$origin, levels=c("low","high")) #因子不可修改
+						sur_dat_sub$Group = ifelse(surv_categorize(res.cut)$origin=="low", groups_1_2[1], groups_1_2[2])
+						sur_dat_sub$Group = factor(sur_dat_sub$Group, levels=groups_1_2)
 						sur_dat_sub
 					}) %>% do.call(rbind, .) %>% as.data.frame()
-
 				} else {
 					sur_res_multi$sur_dat$Group = sur_res_multi$sur_dat$group
 				}
