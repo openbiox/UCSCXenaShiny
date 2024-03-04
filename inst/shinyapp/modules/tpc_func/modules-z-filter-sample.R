@@ -309,6 +309,7 @@ filter_samples_Server = function(input, output, session, database="toil", #id_op
 		add_phes$name = list()
 		add_phes$label=list()
 		add_phes$show=""
+	  	dynamic_condi$sum = 0
 	}) 
 	output$add_info = renderPrint({cat(add_phes$show)})
 
@@ -498,7 +499,7 @@ filter_samples_Server = function(input, output, session, database="toil", #id_op
 					logic_item2_blank = is.na(input[[paste0("item2_",i)]])
 				}
 				shiny::validate(
-					need(!logic_item2_blank, "Please input the null threshold."),
+					need(!logic_item2_blank, "Please input the non-null threshold."),
 				)
 				# 验证范围（百分位数）
 				if(input[[paste0("item3_",i)]] %in% c("%>","%<")){
@@ -533,18 +534,13 @@ filter_samples_Server = function(input, output, session, database="toil", #id_op
 	# 提取筛选条件
 
 
-	# 重置筛选条件
-	observeEvent(input$button_phe_filter_reset, {
-	  dynamic_condi$add = 0
-	  dynamic_condi$del = 0
-	  dynamic_condi$sum = 0
-	  add_phes$filter_phe_id = NULL
-	})
-	# 提取筛选条件
-
 
 	# 获取筛选后的样本ID
-	observe({
+	observeEvent(input$button_phe_filter, {
+		shiny::validate(
+			need(try(dynamic_condi$sum > 0), 
+				"Please set at least one condition."),
+		)
 		if(add_phes$click==0){
 			add_phes$filter_phe_id = query_tcga_group(database = database,cancer = add_phes$cancers,
 				filter_by = filter_by_phe(),)[["data"]]$Sample

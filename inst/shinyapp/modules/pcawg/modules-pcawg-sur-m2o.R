@@ -382,9 +382,14 @@ server.modules_pcawg_sur_m2o = function(input, output, session) {
 						datas_sub$Group = datas_sub$value
 						if(class(datas_sub$value)!="character"){
 							res.cut <- surv_cutpoint(datas_sub, 
-								time = "time", event = "status", variables = "Group")
-							res.cat <- surv_categorize(res.cut)
-							datas_sub$Group = res.cat$Group
+								time = "time", event = "status", variables = "value")
+							groups_1_2 = datas_sub %>% 
+								  dplyr::group_by(group) %>% 
+								  dplyr::summarise(mean = mean(value)) %>% 
+								  dplyr::arrange(mean) %>% 
+								  dplyr::pull(group) %>% as.character()
+							datas_sub$Group = ifelse(surv_categorize(res.cut)$value=="low", groups_1_2[1], groups_1_2[2])
+							datas_sub$Group = factor(datas_sub$Group, levels=groups_1_2)
 						}
 					}
 					surv_diff <- survdiff(Surv(time, status) ~ Group, data = datas_sub)

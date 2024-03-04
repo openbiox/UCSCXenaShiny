@@ -123,28 +123,10 @@ multi_upload_UI = function(id, button_name = "Query data(x-axis)", database = "t
 				),	
 			),
 			tabPanel("All",
-				# uiOutput(ns("tab_All"))
 				fluidRow(
 					uiOutput(ns("msigdb_note.ui")), 
-					column(
-						4,
-			            virtualSelectInput(
-			              inputId = ns("msigdbr_cat"),
-			              label = NULL,
-			              choices = msigdbr_types$gs_subcat_label, 
-			              selected =  msigdbr_types$gs_subcat_label[1],
-			              dropboxWidth = "200%")
-					),
-					column(
-						8,
-			            virtualSelectInput(
-			              inputId = ns("msigdbr_pw"),
-			              label = NULL,
-			              choices = NULL, 
-			              selected =  NULL,
-			              search = TRUE,
-			              dropboxWidth = "200%")
-					)
+					uiOutput(ns("msigdb_sle.ui1")),
+					uiOutput(ns("msigdb_sle.ui2")), 
 				)
 			),
 			tabPanel("File",
@@ -154,6 +136,9 @@ multi_upload_UI = function(id, button_name = "Query data(x-axis)", database = "t
 				)
 			)
 		),
+	    div(verbatimTextOutput(ns("L3s_x_tip")),
+	      style = "margin-top: 0px; margin-bottom: 1px;"
+	    ),
 		shinyWidgets::actionBttn(
 			ns("inspect_data_x"), button_name,
 	        style = "gradient",
@@ -162,11 +147,9 @@ multi_upload_UI = function(id, button_name = "Query data(x-axis)", database = "t
 	        block = TRUE,
 	        size = "sm"
 		),
-	    div(verbatimTextOutput(ns("L3s_x_tip")),
-	      style = "margin-top: 5px; margin-bottom: 0px;"
-	    ),
-		# verbatimTextOutput(ns("L3s_x_tip")),
-		uiOutput(ns("L3s_x_data.ui"))
+		div(uiOutput(ns("L3s_x_data.ui")),
+			style = "margin-top: 1px; margin-bottom: 0px;"
+		)
 	)
 }
 
@@ -253,8 +236,8 @@ multi_upload_Server = function(input, output, session, database = "toil", #id_op
 	})
 
 	msigdbr_query = reactive({
-		category = msigdbr_types$gs_cat[msigdbr_types$gs_subcat_label==input$msigdbr_cat]
-		subcategory = msigdbr_types$gs_subcat[msigdbr_types$gs_subcat_label==input$msigdbr_cat]
+		category = msigdbr_types$gs_cat[msigdbr_types$gs_subcat_label==msigdbr_var$msigdbr_cat]
+		subcategory = msigdbr_types$gs_subcat[msigdbr_types$gs_subcat_label==msigdbr_var$msigdbr_cat]
 		if(length(category)!=0){
 			msigdbr_query = msigdbr(species = "Homo sapiens", 
 			                      category = category, 
@@ -263,33 +246,77 @@ multi_upload_Server = function(input, output, session, database = "toil", #id_op
 		}
 	})
 
+
+	msigdbr_var = reactiveValues(msigdbr_cat="H--H",
+		msigdbr_pw = "HALLMARK_ADIPOGENESIS (210)")
+
 	observe({
-		if(!is.null(msigdbr_query())){
-			msigdbr_term_stat = as.data.frame(table(msigdbr_query()$gs_name)) %>% 
-			  dplyr::rename(term=Var1, size=Freq) %>% 
-			  dplyr::arrange(term) %>% 
-			  dplyr::mutate(term_size = paste0(term," (", size,")"))
-			updateVirtualSelect(
-			  "msigdbr_pw",
-			  choices = msigdbr_term_stat$term_size,
-			  selected = msigdbr_term_stat$term_size[1]
+		if(!is.null(input$msigdbr_cat)){
+			msigdbr_var$msigdbr_cat = input$msigdbr_cat
+		}
+		if(!is.null(input$msigdbr_pw)){
+			msigdbr_var$msigdbr_pw = input$msigdbr_pw
+		}
+	})
+
+	output$msigdb_note.ui = renderUI({
+		if(L2_x() %in% 
+			c("mRNA Expression","DNA Methylation","Mutation status","Copy Number Variation","Transcript Expression")){
+			pw_sle = str_split(msigdbr_var$msigdbr_pw," ")[[1]][1]
+			term_link = sprintf("https://www.gsea-msigdb.org/gsea/msigdb/human/%s.html",
+	                    		ifelse(is.null(pw_sle),"HALLMARK_ADIPOGENESIS",pw_sle))
+			msigdb_link = "https://www.gsea-msigdb.org/gsea/msigdb/human/collection_details.jsp"
+
+			tagList(
+				h5(strong(HTML('&nbsp;'),HTML('&nbsp;'),HTML('&nbsp;'),"Note: For this molecular type, select ids in ",
+					  a("one pathway", href = term_link)," from ",
+					  a("MSigDB database", href = msigdb_link), ":"))
+			)
+		}
+	})
+
+	output$msigdb_sle.ui1 = renderUI({
+		if(L2_x() %in% 
+			c("mRNA Expression","DNA Methylation","Mutation status","Copy Number Variation","Transcript Expression")){
+			tagList(
+				column(
+					4,
+		            virtualSelectInput(
+		              inputId = ns("msigdbr_cat"),
+		              label = NULL,
+		              choices = isolate(msigdbr_types$gs_subcat_label), 
+		              # selected =  msigdbr_types$gs_subcat_label[1],
+		              dropboxWidth = "200%")
+				),
 			)
 		}
 	})
 
 
-	output$msigdb_note.ui = renderUI({
-		# pw_sle = ifelse(is.null(input$msigdbr_pw),"HALLMARK_ADIPOGENESIS",input$msigdbr_pw)
-		pw_sle = str_split(input$msigdbr_pw," ")[[1]][1]
-		term_link = sprintf("https://www.gsea-msigdb.org/gsea/msigdb/human/%s.html",
-                    		ifelse(is.null(pw_sle),"HALLMARK_ADIPOGENESIS",pw_sle))
-		msigdb_link = "https://www.gsea-msigdb.org/gsea/msigdb/human/collection_details.jsp"
-
-		h5(strong(HTML('&nbsp;'),HTML('&nbsp;'),HTML('&nbsp;'),"Note: For Molecular profile, select ids in ",
-			  a("one pathway", href = term_link)," from ",
-			  a("MSigDB database", href = msigdb_link), ":"))
-
+	output$msigdb_sle.ui2 = renderUI({
+		if(!is.null(msigdbr_query())){
+			msigdbr_term_stat = as.data.frame(table(msigdbr_query()$gs_name)) %>% 
+			  dplyr::rename(term=Var1, size=Freq) %>% 
+			  dplyr::arrange(term) %>% 
+			  dplyr::mutate(term_size = paste0(term," (", size,")"))
+		}
+		if(L2_x() %in% 
+			c("mRNA Expression","DNA Methylation","Mutation status","Copy Number Variation","Transcript Expression")){
+			tagList(
+				column(
+					8,
+		            virtualSelectInput(
+		              inputId = ns("msigdbr_pw"),
+		              label = NULL,
+		              choices = isolate(msigdbr_term_stat$term_size), 
+		              # selected =  msigdbr_term_stat$term_size[1],
+		              search = TRUE,
+		              dropboxWidth = "200%")
+				)
+			)
+		}
 	})
+
 
 	output$dw_L3_x = downloadHandler(
 		filename = function(){
@@ -334,15 +361,14 @@ multi_upload_Server = function(input, output, session, database = "toil", #id_op
 				} 
 			}
 		} else if (input$L3_x_type=="All"){
-			# pw_sle = ifelse(is.null(input$msigdbr_pw),"HALLMARK_ADIPOGENESIS",input$msigdbr_pw)
 			pw_genes = msigdbr_query() %>% 
-			  dplyr::filter(gs_name %in% str_split(input$msigdbr_pw," ")[[1]][1]) %>% 
+			  dplyr::filter(gs_name %in% str_split(msigdbr_var$msigdbr_pw," ")[[1]][1]) %>% 
 			  dplyr::pull(gene_symbol)
-			# pw_genes = strsplit(PW_meta$Gene[PW_meta$Name==pw_sle],"/")[[1]]
 			L3s_x = id_option[[input$data_L1]][[L2_x()]]$all #!!! 2w候选基因
 			if(L2_x() %in% 
 				c("mRNA Expression","DNA Methylation","Mutation status","Copy Number Variation")){
-				L3s_x = L3s_x[L3s_x %in% pw_genes]
+				gene_full = tcga_id_referrence$id_molecule$id_gene$Level3
+				L3s_x = gene_full[gene_full %in% pw_genes]
 			} else if(L2_x() %in% c("Transcript Expression")){
 				L3s_x = L3s_x[L3s_x %in% tcga_id_referrence[[1]][[5]]$Level3[tcga_id_referrence[[1]][[5]]$Symbol %in% pw_genes]]
 			}
@@ -354,60 +380,71 @@ multi_upload_Server = function(input, output, session, database = "toil", #id_op
 	})
 	output$L3s_x_tip = renderPrint({
 		cat(paste0("Tip: ",length(L3s_x())," ids are selected.\n"))
-		# str(L3s_x())
 	})
 
 	L3s_x_data = eventReactive(input$inspect_data_x, {
 		L1_x = names(id_category)[sapply(id_category, function(x){any(x %in% L2_x())})]
-		withProgress(message = "Please wait for a while.",{
-			x_data_merge = lapply(seq(L3s_x()), function(i){
-				# 进度提醒
-			    incProgress(1 / length(L3s_x()), detail = paste0("(Run ",i,"/",length(L3s_x()),")"))
+		digest_code = digest::digest(c(database, L1_x, L2_x(), sort(L3s_x())))
+		digest_file = paste0(UCSCXenaShiny:::get_cache_dir(), "/", digest::digest(digest_code), ".rds")
+		if(file.exists(digest_file)){
+			print("Load existed data.")
+			x_data_merge = readRDS(digest_file)
+		} else {
+			withProgress(message = "Please wait for a while.",{
+				x_data_merge = lapply(seq(L3s_x()), function(i){
+					# 进度提醒
+				    incProgress(1 / length(L3s_x()), detail = paste0("(Run ",i,"/",length(L3s_x()),")"))
 
-				L3_x = L3s_x()[i]
-				L2_x = L2_x()
+					L3_x = L3s_x()[i]
+					L2_x = L2_x()
 
-				if(is.null(opt_pancan)){
-					opt_pancan = .opt_pancan
-				} else {
-					opt_pancan = opt_pancan()
-				}
+					if(is.null(opt_pancan)){
+						opt_pancan = .opt_pancan
+					} else {
+						opt_pancan = opt_pancan()
+					}
 
-				if(database=="toil"){
-					clinical_phe = tcga_phenotype_value[["Clinical Phenotype"]]
-					x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
-								   tcga_index_value, tcga_immune_value, tcga_pathway_value, 
-								   clinical_phe,
-								   opt_pancan,custom_metadata())
-				} else if(database=="pcawg"){
-					clinical_phe = pcawg_phenotype_value[["Clinical Phenotype"]]
-					x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
-								   # pcawg_index_list, pcawg_TIL, pcawg_PW, pcawg_info_fine,
-								   pcawg_index_value, pcawg_immune_value, pcawg_pathway_value,
-								   clinical_phe,
-								   opt_pancan,custom_metadata())
-				} else if (database=="ccle"){
-					clinical_phe = ccle_phenotype_value[["Clinical Phenotype"]]
-					x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
-								   # ccle_index_list, NULL, NULL, ccle_info_fine,
-								   ccle_index_value, NULL, NULL, 
-								   clinical_phe,
-								   opt_pancan,custom_metadata())
-				}
-				x_data = x_data %>%
-					dplyr::filter(Sample %in% samples()) %>%
-				    dplyr::select(id, Sample, value)
-				# 默认批量下载的应为数值型变量，若不是则剔除
-				if(class(x_data$value)=="character"){  
-					return(NULL)
-				} else {
-					return(x_data)
-				}
-			}) %>% do.call(rbind, .)
-			x_data_merge =  x_data_merge %>%
-				dplyr::arrange(id,Sample)
-		})
+					if(database=="toil"){
+						clinical_phe = tcga_phenotype_value[["Clinical Phenotype"]]
+						x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
+									   tcga_index_value, tcga_immune_value, tcga_pathway_value, 
+									   clinical_phe,
+									   opt_pancan,custom_metadata())
+					} else if(database=="pcawg"){
+						clinical_phe = pcawg_phenotype_value[["Clinical Phenotype"]]
+						x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
+									   # pcawg_index_list, pcawg_TIL, pcawg_PW, pcawg_info_fine,
+									   pcawg_index_value, pcawg_immune_value, pcawg_pathway_value,
+									   clinical_phe,
+									   opt_pancan,custom_metadata())
+					} else if (database=="ccle"){
+						clinical_phe = ccle_phenotype_value[["Clinical Phenotype"]]
+						x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
+									   # ccle_index_list, NULL, NULL, ccle_info_fine,
+									   ccle_index_value, NULL, NULL, 
+									   clinical_phe,
+									   opt_pancan,custom_metadata())
+					}
+					x_data = x_data %>%
+						# dplyr::filter(Sample %in% samples()) %>%
+					    dplyr::select(id, Sample, value)
+					# 默认批量下载的应为数值型变量，若不是则剔除
+					if(class(x_data$value)=="character"){  
+						return(NULL)
+					} else {
+						return(x_data)
+					}
+				}) %>% do.call(rbind, .)
+			})
+			saveRDS(x_data_merge, file = digest_file)
+		}
+		x_data_merge =  x_data_merge %>%
+			dplyr::filter(Sample %in% samples()) %>%
+			dplyr::arrange(id,Sample)
+		x_data_merge
 	})
+
+
 
 	observeEvent(input$inspect_data_x,{
 		output$L3s_x_data.ui = renderUI({
