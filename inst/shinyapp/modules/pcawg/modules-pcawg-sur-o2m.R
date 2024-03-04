@@ -339,6 +339,7 @@ server.modules_pcawg_sur_o2m = function(input, output, session) {
 							  dplyr::pull(group) %>% as.character()
 						res.cut <- surv_cutpoint(sur_dat_sub, time = "time", event = "status", variables = "origin")
 						sur_dat_sub$Group = ifelse(surv_categorize(res.cut)$origin=="low", groups_1_2[1], groups_1_2[2])
+						if(min(table(sur_dat_sub$Group))==0) return(NULL)
 						sur_dat_sub$Group = factor(sur_dat_sub$Group, levels=groups_1_2)
 						sur_dat_sub
 					}) %>% do.call(rbind, .) %>% as.data.frame()
