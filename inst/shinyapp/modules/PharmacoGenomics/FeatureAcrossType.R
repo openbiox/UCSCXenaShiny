@@ -6,15 +6,20 @@ uiFeatureAcrossType <- function(id){
       column(4,
              selectInput(inputId = ns("select_features"), 
                          "Please select the feature type:", 
-                         choices = c("mRNA", "meth",
-                                     "protein", "cnv",
-                                     "mutation_gene", "mutation_site",
-                                     "fusion", "drug")
+                         choices = c("Copy Number Data" = "cnv",
+                                     "DNA Methylation" = "meth",
+                                     "Gene Fusion" = "fusion",
+                                     "Gene Mutation" = "mutation_gene",
+                                     "Gene Site Mutation" = "mutation_site",
+                                     "mRNA Expression" = "mRNA",
+                                     "Protein Expression" = "protein",
+                                     "Drug Sensitivity" = "drug"
+                         ), selected = "mRNA"
              )),
       # Select specific feature ----
       column(4,
              selectizeInput(
-               ns("select_specific_feature"), "Features Selection", choices = NULL,
+               ns("select_specific_feature"), "Features Selection:", choices = NULL,
                options = list(
                  placeholder = 'Please select a feature',
                  onInitialize = I('function() { this.setValue(""); }'), selected = "LAPATINIB"
@@ -32,6 +37,9 @@ uiFeatureAcrossType <- function(id){
     wellPanel(
       # textOutput("total")
       plotOutput(ns("p_search2"), height="20cm"),
+      h5("."),
+      h4(strong("NOTEs:")),
+      h5("The y axis is the drug sensitivity metric or molecular data for boxplot.")
     ),
     # Download plot ----
     # column(3,
@@ -46,16 +54,16 @@ serverFeatureAcrossType <- function(input, output, session){
   features_search_sel <- reactiveValues()
   observeEvent(input$select_features, {
     features_search_sel$features <- switch(input$select_features,
-                                     "drug" = drugs_search$drugs, 
-                                     "mRNA" = omics_search[omics_search$type %in% "mRNA",]$omics,
-                                     "meth" = omics_search[omics_search$type %in% "meth",]$omics,
-                                     "protein" = omics_search[omics_search$type %in% "protein",]$omics,
-                                     "cnv" = omics_search[omics_search$type %in% "cnv",]$omics,
-                                     "mutation_gene" = omics_search[omics_search$type %in% "mutation_gene",]$omics,
-                                     "mutation_site" = omics_search[omics_search$type %in% "mutation_site",]$omics,
-                                     "fusion" = omics_search[omics_search$type %in% "fusion",]$omics)
+                                           "drug" = drugs_search$drugs, 
+                                           "mRNA" = omics_search[omics_search$type %in% "mRNA",]$omics,
+                                           "meth" = omics_search[omics_search$type %in% "meth",]$omics,
+                                           "protein" = omics_search[omics_search$type %in% "protein",]$omics,
+                                           "cnv" = omics_search[omics_search$type %in% "cnv",]$omics,
+                                           "mutation_gene" = omics_search[omics_search$type %in% "mutation_gene",]$omics,
+                                           "mutation_site" = omics_search[omics_search$type %in% "mutation_site",]$omics,
+                                           "fusion" = omics_search[omics_search$type %in% "fusion",]$omics)
     updateSelectizeInput(session = session, inputId = 'select_specific_feature',
-                         label = 'Features Selection', choices = features_search_sel$features, server = TRUE,
+                         label = 'Features Selection:', choices = features_search_sel$features, server = TRUE,
                          options = list(placeholder = 'Please select a feature', onInitialize = I('function() { this.setValue(""); }')),
                          selected = "ABCC3"
     )
@@ -65,12 +73,12 @@ serverFeatureAcrossType <- function(input, output, session){
     ## Box plot ----
     if(input$select_features %in% c("cnv",
                                     "drug",
-                                 "protein",
-                                 "meth",
-                                 "mRNA")){
-        # message(
-        #   profile_vec_list[[input$select_features]]
-        # )
+                                    "protein",
+                                    "meth",
+                                    "mRNA")){
+      # message(
+      #   profile_vec_list[[input$select_features]]
+      # )
       p_list <- lapply(profile_vec_list[[input$select_features]], function(x){
         # x = tmp$profile_vec[1]
         # Preprocess
@@ -106,12 +114,12 @@ serverFeatureAcrossType <- function(input, output, session){
             plot.title = element_text(size = 15, face = "bold"),
             axis.text = element_text(size = 12),
             axis.text.x = element_text(angle = 60, vjust = 1, hjust = 1)
-          ) + scale_x_discrete(limit = unique(cell_anno$Type)) +
+          ) + scale_x_discrete(limit =levels(factor(unique(cell_anno$Type)))) +
           labs(title = x, 
                subtitle = paste0("Kruskal-Wallis, p ", pval))
         return(p)
       })
-    # Bar plot ----    
+      # Bar plot ----    
     } else{
       p_list <- lapply(profile_vec_list[[input$select_features]], function(x){
         # x = tmp$profile_vec[1]
@@ -145,12 +153,13 @@ serverFeatureAcrossType <- function(input, output, session){
           theme_bw() + scale_fill_manual(values = c("#BEBADAFF", "#FB8072FF")) + 
           theme(
             axis.title.x = element_blank(), 
+            axis.title.y = element_text(size = 15),
             plot.title = element_text(size = 15, face = "bold"),
             axis.text = element_text(size = 12),
             axis.text.x = element_text(angle = 60, vjust = 1, hjust = 1),
-            legend.title = element_text(size = 12, face = "bold"),
-            legend.text = element_text(size = 12)
-          ) + scale_x_discrete(limit = unique(cell_anno$Type)) + 
+            legend.title = element_text(size = 15, face = "bold"),
+            legend.text = element_text(size = 15)
+          ) + scale_x_discrete(limit =levels(factor(unique(cell_anno$Type)))) + 
           labs(x='',y = 'Percentage(%)',
                title = x, 
                subtitle = paste0("Chi-Squared, p ", pval)) 
