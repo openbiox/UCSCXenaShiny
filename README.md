@@ -164,7 +164,12 @@ All exported data and functions are organized at [here](https://openbiox.github.
 e.g.,
 
 ```r
-options(xena.cacheDir = "/home/xxx/xena_data")
+xena.cacheDir = "/xena"
+xena.zenodoDir = "/xena/datasets"
+
+options(xena.cacheDir = xena.cacheDir, xena.zenodoDir = xena.zenodoDir)
+
+options(xena.runMode = "server")
 ```
 
 Option `xena.runMode` can be used to control the way how the Shiny works.
