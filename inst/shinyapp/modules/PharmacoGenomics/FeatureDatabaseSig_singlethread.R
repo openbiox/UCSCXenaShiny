@@ -58,7 +58,7 @@ uiFeatureDatabaseSig <- function(id){
       h5("."),
     ),
     # Download results ----
-    downloadButton(ns("download_sig_re"), 'Download Significant Results'),
+    downloadButton(ns("download_sig_re"), 'Download Result Table'),
     h5("."),
     h4(strong("NOTEs:")),
     h5("This analysis can examine connections between a target feature and all features within all datasets."),
