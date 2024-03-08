@@ -3,7 +3,7 @@ uiStatAnno <- function(id){
   fluidPage(
     column(12,
            navlistPanel(
-             tabPanel("Overall Drug Info",
+             tabPanel("Overall Drug Information",
                       tabsetPanel(
                         tabPanel("Drug and Cell Counts",
                                  plotOutput(ns("p_count_drugandcell"))
@@ -50,7 +50,3 @@ serverStatAnno <- function(input, output, session){
     cell_anno
   }, options = list(scrollX = TRUE), selection = 'single')
 }
-
-# StatAnnoMerge <- function(){
-#   uiStatAnno("StatAnno")
-# }

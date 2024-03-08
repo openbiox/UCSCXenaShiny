@@ -18,7 +18,7 @@ ui.page_PharmacoGenomics <- function() {
     ),
     ## Features database significant analysis ----
     tabPanel(
-      "Features database significant analysis",
+      "Scaling features associations analysis",
       uiFeatureDatabaseSig("FeatureDatabaseSig")
     ),
     ## Statistics and Annotations ----

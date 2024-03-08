@@ -186,18 +186,7 @@ mycolor <- c(RColorBrewer::brewer.pal(12, "Paired"))
 ## PharmacoGenomics ----
 #source(system.file("shinyapp/PGdata.R", package = "UCSCXenaShiny"), local = PGdata <- new.env(), echo = FALSE)
 
-
-
 appdata_path = path.expand(file.path(getOption("xena.cacheDir"), "appdata.RData"))
 message("Saving data to ", appdata_path)
 save.image(file = appdata_path)
-
-
-
-
-
-
-
-
-
 
