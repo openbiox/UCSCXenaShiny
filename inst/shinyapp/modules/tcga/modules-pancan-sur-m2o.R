@@ -66,9 +66,8 @@ ui.modules_pancan_sur_m2o = function(id) {
 				        choiceValues = c("OS", "DSS", "DFI", "PFI"),
 				        choiceNames = c("OS (Overall Survial)", "DSS (Disease-Specific Survival)", 
 				        				"DFI (Disease-Free Interval)", "PFI (Progression-Free Interval)"),
-				        selected = "OS",inline = TRUE
+				        selected = "OS",inline = FALSE
 				    ),
-				    br(),
 					h4(strong("S2.2 Divide 2 groups by batch conditions")) %>% 
 						helper(type = "markdown", size = "l", fade = TRUE, 
 					                   title = "Divide 2 groups by batch conditions", 
@@ -319,23 +318,46 @@ server.modules_pancan_sur_m2o = function(input, output, session) {
 			datas$group[choice_chrs %in% input$group2_range] = input$group2_name
 			datas = na.omit(datas)
 		} else if (input$set_quantile) {
+		    shiny::validate(
+		      need(try(merge_by[[1]][2]<=merge_by[[2]][1]), 
+		        "Please inspect whether to input independent group range.")
+		    )
 			if(is.na(merge_by[[1]][1])) merge_by[[1]][1] = 0
 			if(is.na(merge_by[[2]][1])) merge_by[[1]][1] = 0
 			if(is.na(merge_by[[1]][2])) merge_by[[1]][1] = 1
 			if(is.na(merge_by[[2]][2])) merge_by[[2]][2] = 1
 			datas_split = split(datas, datas$id)
-			datas = lapply(datas_split, function(data_id){
-				choice_chrs_id = data_id$value
-				merge_by_one = merge_by
-		        for (i in seq(merge_by_one)){
-		          merge_by_one[[i]] = quantile(choice_chrs_id, merge_by_one[[i]], na.rm = T)
-		        }
-				data_id$group = NA
-				data_id$group[which(findInterval(choice_chrs_id, merge_by_one[[1]])==1)] = names(merge_by_one[1])
-				data_id$group[which(findInterval(choice_chrs_id, merge_by_one[[2]], rightmost.closed = TRUE)==1)] = names(merge_by_one[2])
-				data_id = na.omit(data_id)
-			}) %>% do.call(rbind, .) %>% tibble::remove_rownames()
+
+			withProgress(message = "Please wait for a while.",{
+				datas = lapply(seq(datas_split), function(i){
+					# 进度提醒
+				    incProgress(1 / length(datas_split), detail = paste0("(Run ",i,"/",length(datas_split),")"))
+
+					data_id = datas_split[[i]]
+					choice_chrs_id = data_id$value
+					merge_by_one = merge_by
+			        for (i in seq(merge_by_one)){
+			          merge_by_one[[i]] = quantile(choice_chrs_id, merge_by_one[[i]], na.rm = T)
+			        }
+					data_id$group = NA
+					data_id$group[which(findInterval(choice_chrs_id, merge_by_one[[1]])==1)] = names(merge_by_one[1])
+					data_id$group[which(findInterval(choice_chrs_id, merge_by_one[[2]], rightmost.closed = TRUE)==1)] = names(merge_by_one[2])
+					data_id = na.omit(data_id)
+				}) %>% do.call(rbind, .) %>% tibble::remove_rownames()
+			})
+
+
 		} else {
+		    shiny::validate(
+		      need(merge_by[[1]][2] >= min(choice_chrs, na.rm=T), 
+		        "Please inspect whether to input valid group range for Group1."),
+		      need(merge_by[[2]][1] <= max(choice_chrs, na.rm=T), 
+		        "Please inspect whether to input valid group range for Group2."),		      
+		    )
+		    shiny::validate(
+		      need(try(merge_by[[1]][2]<=merge_by[[2]][1]), 
+		        "Please inspect whether to input independent group range.")
+		    )
 			if(is.na(merge_by[[1]][1])) merge_by[[1]][1] = min(choice_chrs, na.rm=T)
 			if(is.na(merge_by[[2]][1])) merge_by[[2]][1] = min(choice_chrs, na.rm=T)
 			if(is.na(merge_by[[1]][2])) merge_by[[1]][2] = max(choice_chrs, na.rm=T)
@@ -356,18 +378,25 @@ server.modules_pancan_sur_m2o = function(input, output, session) {
 	})
 
 	output$L3s_x_data_sur_group.ui = renderUI({
+		# group_stat = L3s_x_data_sur_group()
 		output$L3s_x_data_sur_group = renderDataTable({
-			group_stat = L3s_x_data_sur_group()
+			group_stat = L3s_x_data_sur_group() 
 			group_stat = group_stat %>%
 				dplyr::count(id, group) %>% 
-
 			datatable(group_stat,
 				# class = "nowrap row-border",
 				options = list(pageLength = 2, 
 					columnDefs = list(list(className = 'dt-center', targets="_all")))
 			)
 		})
-	dataTableOutput(ns("L3s_x_data_sur_group"))
+		output$valid_group = renderPrint({
+			ids_num = length(unique(L3s_x_data_sur_group()$id))
+			cat(paste0("Tip: ", ids_num, " ids have valid binary groups."))
+		})		
+		tagList(
+			dataTableOutput(ns("L3s_x_data_sur_group")),
+			verbatimTextOutput(ns("valid_group"))
+		)
 	})
 
 
@@ -375,29 +404,40 @@ server.modules_pancan_sur_m2o = function(input, output, session) {
 		datas = L3s_x_data_sur_group()
 		valid_ids = unique(datas$id)
 
-
 		withProgress(message = "Please wait for a while.",{
 			sur_stat = lapply(seq(valid_ids), function(i){
 			    incProgress(1 / length(valid_ids), detail = paste0("(Finished ",i,"/",length(valid_ids),")"))
 				valid_id = valid_ids[i]
 				datas_sub = subset(datas, id %in% valid_id)
+				print(head(datas_sub))
 				if(input$sur_method=="Log-rank test"){
 					if(!input$use_origin){
 						datas_sub$Group = datas_sub$group
 					} else {
-						datas_sub$Group = datas_sub$value
+						# datas_sub$Group = datas_sub$value
 						if(class(datas_sub$value)!="character"){
 							res.cut <- surv_cutpoint(datas_sub, 
-								time = "time", event = "status", variables = "Group")
-							res.cat <- surv_categorize(res.cut)
-							datas_sub$Group = res.cat$Group
+								time = "time", event = "status", variables = "value")
+							groups_1_2 = datas_sub %>% 
+								  dplyr::group_by(group) %>% 
+								  dplyr::summarise(mean = mean(value)) %>% 
+								  dplyr::arrange(mean) %>% 
+								  dplyr::pull(group) %>% as.character()
+							datas_sub$Group = ifelse(surv_categorize(res.cut)$value=="low", groups_1_2[1], groups_1_2[2])
+							datas_sub$Group = factor(datas_sub$Group, levels=groups_1_2)
 						}
 					}
 					surv_diff <- survdiff(Surv(time, status) ~ Group, data = datas_sub)
 					pval = 1 - pchisq(surv_diff$chisq, length(surv_diff$n) - 1)
-					sur_res = summary(survfit(Surv(time, status) ~ Group, data = datas_sub))$table %>% 
-						    as.data.frame() %>% dplyr::pull(median)
-					sur_res = c(sur_res,pval)
+					# sur_res = summary(survfit(Surv(time, status) ~ Group, data = datas_sub))$table %>% 
+					# 	    as.data.frame() %>% dplyr::pull(median)
+
+					sur_tab = summary(survfit(Surv(time, status) ~ Group, data = datas_sub))$table %>% 
+						    as.data.frame()
+
+					sur_res = c(sur_tab[paste0("Group=",input$group1_name),"median"],
+								sur_tab[paste0("Group=",input$group2_name),"median"], pval)
+					# sur_res = c(sur_res,pval)
 					names(sur_res) = c(input$group1_name,input$group2_name,"p.value")
 					names(sur_res)[1:2] = paste0(names(sur_res)[1:2],"\nmedian.time")
 				} else if (input$sur_method=="Cox regression"){

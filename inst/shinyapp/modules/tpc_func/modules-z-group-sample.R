@@ -369,7 +369,7 @@ group_samples_Server = function(input, output, session, database = "toil",
       ,
       column(
         4,
-        textInput(ns("group2_name"),"Group Name", "Group2")
+        textInput(ns("group2_name"),"Group2 Name", "Group2")
       )
     )
   })

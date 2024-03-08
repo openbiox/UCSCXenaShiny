@@ -38,6 +38,9 @@ ui.modules_pw_cor = function(id){
 		          		dropboxWidth = "200%"
 		          	),
 		        ),
+			),
+			column(
+				3,
 		        wellPanel(
           			h4("2. Parameters", align = "center"),
 			        selectInput(inputId = ns("use_all"), label = "Use All Cancer Types", choices = c("TRUE", "FALSE"), selected = "FALSE"),
@@ -99,15 +102,15 @@ ui.modules_pw_cor = function(id){
 			          block = TRUE,
 			          size = "sm"
 			        )
-			    )
-
+			    )	
 			),
 			column(
-			    9,
-			    fluidRow(
-			    	column(6, offset = 3,
-			    		plotOutput(ns("pw_plot"), height = "600px",width = "600px"))
-			    ),
+			    6,
+			    # fluidRow(
+			    # 	column(6, offset = 3,
+			    # 		plotOutput(ns("pw_plot"), height = "600px",width = "600px"))
+			    # ),
+			    plotOutput(ns("pw_plot"), height = "600px"),
 			    hr(),
 			    h5("NOTEs:"),
 			    p("1. 500 common pathway genesets from 3 resources(50 HALLMARK, 186 KEGG, 264 IOBR) were collected."),

@@ -36,6 +36,9 @@ ui.modules_pcawg_unicox <- function(id) {
             dropboxWidth = "200%"
           ),
         ),
+      ),
+      column(
+        3,
         wellPanel(
           h4("2. Parameters", align = "center"),
           # selectInput(inputId = ns("measure"), label = "Select Measure for plot", choices = c("OS", "PFI", "DSS", "DFI"), selected = "OS"),
@@ -52,35 +55,36 @@ ui.modules_pcawg_unicox <- function(id) {
             color = "primary",
             block = TRUE,
             size = "sm"
-          )),
-          wellPanel(
-            h4("3. Download", align = "center"),
-            numericInput(inputId = ns("height"), label = "Height", value = 8),
-            numericInput(inputId = ns("width"), label = "Width", value = 6),
-            prettyRadioButtons(
-              inputId = ns("device"),
-              label = "Choose plot format",
-              choices = c("pdf", "png"),
-              selected = "pdf",
-              inline = TRUE,
-              icon = icon("check"),
-              animation = "jelly",
-              fill = TRUE
-            ),
-            tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
-            downloadBttn(
-              outputId = ns("download"),
-              style = "gradient",
-              color = "primary",
-              block = TRUE,
-              size = "sm"
-            )
           )
         ),
+        wellPanel(
+          h4("3. Download", align = "center"),
+          numericInput(inputId = ns("height"), label = "Height", value = 8),
+          numericInput(inputId = ns("width"), label = "Width", value = 6),
+          prettyRadioButtons(
+            inputId = ns("device"),
+            label = "Choose plot format",
+            choices = c("pdf", "png"),
+            selected = "pdf",
+            inline = TRUE,
+            icon = icon("check"),
+            animation = "jelly",
+            fill = TRUE
+          ),
+          tags$hr(style = "border:none; border-top:2px solid #5E81AC;"),
+          downloadBttn(
+            outputId = ns("download"),
+            style = "gradient",
+            color = "primary",
+            block = TRUE,
+            size = "sm"
+          )
+        )
+      ),
       column(
-        9,
+        6,
         fluidRow(
-         column(6, offset = 3,
+         column(8, offset = 2,
           plotOutput(ns("unicox_gene_tree"), height = "600px")
          )
         ),

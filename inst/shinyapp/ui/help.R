@@ -36,7 +36,7 @@ ui.page_help <- function() {
     tabPanel(
       "Citation",
       fluidPage(
-        includeMarkdown(set_md_path("citation.md"))
+        includeMarkdown(set_md_path("citation2.md"))
       )
     ),
     # tabPanel(

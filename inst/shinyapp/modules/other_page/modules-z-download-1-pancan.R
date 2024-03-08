@@ -169,7 +169,7 @@ ui.modules_download_pancan = function(id){
 							br(),br(),br(),br(),
 							dataTableOutput(ns("L3s_x_data")),
 							br(),
-							h3("3. Download results"),
+							h3("4. Download results"),
 						    fluidRow(
 						    	column(3, downloadButton(ns("save_csv"), "Download table(.csv)")),
 						    	column(3, offset = 2, downloadButton(ns("save_rda"), "Download table(.rda)"))

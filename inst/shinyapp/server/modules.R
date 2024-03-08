@@ -37,11 +37,11 @@ observeEvent(req(input$navbar=="TCGA: Association Between Molecular Profile and 
   callModule(server.modules_pancan_mut, "modules_pancan_mut")
 }, once = TRUE)  
 
-observeEvent(req(input$navbar=="TCGA: Molecular Profile Cox Analysis"),{
+observeEvent(req(input$navbar=="TCGA: Molecular Profile Cox Regression Analysis"),{
   callModule(server.modules_pancan_unicox, "modules_pancan_unicox")
 }, once = TRUE)  
 
-observeEvent(req(input$navbar=="TCGA: Molecular Profile Log-rank Analysis"),{
+observeEvent(req(input$navbar=="TCGA: Molecular Profile Kaplan-Meier Analysis"),{
   callModule(server.modules_sur_plot, "modules_sur_plot")
 }, once = TRUE)  
 
@@ -71,7 +71,7 @@ observeEvent(req(input$navbar=="PCAWG: Molecular Profile Distribution Across Can
   callModule(server.modules_pcawg_dist, "modules_pcawg_dist")
 }, once = TRUE)  
 
-observeEvent(req(input$navbar=="PCAWG: Molecular Profile Cox Analysis"),{
+observeEvent(req(input$navbar=="PCAWG: Molecular Profile Cox Regression Analysis"),{
   callModule(server.modules_pcawg_unicox, "modules_pcawg_unicox")
 }, once = TRUE)  
 
@@ -79,7 +79,7 @@ observeEvent(req(input$navbar=="PCAWG: Molecule-Molecule Correlation"),{
   callModule(server.modules_pcawg_gene_cor, "modules_pcawg_gene_cor")
 }, once = TRUE)  
 
-observeEvent(req(input$navbar=="PCAWG: Molecular Profile Log-rank Analysis"),{
+observeEvent(req(input$navbar=="PCAWG: Molecular Profile Kaplan-Meier Analysis"),{
   callModule(server.modules_pcawg_sur_plot, "modules_pcawg_sur_plot")
 }, once = TRUE)  
 
@@ -183,4 +183,4 @@ observeEvent(req(input$navbar %in% c(
 
 
 callModule(server.home_search_box, "homepage_pancan_search")
-
+callModule(server.home_daily_gene, "homepage_daily_gene")

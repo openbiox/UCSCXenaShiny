@@ -26,7 +26,7 @@ Shixiang Wang<sup>\#</sup>, Yi Xiong<sup>\#</sup>, Longfei Zhao<sup>\#</sup>, Ka
 
 ## :cloud: Use on cloud
 
-If you don't want to install R and packages locally, or you have no programming experience, try using this tool on `Hiplot-academic` platform (<https://shiny.hiplot.cn/ucsc-xena-shiny/> recommended) or `shinyapps.io` (<https://shixiangwang.shinyapps.io/ucscxenashiny/>).
+If you don't want to install R and packages locally, or you have no programming experience, try using this tool on `Oncoharmony Network` (<http://shiny.zhoulab.ac.cn/UCSCXenaShiny//>) or `Hiplot ORG` platform (<https://shiny.hiplot.cn/ucsc-xena-shiny/>).
 
 ## :snake: Use with Conda
 
@@ -164,7 +164,12 @@ All exported data and functions are organized at [here](https://openbiox.github.
 e.g.,
 
 ```r
-options(xena.cacheDir = "/home/xxx/xena_data")
+xena.cacheDir = "/xena"
+xena.zenodoDir = "/xena/datasets"
+
+options(xena.cacheDir = xena.cacheDir, xena.zenodoDir = xena.zenodoDir)
+
+options(xena.runMode = "server")
 ```
 
 Option `xena.runMode` can be used to control the way how the Shiny works.

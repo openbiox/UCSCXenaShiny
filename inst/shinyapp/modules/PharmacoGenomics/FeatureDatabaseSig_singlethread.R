@@ -92,6 +92,7 @@ serverFeatureDatabaseSig <- function(input, output, session){
                          selected = ""
     )
   })
+
   # Set the threshold value for setting significance ----
   output$threshold_value <- renderUI({
     # Spearman correlation
