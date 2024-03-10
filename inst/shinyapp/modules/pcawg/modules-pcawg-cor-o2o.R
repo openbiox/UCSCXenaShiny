@@ -114,6 +114,11 @@ ui.modules_pcawg_cor_o2o = function(id) {
 							column(4, textInput(inputId = ns("y_name"), label = "Y-axis name:")),
 							column(4, textInput(inputId = ns("title_name"), label = "Title name:"))
 						),	
+						div(h3("4. Display the histogram or not:"),style="width:400px;"),
+						fluidRow(
+							column(6, radioButtons(inputId = ns("side_hist"), label = NULL, 
+								choices = c("NO", "YES"), selected="YES",inline = TRUE)),
+						),	
 						div(h5("Note: You can download the raw data and plot in local R environment for more detailed adjustment.")),
 					),
 					br(),
@@ -297,7 +302,11 @@ server.modules_pcawg_cor_o2o = function(input, output, session) {
 		pval = formatC(extract_stats(p)$subtitle_data$p.value, digits = 3, format = 'e')
 		r = round(extract_stats(p)$subtitle_data$estimate,3)
 		p$labels$subtitle = bquote(paste(widehat(italic(r))[.(input$cor_method)] == .(r), ', ' ,italic(p) == .(pval)))
-
+		if(input$side_hist=="NO"){
+			p = p + theme(#ggside.panel.scale = 1,
+			      ggside.axis.text = element_blank(),
+			      ggside.axis.ticks = element_blank())
+		}
 		return(p)
 	})
 	output$cor_plot_sct = renderPlot({cor_plot_sct()})
