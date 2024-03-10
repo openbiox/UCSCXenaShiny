@@ -305,17 +305,14 @@ server.modules_pcawg_sur_o2m = function(input, output, session) {
 		if(input$sur_method=="Log-rank test"){
 		  	fluidRow(
 		  		column(3,colourpicker::colourInput(ns("multi_log_color1"), "Color (Group 1):", "#d53e4f")),
-		  		column(3,colourpicker::colourInput(ns("multi_log_color2"), "Color (Group 1):", "#3288bd")),
-		  		# column(3, numericInput(ns("multi_log_line"), "Add line(P):", 0.05)),
-		  		# column(3, selectInput(ns("multi_log_label"),"Add text:",
-		  		# 	choices = c("Signif.(symbol)", "Signif.(value)"),selected = "Signif.(symbol)"))	
+		  		column(3,colourpicker::colourInput(ns("multi_log_color2"), "Color (Group 2):", "#3288bd")),
 		  	)
 		} else if(input$sur_method=="Univariate Cox regression") {
 		  	fluidRow(
-		  		column(4,colourpicker::colourInput(ns("multi_cox_color"), "Color:", "grey")),
-		  		# column(4, numericInput(ns("multi_cox_line"), "Add line(P):", 0.05)),
-		  		# column(4, selectInput(ns("multi_cox_label"),"Add text:",
-		  		# 	choices = c("HR value", "Signif.(symbol)", "Signif.(value)"),selected = "HR value"))	
+		  		# column(4,colourpicker::colourInput(ns("multi_cox_color"), "Color:", "grey")),
+		  		column(5,colourpicker::colourInput(ns("cox_h_g1_color"), "Color(HR>1):", "#d53e4f")),
+		  		column(5,colourpicker::colourInput(ns("cox_h_l1_color"), "Color(HR<1):", "#3288bd")),
+
 		  	)
 		}
 	)
@@ -454,10 +451,12 @@ server.modules_pcawg_sur_o2m = function(input, output, session) {
 			    tibble::rownames_to_column("Group") %>% 
 			    dplyr::mutate(Cancer = x, .before = 1)
 			}) %>% do.call(rbind, .)
-			fill_cols = c(input$multi_cox_color)
-			names(fill_cols) = c(
-				paste0("Group",levels(sur_res_multi$sur_dat$Group)[2]))
-			print(head(sur_res,20))
+			# fill_cols = c(input$multi_cox_color)
+			# names(fill_cols) = c(
+			# 	paste0("Group",levels(sur_res_multi$sur_dat$Group)[2]))
+			fill_cols = c(input$cox_h_g1_color, input$cox_h_l1_color)
+			names(fill_cols) = c("HR>1","HR<1")
+			# print(head(sur_res,20))
 			sur_res = sur_res %>% dplyr::filter(!is.na(coef))
 			p1 = sur_res %>%
 			  dplyr::rename(`p.value`=`Pr(>|z|)`, `HR` = `exp(coef)`) %>% 
@@ -474,7 +473,7 @@ server.modules_pcawg_sur_o2m = function(input, output, session) {
 			  dplyr::mutate(pval_log = -log10(p.value)) %>% 
 			  dplyr::mutate(pval_log = ifelse(pval_log<10,pval_log, 10)) %>% 
 			  dplyr::mutate(Direct = ifelse(HR>1,"HR>1","HR<1")) %>% 
-			  ggplot(aes(x = Cancer, y = pval_log, fill = Group)) + 
+			  ggplot(aes(x = Cancer, y = pval_log, fill = Direct)) + 
 			  geom_col(position="dodge") + 
 			  scale_fill_manual(values = fill_cols) + 
 			  xlab(NULL) + ylab(isolate(input$x_name_2)) +

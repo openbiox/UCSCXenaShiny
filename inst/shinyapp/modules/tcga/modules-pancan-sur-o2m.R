@@ -321,21 +321,12 @@ server.modules_pancan_sur_o2m = function(input, output, session) {
 		if(input$sur_method=="Log-rank test"){
 		  	fluidRow(
 		  		column(3,colourpicker::colourInput(ns("multi_log_color1"), "Color (Group 1):", "#d53e4f")),
-		  		column(3,colourpicker::colourInput(ns("multi_log_color2"), "Color (Group 1):", "#3288bd")),
-		  		# column(3, numericInput(ns("multi_log_line"), "Add line(P):", 0.05)),
-		  		# column(3, selectInput(ns("multi_log_label"),"Add text:",
-		  		# 	choices = c("Signif.(symbol)", "Signif.(value)"),selected = "Signif.(symbol)"))	
+		  		column(3,colourpicker::colourInput(ns("multi_log_color2"), "Color (Group 2):", "#3288bd")),
 		  	)
 		} else if(input$sur_method=="Univariate Cox regression") {
 		  	fluidRow(
-		  		# column(4,colourpicker::colourInput(ns("multi_cox_color"), "Color:", "grey")),
 		  		column(5,colourpicker::colourInput(ns("cox_h_g1_color"), "Color(HR>1):", "#d53e4f")),
 		  		column(5,colourpicker::colourInput(ns("cox_h_l1_color"), "Color(HR<1):", "#3288bd")),
-
-
-		  		# column(4, numericInput(ns("multi_cox_line"), "Add line(P):", 0.05)),
-		  		# column(4, selectInput(ns("multi_cox_label"),"Add text:",
-		  		# 	choices = c("HR value", "Signif.(symbol)", "Signif.(value)"),selected = "HR value"))	
 		  	)
 		}
 	)
@@ -475,7 +466,7 @@ server.modules_pancan_sur_o2m = function(input, output, session) {
 			    tibble::rownames_to_column("Group") %>% 
 			    dplyr::mutate(Cancer = x, .before = 1)
 			}) %>% do.call(rbind, .)
-			fill_cols = c(input$multi_cox_color)
+			# fill_cols = c(input$multi_cox_color)
 			fill_cols = c(input$cox_h_g1_color, input$cox_h_l1_color)
 			names(fill_cols) = c("HR>1","HR<1")
 			# names(fill_cols) = c(

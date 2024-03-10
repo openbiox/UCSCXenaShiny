@@ -13,6 +13,18 @@ ui.page_home <- function() {
     title = "Home",
     icon = icon("home"), # create icon http://shiny.rstudio.com/reference/shiny/latest/icon.html
     fluidPage(
+      useWaiter(), 
+      waiterPreloader(html = tagList(
+        spin_fading_circles(), 
+        br(), br(),
+        h1(strong("Welcome to use UCSCXenaShiny v2 application!")),
+        br(),
+        p("An interactive web tool with general and personalized modules to explore UCSC Xena datasets"
+          ,style = "font-size: 25px;"),
+        br(),br(),
+        p("Notes:", "(1) The initiation could take about 10 seconds. (2) Please zoom in or up screen for better representation.",
+          style = "font-size: 16px;")
+      ), color = "#2C3E50"),
       useShinydashboard(),
       tags$head(
         tags$link(rel = "stylesheet", type = "text/css", href = "bootstrap4.css")

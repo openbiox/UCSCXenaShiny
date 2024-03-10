@@ -14,19 +14,16 @@ ui.page_help <- function() {
     #   )
     # ),
     # tabPanel(
-    #   "Term List",
+    #   "Tutorial Book",
     #   fluidPage(
-    #     includeMarkdown(set_md_path("terms.md"))
+    #     includeMarkdown(set_md_path("tmp.md"))
     #   )
     # ),
+    tabPanel(a("Tutorial Book", 
+               href="https://lishensuo.github.io/UCSCXenaShiny_Book/",
+               target="_blank")),
     tabPanel(
-      "Tutorial Book",
-      fluidPage(
-        includeMarkdown(set_md_path("tmp.md"))
-      )
-    ),
-    tabPanel(
-      "ID Query",
+      "TPC ID Query",
       ui.modules_id_reference("modules_id_reference")
     ),
 
