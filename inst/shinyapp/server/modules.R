@@ -124,9 +124,6 @@ observeEvent(req(input$navbar=="PCAWG: Survival Analysis"),{
 }, once = TRUE)  
 
 
-
-
-
 # CCLE
 observeEvent(req(input$navbar=="CCLE: Association Analysis"),{
 	callModule(server.modules_ccle_cor_o2o, "modules_ccle_cor_o2o")
@@ -145,7 +142,7 @@ observeEvent(req(input$navbar=="CCLE: Comparison Analysis"),{
 
 
 # # identifier help
-observeEvent(req(input$navbar=="ID Query"),{
+observeEvent(req(input$navbar=="TPC ID Query"),{
 	callModule(server.modules_id_reference, "modules_id_reference")
 }, once = TRUE) 
 
