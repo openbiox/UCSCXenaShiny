@@ -288,6 +288,7 @@ It can be 'client' or 'server'. You can directly set it in `app_run()`.
   - [Shensuo Li](https://github.com/lishensuo)
   - [Longfei Zhao](https://github.com/longfei8533)
   - [Kai Gu](https://github.com/kaigu1990)
+  - [Yuzhong Peng](https://github.com/mugpeng)
   - [Yin Li](https://github.com/yinlisssss)
   - [Fei Zhao](https://github.com/fei0810)
 
