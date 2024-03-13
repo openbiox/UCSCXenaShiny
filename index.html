@@ -88,7 +88,7 @@
 <h2 id="cloud-use-on-cloud">
 <span class="emoji" data-emoji="cloud">☁️</span> Use on cloud<a class="anchor" aria-label="anchor" href="#cloud-use-on-cloud"></a>
 </h2>
-<p>If you don’t want to install R and packages locally, or you have no programming experience, try using this tool on <code>Oncoharmony Network</code> (<a href="http://shiny.zhoulab.ac.cn/UCSCXenaShiny//" class="external-link uri">http://shiny.zhoulab.ac.cn/UCSCXenaShiny//</a>) or <code>Hiplot ORG</code> platform (<a href="https://shiny.hiplot.cn/ucsc-xena-shiny/" class="external-link uri">https://shiny.hiplot.cn/ucsc-xena-shiny/</a>).</p>
+<p>If you don’t want to install R and packages locally, or you have no programming experience, try using this tool on <code>Oncoharmony Network</code> (<a href="http://shiny.zhoulab.ac.cn/UCSCXenaShiny" class="external-link uri">http://shiny.zhoulab.ac.cn/UCSCXenaShiny</a>) or <code>Hiplot ORG</code> platform (<a href="https://shiny.hiplot.cn/ucsc-xena-shiny" class="external-link uri">https://shiny.hiplot.cn/ucsc-xena-shiny</a>).</p>
 </div>
 <div class="section level2">
 <h2 id="snake-use-with-conda">
@@ -126,29 +126,34 @@
 <p><img alt="Docker Image Version (latest by date)" src="https://img.shields.io/docker/v/shixiangwang/ucscxenashiny?color=blue"><img alt="Docker Image Size (latest by date)" src="https://img.shields.io/docker/image-size/shixiangwang/ucscxenashiny"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/shixiangwang/ucscxenashiny"></p>
 <p>UCSCXenaShiny has corresponding docker image at <a href="https://hub.docker.com/r/shixiangwang/ucscxenashiny/" class="external-link uri">https://hub.docker.com/r/shixiangwang/ucscxenashiny/</a>, you can install the latest version with:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">docker</span> pull shixiangwang/ucscxenashiny</span></code></pre></div>
-<p>All versions can be found at <a href="https://hub.docker.com/r/shixiangwang/ucscxenashiny/tags/" class="external-link uri">https://hub.docker.com/r/shixiangwang/ucscxenashiny/tags/</a>. To use a specified version (e.g., <code>v1.0.2</code>), run the following command to install:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">docker</span> pull shixiangwang/ucscxenashiny:v1.0.2</span></code></pre></div>
-<p>Then run the docker image with:</p>
+<p>All versions can be found at <a href="https://hub.docker.com/r/shixiangwang/ucscxenashiny/tags/" class="external-link uri">https://hub.docker.com/r/shixiangwang/ucscxenashiny/tags/</a>. To use a specified version (e.g., <code>v1.0.2</code>; latest code commit will auto-build a tag <code>master</code>), run the following command to install:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">docker</span> pull shixiangwang/ucscxenashiny:v1.0.2</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co"># docker pull shixiangwang/ucscxenashiny:master  # For latest code, unstable</span></span></code></pre></div>
+<p>Run the latest stable docker image and keep it at background with:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="at">--name</span> xenashiny <span class="at">-p</span> 3838:3838 shixiangwang/ucscxenashiny</span></code></pre></div>
 <p>Now you should find the Shiny when you open URL <code>http://127.0.0.1:3838</code> with your web browser. If you deploy the docker in a public (cloud) Linux server, change <code>127.0.0.1</code> to the host IP.</p>
+<p>If the application failed to start. Check if the container has installed all dependencies.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="ex">docker</span> exec xenashiny Rscript /opt/ext-deps.R</span></code></pre></div>
+<p>Or you can interactively check the container:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="ex">docker</span> exec <span class="at">-it</span> xenashiny /bin/bash</span></code></pre></div>
 <p>You can manage the deployed container with the following commands:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Stop the container</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="ex">docker</span> stop xenashiny</span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co"># Start the container</span></span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="ex">docker</span> start xenashiny</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Stop the container</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="ex">docker</span> stop xenashiny</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co"># Start the container</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="ex">docker</span> start xenashiny</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="arrow_double_down-manual-installation">
 <span class="emoji" data-emoji="arrow_double_down">⏬</span> Manual installation<a class="anchor" aria-label="anchor" href="#arrow_double_down-manual-installation"></a>
 </h2>
 <p>You can install stable release of <strong>UCSCXenaShiny</strong> from CRAN with:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"UCSCXenaShiny"</span><span class="op">)</span></span></code></pre></div>
 <p>You can install the development version of <strong>UCSCXenaShiny</strong> from Github with:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"openbiox/UCSCXenaShiny"</span><span class="op">)</span></span></code></pre></div>
 <p>Or r-universe:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"UCSCXenaShiny"</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://openbiox.r-universe.dev"</span>, <span class="st">"https://cran.r-project.org"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Other dependent R packages specific to the Shiny application will be automatically installed when you start with <code><a href="reference/app_run.html">app_run()</a></code> command. If you failed to install <strong>UCSCXenaShiny</strong>, please check if the following system dependencies have been properly installed or see <a href="#hammer_and_wrench-troubleshooting"><strong>Troubleshooting</strong></a> section for specific installation issues.</p>
 <div class="section level3">
@@ -160,11 +165,11 @@
 <p>Please note all commands below are execuated with <code>root</code>.</p>
 </blockquote>
 <p><strong>Ubuntu</strong>:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="ex">apt</span> update <span class="at">-y</span> <span class="kw">&amp;&amp;</span> <span class="ex">apt</span> install <span class="at">-y</span> libcurl4-openssl-dev libssl-dev libxml2-dev <span class="dt">\</span></span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>    libgmp3-dev libmpfr-dev</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="ex">apt</span> update <span class="at">-y</span> <span class="kw">&amp;&amp;</span> <span class="ex">apt</span> install <span class="at">-y</span> libcurl4-openssl-dev libssl-dev libxml2-dev <span class="dt">\</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>    libgmp3-dev libmpfr-dev</span></code></pre></div>
 <p><strong>CentOS</strong>:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="ex">yum</span> update <span class="at">-y</span> <span class="kw">&amp;&amp;</span> <span class="ex">yum</span> install <span class="at">-y</span> libcurl-devel openssl-devel libxml2-devel <span class="dt">\</span></span>
-<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>    gmp-devel mpfr-devel libjpeg-devel cairo-devel</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="ex">yum</span> update <span class="at">-y</span> <span class="kw">&amp;&amp;</span> <span class="ex">yum</span> install <span class="at">-y</span> libcurl-devel openssl-devel libxml2-devel <span class="dt">\</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>    gmp-devel mpfr-devel libjpeg-devel cairo-devel</span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -172,10 +177,10 @@
 <span class="emoji" data-emoji="beginner">🔰</span> Usage<a class="anchor" aria-label="anchor" href="#beginner-usage"></a>
 </h2>
 <p>First load package:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/openbiox/UCSCXenaShiny" class="external-link">UCSCXenaShiny</a></span><span class="op">)</span></span></code></pre></div>
 <p>Start Shiny in your R console (ignore this if you just want to use functions in this package):</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/app_run.html">app_run</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co"># At default, the Shiny is running under client mode</span></span>
 <span><span class="co"># It means the data queried from remote UCSC Xena server will</span></span>
@@ -190,7 +195,7 @@
 <p>All exported data and functions are organized at <a href="https://openbiox.github.io/UCSCXenaShiny/reference/index.html">here</a>.</p>
 <p><code>xena.cacheDir</code> and <code>xena.zenodoDir</code> are two options to control where to store data.</p>
 <p>e.g.,</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">xena.cacheDir</span> <span class="op">=</span> <span class="st">"/xena"</span></span>
 <span><span class="va">xena.zenodoDir</span> <span class="op">=</span> <span class="st">"/xena/datasets"</span></span>
 <span></span>
@@ -224,27 +229,27 @@
 <li>
 <p><code>ERROR: dependencies ‘gmp’, ‘Rmpfr’ are not available for package ‘PMCMRplus’</code> or <code>ERROR: dependency ‘pairwiseComparisons’ is not available for package ‘ggstatsplot’</code>.</p>
 <p><strong>Your operating system lacks <code>gmp</code> and <code>Rmpfr</code> development libraries.</strong></p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># Ubuntu</span></span>
-<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="ex">apt</span> install <span class="at">-y</span> libgmp3-dev libmpfr-dev</span>
-<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="co"># CentOS</span></span>
-<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="ex">yum</span> install <span class="at">-y</span> gmp-devel mpfr-devel</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># Ubuntu</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="ex">apt</span> install <span class="at">-y</span> libgmp3-dev libmpfr-dev</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="co"># CentOS</span></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="ex">yum</span> install <span class="at">-y</span> gmp-devel mpfr-devel</span></code></pre></div>
 </li>
 <li>
 <p><code>installation of package ‘gridtext’ had non-zero exit status</code> with error info <code>grid-renderer.h:61:94: error: no matching function for call to ‘Rcpp::Vector&lt;10, Rcpp::PreserveStorage&gt;::Vector(int, bool&amp;, const GraphicsContext&amp;)’</code>.</p>
 <p><strong>You have an older C++ version which cannot support C++11 features. This error seems only happen on CentOS. Install a newer C++ and set it as default compiler for R would fix this problem.</strong></p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="ex">yum</span> install centos-release-scl</span>
-<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="ex">yum</span> install devtoolset-9</span>
-<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="co"># If you use your non-root account to install packages, </span></span>
-<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="co"># change /root to /home/your_id in the following command</span></span>
-<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> /root/.R</span>
-<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="fu">vi</span> /root/.R/Makevars </span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="ex">yum</span> install centos-release-scl</span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="ex">yum</span> install devtoolset-9</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a><span class="co"># If you use your non-root account to install packages, </span></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a><span class="co"># change /root to /home/your_id in the following command</span></span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> /root/.R</span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="fu">vi</span> /root/.R/Makevars </span></code></pre></div>
 <p><strong>Append content to the openning file.</strong></p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="va">CXX11</span><span class="op">=</span>/opt/rh/devtoolset-9/root/usr/bin/g++ <span class="ex">-std=c++11</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="va">CXX11</span><span class="op">=</span>/opt/rh/devtoolset-9/root/usr/bin/g++ <span class="ex">-std=c++11</span></span></code></pre></div>
 </li>
 <li>
 <p><code>installation of package ‘nloptr’ had non-zero exit status</code> with error info <code>libtool: link: ERROR: no information for variable 'AR' cru</code>.</p>
 <p><strong>The latest version of <code>nloptr</code> can only support R&gt;=4.0. When you are using R3.6 or below would have this issue. So install an older version in R console can fix this.</strong></p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">packageurl</span> <span class="op">&lt;-</span> <span class="st">"https://cran.r-project.org/src/contrib/Archive/nloptr/nloptr_1.2.1.tar.gz"</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="va">packageurl</span>, repos<span class="op">=</span><span class="cn">NULL</span>, type<span class="op">=</span><span class="st">"source"</span><span class="op">)</span></span></code></pre></div>
@@ -255,19 +260,19 @@
 <li>
 <p><code>package ‘pacman’ is not available</code> or similar.</p>
 <p><strong>Install it by hand in R console.</strong></p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pacman"</span><span class="op">)</span></span></code></pre></div>
 </li>
 <li>
 <p><code>there is no package called ‘shinythemes’</code> or similar.</p>
 <p><strong>Install it by hand in R cosole.</strong></p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"shinythemes"</span><span class="op">)</span></span></code></pre></div>
 </li>
 <li>
 <p>Install package <code>gganatogram</code> failed or similar.</p>
 <p><strong>Install it by hand in R cosole.</strong></p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"gganatogram"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>   <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org" class="external-link">remotes</a></span><span class="op">)</span></span>
 <span>   <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span></span>
@@ -281,7 +286,7 @@
 <li>
 <p>Install package <code>ggradar</code> failed or similar.</p>
 <p><strong>Install it by hand in R cosole.</strong></p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"ggradar"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>   <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org" class="external-link">remotes</a></span><span class="op">)</span></span>
 <span>   <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span></span>
