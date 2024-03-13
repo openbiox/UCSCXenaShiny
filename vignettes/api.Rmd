@@ -27,6 +27,10 @@ Firstly, assume you have already installed **UCSCXenaShiny** package.
 library(UCSCXenaShiny)
 ```
 
+## Tutorial Book
+
+From UCSCXenaShiny v2, we provide a comprehensive [tutorial book](https://lishensuo.github.io/UCSCXenaShiny_Book) for introducing how to use the datasets, functions, and the Shiny application.
+
 ## Fetch Data
 
 We provide function to retrieve multi-dimensional data including genomic, epigenomic, transcriptomic, and proteomic data from TCGA (note, this actually contains data from TCGA/TARGET/GTEx databases) and CCLE Pan-Cancer dataset for single identifier (e.g., gene, protein).
@@ -125,3 +129,4 @@ vis_unicox_tree(
 ### Other Functions and Data
 
 All exported data and functions are organized at [here](https://openbiox.github.io/UCSCXenaShiny/reference/index.html).
+

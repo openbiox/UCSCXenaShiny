@@ -26,7 +26,7 @@ Shixiang Wang<sup>\#</sup>, Yi Xiong<sup>\#</sup>, Longfei Zhao<sup>\#</sup>, Ka
 
 ## :cloud: Use on cloud
 
-If you don't want to install R and packages locally, or you have no programming experience, try using this tool on `Oncoharmony Network` (<http://shiny.zhoulab.ac.cn/UCSCXenaShiny//>) or `Hiplot ORG` platform (<https://shiny.hiplot.cn/ucsc-xena-shiny/>).
+If you don't want to install R and packages locally, or you have no programming experience, try using this tool on `Oncoharmony Network` (<http://shiny.zhoulab.ac.cn/UCSCXenaShiny>) or `Hiplot ORG` platform (<https://shiny.hiplot.cn/ucsc-xena-shiny>).
 
 ## :snake: Use with Conda
 
@@ -59,13 +59,14 @@ docker pull shixiangwang/ucscxenashiny
 ```
 
 All versions can be found at <https://hub.docker.com/r/shixiangwang/ucscxenashiny/tags/>.
-To use a specified version (e.g., `v1.0.2`), run the following command to install:
+To use a specified version (e.g., `v1.0.2`; latest code commit will auto-build a tag `master`), run the following command to install:
 
 ```bash
 docker pull shixiangwang/ucscxenashiny:v1.0.2
+# docker pull shixiangwang/ucscxenashiny:master  # For latest code, unstable
 ```
 
-Then run the docker image with:
+Run the latest stable docker image and keep it at background with:
 
 ```bash
 docker run -d --name xenashiny -p 3838:3838 shixiangwang/ucscxenashiny
@@ -73,6 +74,18 @@ docker run -d --name xenashiny -p 3838:3838 shixiangwang/ucscxenashiny
 
 Now you should find the Shiny when you open URL `http://127.0.0.1:3838` with your web browser.
 If you deploy the docker in a public (cloud) Linux server, change `127.0.0.1` to the host IP.
+
+If the application failed to start. Check if the container has installed all dependencies.
+
+```bash
+docker exec xenashiny Rscript /opt/ext-deps.R
+```
+
+Or you can interactively check the container:
+
+```bash
+docker exec -it xenashiny /bin/bash
+```
 
 You can manage the deployed container with the following commands:
 
