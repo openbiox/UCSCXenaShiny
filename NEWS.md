@@ -1,8 +1,8 @@
 # UCSCXenaShiny 2.0.0
 
-## New Features
+See the [UCSCXenaShiny v2 Book](https://lishensuo.github.io/UCSCXenaShiny_Book/index.html) for a comprehensive guidance.
 
-https://github.com/openbiox/UCSCXenaShiny/commit/147f4612943df940d3bbd409e82a492dfce37cb4
+## New Features
 
 ### Datasets
 
@@ -10,6 +10,7 @@ https://github.com/openbiox/UCSCXenaShiny/commit/147f4612943df940d3bbd409e82a492
 - `load_data("tcga_PW_meta")`: metadata annotation for HALLMARK, KEGG, IOBR terms.
 - `load_data("pcawg_TIL")`: PCAWG TIL data.
 - `load_data("pcawg_PW")`: ssGSEA scores of HALLMARK, KEGG, IOBR terms for PCAWG samples.
+- and more.
 
 ### R Package Functions
 
