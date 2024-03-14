@@ -29,7 +29,7 @@ library(UCSCXenaShiny)
 
 ## Tutorial Book
 
-From UCSCXenaShiny v2, we provide a comprehensive [tutorial book](https://lishensuo.github.io/UCSCXenaShiny_Book) for introducing how to use the datasets, functions, and the Shiny application.
+From UCSCXenaShiny v2, we provide a comprehensive [tutorial book](https://lishensuo.github.io/UCSCXenaShiny_Book/) for introducing how to use the datasets, functions, and the Shiny application.
 
 ## Fetch Data
 
