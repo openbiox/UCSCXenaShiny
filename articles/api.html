@@ -75,7 +75,7 @@
                         <h4 data-toc-skip class="author">Shixiang Wang,
 Yi Xiong, Longfei Zhao, Kai Gu, Yin Li, Fei Zhao</h4>
             
-            <h4 data-toc-skip class="date">2024-03-13</h4>
+            <h4 data-toc-skip class="date">2024-03-14</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/openbiox/UCSCXenaShiny/blob/HEAD/vignettes/api.Rmd" class="external-link"><code>vignettes/api.Rmd</code></a></small>
       <div class="d-none name"><code>api.Rmd</code></div>
@@ -102,7 +102,7 @@ Yi Xiong, Longfei Zhao, Kai Gu, Yin Li, Fei Zhao</h4>
 <div class="section level2">
 <h2 id="tutorial-book">Tutorial Book<a class="anchor" aria-label="anchor" href="#tutorial-book"></a>
 </h2>
-<p>From UCSCXenaShiny v2, we provide a comprehensive <a href="https://lishensuo.github.io/UCSCXenaShiny_Book" class="external-link">tutorial book</a>
+<p>From UCSCXenaShiny v2, we provide a comprehensive <a href="https://lishensuo.github.io/UCSCXenaShiny_Book/" class="external-link">tutorial book</a>
 for introducing how to use the datasets, functions, and the Shiny
 application.</p>
 </div>
@@ -145,7 +145,7 @@ value unit is <code>log2(tpm+0.001)</code>.</p>
 <span><span class="co">#&gt; Try querying data #1</span></span>
 <span><span class="co">#&gt; -&gt; Checking if the dataset has probeMap...</span></span>
 <span><span class="co">#&gt; -&gt; Done. ProbeMap is found.</span></span>
-<span><span class="co">#&gt; Saving data to file /tmp/Rtmp8vinNf/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
+<span><span class="co">#&gt; Saving data to file /tmp/RtmpPUQ2dM/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
 <span><span class="co">#&gt; More info about dataset please run following commands:</span></span>
 <span><span class="co">#&gt;   library(UCSCXenaTools)</span></span>
 <span><span class="co">#&gt;   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span></span></code></pre></div>
@@ -190,7 +190,7 @@ value unit is <code>log2(tpm+0.001)</code>.</p>
 </h3>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/vis_toil_TvsN.html">vis_toil_TvsN</a></span><span class="op">(</span>Gene <span class="op">=</span> <span class="st">"TP53"</span>, Mode <span class="op">=</span> <span class="st">"Violinplot"</span>, Show.P.value <span class="op">=</span> <span class="cn">FALSE</span>, Show.P.label <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Reading cache data /tmp/Rtmp8vinNf/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
+<span><span class="co">#&gt; Reading cache data /tmp/RtmpPUQ2dM/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
 <span><span class="co">#&gt; More info about dataset please run following commands:</span></span>
 <span><span class="co">#&gt;   library(UCSCXenaTools)</span></span>
 <span><span class="co">#&gt;   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span></span></code></pre></div>
@@ -210,7 +210,7 @@ value unit is <code>log2(tpm+0.001)</code>.</p>
 <span>  TCGA.only <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  Cancer <span class="op">=</span> <span class="st">"ACC"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Reading cache data /tmp/Rtmp8vinNf/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
+<span><span class="co">#&gt; Reading cache data /tmp/RtmpPUQ2dM/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
 <span><span class="co">#&gt; More info about dataset please run following commands:</span></span>
 <span><span class="co">#&gt;   library(UCSCXenaTools)</span></span>
 <span><span class="co">#&gt;   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span></span>
@@ -241,7 +241,7 @@ PANCAN Dataset<a class="anchor" aria-label="anchor" href="#visualize-relationshi
 <span>  threshold <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey"</span>, <span class="st">"#E31A1C"</span>, <span class="st">"#377DB8"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Reading cache data /tmp/Rtmp8vinNf/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
+<span><span class="co">#&gt; Reading cache data /tmp/RtmpPUQ2dM/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
 <span><span class="co">#&gt; More info about dataset please run following commands:</span></span>
 <span><span class="co">#&gt;   library(UCSCXenaTools)</span></span>
 <span><span class="co">#&gt;   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span></span>
