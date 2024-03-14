@@ -55,12 +55,13 @@ UCSCXenaShiny has corresponding docker image at <https://hub.docker.com/r/shixia
 ```bash
 docker pull shixiangwang/ucscxenashiny
 ```
+> From v2, docker pull from GitHub `ghcr.io` registry is also supported, e.g., `docker pull ghcr.io/openbiox/ucscxenashiny:master`.
 
 All versions can be found at <https://hub.docker.com/r/shixiangwang/ucscxenashiny/tags/>.
 To use a specified version (e.g., `v1.0.2`; latest code commit will auto-build a tag `master`), run the following command to install:
 
 ```bash
-docker pull shixiangwang/ucscxenashiny:v1.0.2
+docker pull shixiangwang/ucscxenashiny:v2.0.0
 # docker pull shixiangwang/ucscxenashiny:master  # For latest code, unstable
 ```
 
@@ -72,6 +73,9 @@ docker run -d --name xenashiny -p 3838:3838 shixiangwang/ucscxenashiny
 
 Now you should find the Shiny when you open URL `http://127.0.0.1:3838` with your web browser.
 If you deploy the docker in a public (cloud) Linux server, change `127.0.0.1` to the host IP.
+
+> For the first time, it may return a failure about 'take a long time to respond', please
+> refresh the web page.
 
 If the application failed to start. Check if the container has installed all dependencies.
 
