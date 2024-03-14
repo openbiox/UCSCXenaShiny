@@ -126,12 +126,18 @@
 <p><img alt="Docker Image Version (latest by date)" src="https://img.shields.io/docker/v/shixiangwang/ucscxenashiny?color=blue"><img alt="Docker Image Size (latest by date)" src="https://img.shields.io/docker/image-size/shixiangwang/ucscxenashiny"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/shixiangwang/ucscxenashiny"></p>
 <p>UCSCXenaShiny has corresponding docker image at <a href="https://hub.docker.com/r/shixiangwang/ucscxenashiny/" class="external-link uri">https://hub.docker.com/r/shixiangwang/ucscxenashiny/</a>, you can install the latest version with:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">docker</span> pull shixiangwang/ucscxenashiny</span></code></pre></div>
+<blockquote>
+<p>From v2, docker pull from GitHub <code>ghcr.io</code> registry is also supported, e.g., <code>docker pull ghcr.io/openbiox/ucscxenashiny:master</code>.</p>
+</blockquote>
 <p>All versions can be found at <a href="https://hub.docker.com/r/shixiangwang/ucscxenashiny/tags/" class="external-link uri">https://hub.docker.com/r/shixiangwang/ucscxenashiny/tags/</a>. To use a specified version (e.g., <code>v1.0.2</code>; latest code commit will auto-build a tag <code>master</code>), run the following command to install:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">docker</span> pull shixiangwang/ucscxenashiny:v1.0.2</span>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">docker</span> pull shixiangwang/ucscxenashiny:v2.0.0</span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co"># docker pull shixiangwang/ucscxenashiny:master  # For latest code, unstable</span></span></code></pre></div>
 <p>Run the latest stable docker image and keep it at background with:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="at">--name</span> xenashiny <span class="at">-p</span> 3838:3838 shixiangwang/ucscxenashiny</span></code></pre></div>
 <p>Now you should find the Shiny when you open URL <code>http://127.0.0.1:3838</code> with your web browser. If you deploy the docker in a public (cloud) Linux server, change <code>127.0.0.1</code> to the host IP.</p>
+<blockquote>
+<p>For the first time, it may return a failure about ‘take a long time to respond’, please refresh the web page.</p>
+</blockquote>
 <p>If the application failed to start. Check if the container has installed all dependencies.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="ex">docker</span> exec xenashiny Rscript /opt/ext-deps.R</span></code></pre></div>
 <p>Or you can interactively check the container:</p>
