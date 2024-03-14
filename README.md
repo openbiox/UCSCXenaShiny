@@ -58,10 +58,10 @@ docker pull shixiangwang/ucscxenashiny
 > From v2, docker pull from GitHub `ghcr.io` registry is also supported, e.g., `docker pull ghcr.io/openbiox/ucscxenashiny:master`.
 
 All versions can be found at <https://hub.docker.com/r/shixiangwang/ucscxenashiny/tags/>.
-To use a specified version (e.g., `v1.0.2`; latest code commit will auto-build a tag `master`), run the following command to install:
+To use a specified version (e.g., `2.0.0`; latest code commit will auto-build a tag `master`), run the following command to install:
 
 ```bash
-docker pull shixiangwang/ucscxenashiny:v2.0.0
+docker pull shixiangwang/ucscxenashiny:2.0.0
 # docker pull shixiangwang/ucscxenashiny:master  # For latest code, unstable
 ```
 
