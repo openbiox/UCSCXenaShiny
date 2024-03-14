@@ -129,8 +129,8 @@
 <blockquote>
 <p>From v2, docker pull from GitHub <code>ghcr.io</code> registry is also supported, e.g., <code>docker pull ghcr.io/openbiox/ucscxenashiny:master</code>.</p>
 </blockquote>
-<p>All versions can be found at <a href="https://hub.docker.com/r/shixiangwang/ucscxenashiny/tags/" class="external-link uri">https://hub.docker.com/r/shixiangwang/ucscxenashiny/tags/</a>. To use a specified version (e.g., <code>v1.0.2</code>; latest code commit will auto-build a tag <code>master</code>), run the following command to install:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">docker</span> pull shixiangwang/ucscxenashiny:v2.0.0</span>
+<p>All versions can be found at <a href="https://hub.docker.com/r/shixiangwang/ucscxenashiny/tags/" class="external-link uri">https://hub.docker.com/r/shixiangwang/ucscxenashiny/tags/</a>. To use a specified version (e.g., <code>2.0.0</code>; latest code commit will auto-build a tag <code>master</code>), run the following command to install:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">docker</span> pull shixiangwang/ucscxenashiny:2.0.0</span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co"># docker pull shixiangwang/ucscxenashiny:master  # For latest code, unstable</span></span></code></pre></div>
 <p>Run the latest stable docker image and keep it at background with:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="at">--name</span> xenashiny <span class="at">-p</span> 3838:3838 shixiangwang/ucscxenashiny</span></code></pre></div>
