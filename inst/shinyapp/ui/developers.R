@@ -26,7 +26,7 @@ ui.page_developers <- function() {
               )
             ),
             tags$div(
-              class = "card bg-info",
+              class = "card bg-warning",
               tags$div(
                 class = "card-body",
                 tags$img(
