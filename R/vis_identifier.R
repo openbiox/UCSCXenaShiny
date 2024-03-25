@@ -255,12 +255,12 @@ vis_identifier_grp_comparison <- function(dataset = NULL, id = NULL, grp_df, sam
 
   if (do_grp) {
     fun <- if (fun_type == "betweenstats") ggstatsplot::grouped_ggbetweenstats else ggstatsplot::grouped_ggwithinstats
-
+    colnames(df)[4] = "grouping.var"
     p <- fun(
       data = df,
       x = !!colnames(df)[3],
       y = !!colnames(df)[2],
-      grouping.var = !!colnames(df)[4],
+      grouping.var = grouping.var,
       type  = type,
       pairwise.comparisons = pairwise.comparisons,
       p.adjust.method = p.adjust.method,

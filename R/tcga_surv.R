@@ -200,7 +200,8 @@ p_survplot <- function(data, palette = "aaas", ...) {
     ncensor.plot.height = 0.15,
     ggtheme = ggplot2::theme_classic(), # Change ggplot2 theme
     ...
-  ) + ggplot2::guides(color = ggplot2::guide_legend(ncol = 3))
+  ) #%+% ggplot2::guides(color = ggplot2::guide_legend(ncol = 3))
+  p$plot = p$plot %+% ggplot2::guides(color = ggplot2::guide_legend(ncol = 3))
 
   attr(p, "data") <- na.omit(data[, c("time", "status", "group")])
   p
