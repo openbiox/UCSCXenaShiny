@@ -1,3 +1,9 @@
+# UCSCXenaShiny 2.0.1
+
+- Fixed some minor bugs in Shiny app.
+- Updated README about Docker usage.
+- Fixed an issue in `vis_identifier_grp_comparison()` ([#317](https://github.com/openbiox/UCSCXenaShiny/issues/317)).
+
 # UCSCXenaShiny 2.0.0
 
 See the [UCSCXenaShiny v2 Book](https://lishensuo.github.io/UCSCXenaShiny_Book/index.html) for a comprehensive guidance.
