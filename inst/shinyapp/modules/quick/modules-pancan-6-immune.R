@@ -98,12 +98,12 @@ server.modules_pancan_immune <- function(input, output, session) {
   
   profile_choices <- reactive({
     switch(input$profile,
-           mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
-           methylation = list(all = pancan_identifiers$gene, default = "TP53"),
-           protein = list(all = pancan_identifiers$protein, default = "P53"),
+           mRNA = list(all = tcga_id.list[["Gene"]], default = "TP53"),
+           methylation = list(all = tcga_id.list[["Gene"]], default = "TP53"),
+           protein = list(all = tcga_id.list[["Protein"]], default = "P53"),
            transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
-           miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-           cnv = list(all = pancan_identifiers$gene, default = "TP53"),
+           miRNA = list(all = tcga_id.list[["miRNA"]], default = "hsa-miR-769-3p"),
+           cnv = list(all = tcga_id.list[["Gene"]], default = "TP53"),
            list(all = "NONE", default = "NONE")
     )
   })

@@ -43,7 +43,7 @@ ui.modules_pancan_dist <- function(id) {
                   id = ns("Mode_params"),
                   type = "hidden",
                   tabPanel("Single-cancer",
-                    selectInput(ns("Cancer"), "Select one cancer",sort(tcga_cancer_choices))
+                    selectInput(ns("Cancer"), "Select one cancer",sort(tcga_names))
                   ),
                   tabPanel("Pan-cancer")
                 ),
@@ -123,10 +123,10 @@ server.modules_pancan_dist <- function(input, output, session) {
   
   profile_choices <- reactive({
     switch(input$profile,
-           mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
-           methylation = list(all = pancan_identifiers$gene, default = "TP53"),
+           mRNA = list(all = tcga_id.list[["Gene"]], default = "TP53"),
+           methylation = list(all = tcga_id.list[["Gene"]], default = "TP53"),
            transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
-           miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+           miRNA = list(all = tcga_id.list[["miRNA"]], default = "hsa-miR-769-3p"),
            list(all = "NONE", default = "NONE")
     )
   })

@@ -14,7 +14,7 @@ ui.modules_sur_plot <- function(id) {
         ),
         selectInput(
           inputId = ns("dataset"), label = "Choose a dataset:",
-          choices = setdiff(TCGA_datasets$id, "FPPP")
+          choices = tcga_names
         ),
         shinyWidgets::prettyRadioButtons(
           inputId = ns("profile"), label = "Select a genomic profile:",
@@ -265,6 +265,11 @@ server.modules_sur_plot <- function(input, output, session) {
 
   # block
   sur_dat_pre <- eventReactive(input$submit_bt, {
+    TCGA_cli_merged <- dplyr::full_join(
+      load_data("tcga_clinical"),
+      load_data("tcga_surv"),
+      by = "sample"
+    )
     if (input$profile == "protein") {
       tcga_surv_get(
         TCGA_cohort = input$dataset, item = input$protein_input,

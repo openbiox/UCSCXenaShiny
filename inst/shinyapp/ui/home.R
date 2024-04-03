@@ -60,14 +60,14 @@ ui.page_home <- function() {
         column(4,
           wellPanel(
             style = "background: #b3cde3",
-            h3("❤ Daily Gene", icon = "dice", align = "center"),
+            h3("Daily Gene", icon = "dice", align = "center"),
             ui.home_daily_gene("homepage_daily_gene"),
           )
         ),
         column(4,
           wellPanel(
             style = "background: #a6cee3",
-            h3("❤ Pan-Cancer Query", align = "center"),
+            h3("Pan-Cancer Query", align = "center"),
             # br(),
             ui.home_search_box("homepage_pancan_search"),
           )

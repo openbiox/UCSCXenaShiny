@@ -543,12 +543,14 @@ server.modules_download_pancan = function(input, output, session, custom_metadat
 			pw_genes = msigdbr_query() %>% 
 			  dplyr::filter(gs_name %in% str_split(input$msigdbr_pw," ")[[1]][1]) %>% 
 			  dplyr::pull(gene_symbol)
-			# pw_genes = strsplit(PW_meta$Gene[PW_meta$Name==pw_sle],"/")[[1]]
-			# L3s_x = id_option[[input$data_L1]][[L2_x()]]$all #!!! 2w候选基因
 			if(L2_x() %in% 
 				c("mRNA Expression","DNA Methylation","Mutation status","Copy Number Variation")){
 				L3s_x = L3s_x[L3s_x %in% pw_genes]
 			} else if(L2_x() %in% c("Transcript Expression")){
+				if(!exists("tcga_id_referrence")){
+					message("Loading \"pancan_identifier_help\"")
+					tcga_id_referrence = load_data("pancan_identifier_help")
+				}
 				L3s_x = L3s_x[L3s_x %in% tcga_id_referrence[[1]][[5]]$Level3[tcga_id_referrence[[1]][[5]]$Symbol %in% pw_genes]]
 			}
 			if(L2_x()=="Custom metadata" & !is.null(custom_metadata)){

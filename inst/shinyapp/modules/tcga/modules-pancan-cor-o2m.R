@@ -21,9 +21,9 @@ ui.modules_pancan_cor_o2m = function(id) {
 					                   content = "tcga_types"),
 					pickerInput(
 						ns("choose_cancers"), NULL,
-						choices = sort(tcga_cancer_choices),
+						choices = sort(tcga_names),
 						multiple = TRUE,
-						selected = sort(tcga_cancer_choices),
+						selected = sort(tcga_names),
 						options = list(`actions-box` = TRUE)
 					),
 

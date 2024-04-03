@@ -1,4 +1,11 @@
 # Render cohorts_text and subtype_text from server
+xena_table <- UCSCXenaTools::XenaData[, c(
+  "XenaDatasets", "XenaHostNames", "XenaCohorts",
+  "SampleCount", "DataSubtype", "Label", "Unit"
+)]
+xena_table$SampleCount <- as.integer(xena_table$SampleCount)
+colnames(xena_table)[c(1:3)] <- c("Dataset ID", "Hub", "Cohort")
+
 
 update_repo_data <- function(input) {
   res <- XenaData

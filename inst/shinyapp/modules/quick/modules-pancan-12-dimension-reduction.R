@@ -86,7 +86,7 @@ ui.modules_dim_dist = function(id){
 							"Preset Group",
 							pickerInput(
 								ns("choose_cancer"), "Choose cancer(s)",
-								choices = sort(tcga_cancer_choices),
+								choices = sort(tcga_names),
 								multiple = TRUE,
 								selected = "BRCA",
 								options = list(`actions-box` = TRUE)
@@ -235,12 +235,12 @@ server.modules_dim_dist = function(input, output, session){
 
 	profile_choices <- reactive({
 	  switch(profile(),
-	    mRNA = list(all = pancan_identifiers$gene, default = c("TP53", "KRAS", "PTEN")),
-	    methylation = list(all = pancan_identifiers$gene, default = c("TP53", "KRAS", "PTEN")),
-	    protein = list(all = pancan_identifiers$protein, default = c("P53", "GATA3", "PTEN")),
+	    mRNA = list(all = tcga_id.list[["Gene"]], default = c("TP53", "KRAS", "PTEN")),
+	    methylation = list(all = tcga_id.list[["Gene"]], default = c("TP53", "KRAS", "PTEN")),
+	    protein = list(all = tcga_id.list[["Protein"]], default = c("P53", "GATA3", "PTEN")),
 	    transcript = list(all = load_data("transcript_identifier"), default = c("ENST00000269305","ENST00000311936","ENST00000371953")),
-	    miRNA = list(all = pancan_identifiers$miRNA, default = c("hsa-miR-522-3p","hsa-miR-1271-5p","hsa-miR-518e-3p")),
-	    cnv = list(all = pancan_identifiers$gene,default = c("TP53", "KRAS", "PTEN")),
+	    miRNA = list(all = tcga_id.list[["miRNA"]], default = c("hsa-miR-522-3p","hsa-miR-1271-5p","hsa-miR-518e-3p")),
+	    cnv = list(all = tcga_id.list[["Gene"]],default = c("TP53", "KRAS", "PTEN")),
 	    list(all = "NONE", default = "NONE")
 	  )
 	})
@@ -334,6 +334,10 @@ server.modules_dim_dist = function(input, output, session){
 				c("mRNA Expression","DNA Methylation","Mutation status","Copy Number Variation")){
 				ids = ids[ids %in% pw_genes]
 			} else if(L2_x() %in% c("Transcript Expression")){
+				if(!exists("tcga_id_referrence")){
+					message("Loading \"pancan_identifier_help\"")
+					tcga_id_referrence = load_data("pancan_identifier_help")
+				}
 				ids = ids[ids %in% tcga_id_referrence[[1]][[5]]$Level3[tcga_id_referrence[[1]][[5]]$Symbol %in% pw_genes]]
 			}
     	}

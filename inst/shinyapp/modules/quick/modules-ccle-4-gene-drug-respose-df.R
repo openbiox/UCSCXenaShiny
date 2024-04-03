@@ -1,5 +1,14 @@
 ui.modules_ccle_drug_response_diff <- function(id) {
   ns <- NS(id)
+
+  ccle_drug_related_tissues <- c(
+    "ALL", "prostate", "central_nervous_system", "urinary_tract", "haematopoietic_and_lymphoid_tissue",
+    "kidney", "thyroid", "soft_tissue", "skin", "salivary_gland",
+    "ovary", "lung", "bone", "endometrium", "pancreas", "breast",
+    "large_intestine", "upper_aerodigestive_tract", "autonomic_ganglia",
+    "stomach", "liver", "biliary_tract", "pleura", "oesophagus"
+  )
+
   fluidPage(
     fluidRow(
       column(3,
@@ -96,9 +105,9 @@ server.modules_ccle_drug_response_diff <- function(input, output, session) {
 
   profile_choices <- reactive({
     switch("mRNA",
-      mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
+      mRNA = list(all = tcga_id.list[["Gene"]], default = "TP53"),
       protein = list(all = UCSCXenaShiny:::.all_ccle_proteins, default = "p53_Caution"),
-      cnv = list(all = pancan_identifiers$gene, default = "TP53"),
+      cnv = list(all = tcga_id.list[["Gene"]], default = "TP53"),
       list(all = "NONE", default = "NONE")
     )
   })

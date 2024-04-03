@@ -70,7 +70,7 @@ server.home_search_box <- function(input, output, session) {
   observe({
 
     mol_choices = switch(ifelse(is.null(input$Pancan_search_type),"mRNA",input$Pancan_search_type),
-      "mRNA" = pancan_identifiers$gene,
+      "mRNA" = tcga_id.list[["Gene"]],
       "transcript" = tcga_id_option$`Molecular profile`$`Transcript Expression`$all,
       "protein" = tcga_id_option$`Molecular profile`$`Protein Expression`$all,
       "mutation" = tcga_id_option$`Molecular profile`$`Mutation status`$all,

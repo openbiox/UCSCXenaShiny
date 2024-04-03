@@ -1,55 +1,259 @@
-data("XenaData", package = "UCSCXenaTools", envir = environment())
-xena_table <- XenaData[, c(
-  "XenaDatasets", "XenaHostNames", "XenaCohorts",
-  "SampleCount", "DataSubtype", "Label", "Unit"
-)]
-xena_table$SampleCount <- as.integer(xena_table$SampleCount)
-colnames(xena_table)[c(1:3)] <- c("Dataset ID", "Hub", "Cohort")
+tcga_id = load_data("v2_tcga_id")
+pcawg_id = load_data("v2_pcawg_id")
+ccle_id = load_data("v2_ccle_id")
 
-# Used in TCGA survival module
-TCGA_datasets <- xena_table %>%
-  dplyr::filter(Hub == "tcgaHub") %>%
-  dplyr::select("Cohort") %>%
-  unique() %>%
-  dplyr::mutate(
-    id = stringr::str_match(Cohort, "\\((\\w+?)\\)")[, 2],
-    des = stringr::str_match(Cohort, "(.*)\\s+\\(")[, 2]
-  ) %>%
-  dplyr::arrange(id)
+tcga_id.list = split(tcga_id$L3, tcga_id$L2)
+pcawg_id.list = split(pcawg_id$L3, pcawg_id$L2)
+ccle_id.list = split(ccle_id$L3, ccle_id$L2)
 
-# Used in genecor and pancan-search-cancer module script
-tcga_cancer_choices <- c(
-  "SKCM", "THCA", "SARC", "PRAD", "PCPG", "PAAD", "HNSC", "ESCA",
-  "COAD", "CESC", "BRCA", "TGCT", "KIRP", "KIRC", "LAML", "READ",
-  "OV", "LUAD", "LIHC", "UCEC", "GBM", "LGG", "UCS", "THYM", "STAD",
-  "DLBC", "LUSC", "MESO", "KICH", "UVM", "BLCA", "CHOL", "ACC"
-)
+## General Analysis
+all_preload_identifiers <- c("NONE", unlist(tcga_id.list[c("Gene","Protein","miRNA")]))
 
-TCGA_cli_merged <- dplyr::full_join(
-  load_data("tcga_clinical"),
-  load_data("tcga_surv"),
-  by = "sample"
-)
-
-pancan_identifiers <- readRDS(
-  system.file(
-    "extdata", "pancan_identifier_list.rds",
-    package = "UCSCXenaShiny"
+tcga_id_option = list(
+  "Molecular profile" = list(
+    "mRNA Expression" = list(
+      "all" = tcga_id.list[["Gene"]],
+      "default" = "TP53"
+    ),
+    "Transcript Expression" = list(
+      "all" = load_data("transcript_identifier"),
+      "default" = "ENST00000000233"
+    ),
+    "DNA Methylation" = list(
+      "all" = tcga_id.list[["Gene"]],
+      "default" = "TP53"
+    ),
+    "Protein Expression" = list(
+      "all" = tcga_id.list[["Protein"]],
+      "default" = "P53"
+    ),
+    "miRNA Expression" = list(
+      "all" = tcga_id.list[["miRNA"]],
+      "default" = "hsa-miR-769-3p"
+    ),
+    "Copy Number Variation" = list(
+      "all" = tcga_id.list[["Gene"]],
+      "default" = "TP53"
+    )
+  ),
+  "Tumor index" = list(
+    "Tumor Purity" = list(
+      "all" = tcga_id.list[["Purity"]],
+      "default" = "ESTIMATE"
+    ),
+    "Tumor Stemness" = list(
+      "all" = tcga_id.list[["Stem"]],
+      "default" = "RNAss"
+    ),
+    "Tumor Mutation Burden" = list(
+      "all" = tcga_id.list[["TMB"]],
+      "default" = "Non_silent_per_Mb"
+    ),
+    "Microsatellite Instability" = list(
+      "all" = tcga_id.list[["MSI"]],
+      "default" = "Total_nb_MSI_events"
+    ),
+    "Genome Instability" = list(
+      "all" = tcga_id.list[["GI"]],
+      "default" = "ploidy"
+    )
+  ),
+  "Immune Infiltration" = list(
+    "CIBERSORT" = list(
+      "all" = tcga_id.list[["CIB"]],
+      "default" = "Monocyte"
+    ),
+    "CIBERSORT-ABS" = list(
+      "all" = tcga_id.list[["CIB.ABS"]],
+      "default" = "Monocyte"
+    ),
+    "EPIC" = list(
+      "all" = tcga_id.list[["EPIC"]],
+      "default" = "Macrophage"
+    ),
+    "MCPCOUNTER" = list(
+      "all" = tcga_id.list[["MCP"]],
+      "default" = "Macrophage"
+    ),
+    "QUANTISEQ" = list(
+      "all" = tcga_id.list[["Quant"]],
+      "default" = "Monocyte"
+    ),
+    "TIMER" = list(
+      "all" = tcga_id.list[["XCELL"]],
+      "default" = "Monocyte"
+    ),
+    "XCELL" = list(
+      "all" = tcga_id.list[["TIMER"]],
+      "default" = "Monocyte"
+    )
+  ),
+  "Pathway activity" = list(
+    "HALLMARK" = list(
+      "all" = tcga_id.list[["HM"]],
+      "default" = "APOPTOSIS"
+    ),
+    "KEGG" = list(
+      "all" = tcga_id.list[["KEGG"]],
+      "default" = "CELL_CYCLE"
+    ),
+    "IOBR" = list(
+      "all" = tcga_id.list[["IOBR"]],
+      "default" = "Biotin_Metabolism"
+    )
+  ),
+  "Phenotype data" = list(
+    "Clinical Phenotype" = list(
+      "all" = tcga_id.list[["Clinical"]],
+      "default" = "Code"
+    ),
+    "Custom metadata" = list(
+      "all" = NULL,
+      "default" = NULL
+    )
   )
 )
-all_preload_identifiers <- c("NONE", unique(as.character(unlist(pancan_identifiers))))
-tryCatch(
-  load_data("transcript_identifier"),
-  error = function(e) {
-    stop("Load data failed, please run load_data('transcript_identifier') by hand before restarting the Shiny.")
-  }
+
+pcawg_id_option = list(
+  "Molecular profile" = list(
+    "mRNA Expression" = list(
+      "all" = pcawg_id.list[["Gene"]],
+      "default" = "TP53"
+    ),
+    "Promoter Activity" = list(
+      "all" = pcawg_id.list[["Promoter"]],
+      "default" = "prmtr.1"
+    ),
+    "Gene Fusion" = list(
+      "all" = pcawg_id.list[["Fusion"]],
+      "default" = "SAMD11"
+    ),
+    "miRNA Expression" = list(
+      "all" = pcawg_id.list[["miRNA"]],
+      "default" = "hsa-let-7a-2-3p"
+    ),
+    "APOBEC Mutagenesis" = list(
+      "all" = pcawg_id.list[["Muta"]],
+      "default" = "A3A_or_A3B"
+    )
+  ),
+  "Tumor index" = list(
+    "Tumor Purity" = list(
+      "all" = pcawg_id.list[["Purity"]],
+      "default" = "purity"
+    )
+  ),
+  "Immune Infiltration" = list(
+    "CIBERSORT" = list(
+      "all" = pcawg_id.list[["CIB"]],
+      "default" = "Monocyte"
+    ),
+    "CIBERSORT-ABS" = list(
+      "all" = pcawg_id.list[["CIB.ABS"]],
+      "default" = "Monocyte"
+    ),
+    "EPIC" = list(
+      "all" = pcawg_id.list[["EPIC"]],
+      "default" = "Macrophage"
+    ),
+    "MCPCOUNTER" = list(
+      "all" = pcawg_id.list[["MCP"]],
+      "default" = "Macrophage"
+    ),
+    "QUANTISEQ" = list(
+      "all" = pcawg_id.list[["Quant"]],
+      "default" = "Monocyte"
+    ),
+    "TIMER" = list(
+      "all" = pcawg_id.list[["XCELL"]],
+      "default" = "Monocyte"
+    ),
+    "XCELL" = list(
+      "all" = pcawg_id.list[["TIMER"]],
+      "default" = "Monocyte"
+    )
+  ),
+  "Pathway activity" = list(
+    "HALLMARK" = list(
+      "all" = pcawg_id.list[["HM"]],
+      "default" = "APOPTOSIS"
+    ),
+    "KEGG" = list(
+      "all" = pcawg_id.list[["KEGG"]],
+      "default" = "CELL_CYCLE"
+    ),
+    "IOBR" = list(
+      "all" = pcawg_id.list[["IOBR"]],
+      "default" = "Biotin_Metabolism"
+    )
+  ),
+  "Phenotype data" = list(
+    "Clinical Phenotype" = list(
+      "all" = pcawg_id.list[["Clinical"]],
+      "default" = "Age"
+    ),
+    "Custom metadata" = list(
+      "all" = NULL,
+      "default" = NULL
+    )
+  )
 )
 
-phenotype_datasets <- UCSCXenaTools::XenaData %>%
-  dplyr::filter(Type == "clinicalMatrix") %>%
-  dplyr::pull(XenaDatasets)
+ccle_id_option = list(
+  "Molecular profile" = list(
+    "mRNA Expression" = list(
+      "all" = ccle_id.list[["Gene"]],
+      "default" = "TP53"
+    ),
+    "Protein Expression" = list(
+      "all" = ccle_id.list[["Protein"]],
+      "default" = "14-3-3_beta"
+    ),
+    "Copy Number Variation" = list(
+      "all" = ccle_id.list[["Gene"]],
+      "default" = "TP53"
+    ),
+    "Mutation status" = list(
+      "all" = ccle_id.list[["Gene"]],
+      "default" = "TP53"
+    )
+  ),
+  "Tumor index" = list(
+    "Tumor Purity" = list(
+      "all" = ccle_id.list[["Purity"]],
+      "default" = "Purity"
+    )
+  ),
+  "Immune Infiltration" = NULL,
+  "Pathway activity" = NULL,
+  "Phenotype data" = list(
+    "Clinical Phenotype" = list(
+      "all" = ccle_id.list[["Clinical"]],
+      "default" = "Gender"
+    ),
+    "Custom metadata" = list(
+      "all" = NULL,
+      "default" = NULL
+    )
+  )
+)
 
 
+## 33 TCGAs
+tcga_names = sort(unique(tcga_clinical_fine$Cancer))
+## 30 PCAWGs
+pcawg_names = sort(unique(pcawg_info_fine$Project))
+
+code_types = list("NT"= "NT (normal tissue)",
+                  "TP"= "TP (primary tumor)",
+                  "TR"= "TR (recurrent tumor)",
+                  "TB"= "TB (blood derived tumor)",
+                  "TAP"="TAP (additional primary)",
+                  "TM"= "TM (metastatic tumor)",
+                  "TAM"="TAM (additional metastatic)")
+
+
+# Global theme
 themes_list <- list(
   "cowplot" = cowplot::theme_cowplot(),
   "Light" = theme_light(),
@@ -59,17 +263,9 @@ themes_list <- list(
   "half_open" = cowplot::theme_half_open(),
   "minimal_grid" = cowplot::theme_minimal_grid()
 )
+# Global color
+mycolor <- c(RColorBrewer::brewer.pal(12, "Paired"))
 
-
-## 通路基因
-PW_meta <- load_data("tcga_PW_meta")
-PW_meta <- PW_meta %>% 
-  dplyr::arrange(Name) %>%
-  dplyr::mutate(size = purrr::map_int(Gene, function(x){
-    x_ids = strsplit(x, "/", fixed = TRUE)[[1]]
-    length(x_ids)
-  }), .before = 5) %>% 
-  dplyr::mutate(display = paste0(Name, " (", size, ")"), .before = 6)
 
 msigdbr_types <- data.frame(
   gs_cat = c("H","C1", "C2", "C2", "C2", "C2", "C2", "C2", "C2", 
@@ -93,18 +289,15 @@ msigdbr_types = msigdbr_types %>%
 # 4     C2          CP          CP          C2--CP
 
 
-
-
-
-
-
-
 ## TCGA/PCAWG/CCLE value & id for general analysis
 general_value_id = UCSCXenaShiny:::query_general_id()
 # id
-tcga_id_option = general_value_id[["id"]][[1]]
-pcawg_id_option = general_value_id[["id"]][[2]]
-ccle_id_option = general_value_id[["id"]][[3]]
+# tcga_id_option = general_value_id[["id"]][[1]]
+# pcawg_id_option = general_value_id[["id"]][[2]]
+# ccle_id_option = general_value_id[["id"]][[3]]
+
+
+
 # value
 tcga_value_option = general_value_id[["value"]][[1]]
 tcga_index_value = tcga_value_option[["Tumor index"]]
@@ -122,66 +315,6 @@ ccle_value_option = general_value_id[["value"]][[3]]
 ccle_index_value = ccle_value_option[["Tumor index"]]
 ccle_phenotype_value = ccle_value_option[["Phenotype data"]]
 
-
-TIL_signatures = lapply(tcga_id_option$`Immune Infiltration`, function(x) {
-  x$all
-}) %>% reshape2::melt() %>% 
-  dplyr::mutate(x = paste0(value,"_",L1)) %>%
-  dplyr::pull(x)
-
-
-
-# Help → ID reference
-tcga_id_referrence = load_data("pancan_identifier_help")
-pcawg_id_referrence = load_data("pcawg_identifier")
-ccle_id_referrence = load_data("ccle_identifier")
-
-
-
-code_types = list("NT"= "NT (normal tissue)",
-                  "TP"= "TP (primary tumor)",
-                  "TR"= "TR (recurrent tumor)",
-                  "TB"= "TB (blood derived tumor)",
-                  "TAP"="TAP (additional primary)",
-                  "TM"= "TM (metastatic tumor)",
-                  "TAM"="TAM (additional metastatic)")
-
-# CCLE tissues for drug analysis
-# "ALL" means all tissues
-ccle_drug_related_tissues <- c(
-  "ALL", "prostate", "central_nervous_system", "urinary_tract", "haematopoietic_and_lymphoid_tissue",
-  "kidney", "thyroid", "soft_tissue", "skin", "salivary_gland",
-  "ovary", "lung", "bone", "endometrium", "pancreas", "breast",
-  "large_intestine", "upper_aerodigestive_tract", "autonomic_ganglia",
-  "stomach", "liver", "biliary_tract", "pleura", "oesophagus"
-)
-
-# Data summary
-Data_hubs_number <- length(unique(xena_table$Hub))
-Cohorts_number <- length(unique(xena_table$Cohort))
-Datasets_number <- length(unique(xena_table$`Dataset ID`))
-Samples_number <- "~2,000,000"
-Primary_sites_number <- "~37"
-Data_subtypes_number <- "~45"
-Xena_summary <- dplyr::group_by(xena_table, Hub) %>%
-  dplyr::summarise(
-    n_cohort = length(unique(.data$Cohort)),
-    n_dataset = length(unique(.data$`Dataset ID`)), .groups = "drop"
-  )
-
-# PCAWG project info
-pcawg_items = sort(unique(pcawg_info_fine$Project)) #30
-dcc_project_code_choices <- c(
-  "BLCA-US", "BRCA-US", "OV-AU", "PAEN-AU", "PRAD-CA", "PRAD-US", "RECA-EU", "SKCM-US", "STAD-US",
-  "THCA-US", "KIRP-US", "LIHC-US", "PRAD-UK", "LIRI-JP", "PBCA-DE", "CESC-US", "PACA-AU", "PACA-CA",
-  "LAML-KR", "COAD-US", "ESAD-UK", "LINC-JP", "LICA-FR", "CLLE-ES", "HNSC-US", "EOPC-DE", "BRCA-UK",
-  "BOCA-UK", "MALY-DE", "CMDI-UK", "BRCA-EU", "ORCA-IN", "BTCA-SG", "SARC-US", "KICH-US", "MELA-AU",
-  "DLBC-US", "GACA-CN", "PAEN-IT", "GBM-US", "KIRC-US", "LAML-US", "LGG-US", "LUAD-US", "LUSC-US",
-  "OV-US", "READ-US", "UCEC-US"
-)
-
-# Global color
-mycolor <- c(RColorBrewer::brewer.pal(12, "Paired"))
 
 ## PharmacoGenomics ----
 #source(system.file("shinyapp/PGdata.R", package = "UCSCXenaShiny"), local = PGdata <- new.env(), echo = FALSE)

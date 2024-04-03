@@ -21,7 +21,7 @@ ui.modules_pcawg_cor_m2o = function(id) {
 					                   content = "pcawg_projects"),
 					pickerInput(
 						ns("choose_cancer"),NULL,
-						choices = pcawg_items),
+						choices = pcawg_names),
 					br(),
 
 					h4(strong("S1.3 Filter samples"),"[opt]") %>% 

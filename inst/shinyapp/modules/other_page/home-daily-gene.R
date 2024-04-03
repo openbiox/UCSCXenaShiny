@@ -43,8 +43,7 @@ server.home_daily_gene <- function(input, output, session) {
 
 
   gene_sp = reactive({
-    tcga_gene_all = tcga_id_referrence$id_molecule$id_gene$Level3
-    tcga_gene = pancan_identifiers$gene[pancan_identifiers$gene %in% tcga_gene_all]
+    tcga_gene = tcga_id.list[["Gene"]]
 
     if(input$change_gene==0){
       current_date <- Sys.Date()
@@ -128,7 +127,7 @@ server.home_daily_gene <- function(input, output, session) {
         tags$li(gene_sp()," is most differentially expressed in ",
                 a(paste0("TCGA-",stat_res()$tissue[1]), href = tcga_link), ".",
                 style = "font-size: 16px;"),
-        tags$li("Explore its pan-cancer feature in right panel. ☞",style = "font-size: 16px;"),
+        tags$li("Explore its pan-cancer feature in right panel.",style = "font-size: 16px;"),
         tags$li("Search more about the gene in ",
                 a("GeneCards", href = gc_link), " or ",
                 a("PubMed", href = pm_link), ".",

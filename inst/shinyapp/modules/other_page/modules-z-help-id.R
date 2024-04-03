@@ -80,6 +80,11 @@ ui.modules_id_reference = function(id) {
 
 server.modules_id_reference = function(input, output, session){
 	ns = session$ns
+
+	# load id data
+	tcga_id_referrence = load_data("pancan_identifier_help")
+	pcawg_id_referrence = load_data("pcawg_identifier")
+	ccle_id_referrence = load_data("ccle_identifier")
 	
 	## Molecular profile(TCGA)
 	output$dt_1_1_gene = renderDataTable({

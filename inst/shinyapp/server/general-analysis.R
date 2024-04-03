@@ -1,3 +1,7 @@
+phenotype_datasets <- UCSCXenaTools::XenaData %>%
+  dplyr::filter(Type == "clinicalMatrix") %>%
+  dplyr::pull(XenaDatasets)
+
 custom_file <- reactiveValues()
 custom_file$fData <- NULL
 custom_file$pData <- NULL

@@ -66,7 +66,7 @@ ui.modules_pcawg_gene_cor <- function(id) {
           selectInput(inputId = ns("use_all"), label = "Use All Cancer Types", choices = c("TRUE", "FALSE"), selected = "FALSE"),
           selectInput(
             inputId = ns("dcc_project_code_choose"), label = "Filter Project",
-            choices = dcc_project_code_choices,
+            choices = pcawg_names,
             selected = "BLCA-US", multiple = TRUE
           ),
           materialSwitch(ns("use_regline"), "Use regression line", inline = TRUE),
@@ -150,10 +150,10 @@ server.modules_pcawg_gene_cor <- function(input, output, session) {
 
   profile_choices1 <- reactive({
     switch(input$profile1,
-      mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
-      miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+      mRNA = list(all = tcga_id.list[["Gene"]], default = "TP53"),
+      miRNA = list(all = tcga_id.list[["miRNA"]], default = "hsa-miR-769-3p"),
       promoter = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
-      fusion = list(all = pancan_identifiers$gene, default = "DPM1"),
+      fusion = list(all = tcga_id.list[["Gene"]], default = "DPM1"),
       APOBEC = list(all = c(
         "tCa_MutLoad_MinEstimate", "APOBECtCa_enrich",
         "A3A_or_A3B", "APOBEC_tCa_enrich_quartile", "APOBECrtCa_enrich",
@@ -177,10 +177,10 @@ server.modules_pcawg_gene_cor <- function(input, output, session) {
 
   profile_choices2 <- reactive({
     switch(input$profile2,
-      mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
-      miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+      mRNA = list(all = tcga_id.list[["Gene"]], default = "TP53"),
+      miRNA = list(all = tcga_id.list[["miRNA"]], default = "hsa-miR-769-3p"),
       promoter = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
-      fusion = list(all = pancan_identifiers$gene, default = "DPM1"),
+      fusion = list(all = tcga_id.list[["Gene"]], default = "DPM1"),
       APOBEC = list(all = c(
         "tCa_MutLoad_MinEstimate", "APOBECtCa_enrich",
         "A3A_or_A3B", "APOBEC_tCa_enrich_quartile", "APOBECrtCa_enrich",

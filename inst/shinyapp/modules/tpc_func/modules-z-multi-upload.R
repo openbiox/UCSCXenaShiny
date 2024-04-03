@@ -365,6 +365,12 @@ multi_upload_Server = function(input, output, session, database = "toil", #id_op
 			  dplyr::filter(gs_name %in% str_split(msigdbr_var$msigdbr_pw," ")[[1]][1]) %>% 
 			  dplyr::pull(gene_symbol)
 			L3s_x = id_option[[input$data_L1]][[L2_x()]]$all #!!! 2w候选基因
+
+			if(!exists("tcga_id_referrence")){
+				message("Loading \"pancan_identifier_help\"")
+				tcga_id_referrence = load_data("pancan_identifier_help")
+			}
+			
 			if(L2_x() %in% 
 				c("mRNA Expression","DNA Methylation","Mutation status","Copy Number Variation")){
 				gene_full = tcga_id_referrence$id_molecule$id_gene$Level3
