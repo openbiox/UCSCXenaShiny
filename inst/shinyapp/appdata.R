@@ -289,37 +289,11 @@ msigdbr_types = msigdbr_types %>%
 # 4     C2          CP          CP          C2--CP
 
 
-## TCGA/PCAWG/CCLE value & id for general analysis
-general_value_id = UCSCXenaShiny:::query_general_id()
-# id
-# tcga_id_option = general_value_id[["id"]][[1]]
-# pcawg_id_option = general_value_id[["id"]][[2]]
-# ccle_id_option = general_value_id[["id"]][[3]]
-
-
-
-# value
-tcga_value_option = general_value_id[["value"]][[1]]
-tcga_index_value = tcga_value_option[["Tumor index"]]
-tcga_immune_value = tcga_value_option[["Immune Infiltration"]]
-tcga_pathway_value = tcga_value_option[["Pathway activity"]]
-tcga_phenotype_value = tcga_value_option[["Phenotype data"]]
-
-pcawg_value_option = general_value_id[["value"]][[2]]
-pcawg_index_value = pcawg_value_option[["Tumor index"]]
-pcawg_immune_value = pcawg_value_option[["Immune Infiltration"]]
-pcawg_pathway_value = pcawg_value_option[["Pathway activity"]]
-pcawg_phenotype_value = pcawg_value_option[["Phenotype data"]]
-
-ccle_value_option = general_value_id[["value"]][[3]]
-ccle_index_value = ccle_value_option[["Tumor index"]]
-ccle_phenotype_value = ccle_value_option[["Phenotype data"]]
-
 
 ## PharmacoGenomics ----
 #source(system.file("shinyapp/PGdata.R", package = "UCSCXenaShiny"), local = PGdata <- new.env(), echo = FALSE)
 
-appdata_path = path.expand(file.path(getOption("xena.cacheDir"), "appdata.RData"))
-message("Saving data to ", appdata_path)
-save.image(file = appdata_path)
+# appdata_path = path.expand(file.path(getOption("xena.cacheDir"), "appdata.RData"))
+# message("Saving data to ", appdata_path)
+# save.image(file = appdata_path)
 

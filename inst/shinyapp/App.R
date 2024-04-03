@@ -109,18 +109,18 @@ options(shiny.maxRequestSize=1024*1024^2)
 message("Starting...")
 
 # Put data here -----------------------------------------------------------
-#source(system.file("shinyapp/appdata.R", package = "UCSCXenaShiny"))
+source(system.file("shinyapp/appdata.R", package = "UCSCXenaShiny"))
 
-appdata_path = path.expand(file.path(getOption("xena.cacheDir"), "appdata.RData"))
-message("Checking shiny app data from ", appdata_path, "...")
-if (!file.exists(appdata_path)) {
-  message("Processing and caching shiny app data...")
-  source(system.file("shinyapp/appdata.R", package = "UCSCXenaShiny"))
-  message("Done")
-} else {
-  load(appdata_path)
-  message("Cached processed data used.")
-}
+# appdata_path = path.expand(file.path(getOption("xena.cacheDir"), "appdata.RData"))
+# message("Checking shiny app data from ", appdata_path, "...")
+# if (!file.exists(appdata_path)) {
+#   message("Processing and caching shiny app data...")
+#   source(system.file("shinyapp/appdata.R", package = "UCSCXenaShiny"))
+#   message("Done")
+# } else {
+#   load(appdata_path)
+#   message("Cached processed data used.")
+# }
 
 # Put modules here --------------------------------------------------------
 modules_path <- system.file("shinyapp", "modules", package = "UCSCXenaShiny", mustWork = TRUE)
