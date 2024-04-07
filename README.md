@@ -80,7 +80,7 @@ If you deploy the docker in a public (cloud) Linux server, change `127.0.0.1` to
 If the application failed to start. Check if the container has installed all dependencies.
 
 ```bash
-docker exec xenashiny Rscript /opt/ext-deps.R
+docker exec xenashiny R -e 'source(system.file("shinyapp/utils_pkgs.R", package = "UCSCXenaShiny"))'
 ```
 
 Or you can interactively check the container:

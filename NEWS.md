@@ -1,3 +1,8 @@
+# UCSCXenaShiny 2.1.0
+
+- Optimized data preloading of Shiny application.
+- Dockerfile updated.
+
 # UCSCXenaShiny 2.0.1
 
 - Fixed some minor bugs in Shiny app.
