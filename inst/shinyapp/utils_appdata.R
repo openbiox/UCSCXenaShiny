@@ -261,10 +261,10 @@ code_types = list("NT"= "NT (normal tissue)",
 # Global theme
 themes_list <- list(
   "cowplot" = cowplot::theme_cowplot(),
-  "Light" = theme_light(),
-  "Minimal" = theme_minimal(),
-  "Classic" = theme_classic(),
-  "Gray" = theme_gray(),
+  "Light" = ggplot2::theme_light(),
+  "Minimal" = ggplot2::theme_minimal(),
+  "Classic" = ggplot2::theme_classic(),
+  "Gray" = ggplot2::theme_gray(),
   "half_open" = cowplot::theme_half_open(),
   "minimal_grid" = cowplot::theme_minimal_grid()
 )
