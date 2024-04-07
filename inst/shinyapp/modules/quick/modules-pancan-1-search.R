@@ -125,7 +125,7 @@ server.modules_pancan_dist <- function(input, output, session) {
     switch(input$profile,
            mRNA = list(all = tcga_id.list[["Gene"]], default = "TP53"),
            methylation = list(all = tcga_id.list[["Gene"]], default = "TP53"),
-           transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
+           transcript = list(all = tcga_id.list[["Transcript"]], default = "ENST00000000233"),
            miRNA = list(all = tcga_id.list[["miRNA"]], default = "hsa-miR-769-3p"),
            list(all = "NONE", default = "NONE")
     )

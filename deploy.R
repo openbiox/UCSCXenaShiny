@@ -24,14 +24,14 @@ options(xena.runMode = "server")
 
 library(UCSCXenaShiny)
 
-tryCatch({
-  # Preload datasets
-  load_data("transcript_identifier")
-  load_data("tcga_TIL")
-  invisible(NULL)
-}, error = function(e) {
-  warning("Preload data failed due to the network, it will try again when starting Shiny!")
-})
+# tryCatch({
+#   # Preload datasets
+#   tcga_id.list[["Transcript"]]
+#   load_data("tcga_TIL")
+#   invisible(NULL)
+# }, error = function(e) {
+#   warning("Preload data failed due to the network, it will try again when starting Shiny!")
+# })
 
 shiny::shinyAppFile(
   system.file("shinyapp", "App.R", package = "UCSCXenaShiny")

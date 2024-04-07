@@ -111,7 +111,7 @@ server.modules_cancer_dist <- function(input, output, session) {
       mRNA = list(all = tcga_id.list[["Gene"]], default = "TP53"),
       methylation = list(all = tcga_id.list[["Gene"]], default = "TP53"),
       protein = list(all = tcga_id.list[["Protein"]], default = "P53"),
-      transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
+      transcript = list(all = tcga_id.list[["Transcript"]], default = "ENST00000000233"),
       miRNA = list(all = tcga_id.list[["miRNA"]], default = "hsa-miR-769-3p"),
       cnv_gistic2 = list(all = tcga_id.list[["Gene"]], default = "TP53"),
       list(all = "NONE", default = "NONE")

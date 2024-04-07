@@ -6,6 +6,11 @@ tcga_id.list = split(tcga_id$L3, tcga_id$L2)
 pcawg_id.list = split(pcawg_id$L3, pcawg_id$L2)
 ccle_id.list = split(ccle_id$L3, ccle_id$L2)
 
+names(tcga_id.list)
+
+
+
+
 ## General Analysis
 all_preload_identifiers <- c("NONE", unlist(tcga_id.list[c("Gene","Protein","miRNA")]))
 
@@ -16,7 +21,7 @@ tcga_id_option = list(
       "default" = "TP53"
     ),
     "Transcript Expression" = list(
-      "all" = load_data("transcript_identifier"),
+      "all" = tcga_id.list[["Transcript"]],
       "default" = "ENST00000000233"
     ),
     "DNA Methylation" = list(

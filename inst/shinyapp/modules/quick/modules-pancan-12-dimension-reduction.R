@@ -238,7 +238,7 @@ server.modules_dim_dist = function(input, output, session){
 	    mRNA = list(all = tcga_id.list[["Gene"]], default = c("TP53", "KRAS", "PTEN")),
 	    methylation = list(all = tcga_id.list[["Gene"]], default = c("TP53", "KRAS", "PTEN")),
 	    protein = list(all = tcga_id.list[["Protein"]], default = c("P53", "GATA3", "PTEN")),
-	    transcript = list(all = load_data("transcript_identifier"), default = c("ENST00000269305","ENST00000311936","ENST00000371953")),
+	    transcript = list(all = tcga_id.list[["Transcript"]], default = c("ENST00000269305","ENST00000311936","ENST00000371953")),
 	    miRNA = list(all = tcga_id.list[["miRNA"]], default = c("hsa-miR-522-3p","hsa-miR-1271-5p","hsa-miR-518e-3p")),
 	    cnv = list(all = tcga_id.list[["Gene"]],default = c("TP53", "KRAS", "PTEN")),
 	    list(all = "NONE", default = "NONE")
