@@ -9,10 +9,7 @@ query_general_value(
   L2,
   L3,
   database = c("toil", "pcawg", "ccle"),
-  index_value,
-  immune_value,
-  pathway_value,
-  clinical_value,
+  tpc_value_nonomics = NULL,
   opt_pancan = NULL,
   custom_metadata = NULL
 )
@@ -26,13 +23,7 @@ query_general_value(
 
 \item{database}{one of c("toil","pcawg","ccle")}
 
-\item{index_value}{tumor index list}
-
-\item{immune_value}{tumor immune infiltration list}
-
-\item{pathway_value}{pathway activity list}
-
-\item{clinical_value}{clinical data.frame}
+\item{tpc_value_nonomics}{non-omics matrix data of one database}
 
 \item{opt_pancan}{molecular datasets parameters}
 

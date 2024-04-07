@@ -15,8 +15,7 @@ RUN apt update -y && apt install -y libcurl4-openssl-dev libssl-dev libxml2-dev 
     R -e 'remotes::install_github("openbiox/UCSCXenaShiny", dependencies = TRUE)'
   
 # Install extra dependencies
-RUN R -e 'writeLines(readLines(system.file("shinyapp", "App.R", package = "UCSCXenaShiny"))[25:106], "/opt/ext-deps.R")' &&\
-    Rscript /opt/ext-deps.R
+RUN R -e 'source(system.file("shinyapp/utils_pkgs.R", package = "UCSCXenaShiny"))'
     
 # Deploy Shiny shinyapp
 COPY deploy.R deploy.html /opt/
@@ -33,8 +32,6 @@ RUN mkdir -p /xena/datasets && chown -R shiny:shiny /xena &&\
     
 # preload datasets
 RUN cat -n /srv/shiny-server/ucscxenashiny/app.R &&\
-    R -e 'writeLines(readLines("/srv/shiny-server/ucscxenashiny/app.R")[10:25], "/opt/preload.R")' &&\
-    Rscript /opt/preload.R &&\
-    rm /opt/preload.R
+    R -e 'source(system.file("shinyapp/utils_appdata.R", package = "UCSCXenaShiny"))'
 WORKDIR /xena
 EXPOSE 3838

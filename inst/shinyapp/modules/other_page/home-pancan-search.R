@@ -70,7 +70,7 @@ server.home_search_box <- function(input, output, session) {
   observe({
 
     mol_choices = switch(ifelse(is.null(input$Pancan_search_type),"mRNA",input$Pancan_search_type),
-      "mRNA" = pancan_identifiers$gene,
+      "mRNA" = tcga_id.list[["Gene"]],
       "transcript" = tcga_id_option$`Molecular profile`$`Transcript Expression`$all,
       "protein" = tcga_id_option$`Molecular profile`$`Protein Expression`$all,
       "mutation" = tcga_id_option$`Molecular profile`$`Mutation status`$all,
@@ -216,7 +216,7 @@ server.home_search_box <- function(input, output, session) {
               h3("NOTEs:"),
               h4("1. It will take about ",strong("one minute",style="color:red")," for the general analysis which includes the relationships between queried molecule and ",
                 "(1) clinical phenotypes, (2) survival influence, (3) tumor index (4) immune infiltration, (5) pathway activity.",
-                "You can see the ",a("example report", href = "https://lishensuo.github.io/book_test/UCSCXenaShiny_example_report.html")," while waiting."),
+                "You can see the ",a("example report", href = "https://lishensuo.github.io/UCSCXenaShiny_Book/example_report.html")," while waiting."),
               h4("2. It will take about ", strong("10 seconds",style="color:red"), " for the generation of organized report in html format."),
               h4("3. Final, the analyzed result under the report can be directly downloaded in zip format.")
             )

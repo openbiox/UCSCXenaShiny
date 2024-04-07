@@ -20,7 +20,7 @@ ui.modules_pancan_sur_o2o = function(id) {
 					                   content = "tcga_types"),
 					pickerInput(
 						ns("choose_cancer"), NULL,
-						choices = sort(tcga_cancer_choices)),
+						choices = sort(tcga_names)),
 				    br(),
 
 					h4(strong("S1.3 Filter samples"),"[opt]") %>% 

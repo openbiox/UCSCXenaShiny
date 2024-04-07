@@ -21,9 +21,9 @@ ui.modules_pcawg_comp_o2m = function(id) {
 					                   content = "pcawg_projects"),
 					pickerInput(
 						ns("choose_cancers"),NULL,
-						choices = pcawg_items,
+						choices = pcawg_names,
 						multiple = TRUE,
-						selected = pcawg_items,
+						selected = pcawg_names,
 						options = list(`actions-box` = TRUE)
 					),
 					br(),

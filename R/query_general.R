@@ -1,5 +1,4 @@
 query_general_id = function(){
-  
   tcga_clinical_fine = load_data("tcga_clinical_fine")
   pcawg_info_fine = load_data("pcawg_info_fine")
   ccle_info_fine = load_data("ccle_info_fine")
@@ -234,11 +233,8 @@ query_general_id = function(){
 #' @param L3 level 3  identifier
 #' @param opt_pancan      molecular datasets parameters
 #' @param custom_metadata user customized metadata
-#' @param database          one of c("toil","pcawg","ccle")
-#' @param index_value     tumor index list
-#' @param immune_value    tumor immune infiltration list
-#' @param pathway_value   pathway activity list
-#' @param clinical_value  clinical data.frame
+#' @param database        one of c("toil","pcawg","ccle")
+#' @param tpc_value_nonomics     non-omics matrix data of one database
 #'
 #' @examples
 #' \dontrun{
@@ -262,32 +258,30 @@ query_general_id = function(){
 #' }
 
 
-query_general_value = function(L1, L2, L3, database = c("toil","pcawg","ccle"),
-                          index_value, immune_value, pathway_value, clinical_value,
+query_general_value = function(L1, L2, L3, 
+                          database = c("toil","pcawg","ccle"),
+                          tpc_value_nonomics = NULL,
                           opt_pancan=NULL, custom_metadata=NULL){
   database = match.arg(database)
 
-  
   if(L1 == "Molecular profile"){
     # L2 = "mRNA Expression"
     # L3 = "TP53"
-    x_genomic_profile = switch(L2,
-                               `mRNA Expression` = "mRNA",
-                               `Transcript Expression` = "transcript",
-                               `DNA Methylation` = "methylation",
-                               `Protein Expression` = "protein",
-                               `miRNA Expression` = "miRNA",
-                               `Mutation status` = "mutation",
-                               `Copy Number Variation` = "cnv",
-                               # `mRNA Expression` = "mRNA",
-                               `Promoter Activity` = "promoter",
-                               `Gene Fusion` = "fusion",
-                               # `miRNA Expression` = 'miRNA',
-                               `APOBEC Mutagenesis` = "APOBEC"
+    L2_label = switch(L2,
+                      `mRNA Expression` = "mRNA",
+                      `Transcript Expression` = "transcript",
+                      `DNA Methylation` = "methylation",
+                      `Protein Expression` = "protein",
+                      `miRNA Expression` = "miRNA",
+                      `Mutation status` = "mutation",
+                      `Copy Number Variation` = "cnv",
+                      `Promoter Activity` = "promoter",
+                      `Gene Fusion` = "fusion",
+                      `APOBEC Mutagenesis` = "APOBEC"
     )
     if(is.null(opt_pancan)) {opt_pancan = .opt_pancan}
-    x_data <- query_pancan_value(L3, 
-                                 data_type = x_genomic_profile,
+    x_data <- query_pancan_value(molecule = L3, 
+                                 data_type = L2_label,
                                  database = database,
                                  opt_pancan = opt_pancan
     )
@@ -309,32 +303,61 @@ query_general_value = function(L1, L2, L3, database = c("toil","pcawg","ccle"),
     }
 
   } else {
-    if(L1 == "Tumor index"){
-      x_data = index_value[[L2]][,c("Sample", L3)]
-    } else if (L1 == "Immune Infiltration") {
-      x_data = immune_value[[L2]][,c("Sample", L3)]
-    } else if (L1 == "Pathway activity") {
-      x_data = pathway_value[[L2]][,c("Sample", L3)]
-    } else if (L1 == "Phenotype data") {
-      if(L2 =="Clinical Phenotype"){
-          x_data = clinical_value[,c("Sample", L3)]
-      } else {
-          x_data = custom_metadata[,c("Sample", L3)]
-      }
+
+    if(is.null(tpc_value_nonomics)){
+      tpc_value_nonomics = load_data(paste0("v2_",database,"_value_nonomics"))
     }
+
+    if(L2!="Custom metadata"){
+      L1_label = switch(L1,
+          `Tumor index` = "Index",
+          `Immune Infiltration` = "Immune",
+          `Pathway activity` = "Pathway",
+          `Phenotype data` = "Phenotype")
+      L2_label = switch(L2,
+          # "Tumor index"
+          `Tumor Purity` = "Purity",
+          `Tumor Stemness` = "Stem",
+          `Tumor Mutation Burden` = "TMB",
+          `Microsatellite Instability` = "MSI",
+          `Genome Instability` = "GI",
+          # "Immune Infiltration"
+          `CIBERSORT` = "CIB",
+          `CIBERSORT-ABS` = "CIB.ABS",
+          `EPIC` = "EPIC",
+          `MCPCOUNTER` = "MCP",
+          `QUANTISEQ` = "Quant",
+          `TIMER` = "TIMER",
+          `XCELL` = "XCELL",
+          # "Pathway activity"
+          `HALLMARK` = "HM",
+          `KEGG` = "KEGG",
+          `IOBR` = "IOBR",
+          # "Phenotype data"
+          `Clinical Phenotype` = "Clinical"
+      )
+      nonomics_id = paste(L1_label, L2_label, L3, sep = "+")
+      stopifnot(nonomics_id %in% colnames(tpc_value_nonomics))
+      x_data = tpc_value_nonomics[,c("Sample",nonomics_id)]
+    } else {
+      stopifnot(!is.null(custom_metadata))
+      x_data = custom_metadata[, c("Sample",L3)] %>%
+        dplyr::filter(.data$Sample %in% tpc_value_nonomics$Sample)
+    }
+
     colnames(x_data) = c("Sample","value")
     x_data = x_data %>% 
       dplyr::mutate(id = L3, .before = 1) %>%
-      dplyr::mutate(level2 = L2) %>%
-      dplyr::filter(!is.na(.data$value))
-
+      dplyr::mutate(level2 = L2)
+      
   } 
   x_data = as.data.frame(x_data)
   # 检查重复样本
   if(is.numeric(x_data$value)){
     x_data = x_data %>%
-      dplyr::group_by(.data$Sample, .data$id, .data$level2) %>%
-      dplyr::summarise(value = mean(.data$value)) %>%
+      # dplyr::group_by(.data$Sample, .data$id, .data$level2) %>%
+      # dplyr::summarise(value = mean(.data$value)) %>%
+      dplyr::filter(!is.na(.data$value)) %>%
       as.data.frame()
   }
   x_data

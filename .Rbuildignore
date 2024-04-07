@@ -46,11 +46,15 @@ inst/extdata/tcga_PW.rda
 inst/extdata/tcga_PW_meta.rda
 inst/extdata/pancan_identifier_help
 
+inst/extdata/v2.*rda
+inst/extdata/OP*
 
 inst/extdata/pcawg_PW.rda
 inst/extdata/pcawg_TIL.rda
 inst/extdata/pcawg_identifier.rda
 inst/extdata/ccle_identifier.rda
+
+.Script.r
 
 ^doc$
 ^Meta$

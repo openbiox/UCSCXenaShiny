@@ -162,12 +162,20 @@ mol_origin_Server = function(input, output, session, database = "toil"){
 
   updateVirtualSelect(
     inputId = "toil_L2_3_methy_3_gene",
-    choices = pancan_identifiers$gene,
+    choices = tcga_id.list[["Gene"]],
     selected = "TP53"
   )
 
+
+
   # 特定基因下所包含的所有CpG位点
 	candi_cpg = reactive({
+			# 仅当选中甲基化类型时，才加载该数据
+			req(input$data_origin=="DNA Methylation")
+			if(!exists("tcga_id_referrence")){
+				message("Loading \"pancan_identifier_help\"")
+				tcga_id_referrence = load_data("pancan_identifier_help")
+			}
 			if(is.null(input$toil_L2_3_methy_1)){
 				toil_L2_3_methy_1 = "450K"
 			} else {
@@ -237,11 +245,12 @@ mol_origin_Server = function(input, output, session, database = "toil"){
 
 	opt_pancan = reactive({
 		opt_pancan = .opt_pancan
-		if(database=="toil"){
+		if(database=="toil" & input$data_origin!="DNA Methylation"){
 			opt_pancan$toil_mRNA = list(norm = input$toil_gene_norm)
 			opt_pancan$toil_transcript = list(norm = input$toil_trans_norm)
 			opt_pancan$toil_cnv = list(gistic2 = ifelse(is.null(input$toil_L2_7_cnv_1),TRUE,as.logical(input$toil_L2_7_cnv_1)),
 											use_thresholded_data = ifelse(is.null(input$toil_L2_7_cnv_2),TRUE,as.logical(input$toil_L2_7_cnv_2)))
+		} else if (database=="toil" & input$data_origin=="DNA Methylation"){
 			opt_pancan$toil_methylation = list(type = ifelse(is.null(input$toil_L2_3_methy_1),"450K",input$toil_L2_3_methy_1), 
 									aggr = ifelse(is.null(input$toil_L2_3_methy_2),"NA",input$toil_L2_3_methy_2),
 									rule_out = setdiff(candi_cpg()$CpG, cpg_ids_retain()))

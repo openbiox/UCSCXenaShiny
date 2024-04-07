@@ -3,6 +3,7 @@
 .RData
 .Ruserdata
 .DS_Store
+.Script.r
 UCSCXenaShiny.Rcheck/
 UCSCXenaShiny*.tar.gz
 UCSCXenaShiny*.tgz
@@ -44,6 +45,7 @@ inst/extdata/pcawg_TIL.rda
 inst/extdata/pcawg_identifier.rda
 inst/extdata/ccle_identifier.rda
 
+inst/extdata/v2.*rda
 
 
 

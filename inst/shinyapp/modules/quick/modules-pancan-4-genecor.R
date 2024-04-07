@@ -53,7 +53,7 @@ ui.modules_pancan_gene_cor <- function(id) {
           selectInput(inputId = ns("use_all"), label = "Use All Cancer Types", choices = c("TRUE", "FALSE"), selected = "FALSE"),
           selectInput(
             inputId = ns("Cancer"), label = "Filter Cancer",
-            choices = tcga_cancer_choices,
+            choices = tcga_names,
             selected = "ACC", multiple = TRUE
           ),
           materialSwitch(ns("use_regline"), "Use regression line", inline = TRUE),
@@ -137,12 +137,12 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
 
   profile_choices1 <- reactive({
     switch(input$profile1,
-      mRNA = list(all = pancan_identifiers$gene, default = "CSF1R"),
-      methylation = list(all = pancan_identifiers$gene, default = "TP53"),
-      protein = list(all = pancan_identifiers$protein, default = "P53"),
-      transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
-      miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-      cnv = list(all = pancan_identifiers$gene, default = "TP53"),
+      mRNA = list(all = tcga_id.list[["Gene"]], default = "CSF1R"),
+      methylation = list(all = tcga_id.list[["Gene"]], default = "TP53"),
+      protein = list(all = tcga_id.list[["Protein"]], default = "P53"),
+      transcript = list(all = tcga_id.list[["Transcript"]], default = "ENST00000000233"),
+      miRNA = list(all = tcga_id.list[["miRNA"]], default = "hsa-miR-769-3p"),
+      cnv = list(all = tcga_id.list[["Gene"]], default = "TP53"),
       list(all = "NONE", default = "NONE")
     )
   })
@@ -157,12 +157,12 @@ server.modules_pancan_gene_cor <- function(input, output, session) {
 
   profile_choices2 <- reactive({
     switch(input$profile2,
-      mRNA = list(all = pancan_identifiers$gene, default = "JAK3"),
-      methylation = list(all = pancan_identifiers$gene, default = "TP53"),
-      protein = list(all = pancan_identifiers$protein, default = "P53"),
-      transcript = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
-      miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-      cnv = list(all = pancan_identifiers$gene, default = "TP53"),
+      mRNA = list(all = tcga_id.list[["Gene"]], default = "JAK3"),
+      methylation = list(all = tcga_id.list[["Gene"]], default = "TP53"),
+      protein = list(all = tcga_id.list[["Protein"]], default = "P53"),
+      transcript = list(all = tcga_id.list[["Transcript"]], default = "ENST00000000233"),
+      miRNA = list(all = tcga_id.list[["miRNA"]], default = "hsa-miR-769-3p"),
+      cnv = list(all = tcga_id.list[["Gene"]], default = "TP53"),
       list(all = "NONE", default = "NONE")
     )
   })

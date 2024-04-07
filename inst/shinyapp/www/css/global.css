@@ -1,0 +1,43 @@
+.shiny-notification {
+    height: 100px;
+    width: 800px;
+    position: fixed;
+    top: calc(50% - 50px);
+    ;
+    left: calc(50% - 400px);
+    ;
+}
+
+[data-value="Sole Analysis for Single Cancer"] {
+    width: 400px;
+    background-color: #bdbdbd;
+}
+
+[data-value="Sole Analysis for Multiple Cancers"] {
+    width: 400px;
+    background-color: #525252;
+}
+
+[data-value="Batch Analysis for Single Cancer"] {
+    width: 400px;
+    background-color: #525252;
+}
+
+[data-value="Sole Analysis for Cell Lines"] {
+    width: 400px;
+    background-color: #bdbdbd;
+}
+
+[data-value="Batch Analysis for Cell Lines"] {
+    width: 400px;
+    background-color: #525252;
+}
+
+.tab-pane {
+    background-color: transparent;
+    width: 100%;
+}
+
+.nav-tabs {
+    font-size: 20px
+}

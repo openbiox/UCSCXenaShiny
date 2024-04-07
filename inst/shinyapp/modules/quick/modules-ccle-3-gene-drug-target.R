@@ -100,7 +100,7 @@ server.modules_ccle_drug_target_asso <- function(input, output, session) {
   observe({
     updateVirtualSelect(
       "ccle_search",
-      choices = pancan_identifiers$gene,
+      choices = tcga_id.list[["Gene"]],
       selected = "TP53"
     )
   })

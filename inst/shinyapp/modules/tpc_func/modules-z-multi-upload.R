@@ -365,6 +365,12 @@ multi_upload_Server = function(input, output, session, database = "toil", #id_op
 			  dplyr::filter(gs_name %in% str_split(msigdbr_var$msigdbr_pw," ")[[1]][1]) %>% 
 			  dplyr::pull(gene_symbol)
 			L3s_x = id_option[[input$data_L1]][[L2_x()]]$all #!!! 2w候选基因
+
+			if(!exists("tcga_id_referrence")){
+				message("Loading \"pancan_identifier_help\"")
+				tcga_id_referrence = load_data("pancan_identifier_help")
+			}
+			
 			if(L2_x() %in% 
 				c("mRNA Expression","DNA Methylation","Mutation status","Copy Number Variation")){
 				gene_full = tcga_id_referrence$id_molecule$id_gene$Level3
@@ -405,25 +411,26 @@ multi_upload_Server = function(input, output, session, database = "toil", #id_op
 					}
 
 					if(database=="toil"){
-						clinical_phe = tcga_phenotype_value[["Clinical Phenotype"]]
+						if(!exists("tcga_value_nonomics")){
+							tcga_value_nonomics = load_data("v2_tcga_value_nonomics")
+						}
+						clinical_phe = tcga_clinical_fine
 						x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
-									   tcga_index_value, tcga_immune_value, tcga_pathway_value, 
-									   clinical_phe,
-									   opt_pancan,custom_metadata())
+										tcga_value_nonomics, opt_pancan,custom_metadata())
 					} else if(database=="pcawg"){
-						clinical_phe = pcawg_phenotype_value[["Clinical Phenotype"]]
+						if(!exists("pcawg_value_nonomics")){
+							pcawg_value_nonomics = load_data("v2_pcawg_value_nonomics")
+						}
+						clinical_phe = pcawg_info_fine
 						x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
-									   # pcawg_index_list, pcawg_TIL, pcawg_PW, pcawg_info_fine,
-									   pcawg_index_value, pcawg_immune_value, pcawg_pathway_value,
-									   clinical_phe,
-									   opt_pancan,custom_metadata())
+										pcawg_value_nonomics, opt_pancan,custom_metadata())
 					} else if (database=="ccle"){
-						clinical_phe = ccle_phenotype_value[["Clinical Phenotype"]]
+						if(!exists("ccle_value_nonomics")){
+							ccle_value_nonomics = load_data("v2_ccle_value_nonomics")
+						}
+						clinical_phe = ccle_info_fine
 						x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
-									   # ccle_index_list, NULL, NULL, ccle_info_fine,
-									   ccle_index_value, NULL, NULL, 
-									   clinical_phe,
-									   opt_pancan,custom_metadata())
+										ccle_value_nonomics, opt_pancan,custom_metadata())
 					}
 					x_data = x_data %>%
 						# dplyr::filter(Sample %in% samples()) %>%

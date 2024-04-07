@@ -160,6 +160,15 @@ server.modules_ga_dim_distribution <- function(
   custom_file) {
   ns <- session$ns
 
+  PW_meta <- load_data("tcga_PW_meta")
+  PW_meta <- PW_meta %>% 
+    dplyr::arrange(Name) %>%
+    dplyr::mutate(size = purrr::map_int(Gene, function(x){
+      x_ids = strsplit(x, "/", fixed = TRUE)[[1]]
+      length(x_ids)
+    }), .before = 5) %>% 
+    dplyr::mutate(display = paste0(Name, " (", size, ")"), .before = 6)
+
   output$ga_data1_id <- renderUI({
     show_table <- selected_database_add_url_and_phenotype()
     selectInput(

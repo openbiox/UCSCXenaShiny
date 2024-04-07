@@ -111,10 +111,10 @@ server.modules_pcawg_unicox <- function(input, output, session) {
 
   profile_choices <- reactive({
     switch(input$profile,
-      mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
-      miRNA = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
+      mRNA = list(all = tcga_id.list[["Gene"]], default = "TP53"),
+      miRNA = list(all = tcga_id.list[["miRNA"]], default = "hsa-miR-769-3p"),
       promoter = list(all = names(load_data("pcawg_promoter_id")), default = "1:169863093:SCYL3"),
-      fusion = list(all = pancan_identifiers$gene, default = "DPM1"),
+      fusion = list(all = tcga_id.list[["Gene"]], default = "DPM1"),
       APOBEC = list(all = c(
         "tCa_MutLoad_MinEstimate", "APOBECtCa_enrich",
         "A3A_or_A3B", "APOBEC_tCa_enrich_quartile", "APOBECrtCa_enrich",

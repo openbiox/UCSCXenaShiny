@@ -254,27 +254,28 @@ group_samples_Server = function(input, output, session, database = "toil",
       opt_pancan = opt_pancan()
     }
     ## 利用内部自定义下载函数获取数据
-    if(database=="toil"){
-      clinical_phe = tcga_phenotype_value[["Clinical Phenotype"]]
-      x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
-               tcga_index_value, tcga_immune_value, tcga_pathway_value, 
-               clinical_phe,
-               opt_pancan,custom_metadata())
-    } else if(database=="pcawg"){
-      clinical_phe = pcawg_phenotype_value[["Clinical Phenotype"]]
-      x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
-               # pcawg_index_list, pcawg_TIL, pcawg_PW, pcawg_info_fine,
-               pcawg_index_value, pcawg_immune_value, pcawg_pathway_value,
-               clinical_phe,
-               opt_pancan,custom_metadata())
-    } else if (database=="ccle"){
-      clinical_phe = ccle_phenotype_value[["Clinical Phenotype"]]
-      x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
-               # ccle_index_list, NULL, NULL, ccle_info_fine,
-               ccle_index_value, NULL, NULL, 
-               clinical_phe,
-               opt_pancan,custom_metadata())
-    }
+		if(database=="toil"){
+			if(!exists("tcga_value_nonomics")){
+				tcga_value_nonomics = load_data("v2_tcga_value_nonomics")
+			}
+			clinical_phe = tcga_clinical_fine
+			x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
+							tcga_value_nonomics, opt_pancan,custom_metadata())
+		} else if(database=="pcawg"){
+			if(!exists("pcawg_value_nonomics")){
+				pcawg_value_nonomics = load_data("v2_pcawg_value_nonomics")
+			}
+			clinical_phe = pcawg_info_fine
+			x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
+							pcawg_value_nonomics, opt_pancan,custom_metadata())
+		} else if (database=="ccle"){
+			if(!exists("ccle_value_nonomics")){
+				ccle_value_nonomics = load_data("v2_ccle_value_nonomics")
+			}
+			clinical_phe = ccle_info_fine
+			x_data = UCSCXenaShiny:::query_general_value(L1_x, L2_x, L3_x, database,
+							ccle_value_nonomics, opt_pancan,custom_metadata())
+		}
     if(!is.null(samples)){
       if(!is.null(samples())){
         x_data = x_data %>%

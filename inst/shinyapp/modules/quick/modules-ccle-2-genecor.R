@@ -152,9 +152,9 @@ server.modules_ccle_genecor <- function(input, output, session) {
 
   profile_choices1 <- reactive({
     switch(input$profile1,
-      mRNA = list(all = pancan_identifiers$gene, default = "CSF1R"),
-      protein = list(all = pancan_identifiers$protein, default = "P53"),
-      cnv = list(all = pancan_identifiers$gene, default = "TP53"),
+      mRNA = list(all = tcga_id.list[["Gene"]], default = "CSF1R"),
+      protein = list(all = tcga_id.list[["Protein"]], default = "P53"),
+      cnv = list(all = tcga_id.list[["Gene"]], default = "TP53"),
       list(all = "NONE", default = "NONE")
     )
   })
@@ -169,9 +169,9 @@ server.modules_ccle_genecor <- function(input, output, session) {
 
   profile_choices2 <- reactive({
     switch(input$profile2,
-      mRNA = list(all = pancan_identifiers$gene, default = "JAK3"),
+      mRNA = list(all = tcga_id.list[["Gene"]], default = "JAK3"),
       protein = list(all = UCSCXenaShiny:::.all_ccle_proteins, default = "p53_Caution"),
-      cnv = list(all = pancan_identifiers$gene, default = "TP53"),
+      cnv = list(all = tcga_id.list[["Gene"]], default = "TP53"),
       list(all = "NONE", default = "NONE")
     )
   })

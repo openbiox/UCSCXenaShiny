@@ -80,6 +80,12 @@ ui.modules_id_reference = function(id) {
 
 server.modules_id_reference = function(input, output, session){
 	ns = session$ns
+
+	# load id data
+	id_referrence = load_data("v2_tpc_id_help")
+	tcga_id_referrence = id_referrence[["tcga"]]
+	pcawg_id_referrence = id_referrence[["pcawg"]]
+	ccle_id_referrence = id_referrence[["ccle"]]
 	
 	## Molecular profile(TCGA)
 	output$dt_1_1_gene = renderDataTable({
