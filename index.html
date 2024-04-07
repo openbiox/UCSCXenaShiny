@@ -32,7 +32,7 @@
     
     <a class="navbar-brand me-2" href="index.html">UCSCXenaShiny</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -139,7 +139,7 @@
 <p>For the first time, it may return a failure about ‘take a long time to respond’, please refresh the web page.</p>
 </blockquote>
 <p>If the application failed to start. Check if the container has installed all dependencies.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="ex">docker</span> exec xenashiny Rscript /opt/ext-deps.R</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="ex">docker</span> exec xenashiny R <span class="at">-e</span> <span class="st">'source(system.file("shinyapp/utils_pkgs.R", package = "UCSCXenaShiny"))'</span></span></code></pre></div>
 <p>Or you can interactively check the container:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="ex">docker</span> exec <span class="at">-it</span> xenashiny /bin/bash</span></code></pre></div>
 <p>You can manage the deployed container with the following commands:</p>
