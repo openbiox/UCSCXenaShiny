@@ -49,13 +49,7 @@ When any of \code{dataset} and \code{id} is \code{NULL}, it should be a \code{da
 
 You can specify just the initial letter.}
 
-\item{pairwise.comparisons}{Logical that decides whether pairwise comparisons
-are to be displayed (default: \code{TRUE}). Please note that only
-\strong{significant} comparisons will be shown by default. To change this
-behavior, select appropriate option with \code{pairwise.display} argument. The
-pairwise comparison dataframes are prepared using the
-\code{pairwise_comparisons} function. For more details
-about pairwise comparisons, see the documentation for that function.}
+\item{pairwise.comparisons}{whether pairwise comparison}
 
 \item{p.adjust.method}{Adjustment method for \emph{p}-values for multiple
 comparisons. Possible methods are: \code{"holm"} (default), \code{"hochberg"},

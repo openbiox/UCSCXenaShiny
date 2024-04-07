@@ -1,5 +1,4 @@
 query_general_id = function(){
-  
   tcga_clinical_fine = load_data("tcga_clinical_fine")
   pcawg_info_fine = load_data("pcawg_info_fine")
   ccle_info_fine = load_data("ccle_info_fine")
@@ -235,7 +234,7 @@ query_general_id = function(){
 #' @param opt_pancan      molecular datasets parameters
 #' @param custom_metadata user customized metadata
 #' @param database        one of c("toil","pcawg","ccle")
-#' @param tpc_value_nonomics     
+#' @param tpc_value_nonomics     non-omics matrix data of one database
 #'
 #' @examples
 #' \dontrun{

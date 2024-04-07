@@ -183,6 +183,7 @@ vis_identifier_multi_cor <- function(dataset, ids, samples = NULL,
 #' - The second column refers to values indicated in axis Y.
 #' - The third column refers to groups indicated in axis X.
 #' - The fourth column is optional, which indicates facet variable.
+#' @param pairwise.comparisons whether pairwise comparison
 #' @param ... other parameters passing to [ggstatsplot::ggbetweenstats] or [ggstatsplot::ggwithinstats].
 #' @export
 #' @return a (gg)plot object.
