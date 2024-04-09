@@ -84,7 +84,7 @@ ui.modules_pancan_cor_m2o = function(id) {
 						helper(type = "markdown", size = "l", fade = TRUE, 
 					                   title = "Analyze", 
 					                   content = "analyze_cor_3"),  
-					# br(),br(),
+
 					h4(strong("S3.1 Set analysis parameters")), 
 					selectInput(ns("cor_method"),"Correlation method:",choices = c("pearson", "spearman")),
 					shinyWidgets::actionBttn(
@@ -102,7 +102,7 @@ ui.modules_pancan_cor_m2o = function(id) {
 							   )
 					),
 					h4(strong("S3.2 Download results")), 
-					uiOutput(ns("cor_stat_dw.ui"))
+					download_res_UI(ns("download_res2cor"))
 				)
 			)
 		)
@@ -201,6 +201,7 @@ server.modules_pancan_cor_m2o = function(input, output, session) {
 
 	# 相关性分析
 	cor_stat = eventReactive(input$cal_batch_cor,{
+		shinyjs::disable("cal_batch_cor")
 		x_datas = L3s_x_data()[,c("id","Sample","value")]
 		colnames(x_datas)[c(1,3)] = paste0("x_",colnames(x_datas)[c(1,3)])
 		y_data = L3_y_data()[,c("id","Sample","value")]
@@ -226,6 +227,8 @@ server.modules_pancan_cor_m2o = function(input, output, session) {
 			  dplyr::arrange(p.value)
 			cor_stat2
 		})
+		shinyjs::enable("cal_batch_cor")
+		cor_stat2
 	})
 
 
@@ -248,33 +251,16 @@ server.modules_pancan_cor_m2o = function(input, output, session) {
 	dataTableOutput(ns("cor_stat_tb"))
 	})
 
-	output$cor_stat_dw.ui = renderUI({
-		fluidRow(
-			column(6,downloadButton(ns("cor_batch_raw"), "Raw data(.csv)")),
-			column(6,downloadButton(ns("cor_batch_res"), "Analyzed data(.csv)"))
-		)
+	# Download results
+	observeEvent(input$cal_batch_cor,{
+		res1 = NULL
+		x_datas = L3s_x_data() %>%
+			dplyr::mutate(axis = "X")
+		y_data = L3_y_data() %>%
+			dplyr::select(id, Sample, value) %>%
+			dplyr::mutate(axis = "Y")
+		res2 = rbind(x_datas, y_data)
+		res3 = cor_stat()
+		callModule(download_res_Server, "download_res2cor", res1, res2, res3)
 	})
-	output$cor_batch_raw = downloadHandler(
-		filename = function(){
-			paste0("Batch_correlation_rawdata_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
-		},
-		content = function(file){
-			x_datas = L3s_x_data() %>%
-				dplyr::mutate(axis = "X")
-			y_data = L3_y_data() %>%
-				dplyr::select(id,Sample,value) %>%
-				dplyr::mutate(axis = "Y")
-			xy_data = rbind(x_datas, y_data)
-			write.csv(xy_data, file, row.names = FALSE)
-		}
-	)
-	output$cor_batch_res = downloadHandler(
-		filename = function(){
-			paste0("Batch_correlation_result_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
-		},
-		content = function(file){
-			cor_stat_ = cor_stat()
-			write.csv(cor_stat_, file, row.names = FALSE)
-		}
-	)
 }

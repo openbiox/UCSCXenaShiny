@@ -1,4 +1,4 @@
-ui.modules_pcawg_cor_o2o = function(id) {
+ui.modules_pcawg_cor_o2m = function(id) {
 	ns = NS(id)
 	fluidPage(
 		fluidRow(
@@ -15,13 +15,17 @@ ui.modules_pcawg_cor_o2o = function(id) {
 					                   content = "data_origin"),
 					mol_origin_UI(ns("mol_origin2cor"), database = "pcawg"),
 
-					h4(strong("S1.2 Choose project")) %>% 
+					h4(strong("S1.2 Choose projects")) %>% 
 						helper(type = "markdown", size = "l", fade = TRUE, 
 					                   title = "PCAWG projects", 
 					                   content = "pcawg_projects"),
 					pickerInput(
-						ns("choose_cancer"),NULL,
-						choices = pcawg_names),
+						ns("choose_cancers"),NULL,
+						choices = pcawg_names,
+						multiple = TRUE,
+						selected = pcawg_names,
+						options = list(`actions-box` = TRUE)
+					),
 					br(),
 
 					h4(strong("S1.3 Filter samples"),"[opt]") %>% 
@@ -52,7 +56,7 @@ ui.modules_pcawg_cor_o2o = function(id) {
 						helper(type = "markdown", size = "l", fade = TRUE, 
 					                   title = "Add signature", 
 					                   content = "add_signature"),
-					add_signature_UI(ns("add_signature2cor"), database = "pcawg"),
+					add_signature_UI(ns("add_signature2cor"), database = "pcawg")
 				)
 			),
 			# 下载X/Y轴数据
@@ -86,44 +90,45 @@ ui.modules_pcawg_cor_o2o = function(id) {
 					h2("S3: Analyze & Visualize", align = "center") %>% 
 						helper(type = "markdown", size = "l", fade = TRUE, 
 					                   title = "Analyze & Visualize", 
-					                   content = "analyze_cor_1"),  
+					                   content = "analyze_cor_2"),  
 					style = "height:1100px",
 					h4(strong("S3.1 Set analysis parameters")), 
 					selectInput(ns("cor_method"), "Correlation method:",choices = c("Pearson", "Spearman")),
+					shinyWidgets::actionBttn(
+						ns("step3_plot_bar_1"), "Run (Calculate)",
+				        style = "gradient",
+				        icon = icon("chart-line"),
+				        color = "primary",
+				        block = TRUE,
+				        size = "sm"
+					),
 					h4(strong("S3.2 Set visualization parameters")), 
 					fluidRow(
-						column(3, colourpicker::colourInput(inputId = ns("line_color"), "Line color:", "#0000FF")),
-						column(3, colourpicker::colourInput(inputId = ns("x_hist_color"), "Hist color(x):", "#009E73")),
-						column(3, colourpicker::colourInput(inputId = ns("y_hist_color"), "Hist color(y):", "#D55E00"))
-					),
-					dropMenu(
-						actionButton(ns("more_visu"), "Set more visualization params"),
-						div(h3("1. Adjust points:"),style="width:400px;"),
-						fluidRow(
-							column(4, numericInput(inputId = ns("point_size"), label = "Point size:", value = 3, step = 0.5)),
-							column(3, numericInput(inputId = ns("point_alpha"), label = "Point alpha:", value = 0.4, step = 0.1, min = 0, max = 1))
-						),
-						div(h3("2. Adjust text size:"),style="width:400px;"),
-						fluidRow(
-							column(4, numericInput(inputId = ns("axis_size"), label = "Text size:", value = 18, step = 0.5)),
-							column(4, numericInput(inputId = ns("title_size"), label = "Title size:", value = 20, step = 0.5))
-						),				
-						div(h3("3. Adjust lab and title name:"),style="width:400px;"),
-						fluidRow(
-							column(4, textInput(inputId = ns("x_name"), label = "X-axis name:")),
-							column(4, textInput(inputId = ns("y_name"), label = "Y-axis name:")),
-							column(4, textInput(inputId = ns("title_name"), label = "Title name:"))
-						),	
-						div(h3("4. Display the histogram or not:"),style="width:400px;"),
-						fluidRow(
-							column(6, radioButtons(inputId = ns("side_hist"), label = NULL, 
-								choices = c("NO", "YES"), selected="YES",inline = TRUE)),
-						),	
-						div(h5("Note: You can download the raw data and plot in local R environment for more detailed adjustment.")),
+						column(3, colourpicker::colourInput(inputId = ns("positive_color"), "Positive color:", "#d53e4f")),
+						column(3, colourpicker::colourInput(inputId = ns("negative_color"), "Negative color:", "#3288bd")),
+						column(3, 
+								dropMenu(
+									actionBttn(ns("more_visu"), label = NULL, style = "simple"),
+									div(h3("1. Adjust text size:"),style="width:400px;"),
+									fluidRow(
+										column(4, numericInput(inputId = ns("axis_size"), label = "Text size:", value = 18, step = 0.5)),
+										column(4, numericInput(inputId = ns("title_size"), label = "Title size:", value = 20, step = 0.5)),
+										column(4, numericInput(inputId = ns("label_size"), label = "Label size:", value = 5, step = 0.5)),
+									),				
+									div(h3("2. Adjust lab and title name:"),style="width:400px;"),
+									fluidRow(
+										column(4, textInput(inputId = ns("x_name"), label = "X-axis name:", 
+											value = "estimate coefficient")),
+										column(4, textInput(inputId = ns("title_name"), label = "Title name:",
+											value = NULL))
+									),	
+									div(h5("Note: You can download the raw data and plot in local R environment for more detailed adjustment.")),
+								)
+						)
 					),
 					br(),
 					shinyWidgets::actionBttn(
-						ns("step3_plot_sct"), "Run",
+						ns("step3_plot_bar_2"), "Run (Visualize)",
 				        style = "gradient",
 				        icon = icon("chart-line"),
 				        color = "primary",
@@ -133,14 +138,14 @@ ui.modules_pcawg_cor_o2o = function(id) {
 					br(),
 					fluidRow(
 						column(10, offset = 1,
-							   plotOutput({ns("cor_plot_sct")}, height = "500px") 
+							   plotOutput({ns("cor_plot_bar")}, height = "500px") 
 						)
 					),
 					h4(strong("S3.3 Download results")), 
 				    fluidRow(
 				    	column(3, downloadButton(ns("save_plot_bt"), "Figure")),
 				    	column(3, offset = 0, downloadButton(ns("save_data_raw"), "Raw data(.csv)")),
-				    	column(3, offset = 1, downloadButton(ns("save_data_res"), "Analyzed data(.csv)"))
+				    	column(3, offset = 1, downloadButton(ns("save_data_res"), "Analyzied data(.csv)"))
 				    ),
 				    br(),
 				    fluidRow(
@@ -166,16 +171,18 @@ ui.modules_pcawg_cor_o2o = function(id) {
 			)
 		)
 	)
+
 }
 
 
-server.modules_pcawg_cor_o2o = function(input, output, session) {
+
+server.modules_pcawg_cor_o2m = function(input, output, session) {
 	ns <- session$ns
 	# 记录选择癌症
 	cancer_choose <- reactiveValues(name = "BLCA-US", phe_primary="",
 		filter_phe_id=query_tcga_group(database = "pcawg", cancer = "BLCA-US", return_all = T))
 	observe({
-		cancer_choose$name = input$choose_cancer
+		cancer_choose$name = input$choose_cancers
 		cancer_choose$phe_primary <- query_tcga_group(database = "pcawg",
 			cancer = cancer_choose$name, return_all = T)
 	})
@@ -199,6 +206,7 @@ server.modules_pcawg_cor_o2o = function(input, output, session) {
 			}
 		}
 	})
+
 
 	## 过滤样本
 	# quick filter widget
@@ -236,7 +244,7 @@ server.modules_pcawg_cor_o2o = function(input, output, session) {
 			cat(paste0("Tip: ", length(cancer_choose$filter_phe_id), " samples are retained"))
 		})
 	})
-	
+
 	## x-axis panel
 	x_axis_data = callModule(download_feat_Server, "download_x_axis", 
 							 database = "pcawg",
@@ -254,70 +262,78 @@ server.modules_pcawg_cor_o2o = function(input, output, session) {
 						     opt_pancan = reactive(opt_pancan()),
 						     check_numeric=TRUE
 							 )
-	# 合并分析
-	# scatterplot逻辑：先绘图，再提取相关性结果
-	merge_data_sct = eventReactive(input$step3_plot_sct, {
+
+	# barplot逻辑：先批量计算相关性，再绘图
+	merge_data_bar = eventReactive(input$step3_plot_bar_1, {
 		x_axis_data = x_axis_data()
 		colnames(x_axis_data)[c(1:3,5)] = paste0("x_",colnames(x_axis_data)[c(1:3,5)])
 		y_axis_data = y_axis_data()
 		colnames(y_axis_data)[c(1:3,5)] = paste0("y_",colnames(y_axis_data)[c(1:3,5)])
 
+		# inner_join取交集本身可以避免行为0的项目数据
 		data = dplyr::inner_join(x_axis_data, y_axis_data) %>%
 			dplyr::select(cancer, Sample, everything())
 		data
 	})
 
-	observe({
-		updateTextInput(session, "x_name", value = unique(x_axis_data()$id))
-		updateTextInput(session, "y_name", value = unique(y_axis_data()$id))
-		updateTextInput(session, "title_name", value = cancer_choose$name)
-	})
-
-	cor_plot_sct = eventReactive(input$step3_plot_sct, {
-		shiny::validate(
-			need(try(nrow(merge_data_sct())>0), 
-				"Please inspect whether to get valid data in Step2."),
-		)
-
-		merge_data_sct = merge_data_sct()
-
+	cor_data_bar = eventReactive(input$step3_plot_bar_1, {
+		merge_data_bar = merge_data_bar()
 		cor_method = switch(isolate(input$cor_method),
 			Pearson = "parametric", Spearman = "nonparametric")
-		p = ggscatterstats(
-		  merge_data_sct,
-		  x = "x_value",
-		  y = "y_value",
-		  xlab = isolate(input$x_name),
-		  ylab = isolate(input$y_name),
-		  title = isolate(input$title_name),
-		  type = cor_method,
-		  point.args = list(size = isolate(input$point_size), alpha = isolate(input$point_alpha)),
-		  smooth.line.args = list(color = isolate(input$line_color),linewidth = 1.5,method = "lm",formula = y ~ x),
-		  xsidehistogram.args = list(fill = isolate(input$x_hist_color), color = "black", na.rm = TRUE),
-		  ysidehistogram.args = list(fill = isolate(input$y_hist_color), color = "black", na.rm = TRUE),
-		  bf.message = FALSE
-		) + 
-			theme(text = element_text(size=isolate(input$axis_size)),
-				  plot.title = element_text(size=isolate(input$title_size), hjust = 0.5))
-		pval = formatC(extract_stats(p)$subtitle_data$p.value, digits = 3, format = 'e')
-		r = round(extract_stats(p)$subtitle_data$estimate,3)
-		p$labels$subtitle = bquote(paste(widehat(italic(r))[.(input$cor_method)] == .(r), ', ' ,italic(p) == .(pval)))
-		if(input$side_hist=="NO"){
-			p = p + theme(#ggside.panel.scale = 1,
-			      ggside.axis.text = element_blank(),
-			      ggside.axis.ticks = element_blank())
-		}
+		valid_cancer_choose = sort(unique(merge_data_bar$cancer))
+
+		withProgress(message = "Please wait for a while.",{
+			stat_cor = lapply(seq(valid_cancer_choose), function(i){
+			  tcga_type = valid_cancer_choose[i]
+			  p = ggscatterstats(
+			    subset(merge_data_bar, cancer==tcga_type),
+			    x = "x_value",
+			    y = "y_value",
+			    type = cor_method)
+			  incProgress(1 / length(valid_cancer_choose), detail = paste0("(Finished ",i,"/",length(valid_cancer_choose),")"))
+			  return(extract_stats(p)$subtitle_data)
+			}) %>% do.call(rbind, .) %>% 
+			dplyr::select(!expression) %>% 
+			dplyr::mutate(cancer = valid_cancer_choose, .before=1)
+			stat_cor
+		})
+	})
+
+	cor_plot_bar = eventReactive(input$step3_plot_bar_2, {
+		shiny::validate(
+			need(try(nrow(cor_data_bar())>0), 
+				"Please inspect whether to download valid X/Y axis data in S2 or S3 step."),
+		)
+
+		cor_data_bar = cor_data_bar()
+		p = cor_data_bar %>% 
+		  dplyr::arrange(estimate) %>% 
+		  dplyr::mutate(cancer = factor(cancer, levels = cancer)) %>% 
+		  dplyr::mutate(group = estimate>0) %>% 
+		  ggplot(aes(x=cancer, y=estimate, fill=group)) + 
+		  geom_col(color="black") + 
+		  geom_text(aes(y=0,label=format(round(estimate,2), nsmall =2),
+		                hjust = ifelse(estimate >= 0, 1.5, -0.5)),
+		  			size = isolate(input$label_size)) +
+		  xlab("") + ylab(isolate(input$x_name)) + #转置
+		  ggtitle(label = isolate(input$title_name)) +
+		  coord_flip() +
+		  scale_fill_manual(values = c(isolate(input$negative_color),isolate(input$positive_color))) +
+		  theme_minimal() + 
+		  theme(legend.position = "none", text = element_text(size=isolate(input$axis_size)),
+				plot.title = element_text(size=isolate(input$title_size), hjust = 0.5))
 		return(p)
 	})
-	output$cor_plot_sct = renderPlot({cor_plot_sct()})
+
+	output$cor_plot_bar = renderPlot({cor_plot_bar()})
 
 	# 3个下载按钮
 	output$save_plot_bt = downloadHandler(
 		filename = function(){
-			paste0("Scatterplot", "_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".",input$save_plot_F)
+			paste0("Barplot", "_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".",input$save_plot_F)
 		},
 		content = function(file){
-			p = cor_plot_sct()
+			p = cor_plot_bar()
 			
 		    if (input$save_plot_F == "pdf") {
 		      pdf(file, width = input$save_plot_W, height = input$save_plot_H)
@@ -336,22 +352,21 @@ server.modules_pcawg_cor_o2o = function(input, output, session) {
 			paste0("Correlation_rawdata_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
 		},
 		content = function(file){
-			p_raw = merge_data_sct()
+			p_raw = merge_data_bar()
 			write.csv(p_raw, file, row.names = FALSE)
 		}
 	)
-
 	output$save_data_res = downloadHandler(
 		filename = function(){
 			paste0("Correlation_result_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
 		},
 		content = function(file){
-			p_cor = extract_stats(cor_plot_sct())$subtitle_data
-			p_cor = p_cor[-which(colnames(p_cor)=="expression")]
-			p_cor$parameter1 = unique(merge_data_sct()$x_axis)
-			p_cor$parameter2 = unique(merge_data_sct()$y_axis)
-			p_cor = p_cor %>% dplyr::mutate(cancer = cancer_choose$name, .before=1)
+			p_cor = cor_data_bar()
+			p_cor$parameter1 = unique(merge_data_bar()$x_axis)
+			p_cor$parameter2 = unique(merge_data_bar()$y_axis)	
 			write.csv(p_cor, file, row.names = FALSE)
 		}
 	)
+
+
 }

@@ -85,11 +85,11 @@ tcga_id_option = list(
       "default" = "Monocyte"
     ),
     "TIMER" = list(
-      "all" = tcga_id.list[["XCELL"]],
+      "all" = tcga_id.list[["TIMER"]],
       "default" = "Monocyte"
     ),
     "XCELL" = list(
-      "all" = tcga_id.list[["TIMER"]],
+      "all" = tcga_id.list[["XCELL"]],
       "default" = "Monocyte"
     )
   ),
@@ -260,13 +260,15 @@ code_types = list("NT"= "NT (normal tissue)",
 
 # Global theme
 themes_list <- list(
-  "cowplot" = cowplot::theme_cowplot(),
+  "BW" = ggplot2::theme_bw(),
+  "Cowplot" = cowplot::theme_cowplot(),
   "Light" = ggplot2::theme_light(),
   "Minimal" = ggplot2::theme_minimal(),
   "Classic" = ggplot2::theme_classic(),
   "Gray" = ggplot2::theme_gray(),
-  "half_open" = cowplot::theme_half_open(),
-  "minimal_grid" = cowplot::theme_minimal_grid()
+  "Half_open" = cowplot::theme_half_open(),
+  "Minimal_grid" = cowplot::theme_minimal_grid(),
+  "ggstatplot" = ggstatsplot::theme_ggstatsplot()
 )
 # Global color
 mycolor <- c(RColorBrewer::brewer.pal(12, "Paired"))

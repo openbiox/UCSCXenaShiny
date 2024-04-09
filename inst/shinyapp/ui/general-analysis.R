@@ -1,3 +1,7 @@
+phenotype_datasets <- UCSCXenaTools::XenaData %>%
+  dplyr::filter(Type == "clinicalMatrix") %>%
+  dplyr::pull(XenaDatasets)
+
 ui.page_general_analysis <- function() {
   # ns <- NS(id)
   # navbarMenu(

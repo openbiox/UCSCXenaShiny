@@ -205,6 +205,7 @@ download_feat_Server = function(input, output, session, database = "toil",#id_op
 
 
 	download_data = eventReactive(input$query_data, {
+		shinyjs::disable("query_data")
 		L2_x = switch(input$data_L1,
 		    `Molecular profile` = input$genomic_profile,
 		    `Tumor index` = input$tumor_index,
@@ -263,12 +264,14 @@ download_feat_Server = function(input, output, session, database = "toil",#id_op
 		x_data$cancer = clinical_phe[,2,drop=T][match(x_data$Sample, clinical_phe$Sample)]
 		x_data = x_data[,c("id","level1","level2","Sample","value","cancer")] %>%
 			dplyr::arrange(cancer,Sample)
+		shinyjs::enable("query_data")
 		x_data
 	})
 
 	w <- waiter::Waiter$new(id = ns("x_axis_data_table"), html = waiter::spin_hexdots(), color = "black")
 
 	observeEvent(input$query_data,{
+		
 		w$show()
 		output$x_axis_data_table = renderUI({
 			if(table.ui){
@@ -303,6 +306,7 @@ download_feat_Server = function(input, output, session, database = "toil",#id_op
 			}
 
 		})
+		
 	})
 
 	# observeEvent(input$query_data,{

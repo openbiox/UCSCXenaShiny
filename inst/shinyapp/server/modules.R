@@ -87,52 +87,76 @@ observeEvent(req(input$navbar=="PCAWG: Molecular Profile Kaplan-Meier Analysis")
 
 # TCGA pancan
 observeEvent(req(input$navbar=="TCGA: Association Analysis"),{
+    waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE)
+    waiter$show()
 		callModule(server.modules_pancan_cor_o2o, "modules_pancan_cor_o2o")
 		callModule(server.modules_pancan_cor_o2m, "modules_pancan_cor_o2m")
 		callModule(server.modules_pancan_cor_m2o, "modules_pancan_cor_m2o")
+    on.exit(waiter$hide())
 }, once = TRUE)  
 
 observeEvent(req(input$navbar=="TCGA: Comparison Analysis"),{
+    waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE)
+    waiter$show()
 		callModule(server.modules_pancan_comp_o2o, "modules_pancan_comp_o2o")
 		callModule(server.modules_pancan_comp_o2m, "modules_pancan_comp_o2m")
 		callModule(server.modules_pancan_comp_m2o, "modules_pancan_comp_m2o")
+    on.exit(waiter$hide())
 }, once = TRUE)  
 
 observeEvent(req(input$navbar=="TCGA: Survival Analysis"),{
+    waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE)
+    waiter$show()
 		callModule(server.modules_pancan_sur_o2o, "modules_pancan_sur_o2o")
 		callModule(server.modules_pancan_sur_o2m, "modules_pancan_sur_o2m")
 		callModule(server.modules_pancan_sur_m2o, "modules_pancan_sur_m2o")
+    on.exit(waiter$hide())
 }, once = TRUE)  
 
 
 
 # PCAWG 
 observeEvent(req(input$navbar=="PCAWG: Association Analysis"),{
-	callModule(server.modules_pcawg_cor_o2o, "modules_pcawg_cor_o2o")
-	callModule(server.modules_pcawg_cor_o2m, "modules_pcawg_cor_o2m")
-	callModule(server.modules_pcawg_cor_m2o, "modules_pcawg_cor_m2o")
+    waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE)
+    waiter$show()
+    callModule(server.modules_pcawg_cor_o2o, "modules_pcawg_cor_o2o")
+    callModule(server.modules_pcawg_cor_o2m, "modules_pcawg_cor_o2m")
+    callModule(server.modules_pcawg_cor_m2o, "modules_pcawg_cor_m2o")
+    on.exit(waiter$hide())
 }, once = TRUE)  
 observeEvent(req(input$navbar=="PCAWG: Comparison Analysis"),{
-	callModule(server.modules_pcawg_comp_o2o, "modules_pcawg_comp_o2o")
-	callModule(server.modules_pcawg_comp_o2m, "modules_pcawg_comp_o2m")
-	callModule(server.modules_pcawg_comp_m2o, "modules_pcawg_comp_m2o")
+    waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE)
+    waiter$show()
+    callModule(server.modules_pcawg_comp_o2o, "modules_pcawg_comp_o2o")
+    callModule(server.modules_pcawg_comp_o2m, "modules_pcawg_comp_o2m")
+    callModule(server.modules_pcawg_comp_m2o, "modules_pcawg_comp_m2o")
+    on.exit(waiter$hide())
 }, once = TRUE)  
 observeEvent(req(input$navbar=="PCAWG: Survival Analysis"),{
-	callModule(server.modules_pcawg_sur_o2o, "modules_pcawg_sur_o2o")
-	callModule(server.modules_pcawg_sur_o2m, "modules_pcawg_sur_o2m")
-	callModule(server.modules_pcawg_sur_m2o, "modules_pcawg_sur_m2o")
+    waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE)
+    waiter$show()
+    callModule(server.modules_pcawg_sur_o2o, "modules_pcawg_sur_o2o")
+    callModule(server.modules_pcawg_sur_o2m, "modules_pcawg_sur_o2m")
+    callModule(server.modules_pcawg_sur_m2o, "modules_pcawg_sur_m2o")
+    on.exit(waiter$hide())
 }, once = TRUE)  
 
 
 # CCLE
 observeEvent(req(input$navbar=="CCLE: Association Analysis"),{
-	callModule(server.modules_ccle_cor_o2o, "modules_ccle_cor_o2o")
-	callModule(server.modules_ccle_cor_m2o, "modules_ccle_cor_m2o")
+    waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE)
+    waiter$show()
+    callModule(server.modules_ccle_cor_o2o, "modules_ccle_cor_o2o")
+    callModule(server.modules_ccle_cor_m2o, "modules_ccle_cor_m2o")
+    on.exit(waiter$hide())
 }, once = TRUE) 
 
 observeEvent(req(input$navbar=="CCLE: Comparison Analysis"),{
-	callModule(server.modules_ccle_comp_o2o, "modules_ccle_comp_o2o")
-	callModule(server.modules_ccle_comp_m2o, "modules_ccle_comp_m2o")
+    waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE)
+    waiter$show()
+    callModule(server.modules_ccle_comp_o2o, "modules_ccle_comp_o2o")
+    callModule(server.modules_ccle_comp_m2o, "modules_ccle_comp_m2o")
+    on.exit(waiter$hide())
 }, once = TRUE) 
 
 
@@ -143,7 +167,10 @@ observeEvent(req(input$navbar=="CCLE: Comparison Analysis"),{
 
 # # identifier help
 observeEvent(req(input$navbar=="TPC ID Query"),{
+  waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE)
+  waiter$show()
 	callModule(server.modules_id_reference, "modules_id_reference")
+  on.exit(waiter$hide())
 }, once = TRUE) 
 
 
@@ -151,11 +178,17 @@ observeEvent(req(input$navbar=="TPC ID Query"),{
 
 # # download data
 observeEvent(req(input$navbar=="Based on TCGA/PCAWG/CCLE Analysis"),{
-	callModule(server.modules_download_pancan, "modules_download_pancan")
+    waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE)
+    waiter$show()
+	  callModule(server.modules_download_pancan, "modules_download_pancan")
+    on.exit(waiter$hide())
 }, once = TRUE) 
 
 observeEvent(req(input$navbar=="Based on Repository Datasets"),{
-	callModule(server.modules_download_dataset, "modules_download_dataset")
+    waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE)
+    waiter$show()
+	  callModule(server.modules_download_dataset, "modules_download_dataset")
+    on.exit(waiter$hide())
 }, once = TRUE) 
 
 
@@ -167,15 +200,18 @@ observeEvent(req(input$navbar %in% c(
   "Features database significant analysis",
   "Statistics and Annotations"
 )),{
-  message("Preprocessing drug omics data...")
-  source(system.file("shinyapp/PGdata.R", package = "UCSCXenaShiny"))
-  
-  callModule(serverDrugOmicPair, "DrugOmicPair")
-  callModule(serverFeatureAcrossType, "FeatureAcrossType")
-  callModule(serverProfileDrugSens, "ProfileDrugSens")
-  callModule(serverFeatureDatabaseSig, "FeatureDatabaseSig")
-  callModule(serverStatAnno, "StatAnno")
-  message("Done for loading data and modules.")
+
+    waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE)
+    waiter$show()
+    message("Preprocessing drug omics data...")
+    source(system.file("shinyapp/PGdata.R", package = "UCSCXenaShiny"))
+    callModule(serverDrugOmicPair, "DrugOmicPair")
+    callModule(serverFeatureAcrossType, "FeatureAcrossType")
+    callModule(serverProfileDrugSens, "ProfileDrugSens")
+    callModule(serverFeatureDatabaseSig, "FeatureDatabaseSig")
+    callModule(serverStatAnno, "StatAnno")
+    message("Done for loading data and modules.")
+    on.exit(waiter$hide())
 }, once = TRUE) 
 
 

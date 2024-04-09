@@ -389,6 +389,7 @@ multi_upload_Server = function(input, output, session, database = "toil", #id_op
 	})
 
 	L3s_x_data = eventReactive(input$inspect_data_x, {
+		shinyjs::disable("inspect_data_x")
 		L1_x = names(id_category)[sapply(id_category, function(x){any(x %in% L2_x())})]
 		digest_code = digest::digest(c(database, L1_x, L2_x(), sort(L3s_x())))
 		digest_file = paste0(UCSCXenaShiny:::get_cache_dir(), "/", digest::digest(digest_code), ".rds")
@@ -448,6 +449,7 @@ multi_upload_Server = function(input, output, session, database = "toil", #id_op
 		x_data_merge =  x_data_merge %>%
 			dplyr::filter(Sample %in% samples()) %>%
 			dplyr::arrange(id,Sample)
+		shinyjs::enable("inspect_data_x")
 		x_data_merge
 	})
 

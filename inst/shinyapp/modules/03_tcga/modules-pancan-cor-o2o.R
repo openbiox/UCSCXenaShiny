@@ -1,4 +1,4 @@
-ui.modules_ccle_cor_o2o = function(id) {
+ui.modules_pancan_cor_o2o = function(id) {
 	ns = NS(id)
 	fluidPage(
 		fluidRow(
@@ -13,24 +13,29 @@ ui.modules_ccle_cor_o2o = function(id) {
 						helper(type = "markdown", size = "l", fade = TRUE, 
 					                   title = "Modify datasets", 
 					                   content = "data_origin"),
-					mol_origin_UI(ns("mol_origin2cor"), database = "ccle"),
+					mol_origin_UI(ns("mol_origin2cor"), database = "toil"),
 
-					h4(strong("S1.2 Choose sites")),
+					h4(strong("S1.2 Choose cancer")) %>% 
+						helper(type = "markdown", size = "l", fade = TRUE, 
+					                   title = "Cancer types", 
+					                   content = "tcga_types"),
 					pickerInput(
-						ns("choose_cancer"),NULL,
-						choices = sort(unique(ccle_info_fine$Site_Primary)),
-						multiple = TRUE,
-						selected = sort(unique(ccle_info_fine$Site_Primary)),
-						options = list(`actions-box` = TRUE)
-					),
-					br(),
+						ns("choose_cancer"), NULL,
+						choices = sort(tcga_names)),
+				    br(),
 
 					h4(strong("S1.3 Filter samples"),"[opt]") %>% 
 						helper(type = "markdown", size = "l", fade = TRUE, 
 					                   title = "Filter samples", 
 					                   content = "choose_samples"),
+					h5("Quick filter:"),
+					pickerInput(
+						ns("filter_by_code"), NULL,
+						choices = NULL, selected =  NULL,
+						multiple = TRUE, options = list(`actions-box` = TRUE)
+					),
 					h5("Exact filter:"),
-					filter_samples_UI(ns("filter_samples2cor"), database = "ccle"),
+					filter_samples_UI(ns("filter_samples2cor"), database = "toil"),
 					br(),
 					verbatimTextOutput(ns("filter_phe_id_info")),
 					br(),
@@ -47,7 +52,8 @@ ui.modules_ccle_cor_o2o = function(id) {
 						helper(type = "markdown", size = "l", fade = TRUE, 
 					                   title = "Add signature", 
 					                   content = "add_signature"),
-					add_signature_UI(ns("add_signature2cor"), database = "ccle"),
+					add_signature_UI(ns("add_signature2cor"), database = "toil"),
+					br(),
 
 				)
 			),
@@ -63,16 +69,15 @@ ui.modules_ccle_cor_o2o = function(id) {
 					                   title = "Get one data", 
 					                   content = "get_one_data"), 
 					download_feat_UI(ns("download_x_axis"), 
-						button_name="Query",database = "ccle"),
-		            # br(),br(),
+						button_name="Query", database = "toil"),
+		            # br(),
 		            # Y
 		            h4(strong("S2.2 Get data for Y-axis")) %>% 
 						helper(type = "markdown", size = "l", fade = TRUE, 
 					                   title = "Get one data", 
-					                   content = "get_one_data"), 
+					                   content = "get_one_data"),  
 					download_feat_UI(ns("download_y_axis"), 
-						button_name="Query",database = "ccle")
-
+						button_name="Query", database = "toil")
 				)
 			),
 			# 分析/绘图/下载
@@ -93,24 +98,33 @@ ui.modules_ccle_cor_o2o = function(id) {
 						column(3, colourpicker::colourInput(inputId = ns("y_hist_color"), "Hist color(y):", "#D55E00"))
 					),
 					dropMenu(
-						actionButton(ns("more_visu"), "Set more visualization params"),
-						div(h3("1. Adjust points:"),style="width:400px;"),
+						# actionButton(ns("more_visu"), "Set more visualization params"),
+						actionBttn(ns("more_visu"), label = "Other options", style = "bordered",color = "success",icon = icon("bars")),
+						
+						div(h3("1. Select ggplot theme:"),style="width:400px;"),
+						fluidRow(
+							column(6,
+								selectInput(inputId = ns("theme"), label = NULL, 
+											choices = names(themes_list), selected = "ggstatplot")
+							)
+						),
+						div(h3("2. Adjust points:"),style="width:400px;"),
 						fluidRow(
 							column(4, numericInput(inputId = ns("point_size"), label = "Point size:", value = 3, step = 0.5)),
 							column(3, numericInput(inputId = ns("point_alpha"), label = "Point alpha:", value = 0.4, step = 0.1, min = 0, max = 1))
 						),
-						div(h3("2. Adjust text size:"),style="width:400px;"),
+						div(h3("3. Adjust text size:"),style="width:400px;"),
 						fluidRow(
 							column(4, numericInput(inputId = ns("axis_size"), label = "Text size:", value = 18, step = 0.5)),
 							column(4, numericInput(inputId = ns("title_size"), label = "Title size:", value = 20, step = 0.5))
 						),				
-						div(h3("3. Adjust lab and title name:"),style="width:400px;"),
+						div(h3("4. Adjust lab and title name:"),style="width:400px;"),
 						fluidRow(
 							column(4, textInput(inputId = ns("x_name"), label = "X-axis name:")),
 							column(4, textInput(inputId = ns("y_name"), label = "Y-axis name:")),
 							column(4, textInput(inputId = ns("title_name"), label = "Title name:"))
 						),	
-						div(h3("4. Display the histogram or not:"),style="width:400px;"),
+						div(h3("5. Display the histogram or not:"),style="width:400px;"),
 						fluidRow(
 							column(6, radioButtons(inputId = ns("side_hist"), label = NULL, 
 								choices = c("NO", "YES"), selected="YES",inline = TRUE)),
@@ -129,36 +143,12 @@ ui.modules_ccle_cor_o2o = function(id) {
 					br(),
 					fluidRow(
 						column(10, offset = 1,
-							   plotOutput({ns("cor_plot_sct")}, height = "500px") 
+							   plotOutput({ns("cor_plot_sct")}, height = "480px") 
 						)
 					),
+					br(),
 					h4(strong("S3.3 Download results")), 
-				    fluidRow(
-				    	column(3, downloadButton(ns("save_plot_bt"), "Figure")),
-				    	column(3, offset = 0, downloadButton(ns("save_data_raw"), "Raw data(.csv)")),
-				    	column(3, offset = 1, downloadButton(ns("save_data_res"), "Analyzed data(.csv)"))
-				    ),
-
-				    br(),
-				    fluidRow(
-				    	column(2, p("Plot Height:")),
-				    	column(3, numericInput(ns("save_plot_H"), NULL ,min = 1, max = 20, value = 10, step = 0.5)),
-				    	column(2, p("Plot Width:")),
-				    	column(3, numericInput(ns("save_plot_W"), NULL, min = 1, max = 20, value = 10, step = 0.5)),
-				        column(
-				        	2,
-					        prettyRadioButtons(
-					          inputId = ns("save_plot_F"),
-					          label = NULL,
-					          choices = c("pdf", "png"),
-					          selected = "pdf",
-					          inline = TRUE,
-					          icon = icon("check"),
-					          animation = "jelly",
-					          fill = TRUE
-					        )
-				        )
-				    )
+					download_res_UI(ns("download_res2cor"))
 				)
 			)
 		)
@@ -166,24 +156,22 @@ ui.modules_ccle_cor_o2o = function(id) {
 }
 
 
-server.modules_ccle_cor_o2o = function(input, output, session) {
+server.modules_pancan_cor_o2o = function(input, output, session) {
 	ns <- session$ns
+
 	# 记录选择癌症
-	cancer_choose <- reactiveValues(name = "lung", phe_primary="",
-		filter_phe_id=query_tcga_group(database = "ccle", cancer = "lung", return_all = T))
+	cancer_choose <- reactiveValues(name = "ACC", phe_primary="",
+		filter_phe_id=query_tcga_group(database = "toil",cancer = "BRCA", return_all = T))
 	observe({
 		cancer_choose$name = input$choose_cancer
-		cancer_choose$phe_primary <- query_tcga_group(database = "ccle",
-			cancer = cancer_choose$name, return_all = T)
+		cancer_choose$phe_primary <- query_tcga_group(database = "toil",cancer = cancer_choose$name, return_all = T)
 	})
 
-	# 数据源设置
-	opt_pancan = callModule(mol_origin_Server, "mol_origin2cor", database = "ccle")
-
 	# 自定义上传metadata数据
-	custom_meta = callModule(custom_meta_Server, "custom_meta2cor", database = "ccle")
-	# signature
-	sig_dat = callModule(add_signature_Server, "add_signature2cor", database = "ccle")
+	custom_meta = callModule(custom_meta_Server, "custom_meta2cor", database = "toil")
+	# # signature
+	sig_dat = callModule(add_signature_Server, "add_signature2cor", database = "toil")
+	# sig_dat = reactive({NULL})
 	custom_meta_sig = reactive({
 		if(is.null(custom_meta())){
 			return(sig_dat())
@@ -197,28 +185,54 @@ server.modules_ccle_cor_o2o = function(input, output, session) {
 		}
 	})
 
+	# 数据源设置
+	opt_pancan = callModule(mol_origin_Server, "mol_origin2cor", database = "toil")
+
 	## 过滤样本
 	# exact filter module
 	filter_phe_id = callModule(filter_samples_Server, "filter_samples2cor",
-					   database = "ccle",
+					   database = "toil",
 					   cancers=reactive(cancer_choose$name),
 					   custom_metadata=reactive(custom_meta_sig()),
 					   opt_pancan = reactive(opt_pancan()))
+
+	# filter_phe_id = reactive({NULL})
+	# quick filter widget
 	observe({
+		code_types_valid = code_types[names(code_types) %in% 
+							unique(cancer_choose$phe_primary$Code)]
+		updatePickerInput(
+			session,
+			"filter_by_code",
+			choices = unlist(code_types_valid,use.names = F),
+			selected =  unlist(code_types_valid,use.names = F)
+		)
+	})
+
+	# 综合上述二者
+	observe({
+		# quick filter
+		choose_codes = names(code_types)[unlist(code_types) %in% input$filter_by_code]
+		filter_phe_id2 = cancer_choose$phe_primary %>%
+			dplyr::filter(Code %in% choose_codes) %>%
+			dplyr::pull("Sample")
+
 		# exact filter
 		if(is.null(filter_phe_id())){
-			cancer_choose$filter_phe_id = cancer_choose$phe_primary$Sample
+			cancer_choose$filter_phe_id = filter_phe_id2
 		} else {
-			cancer_choose$filter_phe_id = filter_phe_id()
+			cancer_choose$filter_phe_id = intersect(filter_phe_id2,filter_phe_id())
 		}
 
 		output$filter_phe_id_info = renderPrint({
 			cat(paste0("Tip: ", length(cancer_choose$filter_phe_id), " samples are retained"))
 		})
 	})
+
+
 	## x-axis panel
 	x_axis_data = callModule(download_feat_Server, "download_x_axis", 
-							 database = "ccle",
+							 database = "toil",
 							 samples=reactive(cancer_choose$filter_phe_id),
 							 custom_metadata=reactive(custom_meta_sig()),
 						     opt_pancan = reactive(opt_pancan()),
@@ -227,13 +241,12 @@ server.modules_ccle_cor_o2o = function(input, output, session) {
 
 	## y-axis panel
 	y_axis_data = callModule(download_feat_Server, "download_y_axis", 
-							 database = "ccle",
+							 database = "toil",
 							 samples=reactive(cancer_choose$filter_phe_id),
 							 custom_metadata=reactive(custom_meta_sig()),
 						     opt_pancan = reactive(opt_pancan()),
 						     check_numeric=TRUE
-							 )	
-
+							 )
 
 	# 合并分析
 	# scatterplot逻辑：先绘图，再提取相关性结果
@@ -248,11 +261,10 @@ server.modules_ccle_cor_o2o = function(input, output, session) {
 		data
 	})
 
-
 	observe({
 		updateTextInput(session, "x_name", value = unique(x_axis_data()$id))
 		updateTextInput(session, "y_name", value = unique(y_axis_data()$id))
-		updateTextInput(session, "title_name", value = "CCLE")
+		updateTextInput(session, "title_name", value = cancer_choose$name)
 	})
 
 	cor_plot_sct = eventReactive(input$step3_plot_sct, {
@@ -260,80 +272,31 @@ server.modules_ccle_cor_o2o = function(input, output, session) {
 			need(try(nrow(merge_data_sct())>0), 
 				"Please inspect whether to get valid data in Step2."),
 		)
-
-		merge_data_sct = merge_data_sct()
-
-		cor_method = switch(isolate(input$cor_method),
-			Pearson = "parametric", Spearman = "nonparametric")
-		p = ggscatterstats(
-		  merge_data_sct,
-		  x = "x_value",
-		  y = "y_value",
-		  xlab = isolate(input$x_name),
-		  ylab = isolate(input$y_name),
-		  title = isolate(input$title_name),
-		  type = cor_method,
-		  point.args = list(size = isolate(input$point_size), alpha = isolate(input$point_alpha)),
-		  smooth.line.args = list(color = isolate(input$line_color),linewidth = 1.5,method = "lm",formula = y ~ x),
-		  xsidehistogram.args = list(fill = isolate(input$x_hist_color), color = "black", na.rm = TRUE),
-		  ysidehistogram.args = list(fill = isolate(input$y_hist_color), color = "black", na.rm = TRUE),
-		  bf.message = FALSE
-		) + 
-			theme(text = element_text(size=isolate(input$axis_size)),
-				  plot.title = element_text(size=isolate(input$title_size), hjust = 0.5))
-		pval = formatC(extract_stats(p)$subtitle_data$p.value, digits = 3, format = 'e')
-		r = round(extract_stats(p)$subtitle_data$estimate,3)
-		p$labels$subtitle = bquote(paste(widehat(italic(r))[.(input$cor_method)] == .(r), ', ' ,italic(p) == .(pval)))
-		if(input$side_hist=="NO"){
-			p = p + theme(#ggside.panel.scale = 1,
-			      ggside.axis.text = element_blank(),
-			      ggside.axis.ticks = element_blank())
-		}
+		p = plot_cor_o2o(
+			data = merge_data_sct(), cor_method = input$cor_method,
+			xlab = input$x_name, ylab = input$y_name, title = input$title_name, 
+			point.args = list(size = input$point_size, alpha = input$point_alpha),
+			smooth.line.args = list(color = input$line_color,linewidth = 1.5,method = "lm",formula = y ~ x),
+			xsidehistogram.args = list(fill = input$x_hist_color, color = "black", na.rm = TRUE),
+			ysidehistogram.args = list(fill = input$y_hist_color, color = "black", na.rm = TRUE),
+			axis_size = input$axis_size, title_size = input$title_size, side_hist = input$side_hist,
+			custom_theme = themes_list[[input$theme]]
+		)
 		return(p)
 	})
 	output$cor_plot_sct = renderPlot({cor_plot_sct()})
 
-	# 3个下载按钮
-	output$save_plot_bt = downloadHandler(
-		filename = function(){
-			paste0("Scatterplot", "_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".",input$save_plot_F)
-		},
-		content = function(file){
-			p = cor_plot_sct()
-			
-		    if (input$save_plot_F == "pdf") {
-		      pdf(file, width = input$save_plot_W, height = input$save_plot_H)
-		      print(p)
-		      dev.off()
-		    } else if (input$save_plot_F == "png"){
-		      png(file, width = input$save_plot_W, height = input$save_plot_H, res = 600, units = "in")
-		      print(p)
-		      dev.off()
-		    }
-		}
-	)
+	# Download results
+	observeEvent(input$step3_plot_sct,{
+		res1 = cor_plot_sct()
+		res2 = merge_data_sct()
+		p_cor = extract_stats(cor_plot_sct())$subtitle_data
+		p_cor = p_cor[-which(colnames(p_cor)=="expression")]
+		p_cor$parameter1 = unique(merge_data_sct()$x_axis)
+		p_cor$parameter2 = unique(merge_data_sct()$y_axis)
+		p_cor = p_cor %>% dplyr::mutate(cancer = cancer_choose$name, .before=1)
+		res3 = p_cor
 
-	output$save_data_raw = downloadHandler(
-		filename = function(){
-			paste0("Correlation_rawdata_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
-		},
-		content = function(file){
-			p_raw = merge_data_sct()
-			write.csv(p_raw, file, row.names = FALSE)
-		}
-	)
-
-	output$save_data_res = downloadHandler(
-		filename = function(){
-			paste0("Correlation_result_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
-		},
-		content = function(file){
-			p_cor = extract_stats(cor_plot_sct())$subtitle_data
-			p_cor = p_cor[-which(colnames(p_cor)=="expression")]
-			p_cor$parameter1 = unique(merge_data_sct()$x_axis)
-			p_cor$parameter2 = unique(merge_data_sct()$y_axis)
-			p_cor = p_cor %>% dplyr::mutate(cancer = cancer_choose$name, .before=1)
-			write.csv(p_cor, file, row.names = FALSE)
-		}
-	)
+		callModule(download_res_Server, "download_res2cor", res1, res2, res3)
+	})
 }
