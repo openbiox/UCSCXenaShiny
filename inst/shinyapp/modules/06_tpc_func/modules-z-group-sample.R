@@ -7,15 +7,6 @@ group_samples_UI = function(id, button_name="Filter by multi-conditions", databa
 
   tagList(
     # h4("1. Select one condition"),
-
-    # shinyWidgets::actionBttn(
-    #   ns("query_dist"), "Observe",
-    #       style = "gradient",
-    #       icon = icon("chart-simple"),
-    #       color = "primary",
-    #       block = TRUE,
-    #       size = "sm"
-    # ),
     
     fluidRow(
       column(
@@ -233,6 +224,7 @@ group_samples_Server = function(input, output, session, database = "toil",
   
   ## query conditon & observe distribution
   condi_data = eventReactive(input$query_dist,{
+    shinyjs::disable("query_dist")
     L2_x = switch(input$data_L1,
         `Molecular profile` = input$genomic_profile,
         `Tumor index` = input$tumor_index,
@@ -283,6 +275,7 @@ group_samples_Server = function(input, output, session, database = "toil",
       }
     }
     # req(nrow(x_data)>0)
+    shinyjs::enable("query_dist")
     if(nrow(x_data)>0){
       x_data$level1 = L1_x
       x_data$cancer = clinical_phe[,2,drop=T][match(x_data$Sample, clinical_phe$Sample)]
@@ -292,7 +285,6 @@ group_samples_Server = function(input, output, session, database = "toil",
     } else {
       NULL
     }
-
   })
   # output$condi_dist = renderPrint({head(condi_data())})
 

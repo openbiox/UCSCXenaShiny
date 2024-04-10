@@ -126,16 +126,14 @@ ui.modules_pancan_sur_m2o = function(id) {
 							   div(uiOutput(ns("sur_stat_tb.ui")),style = "height:600px"),
 							   )
 					),
+					br(),
 					h4(strong("S3.2 Download results")), 
-					uiOutput(ns("sur_stat_dw.ui"))
+					download_res_UI(ns("download_res2sur"))
 				)
 			)
 		)
 	)
 }
-
-
-
 
 
 server.modules_pancan_sur_m2o = function(input, output, session) {
@@ -327,7 +325,7 @@ server.modules_pancan_sur_m2o = function(input, output, session) {
 			if(is.na(merge_by[[1]][2])) merge_by[[1]][1] = 1
 			if(is.na(merge_by[[2]][2])) merge_by[[2]][2] = 1
 			datas_split = split(datas, datas$id)
-
+			shinyjs::disable("set_group")
 			withProgress(message = "Please wait for a while.",{
 				datas = lapply(seq(datas_split), function(i){
 					# 进度提醒
@@ -345,7 +343,7 @@ server.modules_pancan_sur_m2o = function(input, output, session) {
 					data_id = na.omit(data_id)
 				}) %>% do.call(rbind, .) %>% tibble::remove_rownames()
 			})
-
+			shinyjs::enable("set_group")
 
 		} else {
 		    shiny::validate(
@@ -403,7 +401,7 @@ server.modules_pancan_sur_m2o = function(input, output, session) {
 	sur_stat = eventReactive(input$cal_batch_sur,{
 		datas = L3s_x_data_sur_group()
 		valid_ids = unique(datas$id)
-
+		shinyjs::disable("cal_batch_sur")
 		withProgress(message = "Please wait for a while.",{
 			sur_stat = lapply(seq(valid_ids), function(i){
 			    incProgress(1 / length(valid_ids), detail = paste0("(Finished ",i,"/",length(valid_ids),")"))
@@ -465,6 +463,9 @@ server.modules_pancan_sur_m2o = function(input, output, session) {
 				dplyr::arrange(p.value)
 			sur_stat
 		})
+		shinyjs::enable("cal_batch_sur")
+		sur_stat
+
 	})
 
 	output$sur_stat_tb.ui = renderUI({
@@ -485,30 +486,11 @@ server.modules_pancan_sur_m2o = function(input, output, session) {
 		}) 
 		dataTableOutput(ns("sur_stat_tb"))
 	})
-
-	output$sur_stat_dw.ui = renderUI({
-		fluidRow(
-			column(6,downloadButton(ns("sur_batch_raw"), "Raw data(.csv)")),
-			column(6,downloadButton(ns("sur_batch_res"), "Result data(.csv)"))
-		)
+	# Download results
+	observeEvent(input$cal_batch_sur,{
+		res1 = NULL
+		res2 = L3s_x_data_sur_group()
+		res3 = sur_stat()
+		callModule(download_res_Server, "download_res2sur", res1, res2, res3)
 	})
-
-	output$sur_batch_raw = downloadHandler(
-		filename = function(){
-			paste0("Batch_survival_rawdata_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
-		},
-		content = function(file){
-			datas = L3s_x_data_sur_group()
-			write.csv(datas, file, row.names = FALSE)
-		}
-	)
-	output$sur_batch_res = downloadHandler(
-		filename = function(){
-			paste0("Batch_survival_result_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
-		},
-		content = function(file){
-			sur_stat_ = sur_stat()
-			write.csv(sur_stat_, file, row.names = FALSE)
-		}
-	)
 }

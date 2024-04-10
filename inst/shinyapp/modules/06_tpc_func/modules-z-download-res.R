@@ -14,7 +14,7 @@ download_res_UI = function(id){
                         numericInput(ns("save_plot_W"), NULL ,min = 1, max = 20, value = 10, step = 0.5),	
                         div(h3("3. Format:"),style="width:400px;"),		
                         radioGroupButtons(
-                            inputId = "save_plot_F",
+                            inputId = ns("save_plot_F"),
                             label = NULL,
                             status = "primary",
                             choices = c("PDF", "PNG"),
@@ -48,16 +48,16 @@ download_res_Server = function(input, output, session,
 
 	output$save_plot_bt = downloadHandler(
 		filename = function(){
-			paste0("Plot", "_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".",input$save_plot_F)
+			paste0("Plot", "_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".",tolower(input$save_plot_F))
 		},
 		content = function(file){
 			# p = cor_plot_bar()
             p = res1
-		    if (input$save_plot_F == "pdf") {
+		    if (input$save_plot_F == "PDF") {
 		      pdf(file, width = input$save_plot_W, height = input$save_plot_H)
 		      print(p)
 		      dev.off()
-		    } else if (input$save_plot_F == "png"){
+		    } else if (input$save_plot_F == "PNG"){
 		      png(file, width = input$save_plot_W, height = input$save_plot_H, res = 600, units = "in")
 		      print(p)
 		      dev.off()

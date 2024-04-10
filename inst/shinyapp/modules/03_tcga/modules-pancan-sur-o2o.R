@@ -100,7 +100,7 @@ ui.modules_pancan_sur_o2o = function(id) {
 					h4(strong("S3.2 Set visualization parameters")), 
 			      	uiOutput(ns("one_params.ui")),
 					dropMenu(
-						actionButton(ns("more_visu"), "Set more visualization params"),
+						actionBttn(ns("more_visu"), label = "Other options", style = "bordered",color = "success",icon = icon("bars")),
 						div(h3(strong("Params for Log-rank test")),style="width:500px;"),
 						div(h4("1. Wheather to dislpay risk.table:"),style="width:500px;"),
 						fluidRow(
@@ -153,33 +153,9 @@ ui.modules_pancan_sur_o2o = function(id) {
 							   plotOutput({ns("sur_plot_one")}, height = "500px") 
 						)
 					),
-
+					br(),
 					h4(strong("S3.3 Download results")), 
-				    fluidRow(
-				    	column(3, downloadButton(ns("save_plot_bt"), "Figure")),
-				    	column(3, offset = 0, downloadButton(ns("save_data_raw"), "Raw data(.csv)")),
-				    	column(3, offset = 1, downloadButton(ns("save_data_res"), "Analyzed data(.csv)")),
-				    ),
-				    br(),
-				    fluidRow(
-				    	column(2, p("Plot Height:")),
-				    	column(3, numericInput(ns("save_plot_H"), NULL ,min = 1, max = 20, value = 10, step = 0.5)),
-				    	column(2, p("Plot Width:")),
-				    	column(3, numericInput(ns("save_plot_W"), NULL, min = 1, max = 20, value = 10, step = 0.5)),
-				        column(
-				        	2,
-					        prettyRadioButtons(
-					          inputId = ns("save_plot_F"),
-					          label = NULL,
-					          choices = c("pdf", "png"),
-					          selected = "pdf",
-					          inline = TRUE,
-					          icon = icon("check"),
-					          animation = "jelly",
-					          fill = TRUE
-					        )
-				        )
-				    )
+					download_res_UI(ns("download_res2sur"))
 				)
 			)
 		)
@@ -364,119 +340,24 @@ server.modules_pancan_sur_o2o = function(input, output, session) {
 			need(try(nrow(sur_res_one$sur_dat)>0), 
 				"Please inspect whether to set valid groups in S3 step."),
 		)
-		if(input$plot_CI == "NO"){
-			conf.int = FALSE
-			conf.int.style = "ribbon"
-		} else if(input$plot_CI == "YES(ribbon)"){
-			conf.int = TRUE
-			conf.int.style = "ribbon"
-		} else if(input$plot_CI == "YES(step)"){
-			conf.int = TRUE
-			conf.int.style = "step"
-		}
-		dat = sur_res_one$sur_dat
-
-		custom_theme <- function(plot_size) {
-		  theme_classic() %+replace%
-		    theme(
-		      plot.title=element_text(hjust=0.5, size = plot_size)
-		    )
-		}
-
-
-		if(input$plot_table=="NO" & input$plot_ncensor=="NO"){
-			surv.plot.height = 1
-           	risk.table.height = 0 
-           	ncensor.plot.height = 0 
-           	risk.table = FALSE
-           	ncensor.plot = FALSE
-		} else if (input$plot_table=="YES" & input$plot_ncensor=="NO"){
-			surv.plot.height = 0.7
-           	risk.table.height = 0.3 
-           	ncensor.plot.height = 0
-           	risk.table = TRUE
-           	ncensor.plot = FALSE
-		} else if (input$plot_table=="NO" & input$plot_ncensor=="YES"){
-			surv.plot.height = 0.7
-           	risk.table.height = 0 
-           	ncensor.plot.height = 0.3 
-           	risk.table = FALSE
-           	ncensor.plot = TRUE
-		} else if (input$plot_table=="YES" & input$plot_ncensor=="YES"){
-			surv.plot.height = 0.7
-           	risk.table.height = 0.15
-           	ncensor.plot.height = 0.15
-           	risk.table = TRUE
-           	ncensor.plot = TRUE
-		}
-
-		if(input$sur_method=="Log-rank test"){	
-			fit <- survfit(Surv(time, status) ~ Group, data = dat)
-			p <- ggsurvplot(fit, data = dat,#data = group_sur_final(), 
-	                       pval = TRUE, pval.method = TRUE, 
-	                       palette = c(input$one_log_color1, input$one_log_color2), 
-	                       size = 1.2, font.legend = c(14, "black"), 
-	                       font.x = c(input$axis_size, "bold", "black"), 
-	                       font.y = c(input$axis_size,  "bold", "black"), 
-	                       font.tickslab = c(12, "bold", "black"), 
-	                       xlab = input$x_name,
-	                       title = input$title_name,
-	                       conf.int = conf.int,
-	                       conf.int.style = conf.int.style,
-	                       risk.table = risk.table, risk.table.col = "strata", risk.table.y.text = FALSE, 
-	                       ncensor.plot = ncensor.plot, 
-	                       surv.plot.height = surv.plot.height, 
-	                       risk.table.height = risk.table.height, 
-	                       ncensor.plot.height = ncensor.plot.height, 
-	                       ggtheme = custom_theme(input$title_size))
-		}  else if (input$sur_method=="Univariate Cox regression"){
-			fit = coxph(Surv(time, status) ~ Group , data = dat)
-			p = ggforest(fit,data = dat,#fontsize = 1,
-				cpositions = c(input$text_c1, input$text_c2, input$text_c3),
-				fontsize = input$axis_size_2, main = input$title_name_2
-				)
-		}
+		p = plot_sur_o20(
+			sur_res_one$sur_dat, plot_CI=input$plot_CI, plot_table=input$plot_table, 
+			plot_ncensor=input$plot_ncensor, sur_method=input$sur_method,
+        	one_log_color1=input$one_log_color1, one_log_color2=input$one_log_color2, 
+			axis_size=input$axis_size, x_name=input$x_name, 
+			title_name=input$title_name, title_size=input$title_size,
+        	text_c1=input$text_c1, text_c2=input$text_c2, text_c3=input$text_c3,
+			axis_size_2=input$axis_size_2, title_name_2=input$title_name_2)
 		p
 	})
 
 	output$sur_plot_one = renderPlot({sur_plot_one()})
 
-	# 3个下载按钮
-	output$save_plot_bt = downloadHandler(
-		filename = function(){
-			paste0("Curve", "_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".",input$save_plot_F)
-		},
-		content = function(file){
-			p = sur_plot_one()
-		    if (input$save_plot_F == "pdf") {
-		      pdf(file, width = input$save_plot_W, height = input$save_plot_H)
-		      print(p)
-		      dev.off()
-		    } else if (input$save_plot_F == "png"){
-		      png(file, width = input$save_plot_W, height = input$save_plot_H, res = 600, units = "in")
-		      print(p)
-		      dev.off()
-		    }
-		}
-	)
-
-	output$save_data_raw = downloadHandler(
-		filename = function(){
-			paste0("Survival_rawdata_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
-		},
-		content = function(file){
-			p_raw = sur_res_one$sur_dat
-			write.csv(p_raw, file, row.names = FALSE)
-		}
-	)
-
-	output$save_data_res = downloadHandler(
-		filename = function(){
-			paste0("Survival_result_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
-		},
-		content = function(file){
-			p_raw = sur_res_one$sur_res
-			write.csv(p_raw, file, row.names = FALSE)
-		}
-	)
+	# Download results
+	observeEvent(input$sur_analysis_bt_single,{
+		res1 = sur_plot_one()
+		res2 = sur_res_one$sur_dat
+		res3 = sur_res_one$sur_res
+		callModule(download_res_Server, "download_res2sur", res1, res2, res3)
+	})
 }

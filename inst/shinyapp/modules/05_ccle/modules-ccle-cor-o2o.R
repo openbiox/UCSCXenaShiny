@@ -93,24 +93,31 @@ ui.modules_ccle_cor_o2o = function(id) {
 						column(3, colourpicker::colourInput(inputId = ns("y_hist_color"), "Hist color(y):", "#D55E00"))
 					),
 					dropMenu(
-						actionButton(ns("more_visu"), "Set more visualization params"),
-						div(h3("1. Adjust points:"),style="width:400px;"),
+						actionBttn(ns("more_visu"), label = "Other options", style = "bordered",color = "success",icon = icon("bars")),
+						div(h3("1. Select ggplot theme:"),style="width:400px;"),
+						fluidRow(
+							column(6,
+								selectInput(inputId = ns("theme"), label = NULL, 
+											choices = names(themes_list), selected = "ggstatplot")
+							)
+						),
+						div(h3("2. Adjust points:"),style="width:400px;"),
 						fluidRow(
 							column(4, numericInput(inputId = ns("point_size"), label = "Point size:", value = 3, step = 0.5)),
 							column(3, numericInput(inputId = ns("point_alpha"), label = "Point alpha:", value = 0.4, step = 0.1, min = 0, max = 1))
 						),
-						div(h3("2. Adjust text size:"),style="width:400px;"),
+						div(h3("3. Adjust text size:"),style="width:400px;"),
 						fluidRow(
 							column(4, numericInput(inputId = ns("axis_size"), label = "Text size:", value = 18, step = 0.5)),
 							column(4, numericInput(inputId = ns("title_size"), label = "Title size:", value = 20, step = 0.5))
 						),				
-						div(h3("3. Adjust lab and title name:"),style="width:400px;"),
+						div(h3("4. Adjust lab and title name:"),style="width:400px;"),
 						fluidRow(
 							column(4, textInput(inputId = ns("x_name"), label = "X-axis name:")),
 							column(4, textInput(inputId = ns("y_name"), label = "Y-axis name:")),
 							column(4, textInput(inputId = ns("title_name"), label = "Title name:"))
 						),	
-						div(h3("4. Display the histogram or not:"),style="width:400px;"),
+						div(h3("5. Display the histogram or not:"),style="width:400px;"),
 						fluidRow(
 							column(6, radioButtons(inputId = ns("side_hist"), label = NULL, 
 								choices = c("NO", "YES"), selected="YES",inline = TRUE)),
@@ -132,33 +139,9 @@ ui.modules_ccle_cor_o2o = function(id) {
 							   plotOutput({ns("cor_plot_sct")}, height = "500px") 
 						)
 					),
+					br(),
 					h4(strong("S3.3 Download results")), 
-				    fluidRow(
-				    	column(3, downloadButton(ns("save_plot_bt"), "Figure")),
-				    	column(3, offset = 0, downloadButton(ns("save_data_raw"), "Raw data(.csv)")),
-				    	column(3, offset = 1, downloadButton(ns("save_data_res"), "Analyzed data(.csv)"))
-				    ),
-
-				    br(),
-				    fluidRow(
-				    	column(2, p("Plot Height:")),
-				    	column(3, numericInput(ns("save_plot_H"), NULL ,min = 1, max = 20, value = 10, step = 0.5)),
-				    	column(2, p("Plot Width:")),
-				    	column(3, numericInput(ns("save_plot_W"), NULL, min = 1, max = 20, value = 10, step = 0.5)),
-				        column(
-				        	2,
-					        prettyRadioButtons(
-					          inputId = ns("save_plot_F"),
-					          label = NULL,
-					          choices = c("pdf", "png"),
-					          selected = "pdf",
-					          inline = TRUE,
-					          icon = icon("check"),
-					          animation = "jelly",
-					          fill = TRUE
-					        )
-				        )
-				    )
+					download_res_UI(ns("download_res2cor"))
 				)
 			)
 		)
@@ -267,53 +250,23 @@ server.modules_ccle_cor_o2o = function(input, output, session) {
 			smooth.line.args = list(color = input$line_color,linewidth = 1.5,method = "lm",formula = y ~ x),
 			xsidehistogram.args = list(fill = input$x_hist_color, color = "black", na.rm = TRUE),
 			ysidehistogram.args = list(fill = input$y_hist_color, color = "black", na.rm = TRUE),
-			axis_size = input$axis_size, title_size = input$title_size, side_hist = input$side_hist
+			axis_size = input$axis_size, title_size = input$title_size, side_hist = input$side_hist,
+			custom_theme = themes_list[[input$theme]]
 		)
 		return(p)
 	})
 	output$cor_plot_sct = renderPlot({cor_plot_sct()})
 
-	# 3个下载按钮
-	output$save_plot_bt = downloadHandler(
-		filename = function(){
-			paste0("Scatterplot", "_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".",input$save_plot_F)
-		},
-		content = function(file){
-			p = cor_plot_sct()
-			
-		    if (input$save_plot_F == "pdf") {
-		      pdf(file, width = input$save_plot_W, height = input$save_plot_H)
-		      print(p)
-		      dev.off()
-		    } else if (input$save_plot_F == "png"){
-		      png(file, width = input$save_plot_W, height = input$save_plot_H, res = 600, units = "in")
-		      print(p)
-		      dev.off()
-		    }
-		}
-	)
+	# Download results
+	observeEvent(input$step3_plot_sct,{
+		res1 = cor_plot_sct()
+		res2 = merge_data_sct()
+		p_cor = extract_stats(cor_plot_sct())$subtitle_data
+		p_cor = p_cor[-which(colnames(p_cor)=="expression")]
+		p_cor$parameter1 = unique(merge_data_sct()$x_axis)
+		p_cor$parameter2 = unique(merge_data_sct()$y_axis)
+		res3 = p_cor
 
-	output$save_data_raw = downloadHandler(
-		filename = function(){
-			paste0("Correlation_rawdata_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
-		},
-		content = function(file){
-			p_raw = merge_data_sct()
-			write.csv(p_raw, file, row.names = FALSE)
-		}
-	)
-
-	output$save_data_res = downloadHandler(
-		filename = function(){
-			paste0("Correlation_result_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
-		},
-		content = function(file){
-			p_cor = extract_stats(cor_plot_sct())$subtitle_data
-			p_cor = p_cor[-which(colnames(p_cor)=="expression")]
-			p_cor$parameter1 = unique(merge_data_sct()$x_axis)
-			p_cor$parameter2 = unique(merge_data_sct()$y_axis)
-			p_cor = p_cor %>% dplyr::mutate(cancer = cancer_choose$name, .before=1)
-			write.csv(p_cor, file, row.names = FALSE)
-		}
-	)
+		callModule(download_res_Server, "download_res2cor", res1, res2, res3)
+	})
 }

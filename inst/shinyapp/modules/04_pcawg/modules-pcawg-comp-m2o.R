@@ -101,7 +101,7 @@ ui.modules_pcawg_comp_m2o = function(id) {
 							   )
 					),
 					h4(strong("S3.2 Download results")), 
-					uiOutput(ns("comp_stat_dw.ui"))
+					download_res_UI(ns("download_res2comp"))
 				)
 			)
 		)
@@ -204,6 +204,7 @@ server.modules_pcawg_comp_m2o = function(input, output, session) {
 			need(try(nrow(group_final())>0), 
 				"Please inspect whether to set groups in S2 step."),
 		)
+		shinyjs::disable("cal_batch_comp")
 		withProgress(message = "Please wait for a while.",{
 			comp_stat = lapply(seq(L3s_x()), function(i){
 				# i = 1
@@ -242,7 +243,8 @@ server.modules_pcawg_comp_m2o = function(input, output, session) {
 			  dplyr::arrange(p.value)
 			comp_stat
 		})
-
+		shinyjs::enable("cal_batch_comp")
+		comp_stat
 	})
 
 	output$comp_stat_tb.ui = renderUI({
@@ -265,34 +267,14 @@ server.modules_pcawg_comp_m2o = function(input, output, session) {
 	dataTableOutput(ns("comp_stat_tb"))
 	})
 
-	output$comp_stat_dw.ui = renderUI({
-		fluidRow(
-			column(6,downloadButton(ns("comp_raw"), "Raw data(.csv)")),
-			column(6,downloadButton(ns("comp_res"), "Analyzied data(.csv)"))
-		)
+	# Download results
+	observeEvent(input$cal_batch_comp,{
+		res1 = NULL
+		group_data = group_final()[,c(1,3,4)]
+		colnames(group_data) = c("Sample","group","phenotype")
+		res2 = L3s_x_data() %>%
+			dplyr::inner_join(group_data) %>% na.omit()
+		res3 = comp_stat()
+		callModule(download_res_Server, "download_res2comp", res1, res2, res3)
 	})
-	output$comp_raw = downloadHandler(
-		filename = function(){
-			paste0("Batch_comparison_rawdata_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
-		},
-		content = function(file){
-			group_data = group_final()[,c(1,3,4)]
-			colnames(group_data) = c("Sample","group","phenotype")
-
-			data = L3s_x_data() %>%
-				dplyr::inner_join(group_data) %>% na.omit()
-
-			write.csv(data, file, row.names = FALSE)
-		}
-	)
-	output$comp_res = downloadHandler(
-		filename = function(){
-			paste0("Batch_comparison_result_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
-		},
-		content = function(file){
-			comp_stat_ = comp_stat()
-			write.csv(comp_stat_, file, row.names = FALSE)
-		}
-	)
-
 }

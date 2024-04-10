@@ -24,7 +24,7 @@ message("Checking dependencies...")
 source(system.file("shinyapp/utils_pkgs.R", package = "UCSCXenaShiny"))
 source(system.file("shinyapp/utils_appdata.R", package = "UCSCXenaShiny"))
 source(system.file("shinyapp/utils_func.R", package = "UCSCXenaShiny"))
-source(system.file("shinyapp/utils_plot.R", package = "UCSCXenaShiny"))
+source(system.file("shinyapp/utils_plot.R", package = "UCSCXenaShiny")) #TPC pipelines plot
 
 # Put modules here --------------------------------------------------------
 message("Loading modules and UIs...")

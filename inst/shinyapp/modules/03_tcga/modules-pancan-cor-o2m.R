@@ -289,12 +289,16 @@ server.modules_pancan_cor_o2m = function(input, output, session) {
 		req(cor_data_bar())
 		shiny::validate(
 			need(try(nrow(cor_data_bar())>0), 
-				"Please inspect whether to download valid X/Y axis data in S2 or S3 step."),
+				"Please inspect whether to download valid data in S2 step."),
 		)
 		cat(paste("The calculation has been successfully completed! (",format(Sys.time(), "%H:%M:%S"),")"))
 	})
 
 	cor_plot_bar = eventReactive(input$step3_plot_bar_2, {
+		# shiny::validate(
+		# 	need(try(input$step3_plot_bar_1>0), 
+		# 		"Please run the calculation step (S3.1) above."),
+		# )
 		p = plot_cor_o2m(
 			data=cor_data_bar(), label_size=input$label_size, x_name=input$x_name, title_name=input$title_name,
 			negative_color=input$negative_color, positive_color=input$positive_color, axis_size=input$axis_size, 

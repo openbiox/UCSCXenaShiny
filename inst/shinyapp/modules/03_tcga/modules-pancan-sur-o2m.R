@@ -102,8 +102,15 @@ ui.modules_pancan_sur_o2m = function(id) {
 			      	uiOutput(ns("multi_params.ui")),
 
 			      	dropMenu(
-						actionButton(ns("more_visu"), "Set more visualization params"),
+						actionBttn(ns("more_visu"), label = "Other options", style = "bordered",color = "success",icon = icon("bars")),		
 						placement = "left",
+						div(h3("Select ggplot theme:"),style="width:400px;"),
+						fluidRow(
+							column(6,
+								selectInput(inputId = ns("theme"), label = NULL, 
+											choices = names(themes_list), selected = "Minimal")
+							)
+						),
 						div(h3(strong("Params for Log-rank test")),style="width:500px;"),
 						div(h4("1. Add one vertical line:"),style="width:400px;"),
 				      	fluidRow(
@@ -152,9 +159,6 @@ ui.modules_pancan_sur_o2m = function(id) {
 						div(h5("Note: You can download the raw data and plot in local R environment for more detailed adjustment."))
 			      	),
 			      	br(),
-
-
-
 					shinyWidgets::actionBttn(
 						ns("sur_analysis_bt_multi"), "Run",
 				        style = "gradient",
@@ -169,38 +173,9 @@ ui.modules_pancan_sur_o2m = function(id) {
 							   plotOutput({ns("sur_plot_multi")}, height = "500px") 
 						)
 					),
-
+					br(),
 					h4(strong("S3.3 Download results")), 
-
-				    fluidRow(
-				    	column(3, downloadButton(ns("save_plot_bt"), "Figure")),
-				    	column(3, offset = 0, downloadButton(ns("save_data_raw"), "Raw data(.csv)")),
-				    	column(3, offset = 1, downloadButton(ns("save_data_res"), "Analyzed data(.csv)"))
-				    ),
-
-
-
-
-				    br(),
-				    fluidRow(
-				    	column(2, p("Plot Height:")),
-				    	column(3, numericInput(ns("save_plot_H"), NULL ,min = 1, max = 20, value = 10, step = 0.5)),
-				    	column(2, p("Plot Width:")),
-				    	column(3, numericInput(ns("save_plot_W"), NULL, min = 1, max = 20, value = 10, step = 0.5)),
-				        column(
-				        	2,
-					        prettyRadioButtons(
-					          inputId = ns("save_plot_F"),
-					          label = NULL,
-					          choices = c("pdf", "png"),
-					          selected = "pdf",
-					          inline = TRUE,
-					          icon = icon("check"),
-					          animation = "jelly",
-					          fill = TRUE
-					        )
-				        )
-				    )
+				    download_res_UI(ns("download_res2sur"))
 				)
 			)
 		)
@@ -392,171 +367,34 @@ server.modules_pancan_sur_o2m = function(input, output, session) {
 		}
 	})
 
+
 	sur_plot_multi = eventReactive(input$sur_analysis_bt_multi,{
 		shiny::validate(
 			need(try(nrow(sur_res_multi$sur_dat)>0), 
 				"Please inspect whether to set valid groups in S2 step."),
 		)
-		if(input$sur_method=="Log-rank test"){
-			dat = sur_res_multi$sur_res
-			# print(head(dat))
-			pval_df = dat %>%
-			  dplyr::select(Cancer, Group, rmean, p.value) %>% 
-			  dplyr::group_by(Cancer) %>% 
-			  dplyr::mutate(Risk = ifelse(rmean[1]>rmean[2],
-			                              paste0("Low risk(", Group[1],")"), 
-			                              paste0("High risk(", Group[1],")"))) %>% 
-			  dplyr::distinct(Cancer, p.value, Risk) %>% as.data.frame() %>% 
-			  dplyr::mutate(Cancer = factor(Cancer, levels = rev(sort(Cancer))))
-			# print(head(pval_df))
-			fill_cols = c(input$multi_log_color1, input$multi_log_color2)
-			names(fill_cols) = c(
-				paste0("Low risk(Group=",levels(sur_res_multi$sur_dat$Group)[1], ")"),
-				paste0("High risk(Group=",levels(sur_res_multi$sur_dat$Group)[1], ")"))
-			p1 = pval_df %>% 
-			  dplyr::mutate(pval_log = -log10(p.value)) %>% 
-			  dplyr::mutate(pval_log = ifelse(pval_log<10,pval_log, 10)) %>% 
-			  ggplot(aes(x = Cancer, y = pval_log, fill = Risk)) + 
-			  geom_col() +
-			  scale_fill_manual(values = fill_cols) + 
-			  xlab(NULL) + ylab(isolate(input$x_name)) +
-			  ggtitle(label = isolate(input$title_name)) +
-			  geom_hline(yintercept = -log10(input$multi_log_line), color = "red") +
-			  coord_flip() +
-			  theme_minimal() +
-			  theme(legend.position = "top",
-			        plot.margin = margin(0,0,0,0),
-			        text = element_text(size=input$axis_size),
-					plot.title = element_text(size=isolate(input$title_size), hjust = 0.5)
-			        )  
-			if(input$multi_log_label=="Signif.(value)"){
-				p2 =  ggplot(pval_df) +
-				  geom_text(aes(label=formatC(p.value, format = "e", digits = 2),
-				                x=Cancer,y=1),size = isolate(input$label_size)) +
-				  coord_flip()
-			} else if (input$multi_log_label=="Signif.(symbol)"){
-				p2 = pval_df %>%
-				  dplyr::mutate(p.label=case_when(
-				    p.value  < 0.001 ~ "***",
-				    p.value  < 0.01 ~ "**",
-				    p.value  < 0.05 ~ "*",
-				    TRUE ~ "ns"
-				  )) %>% ggplot() +
-				  geom_text(aes(label=p.label,x=Cancer,y=1),size = isolate(input$label_size)) + 
-				  coord_flip()
-			}
-			p2 = p2 +
-			  theme_minimal() +
-			  theme(axis.ticks = element_blank(),
-			        axis.text = element_blank(),
-			        axis.line = element_blank(),
-			        axis.title = element_blank(),
-			        axis.ticks.length.y = unit(0,"pt"),
-			        plot.margin = margin(0,0,0,0)) +
-			  theme(panel.grid.major.x = element_blank(),
-			        panel.grid.minor.x = element_blank())
-			p = p1 + p2 + plot_layout(widths = c(5,1))
-			p
-		} else if (input$sur_method=="Univariate Cox regression") {
-			dat = sur_res_multi$sur_dat
-			sur_res = lapply(sort(unique(dat$Cancer)), function(x){
-			  sur_dat_sub = subset(dat, Cancer==x)
-			  fit = coxph(Surv(time, status) ~ Group , data = sur_dat_sub)
-			  summary(fit)$coefficients %>% as.data.frame() %>% 
-			    tibble::rownames_to_column("Group") %>% 
-			    dplyr::mutate(Cancer = x, .before = 1)
-			}) %>% do.call(rbind, .)
-			# fill_cols = c(input$multi_cox_color)
-			fill_cols = c(input$cox_h_g1_color, input$cox_h_l1_color)
-			names(fill_cols) = c("HR>1","HR<1")
-			# names(fill_cols) = c(
-			# 	paste0("Group",levels(sur_res_multi$sur_dat$Group)[2]))
-			p1 = sur_res %>%
-			  dplyr::rename(`p.value`=`Pr(>|z|)`, `HR` = `exp(coef)`) %>% 
-			  dplyr::select(Cancer, Group, HR, p.value) %>% 
-			  dplyr::mutate(Cancer = factor(Cancer, levels = rev(sort(Cancer)))) %>%
-			  dplyr::mutate(HR.label = paste0("HR=",formatC(HR, format = "e", digits = 2))) %>%
-			  dplyr::mutate(p.value_label = formatC(p.value, format = "e", digits = 2)) %>% 
-			  dplyr::mutate(p.value_symbol=case_when(
-			    p.value  < 0.001 ~ "***",
-			    p.value  < 0.01 ~ "**",
-			    p.value  < 0.05 ~ "*",
-			    TRUE ~ "ns"
-			  )) %>% 
-			  dplyr::mutate(pval_log = -log10(p.value)) %>% 
-			  dplyr::mutate(pval_log = ifelse(pval_log<10,pval_log, 10)) %>% 
-			  dplyr::mutate(Direct = ifelse(HR>1,"HR>1","HR<1")) %>% 
-			  ggplot(aes(x = Cancer, y = pval_log, fill = Direct)) + 
-			  geom_col(position="dodge") + 
-			  scale_fill_manual(values = fill_cols) + 
-			  xlab(NULL) + ylab(isolate(input$x_name_2)) +
-			  ggtitle(label = isolate(input$title_name_2)) +
-			  guides(fill = guide_legend(title = paste0("Group:",levels(sur_res_multi$sur_dat$Group)[2]))) +
-			  geom_hline(yintercept = -log10(input$multi_cox_line), color = "red") +
-			  coord_flip() +
-			  theme_minimal() +
-			  theme(legend.position = "top",
-			        text = element_text(size=input$axis_size_2),
-					plot.title = element_text(size=isolate(input$title_size_2), hjust = 0.5)
-			        )  
-			if(input$multi_cox_label=="HR value"){
-				p = p1 + 
-				  geom_text(aes(y = max(pval_log),label = HR.label), size = isolate(input$label_size_2),
-				          position=position_dodge(width=0.9), hjust = 1)
-			} else if (input$multi_cox_label=="Signif.(symbol)"){
-				p = p1 + 
-				  geom_text(aes(y = max(pval_log),label = p.value_symbol), size = isolate(input$label_size_2),
-				          position=position_dodge(width=0.9), hjust = 1)
-			} else if (input$multi_cox_label=="Signif.(value)"){
-				p = p1 + 
-				  geom_text(aes(y = max(pval_log),label = p.value_label), size = isolate(input$label_size_2),
-				          position=position_dodge(width=0.9), hjust = 1)
-			}
-		}
+		p = plot_sur_02m(
+			sur_res_multi, sur_method=input$sur_method, 
+			multi_log_color1=input$multi_log_color1, multi_log_color2=input$multi_log_color2, 
+			x_name=input$x_name, title_name=input$title_name, multi_log_line=input$multi_log_line, 
+			axis_size=input$axis_size, title_size=input$title_size, multi_log_label=input$multi_log_label,
+        	label_size=input$label_size, cox_h_g1_color=input$cox_h_g1_color, cox_h_l1_color=input$cox_h_l1_color, 
+			x_name_2=input$x_name_2, title_name_2=input$title_name_2, multi_cox_line=input$multi_cox_line, 
+			axis_size_2=input$axis_size_2, title_size_2=input$title_size_2, 
+			multi_cox_label=input$multi_cox_label, label_size_2=input$label_size_2,
+			custom_theme=themes_list[[input$theme]]
+		)
 		p
 	})
 
 	# output$sur_plot_one = renderPlot({sur_plot_one()})
 	output$sur_plot_multi = renderPlot({sur_plot_multi()})
 
-
-	# 3个下载按钮
-	output$save_plot_bt = downloadHandler(
-		filename = function(){
-			paste0("Bar", "_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".",input$save_plot_F)
-		},
-		content = function(file){
-			p = sur_plot_multi()
-			
-		    if (input$save_plot_F == "pdf") {
-		      pdf(file, width = input$save_plot_W, height = input$save_plot_H)
-		      print(p)
-		      dev.off()
-		    } else if (input$save_plot_F == "png"){
-		      png(file, width = input$save_plot_W, height = input$save_plot_H, res = 600, units = "in")
-		      print(p)
-		      dev.off()
-		    }
-		}
-	)
-
-	output$save_data_raw = downloadHandler(
-		filename = function(){
-			paste0("Survival_rawdata_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
-		},
-		content = function(file){
-			p_raw = sur_res_multi$sur_dat
-			write.csv(p_raw, file, row.names = FALSE)
-		}
-	)
-
-	output$save_data_res = downloadHandler(
-		filename = function(){
-			paste0("Survival_result_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
-		},
-		content = function(file){
-			p_raw = sur_res_multi$sur_res
-			write.csv(p_raw, file, row.names = FALSE)
-		}
-	)
+	# Download results
+	observeEvent(input$sur_analysis_bt_multi,{
+		res1 = sur_plot_multi()
+		res2 = sur_res_multi$sur_dat
+		res3 = sur_res_multi$sur_res
+		callModule(download_res_Server, "download_res2sur", res1, res2, res3)
+	})
 }

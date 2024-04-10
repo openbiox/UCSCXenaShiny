@@ -102,29 +102,35 @@ ui.modules_pcawg_cor_o2m = function(id) {
 				        block = TRUE,
 				        size = "sm"
 					),
+					verbatimTextOutput(ns("message1")),
 					h4(strong("S3.2 Set visualization parameters")), 
 					fluidRow(
 						column(3, colourpicker::colourInput(inputId = ns("positive_color"), "Positive color:", "#d53e4f")),
 						column(3, colourpicker::colourInput(inputId = ns("negative_color"), "Negative color:", "#3288bd")),
-						column(3, 
-								dropMenu(
-									actionBttn(ns("more_visu"), label = NULL, style = "simple"),
-									div(h3("1. Adjust text size:"),style="width:400px;"),
-									fluidRow(
-										column(4, numericInput(inputId = ns("axis_size"), label = "Text size:", value = 18, step = 0.5)),
-										column(4, numericInput(inputId = ns("title_size"), label = "Title size:", value = 20, step = 0.5)),
-										column(4, numericInput(inputId = ns("label_size"), label = "Label size:", value = 5, step = 0.5)),
-									),				
-									div(h3("2. Adjust lab and title name:"),style="width:400px;"),
-									fluidRow(
-										column(4, textInput(inputId = ns("x_name"), label = "X-axis name:", 
-											value = "estimate coefficient")),
-										column(4, textInput(inputId = ns("title_name"), label = "Title name:",
-											value = NULL))
-									),	
-									div(h5("Note: You can download the raw data and plot in local R environment for more detailed adjustment.")),
-								)
-						)
+					),
+					dropMenu(
+						actionBttn(ns("more_visu"), label = "Other options", style = "bordered",color = "success",icon = icon("bars")),
+						div(h3("1. Select ggplot theme:"),style="width:400px;"),
+						fluidRow(
+							column(6,
+								selectInput(inputId = ns("theme"), label = NULL, 
+											choices = names(themes_list), selected = "Minimal")
+							)
+						),
+						div(h3("2. Adjust text size:"),style="width:400px;"),
+						fluidRow(
+							column(4, numericInput(inputId = ns("axis_size"), label = "Text size:", value = 18, step = 0.5)),
+							column(4, numericInput(inputId = ns("title_size"), label = "Title size:", value = 20, step = 0.5)),
+							column(4, numericInput(inputId = ns("label_size"), label = "Label size:", value = 5, step = 0.5)),
+						),				
+						div(h3("3. Adjust lab and title name:"),style="width:400px;"),
+						fluidRow(
+							column(4, textInput(inputId = ns("x_name"), label = "X-axis name:", 
+								value = "estimate coefficient")),
+							column(4, textInput(inputId = ns("title_name"), label = "Title name:",
+								value = NULL))
+						),	
+						div(h5("Note: You can download the raw data and plot in local R environment for more detailed adjustment.")),
 					),
 					br(),
 					shinyWidgets::actionBttn(
@@ -138,43 +144,17 @@ ui.modules_pcawg_cor_o2m = function(id) {
 					br(),
 					fluidRow(
 						column(10, offset = 1,
-							   plotOutput({ns("cor_plot_bar")}, height = "500px") 
+							   plotOutput({ns("cor_plot_bar")}, height = "470px") 
 						)
 					),
 					h4(strong("S3.3 Download results")), 
-				    fluidRow(
-				    	column(3, downloadButton(ns("save_plot_bt"), "Figure")),
-				    	column(3, offset = 0, downloadButton(ns("save_data_raw"), "Raw data(.csv)")),
-				    	column(3, offset = 1, downloadButton(ns("save_data_res"), "Analyzied data(.csv)"))
-				    ),
-				    br(),
-				    fluidRow(
-				    	column(2, p("Plot Height:")),
-				    	column(3, numericInput(ns("save_plot_H"), NULL ,min = 1, max = 20, value = 10, step = 0.5)),
-				    	column(2, p("Plot Width:")),
-				    	column(3, numericInput(ns("save_plot_W"), NULL, min = 1, max = 20, value = 10, step = 0.5)),
-				        column(
-				        	2,
-					        prettyRadioButtons(
-					          inputId = ns("save_plot_F"),
-					          label = NULL,
-					          choices = c("pdf", "png"),
-					          selected = "pdf",
-					          inline = TRUE,
-					          icon = icon("check"),
-					          animation = "jelly",
-					          fill = TRUE
-					        )
-				        )
-				    )
+				    download_res_UI(ns("download_res2cor"))
 				)
 			)
 		)
 	)
 
 }
-
-
 
 server.modules_pcawg_cor_o2m = function(input, output, session) {
 	ns <- session$ns
@@ -206,7 +186,6 @@ server.modules_pcawg_cor_o2m = function(input, output, session) {
 			}
 		}
 	})
-
 
 	## 过滤样本
 	# quick filter widget
@@ -278,6 +257,7 @@ server.modules_pcawg_cor_o2m = function(input, output, session) {
 
 	cor_data_bar = eventReactive(input$step3_plot_bar_1, {
 		merge_data_bar = merge_data_bar()
+		shinyjs::disable("step3_plot_bar_1")
 		cor_method = switch(isolate(input$cor_method),
 			Pearson = "parametric", Spearman = "nonparametric")
 		valid_cancer_choose = sort(unique(merge_data_bar$cancer))
@@ -295,78 +275,46 @@ server.modules_pcawg_cor_o2m = function(input, output, session) {
 			}) %>% do.call(rbind, .) %>% 
 			dplyr::select(!expression) %>% 
 			dplyr::mutate(cancer = valid_cancer_choose, .before=1)
+			shinyjs::enable("step3_plot_bar_1")
 			stat_cor
 		})
 	})
 
-	cor_plot_bar = eventReactive(input$step3_plot_bar_2, {
+	output$message1 = renderPrint({
+		req(cor_data_bar())
 		shiny::validate(
 			need(try(nrow(cor_data_bar())>0), 
 				"Please inspect whether to download valid X/Y axis data in S2 or S3 step."),
 		)
+		cat(paste("The calculation has been successfully completed! (",format(Sys.time(), "%H:%M:%S"),")"))
+	})
 
-		cor_data_bar = cor_data_bar()
-		p = cor_data_bar %>% 
-		  dplyr::arrange(estimate) %>% 
-		  dplyr::mutate(cancer = factor(cancer, levels = cancer)) %>% 
-		  dplyr::mutate(group = estimate>0) %>% 
-		  ggplot(aes(x=cancer, y=estimate, fill=group)) + 
-		  geom_col(color="black") + 
-		  geom_text(aes(y=0,label=format(round(estimate,2), nsmall =2),
-		                hjust = ifelse(estimate >= 0, 1.5, -0.5)),
-		  			size = isolate(input$label_size)) +
-		  xlab("") + ylab(isolate(input$x_name)) + #转置
-		  ggtitle(label = isolate(input$title_name)) +
-		  coord_flip() +
-		  scale_fill_manual(values = c(isolate(input$negative_color),isolate(input$positive_color))) +
-		  theme_minimal() + 
-		  theme(legend.position = "none", text = element_text(size=isolate(input$axis_size)),
-				plot.title = element_text(size=isolate(input$title_size), hjust = 0.5))
+
+	cor_plot_bar = eventReactive(input$step3_plot_bar_2, {
+		# shiny::validate(
+		# 	need(try(input$step3_plot_bar_1>0), 
+		# 		"Please run the calculation step (S3.1) above."),
+		# )
+		p = plot_cor_o2m(
+			data=cor_data_bar(), label_size=input$label_size, x_name=input$x_name, title_name=input$title_name,
+			negative_color=input$negative_color, positive_color=input$positive_color, axis_size=input$axis_size, 
+			title_size=input$title_size,
+			custom_theme = themes_list[[input$theme]]
+		)
 		return(p)
 	})
 
 	output$cor_plot_bar = renderPlot({cor_plot_bar()})
 
-	# 3个下载按钮
-	output$save_plot_bt = downloadHandler(
-		filename = function(){
-			paste0("Barplot", "_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".",input$save_plot_F)
-		},
-		content = function(file){
-			p = cor_plot_bar()
-			
-		    if (input$save_plot_F == "pdf") {
-		      pdf(file, width = input$save_plot_W, height = input$save_plot_H)
-		      print(p)
-		      dev.off()
-		    } else if (input$save_plot_F == "png"){
-		      png(file, width = input$save_plot_W, height = input$save_plot_H, res = 600, units = "in")
-		      print(p)
-		      dev.off()
-		    }
-		}
-	)
+	# Download results
+	observeEvent(input$step3_plot_bar_2,{
+		res1 = cor_plot_bar()
+		res2 = merge_data_bar()
 
-	output$save_data_raw = downloadHandler(
-		filename = function(){
-			paste0("Correlation_rawdata_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
-		},
-		content = function(file){
-			p_raw = merge_data_bar()
-			write.csv(p_raw, file, row.names = FALSE)
-		}
-	)
-	output$save_data_res = downloadHandler(
-		filename = function(){
-			paste0("Correlation_result_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
-		},
-		content = function(file){
-			p_cor = cor_data_bar()
-			p_cor$parameter1 = unique(merge_data_bar()$x_axis)
-			p_cor$parameter2 = unique(merge_data_bar()$y_axis)	
-			write.csv(p_cor, file, row.names = FALSE)
-		}
-	)
-
-
+		p_cor = cor_data_bar()
+		p_cor$parameter1 = unique(merge_data_bar()$x_axis)
+		p_cor$parameter2 = unique(merge_data_bar()$y_axis)	
+		res3 = p_cor
+		callModule(download_res_Server, "download_res2cor", res1, res2, res3)
+	})
 }

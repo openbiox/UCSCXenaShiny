@@ -89,18 +89,25 @@ ui.modules_ccle_comp_o2o = function(id) {
 						column(3, colourpicker::colourInput(inputId = ns("group_2_color"), "Color (Group 2):", "#56B4E9")),
 					),
 					dropMenu(
-						actionButton(ns("more_visu"), "Set more visualization params"),
-						div(h3("1. Adjust points:"),style="width:400px;"),
+						actionBttn(ns("more_visu"), label = "Other options", style = "bordered",color = "success",icon = icon("bars")),
+						div(h3("1. Select ggplot theme:"),style="width:400px;"),
+						fluidRow(
+							column(6,
+								selectInput(inputId = ns("theme"), label = NULL, 
+											choices = names(themes_list), selected = "ggstatplot")
+							)
+						),
+						div(h3("2. Adjust points:"),style="width:400px;"),
 						fluidRow(
 							column(3, numericInput(inputId = ns("point_size"), label = "Point size:", value = 3, step = 0.5)),
 							column(3, numericInput(inputId = ns("point_alpha"), label = "Point alpha:", value = 0.4, step = 0.1, min = 0, max = 1)),
 						),
-						div(h3("2. Adjust text size:"),style="width:400px;"),
+						div(h3("3. Adjust text size:"),style="width:400px;"),
 						fluidRow(
 							column(4, numericInput(inputId = ns("axis_size"), label = "Text size:", value = 18, step = 0.5)),
 							column(4, numericInput(inputId = ns("title_size"), label = "Title size:", value = 20, step = 0.5))
 						),				
-						div(h3("3. Adjust lab and title name:"),style="width:400px;"),
+						div(h3("4. Adjust lab and title name:"),style="width:400px;"),
 						fluidRow(
 							column(4, textInput(inputId = ns("x_name"), label = "X-axis name:")),
 							column(4, textInput(inputId = ns("y_name"), label = "Y-axis name:")),
@@ -125,34 +132,9 @@ ui.modules_ccle_comp_o2o = function(id) {
 							   plotOutput({ns("comp_plot_box")}, height = "500px") 
 						)
 					),
-
+					br(),
 					h4(strong("S3.3 Download results")), 
-				    fluidRow(
-				    	column(3, downloadButton(ns("save_plot_bt"), "Figure")),
-				    	column(3, offset = 0, downloadButton(ns("save_data_raw"), "Raw data(.csv)")),
-				    	column(3, offset = 1, downloadButton(ns("save_data_res"), "Analyzed data(.csv)"))
-				    ),
-
-				    br(),
-				    fluidRow(
-				    	column(2, p("Plot Height:")),
-				    	column(3, numericInput(ns("save_plot_H"), NULL ,min = 1, max = 20, value = 10, step = 0.5)),
-				    	column(2, p("Plot Width:")),
-				    	column(3, numericInput(ns("save_plot_W"), NULL, min = 1, max = 20, value = 10, step = 0.5)),
-				        column(
-				        	2,
-					        prettyRadioButtons(
-					          inputId = ns("save_plot_F"),
-					          label = NULL,
-					          choices = c("pdf", "png"),
-					          selected = "pdf",
-					          inline = TRUE,
-					          icon = icon("check"),
-					          animation = "jelly",
-					          fill = TRUE
-					        )
-				        )
-				    )
+					download_res_UI(ns("download_res2comp"))
 				)
 			)
 		)
@@ -267,77 +249,30 @@ server.modules_ccle_comp_o2o = function(input, output, session) {
 		if(!cancer_choose$single_cancer_ok){
 			return("No enough samples for comparing, please check your input.")
 		} else {
-			comp_method = switch(isolate(input$comp_method),
-				`t-test` = "parametric", wilcoxon = "nonparametric")
-			p = ggbetweenstats(
-			  data  = merge_data_box,
-			  x     = "group",
-			  y     = "value",
-			  xlab = isolate(input$x_name),
-			  ylab = isolate(input$y_name),
-			  title = isolate(input$title_name),
-			  bf.message = FALSE,
-			  type = comp_method,
-			  centrality.plotting = FALSE,
-			  median.color = 'black',
-			  point.args = list(size = isolate(input$point_size), alpha = isolate(input$point_alpha),
-			  	position = ggplot2::position_jitterdodge(dodge.width = 0.6), stroke = 0, na.rm = TRUE)
-			) + 
-			  ggplot2::scale_color_manual(values = c(isolate(input$group_1_color), isolate(input$group_2_color))) +
-			  theme(text = element_text(size=isolate(input$axis_size)),
-			        plot.title = element_text(size=isolate(input$title_size), hjust = 0.5),
-			        plot.subtitle = element_text(size = 12))
-			pval = formatC(extract_stats(p)$subtitle_data$p.value, digits = 3, format = 'e')
-			p$labels$subtitle = bquote(paste(.(input$comp_method),", ",italic(p) == .(pval)))
+			p = plot_comb_o2o(
+				data = merge_data_box(), xlab=input$x_name, ylab=input$y_name, title=input$title_name,
+				comp_method=input$comp_method, point_size=input$point_size, point_alpha=input$point_alpha,
+				group_1_color=input$group_1_color, group_2_color=input$group_2_color,
+				axis_size=input$axis_size, title_size=input$title_size,
+				custom_theme=themes_list[[input$theme]]
+			)
 			return(p)
 		}
 	})
 
 	output$comp_plot_box = renderPlot({comp_plot_box()})
 
-	# 3个下载按钮
-	output$save_plot_bt = downloadHandler(
-		filename = function(){
-			paste0("BoxViolin", "_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".",input$save_plot_F)
-		},
-		content = function(file){
-			p = comp_plot_box()
-			
-		    if (input$save_plot_F == "pdf") {
-		      pdf(file, width = input$save_plot_W, height = input$save_plot_H)
-		      print(p)
-		      dev.off()
-		    } else if (input$save_plot_F == "png"){
-		      png(file, width = input$save_plot_W, height = input$save_plot_H, res = 600, units = "in")
-		      print(p)
-		      dev.off()
-		    }
-		}
-	)
-	output$save_data_raw = downloadHandler(
-		filename = function(){
-			paste0("Compare_rawdata_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
-		},
-		content = function(file){
-			p_raw = merge_data_box()
-			write.csv(p_raw, file, row.names = FALSE)
-		}
-	)
-	output$save_data_res = downloadHandler(
-		filename = function(){
-			paste0("Compare_result_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
-		},
-		content = function(file){
-			p_comp = extract_stats(comp_plot_box())$subtitle_data
-			p_comp = p_comp[-which(colnames(p_comp)=="expression")]
-			p_comp$identifier = unique(merge_data_box()$id)
-			p_comp$phenotype = unique(merge_data_box()$phenotype)
-			p_comp$group_1 = levels(merge_data_box()$group)[1]
-			p_comp$group_2 = levels(merge_data_box()$group)[2]
-
-			write.csv(p_comp, file, row.names = FALSE)
-		}
-	)
-
-
+	# Download results
+	observeEvent(input$step3_plot_box,{
+		res1 = comp_plot_box()
+		res2 = merge_data_box()
+		p_comp = extract_stats(comp_plot_box())$subtitle_data
+		p_comp = p_comp[-which(colnames(p_comp)=="expression")]
+		p_comp$identifier = unique(merge_data_box()$id)
+		p_comp$phenotype = unique(merge_data_box()$phenotype)
+		p_comp$group_1 = levels(merge_data_box()$group)[1]
+		p_comp$group_2 = levels(merge_data_box()$group)[2]
+		res3 = p_comp
+		callModule(download_res_Server, "download_res2comp", res1, res2, res3)
+	})
 }

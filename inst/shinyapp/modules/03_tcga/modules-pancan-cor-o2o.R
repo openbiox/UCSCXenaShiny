@@ -98,9 +98,7 @@ ui.modules_pancan_cor_o2o = function(id) {
 						column(3, colourpicker::colourInput(inputId = ns("y_hist_color"), "Hist color(y):", "#D55E00"))
 					),
 					dropMenu(
-						# actionButton(ns("more_visu"), "Set more visualization params"),
 						actionBttn(ns("more_visu"), label = "Other options", style = "bordered",color = "success",icon = icon("bars")),
-						
 						div(h3("1. Select ggplot theme:"),style="width:400px;"),
 						fluidRow(
 							column(6,

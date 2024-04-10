@@ -92,25 +92,41 @@ ui.modules_pancan_comp_o2m = function(id) {
 
 					h4(strong("S3.1 Set analysis parameters")),
 					selectInput(ns("comp_method"), "Comparison method:",choices = c("t-test", "wilcoxon")),
+					shinyWidgets::actionBttn(
+						ns("step3_plot_line_1"), "Run (Calculate)",
+				        style = "gradient",
+				        icon = icon("chart-line"),
+				        color = "primary",
+				        block = TRUE,
+				        size = "sm"
+					),
+					verbatimTextOutput(ns("message1")),
 					h4(strong("S3.2 Set visualization parameters")), 
 					fluidRow(
 						column(3, colourpicker::colourInput(inputId = ns("group_1_color_2"), "Color (Group 1):", "#E69F00")),
 						column(3, colourpicker::colourInput(inputId = ns("group_2_color_2"), "Color (Group 2):", "#56B4E9")),
 					),
 					dropMenu(
-						actionButton(ns("more_visu"), "Set more visualization params"),
-						div(h3("1. Significance display:"),style="width:400px;"),
+						actionBttn(ns("more_visu"), label = "Other options", style = "bordered",color = "success",icon = icon("bars")),
+						div(h3("1. Select ggplot theme:"),style="width:400px;"),
+						fluidRow(
+							column(6,
+								selectInput(inputId = ns("theme"), label = NULL, 
+											choices = names(themes_list), selected = "Minimal")
+							)
+						),
+						div(h3("2. Significance display:"),style="width:400px;"),
 						fluidRow(
 							column(6, radioButtons(inputId = ns("significance"), label = "Significance:", 
 								choices = c("Value", "Symbol"), selected="Symbol",inline = TRUE)),
 						),
-						div(h3("2. Adjust text size:"),style="width:400px;"),
+						div(h3("3. Adjust text size:"),style="width:400px;"),
 						fluidRow(
 							column(4, numericInput(inputId = ns("axis_size"), label = "Text size:", value = 18, step = 0.5)),
 							column(4, numericInput(inputId = ns("title_size"), label = "Title size:", value = 20, step = 0.5)),
 							column(4, numericInput(inputId = ns("label_size"), label = "Label size:", value = 5, step = 0.5)),
 						),				
-						div(h3("3. Adjust lab and title name:"),style="width:400px;"),
+						div(h3("4. Adjust lab and title name:"),style="width:400px;"),
 						fluidRow(
 							column(4, textInput(inputId = ns("x_name"), label = "X-axis name:")),
 							column(4, textInput(inputId = ns("title_name"), label = "Title name:",
@@ -119,9 +135,8 @@ ui.modules_pancan_comp_o2m = function(id) {
 						div(h5("Note: You can download the raw data and plot in local R environment for more detailed adjustment.")),
 					),
 					br(),
-
 					shinyWidgets::actionBttn(
-						ns("step3_plot_line"), "Run",
+						ns("step3_plot_line_2"), "Run (Visualize)",
 				        style = "gradient",
 				        icon = icon("chart-line"),
 				        color = "primary",
@@ -131,37 +146,12 @@ ui.modules_pancan_comp_o2m = function(id) {
 					br(),
 					fluidRow(
 						column(10, offset = 1,
-							   plotOutput({ns("comp_plot_line")}, height = "500px") 
+							   plotOutput({ns("comp_plot_line")}, height = "480px") 
 						)
 					),
 
 					h4(strong("S3.3 Download results")), 
-				    fluidRow(
-				    	column(3, downloadButton(ns("save_plot_bt"), "Figure")),
-				    	column(3, offset = 0, downloadButton(ns("save_data_raw"), "Raw data(.csv)")),
-				    	column(3, offset = 1, downloadButton(ns("save_data_res"), "Analyzed data(.csv)"))
-				    ),
-
-				    br(),
-				    fluidRow(
-				    	column(2, p("Plot Height:")),
-				    	column(3, numericInput(ns("save_plot_H"), NULL ,min = 1, max = 20, value = 10, step = 0.5)),
-				    	column(2, p("Plot Width:")),
-				    	column(3, numericInput(ns("save_plot_W"), NULL, min = 1, max = 20, value = 10, step = 0.5)),
-				        column(
-				        	2,
-					        prettyRadioButtons(
-					          inputId = ns("save_plot_F"),
-					          label = NULL,
-					          choices = c("pdf", "png"),
-					          selected = "pdf",
-					          inline = TRUE,
-					          icon = icon("check"),
-					          animation = "jelly",
-					          fill = TRUE
-					        )
-				        )
-				    )
+				    download_res_UI(ns("download_res2comp"))
 				)
 			)
 		)
@@ -261,7 +251,7 @@ server.modules_pancan_comp_o2m = function(input, output, session) {
 							 )
 
 	# barplot逻辑：先批量计算相关性，再绘图
-	merge_data_line = eventReactive(input$step3_plot_line, {
+	merge_data_line = eventReactive(input$step3_plot_line_1, {
 		group_data = group_final()[,c(1,3,4)]
 		colnames(group_data) = c("Sample","group","phenotype")
 		y_axis_data = y_axis_data()
@@ -269,8 +259,6 @@ server.modules_pancan_comp_o2m = function(input, output, session) {
 			dplyr::select(cancer, Sample, value, group, everything())
 		data
 	})
-
-
 	# 仍需要检查数据，因为即使二分组本身成立，但可能样本缺失variable数据导致仍然只有一个分组
 	observe({
 		cancer_choose$multi_cancer_ok = 
@@ -284,22 +272,23 @@ server.modules_pancan_comp_o2m = function(input, output, session) {
 	})
 
 
-	comp_data_line = eventReactive(input$step3_plot_line, {
+	comp_data_line = eventReactive(input$step3_plot_line_1, {
 		merge_data_line = merge_data_line()
+		shinyjs::disable("step3_plot_line_1")
 		comp_method = switch(isolate(input$comp_method),
 			`t-test` = "parametric", wilcoxon = "nonparametric")
 		valid_cancer_choose = sort(cancer_choose$multi_cancer_ok)
 
 		withProgress(message = "Please wait for a while.",{
 			stat_comp = lapply(seq(valid_cancer_choose), function(i){
-			  tcga_type = valid_cancer_choose[i]
-			  p = ggbetweenstats(
-			    subset(merge_data_line, cancer==tcga_type),
-			  	x = "group",
-			  	y = "value",
-			    type = comp_method)
-			  incProgress(1 / length(valid_cancer_choose), detail = paste0("(Finished ",i,"/",length(valid_cancer_choose),")"))
-			  return(extract_stats(p)$subtitle_data)
+			tcga_type = valid_cancer_choose[i]
+			p = ggbetweenstats(
+				subset(merge_data_line, cancer==tcga_type),
+				x = "group",
+				y = "value",
+				type = comp_method)
+			incProgress(1 / length(valid_cancer_choose), detail = paste0("(Finished ",i,"/",length(valid_cancer_choose),")"))
+			return(extract_stats(p)$subtitle_data)
 			}) %>% do.call(rbind, .) %>% 
 			dplyr::select(!expression) %>% 
 			dplyr::mutate(cancer = valid_cancer_choose, .before=1) %>% 
@@ -307,8 +296,17 @@ server.modules_pancan_comp_o2m = function(input, output, session) {
 			dplyr::mutate(cancer = factor(cancer, levels = unique(cancer)))
 			stat_comp
 		})
+		shinyjs::enable("step3_plot_line_1")
+		stat_comp
 	})
-
+	output$message1 = renderPrint({
+		req(comp_data_line())
+		shiny::validate(
+			need(try(nrow(comp_data_line())>0), 
+				"Please inspect whether to download valid data in S2 step."),
+		)
+		cat(paste("The calculation has been successfully completed! (",format(Sys.time(), "%H:%M:%S"),")"))
+	})
 
 	observe({
 		updateTextInput(session, "x_name", value = unique(y_axis_data()$id))
@@ -316,107 +314,31 @@ server.modules_pancan_comp_o2m = function(input, output, session) {
 		updateTextInput(session, "title_name", value = "")
 	})
 
-	comp_plot_line = eventReactive(input$step3_plot_line, {
-		shiny::validate(
-			need(try(nrow(merge_data_line())>0), 
-				"Please inspect whether to set groups or download variable data in S2 or S3 step."),
+	comp_plot_line = eventReactive(input$step3_plot_line_2, {
+		p = plot_comb_o2m(
+			data1=merge_data_line(), data2=comp_data_line(),
+			x_name=input$x_name, title_name=input$title_name,
+			group_1_color_2=input$group_1_color_2, group_2_color_2=input$group_2_color_2,
+			axis_size=input$axis_size, title_size=input$title_size,
+			significance=input$significance, label_size=input$label_size,
+			custom_theme=themes_list[[input$theme]]
 		)
-		merge_data_line_sub = merge_data_line() %>%
-			dplyr::filter(cancer %in% as.character(unique(comp_data_line()$cancer))) %>%
-			dplyr::arrange(desc(cancer)) %>%
-			dplyr::mutate(cancer = factor(cancer, levels = unique(cancer)))
-
-		p1 = ggplot(merge_data_line_sub) + 
-		  stat_summary(aes(x=cancer, y=value, color=group),
-		               position=position_dodge(width=0.5)) + 
-		  xlab("") + ylab(isolate(input$x_name)) + #转置
-		  ggtitle(label = isolate(input$title_name)) +
-		  ggplot2::scale_color_manual(values = c(isolate(input$group_1_color_2), isolate(input$group_2_color_2))) +
-		  coord_flip() +
-		  theme_minimal() +
-		  theme(legend.position = "top",
-		        plot.margin = margin(0,0,0,0),
-		        # text = element_text(size=15),
-		  		text = element_text(size=isolate(input$axis_size)),
-				plot.title = element_text(size=isolate(input$title_size), hjust = 0.5)
-		        )
-
-		if(isolate(input$significance)=="Value"){
-			p2 = comp_data_line() %>% ggplot() + 
-			  geom_text(aes(label=formatC(p.value, format = "e", digits = 2),
-			                x=cancer,y=1), size = isolate(input$label_size)) +
-			  coord_flip()
-		} else if (isolate(input$significance)=="Symbol"){
-			p2 = comp_data_line() %>%
-			  dplyr::mutate(p.label=case_when(
-			    p.value < 0.001 ~ "***",
-			    p.value < 0.01 ~ "**",
-			    p.value < 0.05 ~ "*",
-			    TRUE ~ "ns"
-			  )) %>% ggplot() + 
-			  geom_text(aes(label=p.label, x=cancer, y=1), size = isolate(input$label_size)) +
-			  coord_flip()
-		}
-		p2 = p2 +
-		  theme_minimal() +
-		  theme(axis.ticks = element_blank(),
-		        axis.text = element_blank(),
-		        axis.line = element_blank(),
-		        axis.title = element_blank(),
-		        axis.ticks.length.y = unit(0,"pt"),
-		        plot.margin = margin(0,0,0,0)) +
-		  theme(panel.grid.major.x = element_blank(),
-		        panel.grid.minor.x = element_blank()) +
-		  theme(text = element_text(size=isolate(input$axis_size)))
-		
-		p = p1 + p2 + patchwork::plot_layout(widths = c(5,0.3))
-
 		return(p)
 	})
 
 
 	output$comp_plot_line = renderPlot({comp_plot_line()})
 
-
-	# 3个下载按钮
-	output$save_plot_bt = downloadHandler(
-		filename = function(){
-			paste0("LinePlot", "_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".",input$save_plot_F)
-		},
-		content = function(file){
-			p = comp_plot_line()
-			
-		    if (input$save_plot_F == "pdf") {
-		      pdf(file, width = input$save_plot_W, height = input$save_plot_H)
-		      print(p)
-		      dev.off()
-		    } else if (input$save_plot_F == "png"){
-		      png(file, width = input$save_plot_W, height = input$save_plot_H, res = 600, units = "in")
-		      print(p)
-		      dev.off()
-		    }
-		}
-	)
-	output$save_data_raw = downloadHandler(
-		filename = function(){
-			paste0("Compare_rawdata_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
-		},
-		content = function(file){
-			p_raw = merge_data_line()
-			write.csv(p_raw, file, row.names = FALSE)
-		}
-	)
-	output$save_data_res = downloadHandler(
-		filename = function(){
-			paste0("Compare_result_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".csv")
-		},
-		content = function(file){
-			p_comp = comp_data_line()
-			p_comp$identifier = unique(merge_data_line()$id)
-			p_comp$phenotype = unique(merge_data_line()$phenotype)	
-			p_comp$group_1 = levels(merge_data_line()$group)[1]
-			p_comp$group_2 = levels(merge_data_line()$group)[2]
-			write.csv(p_comp, file, row.names = FALSE)
-		}
-	)
+	# Download results
+	observeEvent(input$step3_plot_line_2,{
+		res1 = comp_plot_line()
+		res2 = merge_data_line()
+		p_comp = comp_data_line()
+		p_comp$identifier = unique(merge_data_line()$id)
+		p_comp$phenotype = unique(merge_data_line()$phenotype)	
+		p_comp$group_1 = levels(merge_data_line()$group)[1]
+		p_comp$group_2 = levels(merge_data_line()$group)[2]
+		res3 = p_comp
+		callModule(download_res_Server, "download_res2comp", res1, res2, res3)
+	})
 }
