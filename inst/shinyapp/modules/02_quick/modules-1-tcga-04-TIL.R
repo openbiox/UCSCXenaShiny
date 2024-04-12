@@ -1,0 +1,178 @@
+ui.modules_1_tcga_04 = function(id){
+    ns = NS(id)
+    TIL_signatures = lapply(tcga_id_option$`Immune Infiltration`, function(x) {
+        x$all
+    }) %>% reshape2::melt() %>% 
+        dplyr::mutate(x = paste0(value,"_",L1)) %>%
+        dplyr::pull(x)
+    id2type = data.frame(
+        id = TIL_signatures,
+        type = str_split(TIL_signatures,"_", simplify = T)[,2])
+    id2type.list = split(id2type$id, id2type$type)
+    main_ui = tagList(
+        mol_quick_select_UI(ns("id"), "tcga", 
+            c("mRNA","transcript","methylation","miRNA","protein", "cnv")),
+        h4("3. Select TIL cell types"),
+        virtualSelectInput(
+            ns("immune_sig"), NULL,
+            choices = id2type.list,
+            multiple = TRUE,
+            selected = id2type.list[["TIMER"]]
+        ),
+        h4("4. Select correlation method"),
+        awesomeRadio(
+            inputId = ns("cor_method"),
+            label = NULL, 
+            choices = c("spearman", "pearson"),
+            selected = "spearman",
+            inline = TRUE, checkbox = TRUE
+        ),
+        shinyWidgets::actionBttn(
+            inputId = ns("search_bttn"),
+            label = "Go!",
+            style = "gradient",
+            icon = icon("search"),
+            color = "primary",
+            block = TRUE,
+            size = "sm"
+        )
+    )
+    out_ui = tagList(
+        fluidRow(
+            uiOutput(ns("hm_gene_immune_cor")),
+        )
+    )
+    side_ui = tagList(
+        fluidRow(
+            column(6,
+                h4("1. Visualization parameters"),
+                h5("(1) Colors:"),
+                colourpicker::colourInput(
+                    inputId = ns("color_low"), "Low", "#377DB8"),
+                colourpicker::colourInput(
+                    inputId = ns("color_mid"), "Middle", "white"),
+                colourpicker::colourInput(
+                    inputId = ns("color_high"), "High", "#E31A1C"),
+            ),
+            column(6,
+                h4("2. Download options"),
+                h5("(1) Figure:"),
+                numericInput(inputId = ns("height"), label = "Height", value = 6),
+                numericInput(inputId = ns("width"), label = "Width", value = 12),
+                awesomeRadio(ns("device"), label = "Format", 
+                    choices = c("pdf", "png"), selected = "pdf", inline = TRUE),
+                downloadBttn(
+                  outputId = ns("download_1"),
+                  style = "gradient",
+                  color = "primary",
+                  block = TRUE,
+                  size = "sm"
+                ),
+                h5("(2) Data table:"),
+                downloadBttn(
+                  outputId = ns("download_2"),
+                  style = "gradient",
+                  color = "primary",
+                  block = TRUE,
+                  size = "sm"
+                )
+            )
+        )
+    )
+    fluidPage(
+        style = "height:600px",
+        box(main_ui,
+            width = 5,
+            solidHeader = TRUE,
+            title = "Quick Analysis: Correlation for tumor immune infiltration in tumor samples", 
+            status = "success",
+            background = "gray",
+            collapsible = FALSE,
+            style = "height:600px",
+            footer = "TIPs: Click the bottom button to execute/update the analysis."
+        ),
+        box(out_ui,
+            width = 7,
+            solidHeader = TRUE,
+            title = "Analytical results:", 
+            status = "success",
+            background = "gray",
+            collapsible = FALSE,
+            style = "height:600px",
+            footer = "TIPs: Pull the sidebar to adjsut plot parameters or download results through the top-right widget.",
+            sidebar = boxSidebar(
+                        id = ns("sidebar"),
+                        width = 50,
+                        side_ui
+            )
+        )
+    )
+
+
+
+}
+
+
+server.modules_1_tcga_04 = function(input, output, session){
+    ns = session$ns
+
+    mol_info = callModule(mol_quick_select_Server, "id", "tcga")
+
+    plot_func <- eventReactive(input$search_bttn, {
+        p <- vis_gene_TIL_cor(
+            Gene = mol_info$molecule(),
+            data_type = mol_info$profile(),
+            sig = input$immune_sig,
+            cor_method = input$cor_method
+        )
+        p = p + 
+            scale_fill_gradient2(low = input$color_low, mid = input$color_mid, high = input$color_high)
+        return(p)
+    })
+
+    # Show waiter for plot
+    w <- waiter::Waiter$new(id = ns("hm_gene_immune_cor"), html = waiter::spin_hexdots(), color = "white")
+    observeEvent(input$search_bttn,{
+        output$hm_gene_immune_cor <- renderUI({
+            w$show()
+            output$plot = renderPlot(plot_func())
+            fluidRow(
+                column(12,
+                    plotOutput(ns("plot"), height = "580px"),
+                )
+            )
+        })    
+    })
+
+    output$download_1 <- downloadHandler(
+        filename = function() {
+            paste0(mol_info$molecule(), "_", mol_info$profile(), "_pancan_TIL.", input$device)
+        },
+        content = function(file) {
+            p <- plot_func()
+            if (input$device == "pdf") {
+                pdf(file, width = input$width, height = input$height)
+                print(p)
+                dev.off()
+            } else {
+                png(file, width = input$width, height = input$height, res = 600, units = "in")
+                print(p)
+                dev.off()
+            }
+        }
+    )
+
+    output$download_2 <- downloadHandler(
+        filename = function() {
+            paste0(mol_info$molecule(), "_", mol_info$profile(), "_pancan_TIL.csv")
+        },
+        content = function(file) {
+            data = plot_func()$data %>%
+                dplyr::rename('Cancer'='cancer','Cell type'='immune_cells',
+                'Cor'='cor', 'P.value'='p.value') %>%
+                dplyr::select(Cancer, `Cell type`, Cor, P.value) %>%
+                tibble::remove_rownames()
+        write.csv(data, file, row.names = FALSE)
+        }
+    )
+}

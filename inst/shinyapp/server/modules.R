@@ -1,54 +1,52 @@
 # # quick module
 # # callModule(server.combo.sg.pancan.analysis, "combo.sg.pancan.analysis")
-observeEvent(req(input$navbar=="TCGA+GTEx: Molecular Profile Distribution (Tumor VS Normal)"),{
-  callModule(server.modules_pancan_dist, "module_gene_pancan_dist")
-}, once = TRUE)  
-
-# observeEvent(req(input$navbar=="TCGA+GTEx: Molecular Profile Distribution (Tumor VS Normal)"),{
-#   callModule(server.modules_cancer_dist, "modules_cancer_dist")
+# observeEvent(req(input$navbar=="TEST"),{
+#   callModule(server.modules_1_tcga_search, "id")
 # }, once = TRUE)  
 
+observeEvent(req(input$navbar=="TCGA+GTEx: Molecular Profile Distribution (Tumor VS Normal)"),{
+  callModule(server.modules_1_tcga_01, "modules_1_tcga_01")
+}, once = TRUE)  
+
 observeEvent(req(input$navbar=="TCGA+GTEx: Molecular Profile Anatomy"),{
-  callModule(server.modules_pancan_anatomy, "modules_pancan_anatomy")
+  callModule(server.modules_1_tcga_02, "modules_1_tcga_02")
 }, once = TRUE)  
 
 observeEvent(req(input$navbar=="TCGA: Molecule-Molecule Correlation"),{
-  callModule(server.modules_pancan_gene_cor, "modules_pancan_gene_cor")
-}, once = TRUE)  
-
-
-observeEvent(req(input$navbar=="TCGA: Association Between Molecular Profile and Immune Signature"),{
-  callModule(server.modules_pancan_immune, "modules_pancan_immune")
+  callModule(server.modules_1_tcga_03, "modules_1_tcga_03")
 }, once = TRUE)  
 
 observeEvent(req(input$navbar=="TCGA: Association Between Molecular Profile and Tumor Immune Infiltration"),{
-  callModule(server.modules_pancan_til, "modules_pancan_til")
+  callModule(server.modules_1_tcga_04, "modules_1_tcga_04")
+}, once = TRUE)  
+
+observeEvent(req(input$navbar=="TCGA: Association Between Molecular Profile and Immune Signature"),{
+  callModule(server.modules_1_tcga_05, "modules_1_tcga_05")
 }, once = TRUE)  
 
 observeEvent(req(input$navbar=="TCGA: Association Between Molecular Profile and TMB/Stemness/MSI (Radar Show)"),{
-  callModule(server.modules_pancan_radar, "modules_pancan_radar")
+  callModule(server.modules_1_tcga_06, "modules_1_tcga_06")
 }, once = TRUE)  
 
 observeEvent(req(input$navbar=="TCGA: Association Between Molecular Profile and Pathway Score"),{
-  callModule(server.modules_pw_cor, "modules_pw_cor")
+  callModule(server.modules_1_tcga_07, "modules_1_tcga_07")
 }, once = TRUE)  
 
 observeEvent(req(input$navbar=="TCGA: Association Between Molecular Profile and Gene Mutation"),{
-  callModule(server.modules_pancan_mut, "modules_pancan_mut")
-}, once = TRUE)  
-
-observeEvent(req(input$navbar=="TCGA: Molecular Profile Cox Regression Analysis"),{
-  callModule(server.modules_pancan_unicox, "modules_pancan_unicox")
+  callModule(server.modules_1_tcga_08, "modules_1_tcga_08")
 }, once = TRUE)  
 
 observeEvent(req(input$navbar=="TCGA: Molecular Profile Kaplan-Meier Analysis"),{
-  callModule(server.modules_sur_plot, "modules_sur_plot")
+  callModule(server.modules_1_tcga_09, "modules_1_tcga_09")
+}, once = TRUE)  
+
+observeEvent(req(input$navbar=="TCGA: Molecular Profile Cox Regression Analysis"),{
+  callModule(server.modules_1_tcga_10, "modules_1_tcga_10")
 }, once = TRUE)  
 
 observeEvent(req(input$navbar=="TCGA: Dimension Reduction Distribution"),{
-  callModule(server.modules_dim_dist, "modules_dim_dist")
+  callModule(server.modules_1_tcga_11, "modules_1_tcga_11")
 }, once = TRUE)  
-
 
 observeEvent(req(input$navbar=="CCLE: Molecular Profile Distribution Across Cancer Primary Sites"),{
   callModule(server.modules_ccle_dist, "modules_ccle_dist")

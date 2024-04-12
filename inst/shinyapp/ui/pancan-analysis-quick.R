@@ -2,57 +2,56 @@ ui.page_pancan_quick <- function() {
   navbarMenu(
     title = "Custom T·P·C Modules",
     icon = icon("buromobelexperte"),
-    # tabPanel(
-    #   "Combo: Single Gene Analysis",
-    #   ui.combo.sg.pancan.analysis("combo.sg.pancan.analysis")
-    # ),
+
     tabPanel(
       "TCGA+GTEx: Molecular Profile Distribution (Tumor VS Normal)",
-      ui.modules_pancan_dist("module_gene_pancan_dist")
+      ui.modules_1_tcga_01("modules_1_tcga_01")
     ),
-    # tabPanel(
-    #   "TCGA+GTEx: Molecular Profile Distribution (Tumor VS Normal)",
-    #   ui.modules_cancer_dist("modules_cancer_dist")
-    # ),
     tabPanel(
       "TCGA+GTEx: Molecular Profile Anatomy",
-      ui.modules_pancan_anatomy("modules_pancan_anatomy")
+      ui.modules_1_tcga_02("modules_1_tcga_02")
     ),
     tabPanel(
       "TCGA: Molecule-Molecule Correlation",
-      ui.modules_pancan_gene_cor("modules_pancan_gene_cor")
-    ),
-    tabPanel(
-      "TCGA: Association Between Molecular Profile and Immune Signature",
-      ui.modules_pancan_immune("modules_pancan_immune")
+      ui.modules_1_tcga_03("modules_1_tcga_03")
     ),
     tabPanel(
       "TCGA: Association Between Molecular Profile and Tumor Immune Infiltration",
-      ui.modules_pancan_til("modules_pancan_til")
+      ui.modules_1_tcga_04("modules_1_tcga_04")
     ),
+    tabPanel(
+      "TCGA: Association Between Molecular Profile and Immune Signature",
+      ui.modules_1_tcga_05("modules_1_tcga_05")
+    ),
+
     tabPanel(
       "TCGA: Association Between Molecular Profile and TMB/Stemness/MSI (Radar Show)",
-      ui.modules_pancan_radar("modules_pancan_radar")
+      ui.modules_1_tcga_06("modules_1_tcga_06")
     ),
+
     tabPanel(
-        "TCGA: Association Between Molecular Profile and Pathway Score",
-        ui.modules_pw_cor("modules_pw_cor")
+      "TCGA: Association Between Molecular Profile and Pathway Score",
+      ui.modules_1_tcga_07("modules_1_tcga_07")
     ),
+
     tabPanel(
-        "TCGA: Association Between Molecular Profile and Gene Mutation",
-        ui.modules_pancan_mut("modules_pancan_mut")
+      "TCGA: Association Between Molecular Profile and Gene Mutation",
+      ui.modules_1_tcga_08("modules_1_tcga_08")
     ),
+
     tabPanel(
       "TCGA: Molecular Profile Kaplan-Meier Analysis",
-      ui.modules_sur_plot("modules_sur_plot")
+      ui.modules_1_tcga_09("modules_1_tcga_09")
     ),
+
     tabPanel(
       "TCGA: Molecular Profile Cox Regression Analysis",
-      ui.modules_pancan_unicox("modules_pancan_unicox")
+      ui.modules_1_tcga_10("modules_1_tcga_10")
     ),
+
     tabPanel(
-        "TCGA: Dimension Reduction Distribution",
-        ui.modules_dim_dist("modules_dim_dist")
+      "TCGA: Dimension Reduction Distribution",
+      ui.modules_1_tcga_11("modules_1_tcga_11")
     ),
 
     tabPanel(
