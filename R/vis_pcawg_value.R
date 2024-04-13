@@ -296,7 +296,7 @@ vis_pcawg_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mR
   unicox_res_all_cancers_df <- unicox_res_all_cancers_df[complete.cases(unicox_res_all_cancers_df), ]
   ## visualization
   p <- unicox_res_all_cancers_df %>% 
-    dplyr::mutate(cancer = factor(cancer, levels=rev(cancer))) %>% 
+    dplyr::mutate(cancer = factor(.data$cancer, levels=rev(.data$cancer))) %>% 
     ggplot2::ggplot(aes_string(x = "cancer", y = "HR_log", ymin = "lower_95_log", ymax = "upper_95_log", color = "Type")
   ) +
     ggplot2::theme_bw() +
