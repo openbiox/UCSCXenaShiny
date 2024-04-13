@@ -24,6 +24,7 @@ message("Checking dependencies...")
 source(system.file("shinyapp/utils_pkgs.R", package = "UCSCXenaShiny"))
 source(system.file("shinyapp/utils_appdata.R", package = "UCSCXenaShiny"))
 source(system.file("shinyapp/utils_func.R", package = "UCSCXenaShiny"))
+source(system.file("shinyapp/utils_plot.R", package = "UCSCXenaShiny")) #TPC pipelines plot
 
 # Put modules here --------------------------------------------------------
 message("Loading modules and UIs...")
@@ -46,8 +47,23 @@ ui <- tagList(
     tags$title("XenaShiny"),
     tags$link(rel = "stylesheet", type = "text/css", href = "./css/global.css")
   ),
+
+  useWaiter(), 
+  waiterPreloader(html = tagList(
+    spin_fading_circles(), 
+    br(), br(),
+    h1(strong("Welcome to use UCSCXenaShiny v2 application!")),
+    br(),
+    p("An interactive web tool with general and personalized modules to explore UCSC Xena datasets"
+      ,style = "font-size: 25px;"),
+    br(),br(),
+    p("Notes:", "(1) The initiation could take about 10 seconds. (2) Please zoom in or up screen for better representation.",
+      style = "font-size: 16px;")
+  ), color = "#2C3E50"),
+
   shinyjs::useShinyjs(),
   autoWaiter(html = spin_loader(), color = transparent(0.5)), # change style https://shiny.john-coene.com/waiter/
+
   navbarPage(
     id = "navbar",
     title = "UCSCXenaShiny v2",
@@ -80,7 +96,6 @@ server <- function(input, output, session) {
   storeWarn <- getOption("warn")
   options(warn = -1) 
   # observe(print(input$navbar))
-
   # inst/shinyapp/server
   source(server_file("home.R"), local = TRUE)
   source(server_file("repository.R"), local = TRUE)

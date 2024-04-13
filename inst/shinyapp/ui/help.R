@@ -1,8 +1,4 @@
 ui.page_help <- function() {
-  md_prefix <- system.file("shinyapp/shiny-doc", package = "UCSCXenaShiny")
-  set_md_path <- function(x) {
-    file.path(md_prefix, x)
-  }
 
   navbarMenu(
     title = "Help",

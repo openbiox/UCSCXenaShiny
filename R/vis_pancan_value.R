@@ -238,7 +238,11 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA",
     return(NULL)
   }
   if (is.list(t1)) t1 <- t1[[1]]
-
+  if (all(is.na(t1))) {
+    message("All NAs returned, return NULL instead.")
+    return(NULL)
+  }
+  
   # we filter out normal tissue
   tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
 
@@ -294,9 +298,10 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA",
     dplyr::mutate(Type = ifelse(.data$p.value < 0.05 & .data$HR_log > 0, "Risky", ifelse(.data$p.value < 0.05 & .data$HR_log < 0, "Protective", "NS"))) %>%
     dplyr::mutate(Type = factor(Type, levels = c("NS", "Risky", "Protective")))
   ## visualization
-  p <- ggplot2::ggplot(
-    data = unicox_res_all_cancers_df,
-    aes_string(x = "cancer", y = "HR_log", ymin = "lower_95_log", ymax = "upper_95_log", color = "Type")
+  p <- unicox_res_all_cancers_df %>% 
+    dplyr::mutate(cancer = factor(.data$cancer, levels=rev(.data$cancer))) %>% 
+    ggplot2::ggplot(
+      aes_string(x = "cancer", y = "HR_log", ymin = "lower_95_log", ymax = "upper_95_log", color = "Type")
   ) +
     ggplot2::theme_bw() +
     ggplot2::geom_pointrange() +
@@ -1370,7 +1375,7 @@ vis_gene_TIL_cor <- function(Gene = "TP53",
       axis.text.y = ggplot2::element_text(size = 8)
     ) +
     ggplot2::labs(fill = paste0(" * p < 0.05", "\n\n", "** p < 0.01", "\n\n", "*** p < 0.001", "\n\n", "Correlation")) +
-    ggtitle(paste0("The correlation between ", Gene, " ", data_type, " with immune signatures"))
+    ggtitle(paste0("The correlation between ", Gene, " ", data_type, " with TIL estimations"))
 
   if (Plot == TRUE) {
     return(p)
