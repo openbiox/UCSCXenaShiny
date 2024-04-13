@@ -58,7 +58,7 @@ ui.modules_1_tcga_02 = function(id){
         box(main_ui,
             width = 5,
             solidHeader = TRUE,
-            title = "Quick Analysis: Observe across anatomy (both tumor and normal)", 
+            title = "Quick TCGA Analysis: Compare between tumor and normal", 
             status = "primary",
             background = "gray",
             collapsible = FALSE,
@@ -101,6 +101,12 @@ server.modules_1_tcga_02 = function(input, output, session){
     w <- waiter::Waiter$new(id = ns("pancan_anatomy"), html = waiter::spin_hexdots(), color = "white")
 
     observeEvent(input$search_bttn,{
+        # check whether valid out plot
+        chect_plot = is.null(plot_func()) 
+        if(chect_plot){
+            sendSweetAlert(session, title = "Warning", type = "error", text = "Please select a valid molecule.")
+            req(chect_plot)
+        }
         output$pancan_anatomy <- renderUI({
             w$show()
             output$plot = renderPlot(plot_func()$plot)

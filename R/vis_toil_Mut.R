@@ -56,7 +56,8 @@ vis_toil_Mut <- function(mut_Gene = "TP53", Gene = NULL, data_type = NULL,
   }
   exp_dat_raw <- query_pancan_value(Gene, data_type = data_type, opt_pancan = opt_pancan)
   if (all(is.na(exp_dat_raw$expression))) {
-    stop("For the gene(", Gene, ") profile, all NAs returned.")
+    message("All NAs returned, return NULL instead.")
+    return(NULL)
   }
   unit <- exp_dat_raw$unit
   exp_dat <- exp_dat_raw$expression %>%
@@ -202,7 +203,8 @@ vis_toil_Mut_cancer <- function(mut_Gene = "TP53", Gene = NULL, data_type = NULL
   }
   exp_dat_raw <- query_pancan_value(Gene, data_type = data_type)
   if (all(is.na(exp_dat_raw$expression))) {
-    stop("For the gene(", Gene, ") profile, all NAs returned.")
+    message("All NAs returned, return NULL instead.")
+    return(NULL)
   }
   unit <- exp_dat_raw$unit
   exp_dat <- exp_dat_raw$expression %>%

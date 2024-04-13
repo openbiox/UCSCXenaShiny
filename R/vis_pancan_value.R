@@ -238,7 +238,11 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA",
     return(NULL)
   }
   if (is.list(t1)) t1 <- t1[[1]]
-
+  if (all(is.na(t1))) {
+    message("All NAs returned, return NULL instead.")
+    return(NULL)
+  }
+  
   # we filter out normal tissue
   tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
 

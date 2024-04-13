@@ -257,6 +257,21 @@ code_types = list("NT"= "NT (normal tissue)",
                   "TM"= "TM (metastatic tumor)",
                   "TAM"="TAM (additional metastatic)")
 
+choices_primary_site <- c(
+  "prostate", "stomach",
+  "urinary_tract", "central_nervous_system",
+  "ovary", "haematopoietic_and_lymphoid_tissue",
+  "kidney", "thyroid",
+  "skin", "soft_tissue",
+  "salivary_gland", "lung",
+  "bone", "pleura",
+  "endometrium", "pancreas",
+  "breast", "upper_aerodigestive_tract",
+  "large_intestine", "autonomic_ganglia",
+  "oesophagus", "liver",
+  "biliary_tract", "small_intestine"
+)
+
 
 # Global theme
 themes_list <- list(
@@ -304,3 +319,7 @@ msigdbr_types = msigdbr_types %>%
 # message("Saving data to ", appdata_path)
 # save.image(file = appdata_path)
 
+  md_prefix <- system.file("shinyapp/shiny-doc", package = "UCSCXenaShiny")
+  set_md_path <- function(x) {
+    file.path(md_prefix, x)
+  }

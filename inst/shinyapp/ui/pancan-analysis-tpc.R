@@ -2,10 +2,16 @@ ui.page_pancan_tcga <- function() {
   navbarMenu(
     title = "Personalized T·P·C Pipelines",
     icon = icon("buromobelexperte"),
+    tabPanel(
+      "Introduction",
+      fluidPage(
+        includeMarkdown(set_md_path("intro_personal_pips.md"))
+      )
+    ),
     #### TCGA
     tabPanel(
-      "TCGA: Association Analysis",
-      h1("TCGA Association Analysis", align = "center"),
+      "TCGA: Correlation Analysis",
+      h1("TCGA Correlation Analysis", align = "center"),
       tabsetPanel(
         tabPanel(
           "Sole Analysis for Single Cancer",
@@ -69,8 +75,8 @@ ui.page_pancan_tcga <- function() {
     ),
     #### PCAWG
     tabPanel(
-      "PCAWG: Association Analysis",
-      h1("PCAWG Association Analysis", align = "center"),
+      "PCAWG: Correlation Analysis",
+      h1("PCAWG Correlation Analysis", align = "center"),
       tabsetPanel(
         tabPanel(
           "Sole Analysis for Single Cancer",
@@ -133,8 +139,8 @@ ui.page_pancan_tcga <- function() {
     ),
     #### CCLE
     tabPanel(
-      "CCLE: Association Analysis",
-        h1("CCLE Association Analysis", align = "center"),
+      "CCLE: Correlation Analysis",
+        h1("CCLE Correlation Analysis", align = "center"),
         tabsetPanel(
           tabPanel(
             "Sole Analysis for Cell Lines",

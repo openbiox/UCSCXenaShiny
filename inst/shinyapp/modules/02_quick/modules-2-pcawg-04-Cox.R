@@ -1,12 +1,9 @@
-ui.modules_1_tcga_10 = function(id){
+ui.modules_2_pcawg_04 = function(id){
     ns = NS(id)
 
     main_ui = tagList(
-        mol_quick_select_UI(ns("id"), "tcga", 
-            c("mRNA","transcript","methylation","miRNA","protein", "cnv")),
-        
-        h4("3. Select TCGA endpoint type"),
-        selectInput(ns("measure"), NULL,c("OS", "DSS", "DFI", "PFI")),
+        mol_quick_select_UI(ns("id"), "pcawg", 
+                            c("mRNA","miRNA","promoter","fusion","APOBEC")),
         shinyWidgets::actionBttn(
             inputId = ns("search_bttn"),
             label = "Go!",
@@ -62,7 +59,7 @@ ui.modules_1_tcga_10 = function(id){
         box(main_ui,
             width = 5,
             solidHeader = TRUE,
-            title = "Quick TCGA Analysis:  Univariate Cox regression survival analysis", 
+            title = "Quick PCAWG Analysis: Univariate Cox regression survival analysis", 
             status = "info",
             background = "gray",
             collapsible = FALSE,
@@ -85,25 +82,17 @@ ui.modules_1_tcga_10 = function(id){
             )
         )
     )
-
-
-
 }
 
-server.modules_1_tcga_10 = function(input, output, session){
+server.modules_2_pcawg_04 = function(input, output, session){
     ns = session$ns
 
-
-    mol_info = callModule(mol_quick_select_Server, "id", "tcga")
-
-
-    
-
+    mol_info = callModule(mol_quick_select_Server, "id", "pcawg")
 
     plot_func = eventReactive(input$search_bttn, {
-        p <- vis_unicox_tree(
+        p <- vis_pcawg_unicox_tree(
             Gene = mol_info$molecule(),
-            measure = input$measure,
+            measure = "OS",
             threshold = 0.5,
             data_type = mol_info$profile(),
             values = c(input$first_col, input$second_col, input$third_col)
@@ -136,7 +125,7 @@ server.modules_1_tcga_10 = function(input, output, session){
 
     output$download_1 <- downloadHandler(
         filename = function() {
-            paste0(mol_info$molecule(), "_", mol_info$profile(), "_pancan_unicox.", input$device)
+            paste0(mol_info$molecule(), "_", mol_info$profile(), "_pcawg_unicox.", input$device)
         },
         content = function(file) {
             p <- plot_func()$plot
@@ -154,13 +143,13 @@ server.modules_1_tcga_10 = function(input, output, session){
 
     output$download_2 <- downloadHandler(
         filename = function() {
-            paste0(mol_info$molecule(), "_", mol_info$profile(), "_pancan_unicox.csv")
+            paste0(mol_info$molecule(), "_", mol_info$profile(), "_pcawg_unicox.csv")
         },
         content = function(file) {
-            data = plot_func()$data %>%
-                dplyr::rename('Cancer'='cancer', 'Event'='measure','Samples'='n_ref',
+            data =  plot_func()$data %>%
+                dplyr::rename('Project'='cancer', 'Event'='measure','Samples'='n_ref',
                 'P.value' = 'p.value') %>%
-                dplyr::select(Cancer,Event,Samples,HR_log,lower_95_log,upper_95_log,Type,P.value)
+                dplyr::select(Project,Event,Samples,HR_log,lower_95_log,upper_95_log,Type,P.value)
             write.csv(data, file, row.names = FALSE)
         }
     )

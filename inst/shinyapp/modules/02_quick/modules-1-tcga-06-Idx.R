@@ -72,7 +72,7 @@ ui.modules_1_tcga_06 = function(id){
         box(main_ui,
             width = 5,
             solidHeader = TRUE,
-            title = "Quick Analysis: Correlation for tumor index features in tumor samples", 
+            title = "Quick TCGA Analysis: Correlation in tumor samples",
             status = "success",
             background = "gray",
             collapsible = FALSE,
@@ -112,7 +112,6 @@ server.modules_1_tcga_06 = function(input, output, session){
             TMB = vis_gene_tmb_cor,
             MSI = vis_gene_msi_cor
         )
-
         p <- vis_fun(Gene = mol_info$molecule(), 
                     data_type = mol_info$profile(),
                     cor_method = input$cor_method)
@@ -151,6 +150,12 @@ server.modules_1_tcga_06 = function(input, output, session){
     # Show waiter for plot
     w <- waiter::Waiter$new(id = ns("gene_pancan_radar"), html = waiter::spin_hexdots(), color = "black")
     observeEvent(input$search_bttn,{
+        # check whether valid out plot
+        chect_plot = is.null(plot_func()) 
+        if(chect_plot){
+            sendSweetAlert(session, title = "Warning", type = "error", text = "Please select a valid molecule.")
+            req(chect_plot)
+        }
         output$gene_pancan_radar <- renderUI({
             w$show()
             output$plot = renderPlot(plot_func()$plot)

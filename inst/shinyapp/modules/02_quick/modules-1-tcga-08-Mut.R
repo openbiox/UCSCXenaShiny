@@ -90,7 +90,7 @@ ui.modules_1_tcga_08 = function(id){
         box(main_ui,
             width = 5,
             solidHeader = TRUE,
-            title = "Quick Analysis: Compare between mutation and wild tumor samples", 
+            title = "Quick TCGA Analysis: Compare between mutation and wild tumor samples", 
             status = "primary",
             background = "gray",
             collapsible = FALSE,
@@ -157,7 +157,7 @@ server.modules_1_tcga_08 = function(input, output, session){
 	mut_tip = eventReactive(input$search_bttn,{
 		mut_dat_raw <- query_pancan_value(input$mut_Gene, data_type = "mutation")
         if(all(is.na(mut_dat_raw))){
-            sendSweetAlert(session, title = "Warning", text = "No valid mutation data for the gene!")
+            sendSweetAlert(session, title = "Warning", type = "error", text = "No valid mutation data for the gene!")
             return("Warning: No mutation information for the gene.")
         }
 		tcga_gtex <- load_data("tcga_gtex")
@@ -186,7 +186,7 @@ server.modules_1_tcga_08 = function(input, output, session){
 			subtest = subset(merge_dat_sub, mut=="Mutation")
 			if(nrow(subtest)<=3){
 				mut_tips = paste0("Warning: Less than 3 samples in Mutation group.")
-                sendSweetAlert(session, title = "Warning", text = "No valid mutation data for the gene!")
+                sendSweetAlert(session, title = "Warning", type = "error", text = "No valid mutation data for the gene!")
 			} else {
 				mut_tips = paste0("Note: ", nrow(subtest)," samples in Mutation group.")
 			}
@@ -195,7 +195,7 @@ server.modules_1_tcga_08 = function(input, output, session){
 			subtest_stat = names(table(subtest$tissue)[table(subtest$tissue)>3])
             if(length(subtest_stat)==0){
                 mut_tips = paste0("Warning: No cancer type with Mutation group above 3 samples.")
-                sendSweetAlert(session, title = "Warning", text = "No valid mutation data for the gene!")
+                sendSweetAlert(session, title = "Warning", type = "error", text = "No valid mutation data for the gene!")
             } else {
                 mut_tips = paste0("Note: ",length(subtest_stat)," cancer types with Mutation group above 3 samples.")
             }
@@ -233,6 +233,12 @@ server.modules_1_tcga_08 = function(input, output, session){
 
     w <- waiter::Waiter$new(id = ns("mut_plot"), html = waiter::spin_hexdots(), color = "black")
     observeEvent(input$search_bttn,{
+        # check whether valid out plot
+        chect_plot = is.null(plot_func()) 
+        if(chect_plot){
+            sendSweetAlert(session, title = "Warning", type = "error", text = "Please select a valid molecule.")
+            req(chect_plot)
+        }
         output$mut_plot <- renderUI({
             w$show()
             if(isolate(input$Mode)=="Pan-cancer"){

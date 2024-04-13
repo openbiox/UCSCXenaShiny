@@ -1,12 +1,14 @@
-ui.modules_1_tcga_10 = function(id){
+ui.modules_3_ccle_03 = function(id){
     ns = NS(id)
-
     main_ui = tagList(
-        mol_quick_select_UI(ns("id"), "tcga", 
-            c("mRNA","transcript","methylation","miRNA","protein", "cnv")),
-        
-        h4("3. Select TCGA endpoint type"),
-        selectInput(ns("measure"), NULL,c("OS", "DSS", "DFI", "PFI")),
+        mol_quick_select_UI(ns("id"), "ccle", c("mRNA")),
+        h4("3. Select X-axis type"),
+        selectInput(
+            inputId = ns("x_axis_type"),
+            label = NULL,
+            choices = c("mean.diff", "median.diff"),
+            selected = "mean.diff"
+        ),
         shinyWidgets::actionBttn(
             inputId = ns("search_bttn"),
             label = "Go!",
@@ -15,28 +17,30 @@ ui.modules_1_tcga_10 = function(id){
             color = "primary",
             block = TRUE,
             size = "sm"
-        )
+        ),
+        p("NOTE: ")
     )
     out_ui = tagList(
         fluidRow(
-            uiOutput(ns("unicox_gene_tree"))
+            uiOutput(ns("gene_ccle_drug_target")),
         )
     )
     side_ui = tagList(
         fluidRow(
             column(6,
                 h4("1. Visualization parameters"),
-                h5("(1) Color palette:"),
-                colourpicker::colourInput(inputId = ns("first_col"), "First color", "#6A6F68"),
-                colourpicker::colourInput(inputId = ns("second_col"), "Second color", "#E31A1C"),
-                colourpicker::colourInput(inputId = ns("third_col"), "Third color", "#377DB8"),
-
+                selectInput(
+                    inputId = ns("output_form"),
+                    label = "(1) Plot output form:",
+                    choices = c("plotly", "ggplot2"),
+                    selected = "plotly"
+                ),
             ),
             column(6,
                 h4("2. Download options"),
                 h5("(1) Figure:"),
-                numericInput(inputId = ns("height"), label = "Height", value = 8),
-                numericInput(inputId = ns("width"), label = "Width", value = 8),
+                numericInput(inputId = ns("height"), label = "Height", value = 6),
+                numericInput(inputId = ns("width"), label = "Width", value = 6),
                 awesomeRadio(ns("device"), label = "Format", 
                     choices = c("pdf", "png"), selected = "pdf", inline = TRUE),
                 downloadBttn(
@@ -62,8 +66,8 @@ ui.modules_1_tcga_10 = function(id){
         box(main_ui,
             width = 5,
             solidHeader = TRUE,
-            title = "Quick TCGA Analysis:  Univariate Cox regression survival analysis", 
-            status = "info",
+            title = "Quick Analysis: Compare between tumor and normal", 
+            status = "primary",
             background = "gray",
             collapsible = FALSE,
             style = "height:600px",
@@ -73,7 +77,7 @@ ui.modules_1_tcga_10 = function(id){
             width = 7,
             solidHeader = TRUE,
             title = "Analytical results:", 
-            status = "info",
+            status = "primary",
             background = "gray",
             collapsible = FALSE,
             style = "height:600px",
@@ -85,61 +89,63 @@ ui.modules_1_tcga_10 = function(id){
             )
         )
     )
-
-
-
 }
 
-server.modules_1_tcga_10 = function(input, output, session){
+
+
+server.modules_3_ccle_03 = function(input, output, session){
     ns = session$ns
 
+    mol_info = callModule(mol_quick_select_Server, "id", "ccle")
 
-    mol_info = callModule(mol_quick_select_Server, "id", "tcga")
-
-
-    
-
-
-    plot_func = eventReactive(input$search_bttn, {
-        p <- vis_unicox_tree(
+    plot_func <- eventReactive(input$search_bttn, {
+        # # check whether valid out plot
+        # chect_plot = inherits(plot_func(), "try-error")
+        # if(chect_plot){
+        #     sendSweetAlert(session, title = "Warning", type = "error", text = "Please select a valid molecule.")
+        #     req(chect_plot)
+        # }
+        p <- vis_gene_drug_response_asso(
             Gene = mol_info$molecule(),
-            measure = input$measure,
-            threshold = 0.5,
-            data_type = mol_info$profile(),
-            values = c(input$first_col, input$second_col, input$third_col)
+            output_form = input$output_form,
+            x_axis_type = input$x_axis_type
         )
-        pdata <- p$data %>% 
-            as.data.frame() %>%
-            dplyr::select(cancer, measure, n_contrast, n_ref, beta, HR_log, lower_95_log, upper_95_log, Type, p.value)
-        return(list(plot = p, data = pdata))
+        print(class(p))
+        return(p)
     })
 
-    # Show waiter for plot
-    w <- waiter::Waiter$new(id = ns("unicox_gene_tree"), html = waiter::spin_hexdots(), color = "black")
+    w <- waiter::Waiter$new(id = ns("gene_ccle_drug_target"), html = waiter::spin_hexdots(), color = "black")
+ 
     observeEvent(input$search_bttn,{
-        # check whether valid out plot
-        chect_plot = is.null(plot_func()) 
-        if(chect_plot){
-            sendSweetAlert(session, title = "Warning", type = "error", text = "Please select a valid molecule.")
-            req(chect_plot)
-        }
-        output$unicox_gene_tree <- renderUI({
-            w$show()
-            output$plot = renderPlot(plot_func()$plot)
-            fluidRow(
-                column(8, offset = 2,
-                    plotOutput(ns("plot"), height = "580px"),
+        if (input$output_form == "ggplot2") {
+            output$gene_ccle_drug_target <- renderUI({
+                w$show()
+                output$plot = renderPlot(plot_func())
+                fluidRow(
+                    column(10, offset = 1,
+                        plotOutput(ns("plot"), height = "580px"),
+                    )
                 )
-            )
-        })    
+            }) 
+        } else if (input$output_form == "plotly"){
+            output$gene_ccle_drug_target <- renderUI({
+                w$show()
+                output$plot = plotly::renderPlotly(plot_func())
+                fluidRow(
+                    column(10, offset = 1,
+                        plotly::plotlyOutput(ns("plot"), height = "580px"),
+                    )
+                )
+            }) 
+        }
     })
 
     output$download_1 <- downloadHandler(
         filename = function() {
-            paste0(mol_info$molecule(), "_", mol_info$profile(), "_pancan_unicox.", input$device)
+            paste0(mol_info$molecule(), "_ccle_drug_target.", input$device)
         },
         content = function(file) {
-            p <- plot_func()$plot
+            p <- plot_func()
             if (input$device == "pdf") {
                 pdf(file, width = input$width, height = input$height)
                 print(p)
@@ -154,14 +160,12 @@ server.modules_1_tcga_10 = function(input, output, session){
 
     output$download_2 <- downloadHandler(
         filename = function() {
-            paste0(mol_info$molecule(), "_", mol_info$profile(), "_pancan_unicox.csv")
+            paste0(mol_info$molecule(), "_ccle_drug_target.csv")
         },
         content = function(file) {
-            data = plot_func()$data %>%
-                dplyr::rename('Cancer'='cancer', 'Event'='measure','Samples'='n_ref',
-                'P.value' = 'p.value') %>%
-                dplyr::select(Cancer,Event,Samples,HR_log,lower_95_log,upper_95_log,Type,P.value)
+            data = data <- analyze_gene_drug_response_asso(mol_info$molecule(), combine = TRUE)
             write.csv(data, file, row.names = FALSE)
         }
     )
-}
+
+} 

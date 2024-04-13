@@ -104,7 +104,7 @@ ui.modules_1_tcga_07 = function(id){
         box(main_ui,
             width = 5,
             solidHeader = TRUE,
-            title = "Quick Analysis: Correlation for pathway scores in tumor samples", 
+            title = "Quick TCGA Analysis: Correlation in tumor samples",
             status = "success",
             background = "gray",
             collapsible = FALSE,
@@ -158,6 +158,12 @@ server.modules_1_tcga_07 = function(input, output, session){
     # Show waiter for plot
     w <- waiter::Waiter$new(id = ns("pw_plot"), html = waiter::spin_hexdots(), color = "black")
     observeEvent(input$search_bttn,{
+        # check whether valid out plot
+        chect_plot = is.null(plot_func()) 
+        if(chect_plot){
+            sendSweetAlert(session, title = "Warning", type = "error", text = "Please select a valid molecule.")
+            req(chect_plot)
+        }
         output$pw_plot <- renderUI({
             w$show()
             output$plot = renderPlot(plot_func())

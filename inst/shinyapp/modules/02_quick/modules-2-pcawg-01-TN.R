@@ -1,25 +1,8 @@
-ui.modules_1_tcga_05 = function(id){
+ui.modules_2_pcawg_01 = function(id){
     ns = NS(id)
-
     main_ui = tagList(
-        mol_quick_select_UI(ns("id"), "tcga", 
-            c("mRNA","transcript","methylation","miRNA","protein", "cnv")),
+        mol_quick_select_UI(ns("id"), "pcawg", c("mRNA","miRNA","promoter","fusion","APOBEC")),
 
-        h4("3. Select TIL cell types"),
-        selectInput(
-            ns("immune_sig"), NULL,
-            choices = "Cibersort",
-            selected = c("Yasin", "Wolf", "Attractors", "ICR", 
-                         "c7atoms", "Bindea", "Cibersort")
-        ),
-        h4("4. Select correlation method"),
-        awesomeRadio(
-            inputId = ns("cor_method"),
-            label = NULL, 
-            choices = c("spearman", "pearson"),
-            selected = "spearman",
-            inline = TRUE, checkbox = TRUE
-        ),
         shinyWidgets::actionBttn(
             inputId = ns("search_bttn"),
             label = "Go!",
@@ -32,25 +15,30 @@ ui.modules_1_tcga_05 = function(id){
     )
     out_ui = tagList(
         fluidRow(
-            uiOutput(ns("hm_gene_immune_cor")),
+            uiOutput(ns("gene_pancan_dist")),
         )
     )
     side_ui = tagList(
         fluidRow(
             column(6,
                 h4("1. Visualization parameters"),
-                h5("(1) Colors:"),
-                colourpicker::colourInput(
-                    inputId = ns("color_low"), "Low", "#377DB8"),
-                colourpicker::colourInput(
-                    inputId = ns("color_mid"), "Middle", "white"),
-                colourpicker::colourInput(
-                    inputId = ns("color_high"), "High", "#E31A1C"),
+                h5("(1) Geometry type:"),
+                awesomeRadio(ns("pdist_mode"), label = NULL, 
+                    choices = c("Boxplot", "Violinplot"), selected = "Boxplot", inline = TRUE),
+                h5("(2) Label type:"),
+                awesomeRadio(ns("pdist_show_p"), label = NULL, 
+                    choices = c("None", "P value", "P label"), selected = "None", inline = TRUE),
+                h5("(3) Colors:"),
+                colourpicker::colourInput(inputId = ns("tumor_col"), "Tumor sample color", "#DF2020"),
+                colourpicker::colourInput(inputId = ns("normal_col"), "Normal sample color", "#DDDF21"),
+                h5("(4) ggplot theme:"),
+                selectInput(inputId = ns("theme"), label = "Select theme for plot", 
+                            choices = names(themes_list), selected = "Cowplot"),
             ),
             column(6,
                 h4("2. Download options"),
                 h5("(1) Figure:"),
-                numericInput(inputId = ns("height"), label = "Height", value = 6),
+                numericInput(inputId = ns("height"), label = "Height", value = 5),
                 numericInput(inputId = ns("width"), label = "Width", value = 12),
                 awesomeRadio(ns("device"), label = "Format", 
                     choices = c("pdf", "png"), selected = "pdf", inline = TRUE),
@@ -77,8 +65,8 @@ ui.modules_1_tcga_05 = function(id){
         box(main_ui,
             width = 5,
             solidHeader = TRUE,
-            title = "Quick TCGA Analysis: Correlation in tumor samples", 
-            status = "success",
+            title = "Quick PCAWG Analysis: Compare between tumor and normal", 
+            status = "primary",
             background = "gray",
             collapsible = FALSE,
             style = "height:600px",
@@ -88,7 +76,7 @@ ui.modules_1_tcga_05 = function(id){
             width = 7,
             solidHeader = TRUE,
             title = "Analytical results:", 
-            status = "success",
+            status = "primary",
             background = "gray",
             collapsible = FALSE,
             style = "height:600px",
@@ -103,25 +91,49 @@ ui.modules_1_tcga_05 = function(id){
 }
 
 
-server.modules_1_tcga_05 = function(input, output, session){
+
+server.modules_2_pcawg_01 = function(input, output, session){
     ns = session$ns
 
-    mol_info = callModule(mol_quick_select_Server, "id", "tcga")
+    mol_info = callModule(mol_quick_select_Server, "id", "pcawg")
+
+
+    mark_p = reactiveValues(Show.P.value=FALSE, Show.P.label=FALSE)
+    observe({
+        if(input$pdist_show_p=="P value"){
+            mark_p$Show.P.value = TRUE
+        } else if (input$pdist_show_p=="P label") {
+           mark_p$Show.P.label = TRUE
+        }
+    })
+    observeEvent(input$Mode, {
+        if(input$Mode=="Pan-cancer"){
+            updateAwesomeRadio(session, "pdist_mode", label = NULL, 
+                    choices = c("Boxplot", "Violinplot"), selected = "Boxplot", inline = TRUE)
+        } else {
+            updateAwesomeRadio(session, "pdist_mode", label = NULL, 
+                    choices = c("Dotplot", "Violinplot"), selected = "Violinplot", inline = TRUE)
+        }
+    })
+
 
     plot_func <- eventReactive(input$search_bttn, {
-        p <- vis_gene_immune_cor(
-            Gene = mol_info$molecule(),
-            data_type = mol_info$profile(),
-            Immune_sig_type = input$immune_sig,
-            cor_method = input$cor_method 
-        )
-        p = p + 
-            scale_fill_gradient2(low = input$color_low, mid = input$color_mid, high = input$color_high)
+        print(input$Mode)
+        p = vis_pcawg_dist(
+                Gene = mol_info$molecule(),
+                data_type = mol_info$profile(),
+                Mode = input$pdist_mode,
+                Show.P.value = mark_p$Show.P.value,
+                Show.P.label = mark_p$Show.P.label,
+                values = c(input$tumor_col, input$normal_col)
+            ) + themes_list[[input$theme]] + 
+                ggplot2::theme(
+                    axis.text.x = element_text(angle = 45, hjust = .5, vjust = .5),
+                    text = element_text(size = 20))
         return(p)
     })
 
-    # Show waiter for plot
-    w <- waiter::Waiter$new(id = ns("hm_gene_immune_cor"), html = waiter::spin_hexdots(), color = "white")
+    w <- waiter::Waiter$new(id = ns("plot"), html = waiter::spin_hexdots(), color = "black")
     observeEvent(input$search_bttn,{
         # check whether valid out plot
         chect_plot = is.null(plot_func()) 
@@ -129,11 +141,11 @@ server.modules_1_tcga_05 = function(input, output, session){
             sendSweetAlert(session, title = "Warning", type = "error", text = "Please select a valid molecule.")
             req(chect_plot)
         }
-        output$hm_gene_immune_cor <- renderUI({
+        output$gene_pancan_dist <- renderUI({
             w$show()
             output$plot = renderPlot(plot_func())
             fluidRow(
-                column(12,
+                column(10, offset = 1,
                     plotOutput(ns("plot"), height = "580px"),
                 )
             )
@@ -142,7 +154,7 @@ server.modules_1_tcga_05 = function(input, output, session){
 
     output$download_1 <- downloadHandler(
         filename = function() {
-            paste0(mol_info$molecule(), "_", mol_info$profile(), "_pancan_immune.", input$device)
+            paste0(mol_info$molecule(), "_", mol_info$profile(), "_pcawg_dist.", input$device)
         },
         content = function(file) {
             p <- plot_func()
@@ -160,15 +172,15 @@ server.modules_1_tcga_05 = function(input, output, session){
 
     output$download_2 <- downloadHandler(
         filename = function() {
-            paste0(mol_info$molecule(), "_", mol_info$profile(), "_pancan_immune.csv")
+            paste0(mol_info$molecule(), "_", mol_info$profile(), "_pcawg_dist.csv")
         },
         content = function(file) {
-            data = plot_func()$data %>%
-                dplyr::rename('Cancer'='cancer','Cell type'='immune_cells',
-                'Cor'='cor', 'P.value'='p.value') %>%
-                dplyr::select(Cancer, `Cell type`, Cor, P.value) %>%
-                tibble::remove_rownames()
-            write.csv(data, file, row.names = FALSE)
+        data = plot_func()$data %>%
+            dplyr::rename('Project'='dcc_project_code','Sample'='icgc_specimen_id',
+            'Group'='type2', 'Value'='tpm') %>%
+            dplyr::select(Project, Sample, Group,Value)
+        write.csv(data, file, row.names = FALSE)
         }
     )
-}
+
+} 

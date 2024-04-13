@@ -1,30 +1,16 @@
-ui.modules_1_tcga_09 = function(id){
+ui.modules_2_pcawg_03 = function(id){
     ns = NS(id)
 
     main_ui = tagList(
-        mol_quick_select_UI(ns("id"), "tcga", 
-            c("mRNA","transcript","methylation","miRNA","protein", "cnv", "mutation")),
-        
-        h4("3. Select TCGA cancer type and endpoint type"),
-        fluidRow(
-            column(6,
-                selectInput(ns("Cancer"), NULL,sort(tcga_names)),
-            ),
-            column(6,
-                selectInput(ns("endpoint"), NULL,c("OS", "DSS", "DFI", "PFI"))
-            )
-        ),
+        mol_quick_select_UI(ns("id"), "pcawg", 
+                            c("mRNA","miRNA","promoter","fusion","APOBEC")),
+
+        h4("3. Select PCAWG project (Only OS event)"),
+        selectInput(ns("dataset"), NULL,sort(pcawg_names)),
+
         h4("4. Filter by clinical features"),
-        fluidRow(
-            column(6,
-                virtualSelectInput(ns("sex"), "Gender:",c("FEMALE", "MALE", "Unknown"),
-                            multiple=TRUE, selected = c("FEMALE", "MALE", "Unknown")),
-            ),
-            column(6,
-                virtualSelectInput(ns("stage"), "Tumor stage:",c("I", "II", "III", "IV", "Unknown"),
-                            multiple=TRUE, selected = c("I", "II", "III", "IV", "Unknown")),
-            ),
-        ),
+        virtualSelectInput(ns("sex"), "Gender:",choices = c("Female" = "female", "Male" = "male" ),
+                    multiple=TRUE, selected = c("female", "male")),
         sliderInput(ns("age"), "Age", min = 0, max = 100, value = c(0, 100)),
         shinyWidgets::actionBttn(
           inputId = ns("submit_bt"), label = "Submit",
@@ -79,7 +65,7 @@ ui.modules_1_tcga_09 = function(id){
         box(main_ui,
             width = 5,
             solidHeader = TRUE,
-            title = "Quick TCGA Analysis: Kaplan-Meier survival analysis(Log-rank)", 
+            title = "Quick PCAWG Analysis: Kaplan-Meier survival analysis(Log-rank)", 
             status = "info",
             background = "gray",
             collapsible = FALSE,
@@ -107,61 +93,60 @@ ui.modules_1_tcga_09 = function(id){
 
 }
 
-server.modules_1_tcga_09 = function(input, output, session){
+server.modules_2_pcawg_03 = function(input, output, session){
     ns = session$ns
 
-    ## Data filter
-    dat_filter <- function(data, age, gender, stage, endpoint) {
-        endpoint.time <- paste0(endpoint, ".time")
-        dat <- data %>%
-            dplyr::rename(time = !!endpoint.time, status = !!endpoint) %>%
-            dplyr::filter(
-            age >= !!age[1],
-            age <= !!age[2],
-            gender %in% !!gender,
-            stage %in% !!stage,
-            !is.na(time),
-            !is.na(status)
+    mol_info = callModule(mol_quick_select_Server, "id", "pcawg")
+
+    filter_dat <- eventReactive(input$submit_bt, {
+        val <- query_pancan_value(mol_info$molecule(), mol_info$profile(), database = "pcawg")
+        val <- val$data
+        val <- na.omit(val)
+        
+        if(length(val)<10){
+            sendSweetAlert(
+                session = session,
+                title = "Error...",
+                text = "There is too little available data (<10) for this entry.",
+                type = "error"
             )
-        message("cases after filtering: ", nrow(dat))
-        return(dat)
-    }
+            return(NULL)
+        }
+        
+        val_dat <- data.frame("icgc_specimen_id" = names(val),"val" = as.numeric(val))
+        
+        dat <- dplyr::inner_join(pcawg_info,val_dat,by="icgc_specimen_id") %>% 
+            dplyr::filter(.data$dcc_project_code %in% input$dataset) %>% 
+            dplyr::filter(!is.na(.data$OS.time)) %>% 
+            dplyr::select( sampleID = icgc_specimen_id,
+                            status = OS ,
+                            time = OS.time,
+                            value = val,
+                            gender = donor_sex,
+                            age = donor_age_at_diagnosis)
 
-    mol_info = callModule(mol_quick_select_Server, "id", "tcga")
-
-    sur_dat = eventReactive(input$submit_bt,{
-        TCGA_cli_merged <- dplyr::full_join(
-            load_data("tcga_clinical"),
-            load_data("tcga_surv"),
-            by = "sample"
+        # filter samples
+        dat = dplyr::filter(dat,
+                    .data$age > input$age[1],
+                    .data$age < input$age[2],
+                    .data$gender %in% input$sex
         )
-        dat1 = tcga_surv_get(
-            TCGA_cohort = input$Cancer, item = mol_info$molecule(),
-            profile = mol_info$profile(), TCGA_cli_data = TCGA_cli_merged
-        )
-        # filter
-        dat2 = dat_filter(data = dat1, age = input$age,
-                          gender = input$sex, stage = input$stage, 
-                          endpoint = input$endpoint)
-        dat2
+        # group fusion profile
+        if(mol_info$profile() == "fusion"){
+            dat <- dplyr::mutate(dat,group = case_when(
+                .data$value == 1 ~ "fusion (1)",
+                .data$value == 0 ~ "non-fusion (0)"
+            ))
+        }
+        dat
     })
 
-
     tips = eventReactive(input$submit_bt, {
-        if(mol_info$profile() == "mutation"){
-            sur_dat2 = sur_dat() %>%
-                    dplyr::mutate(group = value)
-            t1 = "variation status"
-        } else if (mol_info$profile() == "cnv") {
-            sur_dat2 = sur_dat() %>%
-                    dplyr::mutate(group = dplyr::case_when(
-                    .data$value > 0 ~ "Duplicated",
-                    .data$value < 0 ~ "Deleted",
-                    TRUE ~ "Normal"
-                ))
-            t1 = "variation status"
+        if(mol_info$profile() == "fusion"){
+            t1 = "fusion status"
+            sur_dat2 = filter_dat()
         } else {
-            sur_dat2 = sur_dat() %>%
+            sur_dat2 = filter_dat() %>%
                 dplyr::arrange(.data$value) %>%
                 dplyr::mutate(per_rank = 100 / nrow(.) * (1:nrow(.))) %>%
                 dplyr::mutate(group = dplyr::case_when(
@@ -178,24 +163,40 @@ server.modules_1_tcga_09 = function(input, output, session){
             msg = "Warning: Please adjust above input for valid sample grouping."
             sendSweetAlert(session, title = "Warning", text = "No more than two groups (> 3 samples) are available!")
         } else {
-            msg = paste0("Note: ", nrow(sur_dat()), " samples are grouped by ", 
+            msg = paste0("Note: ", nrow(filter_dat()), " samples are grouped by ", 
                          t1, " of ", mol_info$molecule(), " ", mol_info$profile(), ".")
         }
         msg
     })
-
     output$msg = renderPrint({cat(tips())})
 
 
-    plot_func = eventReactive(input$submit_bt, {
+    plot_func <- eventReactive(input$submit_bt, {
         req(grep("Note", tips()))
-        p <- tcga_surv_plot(sur_dat(),
-                            cutoff_mode = "Custom",
-                            cutpoint = c(50, 50),
-                            profile = mol_info$profile(),
-                            palette = input$palette #"aaas"
-        )
-        p
+        if (!is.null(filter_dat())) {
+            if (nrow(filter_dat()) >= 10) {
+                if (mol_info$profile() %in% c("mRNA", "miRNA","promoter", "APOBEC")) {
+                    p <- UCSCXenaShiny:::sur_plot(filter_dat(), "Custom", c(50, 50), palette = input$palette)
+                } else {
+                    p <- UCSCXenaShiny:::p_survplot(filter_dat(), palette = input$palette) #with group column
+                }
+                return(p)
+            } else {
+                return(NULL)
+            }
+        } else {
+            return(NULL)
+        }
+    })
+
+    return_data <- eventReactive(input$submit_bt, {
+        if (!is.null(filter_dat()) & nrow(filter_dat()) >= 10) {
+            # shinyjs::show(id = "save_csv")
+            select_data <- dplyr::select(filter_dat(), sampleID, value, status, time)
+            return(select_data)
+        } else {
+            return(NULL)
+        }
     })
 
     # Show waiter for plot
@@ -214,7 +215,7 @@ server.modules_1_tcga_09 = function(input, output, session){
 
     output$download_1 <- downloadHandler(
         filename = function() {
-            paste0(mol_info$molecule(), "_", mol_info$profile(), "_tcga_surplot.", input$device)
+            paste0(mol_info$molecule(), "_", mol_info$profile(), "_pcawg_surplot.", input$device)
         },
         content = function(file) {
             p <- plot_func()
@@ -232,13 +233,13 @@ server.modules_1_tcga_09 = function(input, output, session){
 
     output$download_2 <- downloadHandler(
         filename = function() {
-            paste0(mol_info$molecule(), "_", mol_info$profile(), "_tcga_surplot.csv")
+            paste0(mol_info$molecule(), "_", mol_info$profile(), "_pcawg_surplot.csv")
         },
         content = function(file) {
-            data = sur_dat() %>%
+            data = return_data() %>%
                 dplyr::rename('Sample'='sampleID','Value'='value',
                 'Status'='status', 'Time'='time') %>%
-                dplyr::mutate(Cancer = input$Cancer,Event = input$endpoint) %>%
+                dplyr::mutate(Cancer = input$dataset,Event = "OS") %>%
                 dplyr::select(Cancer, Sample, Event, Status, Time, Value)
             write.csv(data, file, row.names = FALSE)
         }

@@ -1,16 +1,23 @@
-ui.modules_1_tcga_05 = function(id){
+ui.modules_3_ccle_02 = function(id){
     ns = NS(id)
-
     main_ui = tagList(
-        mol_quick_select_UI(ns("id"), "tcga", 
-            c("mRNA","transcript","methylation","miRNA","protein", "cnv")),
-
-        h4("3. Select TIL cell types"),
-        selectInput(
-            ns("immune_sig"), NULL,
-            choices = "Cibersort",
-            selected = c("Yasin", "Wolf", "Attractors", "ICR", 
-                         "c7atoms", "Bindea", "Cibersort")
+        fluidRow(
+            column(6,
+                style = 'border-right: 1px solid; border-color: white',
+                h4(strong("X-axis:")),
+                mol_quick_select_UI(ns("id_1"), "ccle", c("mRNA","protein","cnv"))
+            ),
+            column(6,
+                h4(strong("Y-axis:")),
+                mol_quick_select_UI(ns("id_2"), "ccle", c("mRNA","protein","cnv"))
+            )
+        ),
+        h4("3. Select primary site(s)"),
+        virtualSelectInput(
+            ns("SitePrimary"), NULL,
+            choices = choices_primary_site,
+            multiple = TRUE,
+            selected = "prostate"
         ),
         h4("4. Select correlation method"),
         awesomeRadio(
@@ -32,26 +39,39 @@ ui.modules_1_tcga_05 = function(id){
     )
     out_ui = tagList(
         fluidRow(
-            uiOutput(ns("hm_gene_immune_cor")),
+            uiOutput(ns("gene_ccle_gene_cor")),
         )
     )
     side_ui = tagList(
         fluidRow(
             column(6,
                 h4("1. Visualization parameters"),
-                h5("(1) Colors:"),
+                h5("(1) Regression line:"),
+                switchInput(
+                    inputId = ns("use_regline"),
+                    value = TRUE,
+                    onLabel = "Yes",
+                    offLabel = "No"
+                ),
+                h5("(2) Point transparent:"),
+                sliderTextInput(
+                    inputId = ns("alpha"),
+                    label = NULL,
+                    choices = seq(from = 0, to = 1, by = 0.1),
+                    selected = "0.5", grid = TRUE
+                ),
+                h5("(3) Point color:"),
                 colourpicker::colourInput(
-                    inputId = ns("color_low"), "Low", "#377DB8"),
-                colourpicker::colourInput(
-                    inputId = ns("color_mid"), "Middle", "white"),
-                colourpicker::colourInput(
-                    inputId = ns("color_high"), "High", "#E31A1C"),
+                    inputId = ns("color"), NULL, "#000000"),
+                h5("(4) ggplot theme:"),
+                selectInput(inputId = ns("theme"), label = NULL, 
+                            choices = names(themes_list), selected = "Cowplot"),
             ),
             column(6,
                 h4("2. Download options"),
                 h5("(1) Figure:"),
                 numericInput(inputId = ns("height"), label = "Height", value = 6),
-                numericInput(inputId = ns("width"), label = "Width", value = 12),
+                numericInput(inputId = ns("width"), label = "Width", value = 6),
                 awesomeRadio(ns("device"), label = "Format", 
                     choices = c("pdf", "png"), selected = "pdf", inline = TRUE),
                 downloadBttn(
@@ -77,7 +97,7 @@ ui.modules_1_tcga_05 = function(id){
         box(main_ui,
             width = 5,
             solidHeader = TRUE,
-            title = "Quick TCGA Analysis: Correlation in tumor samples", 
+            title = "Quick CCLE Analysis: Correlation in cancer cell lines", 
             status = "success",
             background = "gray",
             collapsible = FALSE,
@@ -103,37 +123,46 @@ ui.modules_1_tcga_05 = function(id){
 }
 
 
-server.modules_1_tcga_05 = function(input, output, session){
+
+server.modules_3_ccle_02 = function(input, output, session){
     ns = session$ns
 
-    mol_info = callModule(mol_quick_select_Server, "id", "tcga")
+    mol_info_1 = callModule(mol_quick_select_Server, "id_1", "ccle")
+    mol_info_2 = callModule(mol_quick_select_Server, "id_2", "ccle")
 
     plot_func <- eventReactive(input$search_bttn, {
-        p <- vis_gene_immune_cor(
-            Gene = mol_info$molecule(),
-            data_type = mol_info$profile(),
-            Immune_sig_type = input$immune_sig,
-            cor_method = input$cor_method 
-        )
-        p = p + 
-            scale_fill_gradient2(low = input$color_low, mid = input$color_mid, high = input$color_high)
-        return(p)
-    })
-
-    # Show waiter for plot
-    w <- waiter::Waiter$new(id = ns("hm_gene_immune_cor"), html = waiter::spin_hexdots(), color = "white")
-    observeEvent(input$search_bttn,{
         # check whether valid out plot
         chect_plot = is.null(plot_func()) 
         if(chect_plot){
             sendSweetAlert(session, title = "Warning", type = "error", text = "Please select a valid molecule.")
             req(chect_plot)
         }
-        output$hm_gene_immune_cor <- renderUI({
+        p <- vis_ccle_gene_cor(
+            Gene1 = mol_info_1$molecule(),
+            Gene2 = mol_info_2$molecule(),
+            data_type1 = mol_info_1$profile(),
+            data_type2 = mol_info_2$profile(),
+            cor_method = input$cor_method,
+            # use_log_x = input$use_log_x,
+            # use_log_y = input$use_log_y,
+            use_regline = input$use_regline,
+            color = input$color,
+            alpha = input$alpha,
+            SitePrimary = input$SitePrimary
+        )
+        p <- p + themes_list[[input$theme]] +
+                theme(text = element_text(size = 20),
+                    legend.position = "none")
+        return(p)
+    })
+
+    w <- waiter::Waiter$new(id = ns("gene_ccle_gene_cor"), html = waiter::spin_hexdots(), color = "white")
+    observeEvent(input$search_bttn,{
+        output$gene_ccle_gene_cor <- renderUI({
             w$show()
             output$plot = renderPlot(plot_func())
             fluidRow(
-                column(12,
+                column(8, offset = 2,
                     plotOutput(ns("plot"), height = "580px"),
                 )
             )
@@ -142,7 +171,8 @@ server.modules_1_tcga_05 = function(input, output, session){
 
     output$download_1 <- downloadHandler(
         filename = function() {
-            paste0(mol_info$molecule(), "_", mol_info$profile(), "_pancan_immune.", input$device)
+            paste0(mol_info_1$molecule(), "_", mol_info_1$profile(), "_",  
+                   mol_info_2$molecule(), "_", mol_info_2$profile(), "_cor.", input$device)
         },
         content = function(file) {
             p <- plot_func()
@@ -160,15 +190,15 @@ server.modules_1_tcga_05 = function(input, output, session){
 
     output$download_2 <- downloadHandler(
         filename = function() {
-            paste0(mol_info$molecule(), "_", mol_info$profile(), "_pancan_immune.csv")
+            paste0(mol_info_1$molecule(), "_", mol_info_1$profile(), "_", 
+                   mol_info_2$molecule(), "_", mol_info_2$profile(), "_cor.csv")
         },
         content = function(file) {
-            data = plot_func()$data %>%
-                dplyr::rename('Cancer'='cancer','Cell type'='immune_cells',
-                'Cor'='cor', 'P.value'='p.value') %>%
-                dplyr::select(Cancer, `Cell type`, Cor, P.value) %>%
-                tibble::remove_rownames()
-            write.csv(data, file, row.names = FALSE)
+        data = plot_func()$data %>%
+            dplyr::rename('Cell_line'='sample',
+            'Molecule1'='gene1', 'Molecule2'='gene2') %>%
+            dplyr::select(Cell_line,Site_Primary,Molecule1,Molecule2)
+        write.csv(data, file, row.names = FALSE)
         }
     )
 }

@@ -5,8 +5,14 @@ mol_quick_select_UI = function(id, database='tcga',
         tcga = c("mRNA Expression"="mRNA", "Transcript Expression"="transcript", 
                 "DNA Methylation"="methylation", "miRNA Expression"="miRNA",
                 "Protein Expression"="protein", "Copy Number Variation"="cnv",
-                "Mutation status"="mutation")
+                "Mutation status"="mutation"),
+        pcawg = c("mRNA Expression"="mRNA", "miRNA Expression"="miRNA",
+                  "Promoter Activity"="promoter", "Gene Fusion"="fusion",
+                  "APOBEC mutagenesis"="APOBEC"),
+        ccle = c("mRNA Expression"="mRNA", "Protein Expression"="protein", 
+                "Copy Number Variation"="cnv")
     )
+
     tagList(
         h4("1. Select omics type"),
         selectInput(
@@ -45,7 +51,6 @@ mol_quick_select_UI = function(id, database='tcga',
             )
         )
     )
-
 }
 
 
@@ -67,6 +72,22 @@ mol_quick_select_Server = function(input, output, session, database="tcga"){
                 miRNA = list(all = tcga_id.list[["miRNA"]], default = "hsa-miR-769-3p"),
                 cnv = list(all = tcga_id.list[["Gene"]], default = "TP53"),
                 mutation = list(all = tcga_id.list[["Gene"]], default = "TP53"),
+                list(all = "NONE", default = "NONE")
+            )
+        } else if (database=="pcawg"){
+            switch(input$profile,
+                mRNA = list(all = pcawg_id.list[["Gene"]], default = "TP53"),
+                miRNA = list(all = pcawg_id.list[["miRNA"]], default = "hsa-let-7a-2-3p"),
+                promoter = list(all = pcawg_id.list[["Promoter"]], default = "prmtr.1"),
+                fusion = list(all = pcawg_id.list[["Fusion"]], default = "SAMD11"),
+                APOBEC = list(all = pcawg_id.list[["Muta"]], default = "A3A_or_A3B"),
+                list(all = "NONE", default = "NONE")
+            )
+        } else if (database=="ccle"){
+            switch(input$profile,
+                mRNA = list(all = ccle_id.list[["Gene"]], default = "TP53"),
+                protein = list(all = ccle_id.list[["Protein"]], default = "14-3-3_beta"),
+                cnv = list(all = ccle_id.list[["Gene"]], default = "TP53"),
                 list(all = "NONE", default = "NONE")
             )
         }
