@@ -41,9 +41,9 @@ uiDrugOmicPair <- function(id){
       h5("."),
     ),
     h4(strong("NOTEs:")),
+    h5(strong("Given that there are overlapping cells in different drug and omics datasets, we have utilized the common data to assess correlations, thereby maximizing the utilization of existing information. For instance, the designation 'gdsc_ctrp1' indicates that the omics data is sourced from the GDSC project, while the drug sensitivity data is derived from the CTRP1 project.")),
     h5("The y axis is the drug sensitivity metric."),
-    h5("The x-axis represents the molecular state or numerical data, including the boolean state for gene mutations or mRNA expression."),
-    h5("Given that there are overlapping cells in different drug and omics datasets, we have utilized the common data to assess correlations, thereby maximizing the utilization of existing information. For instance, the designation 'gdsc_ctrp1' indicates that the omics data is sourced from the GDSC project, while the drug sensitivity data is derived from the CTRP1 project.")
+    h5("The x-axis represents the molecular state or numerical data, including the boolean state for gene mutations or mRNA expression.")
     # Download plot ----
     # column(3,
     #        downloadLink(ns("dl_p_search"), "Save as PDF")
