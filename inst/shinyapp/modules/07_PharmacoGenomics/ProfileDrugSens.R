@@ -54,12 +54,24 @@ serverProfileDrugSens <- function(input, output, session){
   })
   # Plot ----
   p_drug1 <- reactive({switch(input$Select_database,
-                              "GDSC1" = list(p_tsne_gdsc1, p_ms_gdsc1),
-                              "GDSC2" = list(p_tsne_gdsc2, p_ms_gdsc2), 
-                              "CTRP1" = list(p_tsne_ctrp1, p_ms_ctrp1), 
-                              "CTRP2" = list(p_tsne_ctrp2, p_ms_ctrp2),
-                              "Prism" = list(p_tsne_prism, p_ms_prism), 
-                              "gCSI" = list(p_tsne_gCSI, p_ms_gCSI)
+                              "GDSC1" = list(plotTSNE(gdsc1_tsne, "GDSC1"), 
+                                             plotMADandMedian(gdsc1_ms, "GDSC1")
+                              ),
+                              "GDSC2" = list(plotTSNE(gdsc2_tsne, "GDSC2"), 
+                                             plotMADandMedian(gdsc2_ms, "GDSC2")
+                              ), 
+                              "CTRP1" = list(plotTSNE(ctrp1_tsne, "CTRP1"), 
+                                             plotMADandMedian(ctrp1_ms, "CTRP1")
+                              ), 
+                              "CTRP2" = list(plotTSNE(ctrp2_tsne, "CTRP2"), 
+                                             plotMADandMedian(ctrp2_ms, "CTRP2")
+                              ),
+                              "Prism" = list(plotTSNE(prism_tsne, "PRISM"), 
+                                             plotMADandMedian(prism_ms, "PRISM")
+                              ), 
+                              "gCSI" = list(plotTSNE(gCSI_tsne, "gCSI"), 
+                                            plotMADandMedian(gCSI_ms, "gCSI")
+                              )
   )})
   p_drug2 <- reactive({switch(input$Select_profile_type, 
                               "TSNE" = p_drug1()[[1]],
