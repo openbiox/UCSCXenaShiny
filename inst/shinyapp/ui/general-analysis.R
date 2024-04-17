@@ -94,7 +94,7 @@ ui.page_general_analysis <- function() {
         ui.modules_ga_surv_analysis("module_ga_surv_analysis")
       ),
       tabPanel(
-        "Dimension-Distribution",
+        "Dimension-Reduction",
         ui.modules_ga_dim_distribution("module_ga_dim_distribution")
       )
     )

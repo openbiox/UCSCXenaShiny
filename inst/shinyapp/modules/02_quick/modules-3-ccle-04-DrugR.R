@@ -122,6 +122,7 @@ server.modules_3_ccle_04 = function(input, output, session){
 
     w <- waiter::Waiter$new(id = ns("gene_ccle_drug_response_diff"), html = waiter::spin_hexdots(), color = "black")
     observeEvent(input$search_bttn,{
+        shinyjs::disable("search_bttn")
         # # check whether valid out plot
         # chect_plot = inherits(plot_func(), "try-error")
         # if(chect_plot){
@@ -137,6 +138,7 @@ server.modules_3_ccle_04 = function(input, output, session){
                 )
             )
         }) 
+        shinyjs::enable("search_bttn")
     })
 
     output$download_1 <- downloadHandler(

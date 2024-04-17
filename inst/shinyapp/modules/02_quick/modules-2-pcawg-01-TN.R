@@ -135,6 +135,7 @@ server.modules_2_pcawg_01 = function(input, output, session){
 
     w <- waiter::Waiter$new(id = ns("plot"), html = waiter::spin_hexdots(), color = "black")
     observeEvent(input$search_bttn,{
+        shinyjs::disable("search_bttn")
         # check whether valid out plot
         chect_plot = is.null(plot_func()) 
         if(chect_plot){
@@ -150,6 +151,7 @@ server.modules_2_pcawg_01 = function(input, output, session){
                 )
             )
         })    
+        shinyjs::enable("search_bttn")
     })
 
     output$download_1 <- downloadHandler(
