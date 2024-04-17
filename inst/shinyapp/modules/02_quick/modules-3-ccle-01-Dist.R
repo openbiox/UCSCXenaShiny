@@ -85,9 +85,6 @@ server.modules_3_ccle_01 = function(input, output, session){
 
     mol_info = callModule(mol_quick_select_Server, "id", "ccle")
 
-
-
-
     plot_func <- eventReactive(input$search_bttn, {
         print(input$Mode)
         p <- vis_ccle_tpm(
@@ -99,6 +96,7 @@ server.modules_3_ccle_01 = function(input, output, session){
 
     w <- waiter::Waiter$new(id = ns("plot"), html = waiter::spin_hexdots(), color = "black")
     observeEvent(input$search_bttn,{
+        shinyjs::enable("search_bttn")
         # check whether valid out plot
         chect_plot = is.null(plot_func()) 
         if(chect_plot){
@@ -113,7 +111,8 @@ server.modules_3_ccle_01 = function(input, output, session){
                     plotOutput(ns("plot"), height = "580px"),
                 )
             )
-        })    
+        })   
+        shinyjs::enable("search_bttn")
     })
 
     output$download_1 <- downloadHandler(

@@ -14,6 +14,7 @@ ui.modules_1_tcga_09 = function(id){
                 selectInput(ns("endpoint"), NULL,c("OS", "DSS", "DFI", "PFI"))
             )
         ),
+        
         h4("4. Filter by clinical features"),
         fluidRow(
             column(6,
@@ -26,6 +27,18 @@ ui.modules_1_tcga_09 = function(id){
             ),
         ),
         sliderInput(ns("age"), "Age", min = 0, max = 100, value = c(0, 100)),
+
+        h4("5. Grouping by"),
+
+        awesomeRadio(
+            inputId = ns("groupby"),
+            label = NULL, 
+            choices = c("Median cutoff", "Optimal cutoff"),
+            selected = "Median cutoff",
+            inline = TRUE, checkbox = TRUE
+        ),
+        bsTooltip(ns("groupby"), "Only valid for continuous variable, other than molecules from Copy Number Variation/Mutation status", 
+                    placement = "right", trigger = "hover", options = list(container = "body")),
         shinyWidgets::actionBttn(
           inputId = ns("submit_bt"), label = "Submit",
           style = "gradient",
@@ -75,7 +88,7 @@ ui.modules_1_tcga_09 = function(id){
         )
     )
     fluidPage(
-        style = "height:600px",
+        style = "height:670px",
         box(main_ui,
             width = 5,
             solidHeader = TRUE,
@@ -83,7 +96,7 @@ ui.modules_1_tcga_09 = function(id){
             status = "info",
             background = "gray",
             collapsible = FALSE,
-            style = "height:600px",
+            style = "height:670px",
             footer = "TIPs: Click the bottom button to execute/update the analysis."
         ),
         box(out_ui,
@@ -93,7 +106,7 @@ ui.modules_1_tcga_09 = function(id){
             status = "info",
             background = "gray",
             collapsible = FALSE,
-            style = "height:600px",
+            style = "height:670px",
             footer = "TIPs: Pull the sidebar to adjsut plot parameters or download results through the top-right widget.",
             sidebar = boxSidebar(
                         id = ns("sidebar"),
@@ -102,9 +115,6 @@ ui.modules_1_tcga_09 = function(id){
             )
         )
     )
-
-
-
 }
 
 server.modules_1_tcga_09 = function(input, output, session){
@@ -169,7 +179,7 @@ server.modules_1_tcga_09 = function(input, output, session){
                     .data$per_rank <= !!50 ~ "Low",
                     TRUE ~ NA_character_
                 ))
-            t1 = "median value"   
+            t1 = ifelse(input$groupby=="Optimal cutoff","optimal cutoff","median value")   
         }
         chech_dat = sur_dat2  %>% 
                 dplyr::count(group) %>% 
@@ -187,10 +197,13 @@ server.modules_1_tcga_09 = function(input, output, session){
     output$msg = renderPrint({cat(tips())})
 
 
+
+
     plot_func = eventReactive(input$submit_bt, {
         req(grep("Note", tips()))
+        cutoff_mode = ifelse(input$groupby=="Optimal cutoff","Auto","Custom")
         p <- tcga_surv_plot(sur_dat(),
-                            cutoff_mode = "Custom",
+                            cutoff_mode = cutoff_mode, #"Custom",
                             cutpoint = c(50, 50),
                             profile = mol_info$profile(),
                             palette = input$palette #"aaas"
@@ -201,15 +214,17 @@ server.modules_1_tcga_09 = function(input, output, session){
     # Show waiter for plot
     w <- waiter::Waiter$new(id = ns("surplot"), html = waiter::spin_hexdots(), color = "black")
     observeEvent(input$submit_bt,{
+        shinyjs::disable("submit_bt")
         output$surplot <- renderUI({
             w$show()
             output$plot = renderPlot(plot_func())
             fluidRow(
                 column(10, offset = 1,
-                    plotOutput(ns("plot"), height = "580px"),
+                    plotOutput(ns("plot"), height = "650px"),
                 )
             )
-        })    
+        })   
+        shinyjs::enable("submit_bt")
     })
 
     output$download_1 <- downloadHandler(

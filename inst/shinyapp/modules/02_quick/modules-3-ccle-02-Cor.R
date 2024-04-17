@@ -158,6 +158,7 @@ server.modules_3_ccle_02 = function(input, output, session){
 
     w <- waiter::Waiter$new(id = ns("gene_ccle_gene_cor"), html = waiter::spin_hexdots(), color = "white")
     observeEvent(input$search_bttn,{
+        shinyjs::disable("search_bttn")
         output$gene_ccle_gene_cor <- renderUI({
             w$show()
             output$plot = renderPlot(plot_func())
@@ -167,6 +168,7 @@ server.modules_3_ccle_02 = function(input, output, session){
                 )
             )
         })    
+        shinyjs::enable("search_bttn")
     })
 
     output$download_1 <- downloadHandler(

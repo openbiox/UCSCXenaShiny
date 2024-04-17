@@ -1,3 +1,4 @@
+## scatter plot for individual mode of TPC correlation analysis
 plot_cor_o2o = function(data, xlab, ylab, title, cor_method,
             point.args, smooth.line.args, xsidehistogram.args, ysidehistogram.args,
             axis_size, title_size, side_hist, custom_theme){
@@ -31,7 +32,7 @@ plot_cor_o2o = function(data, xlab, ylab, title, cor_method,
 }
 
 
-
+## bar plot for pan-cancer mode of TPC correlation analysis
 plot_cor_o2m = function(data, label_size, x_name, title_name, 
         negative_color, positive_color, axis_size, title_size,
         custom_theme){
@@ -58,7 +59,7 @@ plot_cor_o2m = function(data, label_size, x_name, title_name,
 }
 
 
-
+## violin plot for individual mode of TPC comparison analysis
 plot_comb_o2o = function(data, xlab, ylab, title, comp_method, 
         point_size, point_alpha, group_1_color, group_2_color, 
         axis_size, title_size, custom_theme){
@@ -84,6 +85,7 @@ plot_comb_o2o = function(data, xlab, ylab, title, comp_method,
     return(p)
 }
 
+## line plot for pan-cancer mode of TPC comparison analysis
 plot_comb_o2m = function(data1, data2, x_name, title_name, 
         group_1_color_2, group_2_color_2, axis_size, title_size,
         significance, label_size, custom_theme){
@@ -135,7 +137,7 @@ plot_comb_o2m = function(data1, data2, x_name, title_name,
 }
 
 
-
+## line plot for individual mode of TPC survival analysis
 plot_sur_o20 = function(data, plot_CI, plot_table, plot_ncensor, sur_method,
         one_log_color1, one_log_color2, axis_size, x_name, title_name, title_size,
         text_c1, text_c2, text_c3, axis_size_2, title_name_2){
@@ -213,7 +215,7 @@ plot_sur_o20 = function(data, plot_CI, plot_table, plot_ncensor, sur_method,
 }
 
 
-
+## bar plot for pan-cancer mode of TPC survival analysis
 # data$sur_res
 # data$sur_dat
 plot_sur_02m = function(data, sur_method, multi_log_color1, multi_log_color2,

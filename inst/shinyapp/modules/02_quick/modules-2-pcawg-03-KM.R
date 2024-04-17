@@ -12,6 +12,19 @@ ui.modules_2_pcawg_03 = function(id){
         virtualSelectInput(ns("sex"), "Gender:",choices = c("Female" = "female", "Male" = "male" ),
                     multiple=TRUE, selected = c("female", "male")),
         sliderInput(ns("age"), "Age", min = 0, max = 100, value = c(0, 100)),
+
+        h4("5. Grouping by"),
+
+        awesomeRadio(
+            inputId = ns("groupby"),
+            label = NULL, 
+            choices = c("Median cutoff", "Optimal cutoff"),
+            selected = "Median cutoff",
+            inline = TRUE, checkbox = TRUE
+        ),
+        bsTooltip(ns("groupby"), "Only valid for continuous variable, other than molecules from Gene Fusion", 
+                    placement = "right", trigger = "hover", options = list(container = "body")),
+
         shinyWidgets::actionBttn(
           inputId = ns("submit_bt"), label = "Submit",
           style = "gradient",
@@ -61,7 +74,7 @@ ui.modules_2_pcawg_03 = function(id){
         )
     )
     fluidPage(
-        style = "height:600px",
+        style = "height:670px",
         box(main_ui,
             width = 5,
             solidHeader = TRUE,
@@ -69,7 +82,7 @@ ui.modules_2_pcawg_03 = function(id){
             status = "info",
             background = "gray",
             collapsible = FALSE,
-            style = "height:600px",
+            style = "height:670px",
             footer = "TIPs: Click the bottom button to execute/update the analysis."
         ),
         box(out_ui,
@@ -79,7 +92,7 @@ ui.modules_2_pcawg_03 = function(id){
             status = "info",
             background = "gray",
             collapsible = FALSE,
-            style = "height:600px",
+            style = "height:670px",
             footer = "TIPs: Pull the sidebar to adjsut plot parameters or download results through the top-right widget.",
             sidebar = boxSidebar(
                         id = ns("sidebar"),
@@ -153,8 +166,9 @@ server.modules_2_pcawg_03 = function(input, output, session){
                     .data$per_rank > !!50 ~ "High",
                     .data$per_rank <= !!50 ~ "Low",
                     TRUE ~ NA_character_
-                ))
-            t1 = "median value"   
+                )) 
+            t1 = ifelse(input$groupby=="Optimal cutoff","optimal cutoff","median value")   
+
         }
         chech_dat = sur_dat2  %>% 
                 dplyr::count(group) %>% 
@@ -176,7 +190,9 @@ server.modules_2_pcawg_03 = function(input, output, session){
         if (!is.null(filter_dat())) {
             if (nrow(filter_dat()) >= 10) {
                 if (mol_info$profile() %in% c("mRNA", "miRNA","promoter", "APOBEC")) {
-                    p <- UCSCXenaShiny:::sur_plot(filter_dat(), "Custom", c(50, 50), palette = input$palette)
+                    cutoff_mode = ifelse(input$groupby=="Optimal cutoff","Auto","Custom")
+
+                    p <- UCSCXenaShiny:::sur_plot(filter_dat(), cutoff_mode, c(50, 50), palette = input$palette)
                 } else {
                     p <- UCSCXenaShiny:::p_survplot(filter_dat(), palette = input$palette) #with group column
                 }
@@ -202,15 +218,17 @@ server.modules_2_pcawg_03 = function(input, output, session){
     # Show waiter for plot
     w <- waiter::Waiter$new(id = ns("surplot"), html = waiter::spin_hexdots(), color = "black")
     observeEvent(input$submit_bt,{
+        shinyjs::disable("submit_bt")
         output$surplot <- renderUI({
             w$show()
             output$plot = renderPlot(plot_func())
             fluidRow(
                 column(10, offset = 1,
-                    plotOutput(ns("plot"), height = "580px"),
+                    plotOutput(ns("plot"), height = "650px"),
                 )
             )
-        })    
+        })   
+        shinyjs::enable("submit_bt") 
     })
 
     output$download_1 <- downloadHandler(

@@ -102,6 +102,7 @@ server.modules_1_tcga_02 = function(input, output, session){
 
     observeEvent(input$search_bttn,{
         # check whether valid out plot
+        shinyjs::disable("search_bttn")
         chect_plot = is.null(plot_func()) 
         if(chect_plot){
             sendSweetAlert(session, title = "Warning", type = "error", text = "Please select a valid molecule.")
@@ -116,6 +117,7 @@ server.modules_1_tcga_02 = function(input, output, session){
                 )
             )
         })    
+        shinyjs::enable("search_bttn")
     })
 
     output$download_1 <- downloadHandler(

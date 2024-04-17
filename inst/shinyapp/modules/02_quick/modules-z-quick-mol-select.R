@@ -43,11 +43,14 @@ mol_quick_select_UI = function(id, database='tcga',
                 searchInput(
                     inputId = ns("Pancan_search_2"),
                     label = NULL,
-                    value = "TP53 + 1.3 * PTEN",
+                    value = NULL,
                     btnReset = icon("xmark"),
-                    placeholder = NULL,
+                    btnSearch = icon("magnifying-glass"),
+                    placeholder = 'e.g. "TP53 + 1.3 * PTEN"',
                     resetValue = "TP53 + 1.3 * PTEN"
-                )
+                ),
+                bsTooltip(ns("Pancan_search_2"), "Please check your signature input via the most-right button", 
+                         placement = "right", trigger = "hover", options = list(container = "body"))
             )
         )
     )
@@ -100,6 +103,13 @@ mol_quick_select_Server = function(input, output, session, database="tcga"){
         selected = profile_choices()$default
         )
     })
+
+    observeEvent(input$Pancan_search_2,{
+        sendSweetAlert(session, title = "TIP", type = "info", 
+            text = paste0("One molecule signature (", input$Pancan_search_2,") was detected.", "\n",
+                         'Please make sure that the formula input is valid (e.g. "TP53 + 1.3 * PTEN")'))
+    }, ignoreInit = TRUE)
+
 
     Pancan_search = reactive({
         if(input$mol_type=="One molecule"){

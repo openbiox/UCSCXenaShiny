@@ -117,6 +117,7 @@ server.modules_3_ccle_03 = function(input, output, session){
     w <- waiter::Waiter$new(id = ns("gene_ccle_drug_target"), html = waiter::spin_hexdots(), color = "black")
  
     observeEvent(input$search_bttn,{
+        shinyjs::disable("search_bttn")
         if (input$output_form == "ggplot2") {
             output$gene_ccle_drug_target <- renderUI({
                 w$show()
@@ -138,6 +139,7 @@ server.modules_3_ccle_03 = function(input, output, session){
                 )
             }) 
         }
+        shinyjs::enable("search_bttn")
     })
 
     output$download_1 <- downloadHandler(

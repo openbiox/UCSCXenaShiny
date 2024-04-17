@@ -18,7 +18,6 @@ ui.modules_1_tcga_01 = function(id){
             ),
             tabPanel("Pan-cancer")
         ),
-
         h4("4. Include GTEx normal samples"),
         switchInput(
             inputId = ns("pdist_dataset"),
@@ -179,6 +178,7 @@ server.modules_1_tcga_01 = function(input, output, session){
     w <- waiter::Waiter$new(id = ns("plot"), html = waiter::spin_hexdots(), color = "black")
     observeEvent(input$search_bttn,{
         # check whether valid out plot
+        shinyjs::disable("search_bttn")
         chect_plot = is.null(plot_func()) 
         if(chect_plot){
             sendSweetAlert(session, title = "Warning", type = "error", text = "Please select a valid molecule.")
@@ -202,6 +202,7 @@ server.modules_1_tcga_01 = function(input, output, session){
                 )
             }
         })    
+        shinyjs::enable("search_bttn")
     })
 
     output$download_1 <- downloadHandler(

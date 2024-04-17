@@ -161,6 +161,7 @@ server.modules_1_tcga_03 = function(input, output, session){
 
     w <- waiter::Waiter$new(id = ns("gene_cor"), html = waiter::spin_hexdots(), color = "white")
     observeEvent(input$search_bttn,{
+        shinyjs::disable("search_bttn")
         # check whether valid out plot
         chect_plot = is.null(plot_func()) 
         if(chect_plot){
@@ -175,7 +176,8 @@ server.modules_1_tcga_03 = function(input, output, session){
                     plotOutput(ns("plot"), height = "580px"),
                 )
             )
-        })    
+        })   
+        shinyjs::enable("search_bttn")
     })
 
     output$download_1 <- downloadHandler(
