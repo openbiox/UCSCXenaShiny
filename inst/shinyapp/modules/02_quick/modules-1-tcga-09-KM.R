@@ -234,7 +234,7 @@ server.modules_1_tcga_09 = function(input, output, session){
         content = function(file) {
             p <- plot_func()
             if (input$device == "pdf") {
-                pdf(file, width = input$width, height = input$height)
+                pdf(file, width = input$width, height = input$height, onefile = FALSE)
                 print(p)
                 dev.off()
             } else {

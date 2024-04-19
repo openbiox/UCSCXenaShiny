@@ -238,7 +238,7 @@ server.modules_2_pcawg_03 = function(input, output, session){
         content = function(file) {
             p <- plot_func()
             if (input$device == "pdf") {
-                pdf(file, width = input$width, height = input$height)
+                pdf(file, width = input$width, height = input$height, onefile = FALSE)
                 print(p)
                 dev.off()
             } else {

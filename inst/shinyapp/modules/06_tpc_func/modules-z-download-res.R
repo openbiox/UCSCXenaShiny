@@ -54,7 +54,7 @@ download_res_Server = function(input, output, session,
 			# p = cor_plot_bar()
             p = res1
 		    if (input$save_plot_F == "PDF") {
-		      pdf(file, width = input$save_plot_W, height = input$save_plot_H)
+		      pdf(file, width = input$save_plot_W, height = input$save_plot_H, onefile = FALSE)
 		      print(p)
 		      dev.off()
 		    } else if (input$save_plot_F == "PNG"){
