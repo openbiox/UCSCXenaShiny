@@ -9,8 +9,10 @@ observeEvent(input$bt03, {
 
 
 output$slick_output <- slickR::renderSlickR({
-  imgs = paste0("slick_img/N",1:6,".png")
-  x = slickR::slickR(imgs, height = 600, width = "80%", slideType = 'img-lazy')  +
+  # imgs = paste0("slick_img/N",1:6,".png")
+  # system.file("shinyapp/www", package = "UCSCXenaShiny")
+  imgs = paste0(system.file("shinyapp/www", package = "UCSCXenaShiny"),"/slick_img/N",1:6,".png")
+  x = slickR::slickR(imgs, height = 600, width = "80%")  + #, slideType = 'img-lazy'
         slickR::settings(arrows = TRUE, dots = TRUE, autoplay = TRUE, autoplaySpeed = 2500)
   x
 })
