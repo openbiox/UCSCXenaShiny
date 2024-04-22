@@ -99,6 +99,7 @@ reference:
     desc: Functions related to Xena Shiny App
     contents:
     - app_run
+    - app_run2
     
   - title: Others
     desc: Other docs
