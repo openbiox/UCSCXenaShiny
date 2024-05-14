@@ -51,8 +51,8 @@ vis_dim_dist <- function(ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
       }) %>% purrr::reduce(dplyr::full_join, by = "Sample")
     },
     error = function(e) {
-      rlang::warn("access data failed, the message is provided below")
-      print(e$message)
+      rlang::inform("access data failed, the message is provided below")
+      rlang::warn(conditionMessage(e))
       NULL
     }
   )
