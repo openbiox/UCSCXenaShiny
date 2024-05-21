@@ -39,14 +39,24 @@ vis_dim_dist <- function(ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
     stop("The number of valid ids is less than three. Please inspect the input ids and data_type(?query_pancan_value)")
   }
   
-  exp_raw <- purrr::map(ids, function(x) {
-    # x = ids[1]
-    data <- query_pancan_value(x, data_type = data_type, opt_pancan=opt_pancan)
-    data <- data[[1]]
-    data <- dplyr::tibble(Sample = names(data), y = as.numeric(data))
-    colnames(data)[2] <- x
-    data
-  }) %>% purrr::reduce(dplyr::full_join, by = "Sample")
+  exp_raw <- tryCatch(
+    {
+      purrr::map(ids, function(x) {
+        # x = ids[1]
+        data <- query_pancan_value(x, data_type = data_type, opt_pancan=opt_pancan)
+        data <- data[[1]]
+        data <- dplyr::tibble(Sample = names(data), y = as.numeric(data))
+        colnames(data)[2] <- x
+        data
+      }) %>% purrr::reduce(dplyr::full_join, by = "Sample")
+    },
+    error = function(e) {
+      rlang::inform("access data failed, the message is provided below")
+      rlang::warn(conditionMessage(e))
+      NULL
+    }
+  )
+  if (is.null(exp_raw)) return(NULL)
   
   
   # meta_raw = query_tcga_group(...)$data

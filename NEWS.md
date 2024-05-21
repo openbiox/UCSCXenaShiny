@@ -1,5 +1,6 @@
 # UCSCXenaShiny 2.1.0
 
+- Handled error raised due to internet issue in CRAN check.
 - Optimized data preloading of Shiny application.
 - Dockerfile updated.
 

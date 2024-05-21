@@ -45,18 +45,30 @@ vis_identifier_dim_dist = function(dataset = NULL, ids = NULL, grp_df, samples =
 	colnames(grp_df)[1] <- "sample"
 
 	if (!is.null(dataset) && !is.null(ids)) {
-		df <- purrr::map(ids, function(x) {
-		message("Querying data of identifier ", x, " from dataset ", dataset, " for DR")
-		data <- if (dataset == "custom_feature_dataset") query_custom_feature_value(x) else
-		  query_molecule_value(dataset, x)
-		data <- dplyr::tibble(
-		  sample = names(data),
-		  y = as.numeric(data)
-		)
-		colnames(data)[2] <- x
-		data
-		}) %>%
-		  purrr::reduce(dplyr::full_join, by = "sample")
+	  
+	  df <- tryCatch(
+	    {
+	      purrr::map(ids, function(x) {
+	        message("Querying data of identifier ", x, " from dataset ", dataset, " for DR")
+	        data <- if (dataset == "custom_feature_dataset") query_custom_feature_value(x) else
+	          query_molecule_value(dataset, x)
+	        data <- dplyr::tibble(
+	          sample = names(data),
+	          y = as.numeric(data)
+	        )
+	        colnames(data)[2] <- x
+	        data
+	      }) %>%
+	        purrr::reduce(dplyr::full_join, by = "sample")
+	    },
+	    error = function(e) {
+	      rlang::inform("access data failed, the message is provided below")
+	      rlang::warn(conditionMessage(e))
+	      NULL
+	    }
+	  )
+	  if (is.null(df)) return(NULL)
+	  
 		df <- dplyr::inner_join(grp_df, df, by = "sample")
 	} else {
 		message("Directly use 'grp_df' for comparison analysis.")
