@@ -66,6 +66,7 @@ Suggests:
     survminer,
     testthat (>= 2.0.1),
     umap,
+    funkyheatmap
 VignetteBuilder: 
     knitr
 Encoding: UTF-8

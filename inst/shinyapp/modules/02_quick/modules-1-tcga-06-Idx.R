@@ -69,6 +69,7 @@ ui.modules_1_tcga_06 = function(id){
     )
     fluidPage(
         style = "height:600px",
+        wellPanel(style = "height:725px",
         box(main_ui,
             width = 5,
             solidHeader = TRUE,
@@ -94,6 +95,7 @@ ui.modules_1_tcga_06 = function(id){
                         side_ui
             )
         )
+        )
     )
 
 
@@ -107,6 +109,8 @@ server.modules_1_tcga_06 = function(input, output, session){
     mol_info = callModule(mol_quick_select_Server, "id", "tcga")
 
     plot_func <- eventReactive(input$search_bttn, {
+        id <- showNotification(h3("The task is running..."), duration = NULL, closeButton = FALSE, type = "message")
+        on.exit(removeNotification(id), add = TRUE)  #reactive语句执行完毕时，运行remove命令
         vis_fun <- switch(input$Type,
             Stemness = vis_gene_stemness_cor,
             TMB = vis_gene_tmb_cor,

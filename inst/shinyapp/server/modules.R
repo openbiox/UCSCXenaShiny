@@ -11,7 +11,7 @@ observeEvent(req(input$navbar=="TCGA: Molecular correlation"),{
   callModule(server.modules_1_tcga_04, "modules_1_tcga_04")
   callModule(server.modules_1_tcga_05, "modules_1_tcga_05")
   callModule(server.modules_1_tcga_06, "modules_1_tcga_06")
-  callModule(server.modules_1_tcga_07, "modules_1_tcga_07")
+  # callModule(server.modules_1_tcga_07, "modules_1_tcga_07")
 }, once = TRUE)  
 
 observeEvent(req(input$navbar=="TCGA: Survival analysis"),{
@@ -23,6 +23,9 @@ observeEvent(req(input$navbar=="TCGA: Dimension reduction"),{
   callModule(server.modules_1_tcga_11, "modules_1_tcga_11")
 }, once = TRUE)  
 
+observeEvent(req(input$navbar=="TCGA: Pathway cross analysis"),{
+  callModule(server.modules_1_tcga_12, "modules_1_tcga_12")
+}, once = TRUE)  
 
 observeEvent(req(input$navbar=="PCAWG: Molecular comparison"),{
   callModule(server.modules_2_pcawg_01, "modules_2_pcawg_01")
@@ -60,6 +63,14 @@ observeEvent(req(input$navbar=="CCLE: Drug analysis"),{
 html_spin = tagList(spin_1(), br(),
                     h2("Loading (Only needed for the first time)"))
 # TCGA pancan
+observeEvent(req(input$navbar=="TCGA: Cross-Omics Analysis"),{
+    waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE, html = html_spin)
+    waiter$show()
+		callModule(server.modules_pancan_cross_gene_o2m, "modules_pancan_cross_gene_o2m")
+		callModule(server.modules_pancan_cross_pw_o2m, "modules_pancan_cross_pw_o2m")
+    on.exit(waiter$hide())
+}, once = TRUE)  
+
 observeEvent(req(input$navbar=="TCGA: Correlation Analysis"),{
     waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE, html = html_spin)
     waiter$show()

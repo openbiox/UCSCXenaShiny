@@ -178,7 +178,7 @@ ui.modules_1_tcga_11 = function(id){
         )
     )
     fluidPage(
-        style = "height:600px",
+        wellPanel(style = "height:725px",
         box(main_ui,
             width = 5,
             solidHeader = TRUE,
@@ -186,7 +186,7 @@ ui.modules_1_tcga_11 = function(id){
             status = "warning",
             background = "gray",
             collapsible = FALSE,
-            style = "height:680px",
+            style = "height:805px",
             footer = "TIPs: Click the bottom button to execute/update the analysis."
         ),
         box(out_ui,
@@ -196,13 +196,14 @@ ui.modules_1_tcga_11 = function(id){
             status = "warning",
             background = "gray",
             collapsible = FALSE,
-            style = "height:680px",
+            style = "height:805px",
             footer = "TIPs: Pull the sidebar to adjsut plot parameters or download results through the top-right widget.",
             sidebar = boxSidebar(
                         id = ns("sidebar"),
                         width = 50,
                         side_ui
             )
+        )
         )
     )
 }
@@ -414,6 +415,8 @@ server.modules_1_tcga_11 = function(input, output, session){
 	})
 
 	plot_func <- eventReactive(input$search_bttn, {
+      id <- showNotification(h3("The task is running..."), duration = NULL, closeButton = FALSE, type = "message")
+      on.exit(removeNotification(id), add = TRUE)  #reactive语句执行完毕时，运行remove命令
       print(head(group_info()))
 	  p = vis_dim_dist(
 		ids=ids(),

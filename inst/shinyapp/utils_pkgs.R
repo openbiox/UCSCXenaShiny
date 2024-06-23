@@ -58,7 +58,8 @@ pacman::p_load(
   ggradar,
   zip,
   msigdbr,
-  slickR
+  slickR,
+  funkyheatmap
 )
 
 if (!requireNamespace("ggradar")) {

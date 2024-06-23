@@ -66,7 +66,6 @@ reference:
     - vis_gene_stemness_cor
     - vis_gene_tmb_cor
     - vis_gene_msi_cor
-    - vis_gene_pw_cor
     - vis_pancan_anatomy
     - vis_toil_TvsN
     - vis_toil_TvsN_cancer

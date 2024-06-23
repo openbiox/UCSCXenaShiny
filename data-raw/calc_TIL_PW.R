@@ -69,6 +69,42 @@ tcga_PW_meta = sig_meta
 save(tcga_PW_meta, file="tcga_PW_meta.rda")
 
 
+# GTEx
+# https://toil-xena-hub.s3.us-east-1.amazonaws.com/download/gtex_RSEM_gene_tpm.gz
+exp_dat = data.table::fread("gtex_RSEM_gene_tpm.gz")
+exp_dat = as.data.frame(exp_dat)
+# https://toil.xenahubs.net/download/probeMap/gencode.v23.annotation.gene.probemap
+id_map = data.table::fread("gencode.v23.annotation.gene.probemap")
+table(exp_dat$sample %in% id_map$id)
+exp_dat2 = exp_dat %>% dplyr::mutate(gene=id_map$gene[match(exp_dat$sample,id_map$id)], .before=1)
+exp_mat = as.matrix(exp_dat2[,c(-1,-2)])
+rownames(exp_mat) = exp_dat2$gene
+dim(exp_mat)
+# [1] 60498 7862
+
+gene_anno = read.csv("Gene_basic_annotation_gencode_v23.csv")
+gene_anno_pc = subset(gene_anno, gene_type=="protein_coding")
+exp_mat_pc = exp_mat[rownames(exp_mat) %in% gene_anno_pc$Symbol,]
+dim(exp_mat_pc)
+# [1] 19657 7862
+
+sig_score_all <- GSVA::gsva(exp_mat_pc,
+                        merge.list,
+                        method="ssgsea",
+                        kcdf="Gaussian",
+                        parallel.sz = 20)
+
+gtex_PW_all = as.data.frame(t(sig_score_all))
+dim(gtex_PW_all)
+# [1] 7862   500
+gtex_PW = gtex_PW_all[rownames(gtex_PW_all) %in% tcga_gtex$sample,]
+dim(gtex_PW)
+# [1] 5242  500
+
+gtex_PW = gtex_PW_all 
+save(gtex_PW, file="gtex_PW.rda")
+
+table(colnames(exp_dat) %in%)
 
 
 

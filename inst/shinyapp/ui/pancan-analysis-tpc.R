@@ -73,6 +73,23 @@ ui.page_pancan_tcga <- function() {
         )
       )
     ),
+    tabPanel(
+      "TCGA: Cross-Omics Analysis",
+      h1("TCGA Cross-Omics Analysis", align = "center"),
+      tabsetPanel(
+        tabPanel(
+          "Gene Cross-Omics Analysis",
+          br(),
+          ui.modules_pancan_cross_gene_o2m("modules_pancan_cross_gene_o2m")
+        ),
+        tabPanel(
+          "Pathway Cross-Omics Analysis",
+          br(),
+          ui.modules_pancan_cross_pw_o2m("modules_pancan_cross_pw_o2m")
+        ),
+      )
+    ),
+
     #### PCAWG
     tabPanel(
       "PCAWG: Correlation Analysis",

@@ -25,7 +25,7 @@ download_res_UI = function(id){
                 )
             ),
             column(3, offset = 0, shinyjs::hidden(downloadButton(ns("save_data_raw"), "Raw data(.csv)"))),
-            column(3, offset = 0, shinyjs::hidden(downloadButton(ns("save_data_res"), "Analyzied data(.csv)")))
+            column(3, offset = 0, shinyjs::hidden(downloadButton(ns("save_data_res"), "Statistical data(.csv)")))
         )
     )
 }
