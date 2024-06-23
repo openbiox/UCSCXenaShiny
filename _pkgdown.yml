@@ -75,6 +75,9 @@ reference:
     - vis_pcawg_dist
     - vis_pcawg_gene_cor
     - vis_pcawg_unicox_tree
+    - vis_gene_cross_omics
+    - vis_pathway_cross_omics
+    - calc_pw_mut_cnv
     
   - title: General Analysis and Visualiation
     desc: Functions to analyze and visualize general data, i.e., any valid data from UCSC Xena or users
