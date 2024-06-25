@@ -40,7 +40,13 @@
     <loc>https://openbiox.github.io/UCSCXenaShiny/reference/app_run.html</loc>
   </url>
   <url>
+    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/app_run2.html</loc>
+  </url>
+  <url>
     <loc>https://openbiox.github.io/UCSCXenaShiny/reference/available_hosts.html</loc>
+  </url>
+  <url>
+    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/calc_pw_mut_cnv.html</loc>
   </url>
   <url>
     <loc>https://openbiox.github.io/UCSCXenaShiny/reference/ccle_absolute.html</loc>
@@ -154,6 +160,9 @@
     <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_cor_cancer.html</loc>
   </url>
   <url>
+    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_cross_omics.html</loc>
+  </url>
+  <url>
     <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_drug_response_asso.html</loc>
   </url>
   <url>
@@ -164,9 +173,6 @@
   </url>
   <url>
     <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_msi_cor.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_pw_cor.html</loc>
   </url>
   <url>
     <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_stemness_cor.html</loc>
@@ -191,6 +197,9 @@
   </url>
   <url>
     <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_pancan_anatomy.html</loc>
+  </url>
+  <url>
+    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_pathway_cross_omics.html</loc>
   </url>
   <url>
     <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_pcawg_dist.html</loc>
