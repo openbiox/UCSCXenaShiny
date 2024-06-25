@@ -52,11 +52,13 @@ Suggests:
     future,
     ggrepel,
     ggstatsplot,
+    glue,
     knitr,
     pacman,
     plotly,
     plyr,
     RColorBrewer (>= 1.1.2),
+    readr,
     rmarkdown,
     Rtsne,
     scales,
@@ -64,6 +66,7 @@ Suggests:
     survminer,
     testthat (>= 2.0.1),
     umap,
+    funkyheatmap
 VignetteBuilder: 
     knitr
 Encoding: UTF-8

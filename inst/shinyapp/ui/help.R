@@ -15,7 +15,7 @@ ui.page_help <- function() {
     #     includeMarkdown(set_md_path("tmp.md"))
     #   )
     # ),
-    tabPanel(a("Tutorial Book", 
+    tabPanel(title = a("Tutorial Book", 
                href="https://lishensuo.github.io/UCSCXenaShiny_Book/",
                target="_blank")),
     tabPanel(

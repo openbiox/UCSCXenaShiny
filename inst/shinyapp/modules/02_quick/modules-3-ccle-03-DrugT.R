@@ -62,7 +62,7 @@ ui.modules_3_ccle_03 = function(id){
         )
     )
     fluidPage(
-        style = "height:600px",
+        wellPanel(style = "height:725px",
         box(main_ui,
             width = 5,
             solidHeader = TRUE,
@@ -88,6 +88,7 @@ ui.modules_3_ccle_03 = function(id){
                         side_ui
             )
         )
+        )
     )
 }
 
@@ -105,6 +106,8 @@ server.modules_3_ccle_03 = function(input, output, session){
         #     sendSweetAlert(session, title = "Warning", type = "error", text = "Please select a valid molecule.")
         #     req(chect_plot)
         # }
+        id <- showNotification(h3("The task is running..."), duration = NULL, closeButton = FALSE, type = "message")
+        on.exit(removeNotification(id), add = TRUE)  #reactive语句执行完毕时，运行remove命令
         p <- vis_gene_drug_response_asso(
             Gene = mol_info$molecule(),
             output_form = input$output_form,

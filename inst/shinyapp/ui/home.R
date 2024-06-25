@@ -25,7 +25,7 @@ ui.page_home <- function() {
       #   p("Notes:", "(1) The initiation could take about 10 seconds. (2) Please zoom in or up screen for better representation.",
       #     style = "font-size: 16px;")
       # ), color = "#2C3E50"),
-      useShinydashboard(),
+      useShinydashboard2(),
       tags$head(
         tags$link(rel = "stylesheet", type = "text/css", href = "bootstrap4.css")
       ),

@@ -88,7 +88,7 @@ ui.modules_1_tcga_09 = function(id){
         )
     )
     fluidPage(
-        style = "height:670px",
+        wellPanel(style = "height:795px",
         box(main_ui,
             width = 5,
             solidHeader = TRUE,
@@ -113,6 +113,7 @@ ui.modules_1_tcga_09 = function(id){
                         width = 50,
                         side_ui
             )
+        )
         )
     )
 }
@@ -201,6 +202,8 @@ server.modules_1_tcga_09 = function(input, output, session){
 
     plot_func = eventReactive(input$submit_bt, {
         req(grep("Note", tips()))
+        id <- showNotification(h3("The task is running..."), duration = NULL, closeButton = FALSE, type = "message")
+        on.exit(removeNotification(id), add = TRUE)  #reactive语句执行完毕时，运行remove命令
         cutoff_mode = ifelse(input$groupby=="Optimal cutoff","Auto","Custom")
         p <- tcga_surv_plot(sur_dat(),
                             cutoff_mode = cutoff_mode, #"Custom",

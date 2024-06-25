@@ -3,6 +3,8 @@ pcawg_id = load_data("v2_pcawg_id")
 ccle_id = load_data("v2_ccle_id")
 
 tcga_id.list = split(tcga_id$L3, tcga_id$L2)
+tcga_id.list[["IOBR"]] = sort(tcga_id.list[["IOBR"]])
+
 pcawg_id.list = split(pcawg_id$L3, pcawg_id$L2)
 ccle_id.list = split(ccle_id$L3, ccle_id$L2)
 
@@ -35,6 +37,10 @@ tcga_id_option = list(
     "miRNA Expression" = list(
       "all" = tcga_id.list[["miRNA"]],
       "default" = "hsa-miR-769-3p"
+    ),
+    "Mutation status" = list(
+      "all" = tcga_id.list[["Gene"]],
+      "default" = "TP53"
     ),
     "Copy Number Variation" = list(
       "all" = tcga_id.list[["Gene"]],
