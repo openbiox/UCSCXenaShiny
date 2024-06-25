@@ -1,3 +1,9 @@
+# UCSCXenaShiny 2.2.0
+
+- Added gene and pathway cross-omics analysis functions/modules.
+- Added `app_run2()` function for custom app start with lightweight modules.
+- Fixed `pdf()` parameter for KM plot
+
 # UCSCXenaShiny 2.1.0
 
 - Handled error raised due to internet issue in CRAN check.
