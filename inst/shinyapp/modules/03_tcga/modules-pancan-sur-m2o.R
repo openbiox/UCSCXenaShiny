@@ -107,10 +107,6 @@ ui.modules_pancan_sur_m2o = function(id) {
 					selectInput(ns("sur_method"), "Survival method:",c("Log-rank test","Cox regression")),
 				    materialSwitch(ns("use_origin"), 
 					    	"Whether use initial data before grouping?"),
-					  #   	 %>% 
-							# helper(type = "markdown", size = "m", fade = TRUE, 
-						 #                   title = "About the initial phenotype", 
-						 #                   content = "sur_initial_group"),
 					br(),br(),
 					shinyWidgets::actionBttn(
 						ns("cal_batch_sur"), "Run",

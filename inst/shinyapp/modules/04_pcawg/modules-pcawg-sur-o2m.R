@@ -88,10 +88,7 @@ ui.modules_pcawg_sur_o2m = function(id) {
 					selectInput(ns("sur_method"), "Survival method:",
 						choices = c("Log-rank test", "Univariate Cox regression")),
 				    materialSwitch(ns("use_origin"), 
-				    	"Whether use initial data before grouping?") %>% 
-						helper(type = "markdown", size = "m", fade = TRUE, 
-					                   title = "About the initial phenotype", 
-					                   content = "sur_initial_group"),
+					    	"Whether use initial data before grouping?"),
 					h4(strong("S3.2 Set visualization parameters")), 
 			      	uiOutput(ns("multi_params.ui")),
 

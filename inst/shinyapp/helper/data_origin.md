@@ -13,6 +13,6 @@
 <img src="https://raw.githubusercontent.com/lishensuo/images2/main/img01/image-20240114135857453.png" alt="image-20240114135857453"  width="450" />
 </p>
 
+---
 
-- <font size="4"> See more details in UCSCXenaShiny v2 book site (todo list). </font> 
-
+- <font size="4"> See more details in [UCSCXenaShiny v2 book](https://lishensuo.github.io/UCSCXenaShiny_Book/). </font> 

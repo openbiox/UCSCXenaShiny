@@ -87,7 +87,7 @@ ui.modules_pancan_comp_o2o = function(id) {
 					                   content = "analyze_comp_1"),  
 					style = "height:1100px",
 					h4(strong("S3.1 Set analysis parameters")), 
-					selectInput(ns("comp_method"), "Comparison method:",choices = c("t-test", "wilcoxon")),
+					selectInput(ns("comp_method"), "Comparison method:",choices = c("wilcoxon","t-test")),
 
 					h4(strong("S3.2 Set visualization parameters")), 
 					fluidRow(

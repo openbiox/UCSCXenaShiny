@@ -36,13 +36,17 @@ analyze_gene_drug_response_asso <- function(gene_list, combine = FALSE) {
   if (is.null(ccle_data)) {
     stop("Data load failed, try again?")
   }
-
-  if (any(gene_list %in% rownames(ccle_data$expr))) {
-    expr <- ccle_data$expr[gene_list, , drop = FALSE]
-  } else {
+  
+  valid_genes = sum(gene_list %in% rownames(ccle_data$expr))
+  if (valid_genes>0 && valid_genes<length(gene_list)) {
+    gene_list = gene_list[gene_list %in% rownames(ccle_data$expr)]
+    warning("Some of your input genes do not exist in CCLE data.")
+  } else if (valid_genes==0) {
     stop("None of your input genes exists in CCLE data.")
   }
-
+  expr <- ccle_data$expr[gene_list, , drop = FALSE]
+  
+  
   if (combine && length(gene_list) > 1) {
     expr <- t(apply(expr, 2, gm_mean))
     rownames(expr) <- "signature"
@@ -198,11 +202,20 @@ analyze_gene_drug_response_diff <- function(gene_list,
 
   ccle_data <- load_data("ccle_expr_and_drug_response")
 
-  if (any(gene_list %in% rownames(ccle_data$expr))) {
-    expr <- ccle_data$expr[gene_list, , drop = FALSE]
-  } else {
+  valid_genes = sum(gene_list %in% rownames(ccle_data$expr))
+  if (valid_genes>0 && valid_genes<length(gene_list)) {
+    gene_list = gene_list[gene_list %in% rownames(ccle_data$expr)]
+    warning("Some of your input genes do not exist in CCLE data.")
+  } else if (valid_genes==0) {
     stop("None of your input genes exists in CCLE data.")
   }
+  expr <- ccle_data$expr[gene_list, , drop = FALSE]
+  
+  # if (any(gene_list %in% rownames(ccle_data$expr))) {
+  #   expr <- ccle_data$expr[gene_list, , drop = FALSE]
+  # } else {
+  #   stop("None of your input genes exists in CCLE data.")
+  # }
 
   if (combine && length(gene_list) > 1) {
     expr <- t(apply(expr, 2, gm_mean))
