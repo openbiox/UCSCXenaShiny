@@ -1,7 +1,21 @@
 ui.modules_3_ccle_04 = function(id){
     ns = NS(id)
     main_ui = tagList(
-        mol_quick_select_UI(ns("id"), "ccle", c("mRNA")),
+        h4("1. Select omics type"),
+        selectInput(
+            inputId = ns("profile"), label = NULL,
+            choices  = c("mRNA Expression"="mRNA"),
+            selected = "mRNA"
+        ),
+        h4(id = ns("id_tip"), "2. Select one gene list"),
+        bsTooltip(ns("id_tip"), "When two or more genes are selected, their geometric mean is calculated as the signature value.", 
+                    placement = "right", trigger = "hover", options = list(container = "body")),
+        virtualSelectInput(
+            inputId = ns("Pancan_search_1"),
+            label = NULL, choices = NULL, multiple = TRUE,
+            width = "100%", search = TRUE,
+            allowNewOption = TRUE, dropboxWidth = "100%"
+        ),
         h4("3. Select primary site(s)"),
         virtualSelectInput(
             ns("SitePrimary"), NULL,
@@ -106,13 +120,23 @@ ui.modules_3_ccle_04 = function(id){
 server.modules_3_ccle_04 = function(input, output, session){
     ns = session$ns
 
-    mol_info = callModule(mol_quick_select_Server, "id", "ccle")
+    profile_choices <- reactive({
+        list(all = ccle_id.list[["Gene"]], default = "TP53")
+    })
+
+    observe({
+        updateVirtualSelect(
+        "Pancan_search_1",
+        choices = profile_choices()$all,
+        selected = profile_choices()$default
+        )
+    })
 
     plot_func <- eventReactive(input$search_bttn, {
         id <- showNotification(h3("The task is running..."), duration = NULL, closeButton = FALSE, type = "message")
         on.exit(removeNotification(id), add = TRUE)  #reactive语句执行完毕时，运行remove命令
         p <- vis_gene_drug_response_diff(
-            Gene = mol_info$molecule(),
+            Gene = input$Pancan_search_1,
             values = c(input$high_col, input$low_col),
             tissue = input$SitePrimary,
             Method = "wilcox.test",
@@ -146,7 +170,7 @@ server.modules_3_ccle_04 = function(input, output, session){
 
     output$download_1 <- downloadHandler(
         filename = function() {
-            paste0(mol_info$molecule(), "_ccle_target_response_diff.", input$device)
+            paste0("ccle_target_response_diff.", input$device)
         },
         content = function(file) {
             p <- plot_func()
@@ -164,7 +188,7 @@ server.modules_3_ccle_04 = function(input, output, session){
 
     output$download_2 <- downloadHandler(
         filename = function() {
-            paste0(mol_info$molecule(), "_ccle_target_response_diff.csv")
+            "ccle_target_response_diff.csv"
         },
         content = function(file) {
             data = data <- analyze_gene_drug_response_asso(mol_info$molecule(), combine = TRUE)

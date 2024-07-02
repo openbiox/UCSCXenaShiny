@@ -104,10 +104,7 @@ ui.modules_pcawg_sur_m2o = function(id) {
 					# br(),br(),
 					selectInput(ns("sur_method"), "Survival method:",c("Log-rank test","Cox regression")),
 				    materialSwitch(ns("use_origin"), 
-					    	"Whether use initial data before grouping?") %>% 
-							helper(type = "markdown", size = "m", fade = TRUE, 
-						                   title = "About the initial phenotype", 
-						                   content = "sur_initial_group"),
+					    	"Whether use initial data before grouping?"),
 					br(),br(),
 					shinyWidgets::actionBttn(
 						ns("cal_batch_sur"), "Run",

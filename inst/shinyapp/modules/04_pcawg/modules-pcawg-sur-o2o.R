@@ -84,10 +84,6 @@ ui.modules_pcawg_sur_o2o = function(id) {
 						choices = c("Log-rank test", "Univariate Cox regression")),
 				    materialSwitch(ns("use_origin"), 
 				    	"Whether use initial data before grouping?"),
-						#  %>% 
-						# helper(type = "markdown", size = "m", fade = TRUE, 
-					    #                title = "About the initial phenotype", 
-					    #                content = "sur_initial_group"),
 					h4(strong("S3.2 Set visualization parameters")), 
 			      	uiOutput(ns("one_params.ui")),
 					dropMenu(
