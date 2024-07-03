@@ -14,7 +14,7 @@ ui.modules_3_ccle_03 = function(id){
             inputId = ns("Pancan_search_1"),
             label = NULL, choices = NULL, multiple = TRUE,
             width = "100%", search = TRUE,
-            allowNewOption = TRUE, dropboxWidth = "100%"
+            allowNewOption = FALSE, dropboxWidth = "100%"
         ),
         h4("3. Select X-axis type"),
         selectInput(
@@ -110,6 +110,8 @@ ui.modules_3_ccle_03 = function(id){
 server.modules_3_ccle_03 = function(input, output, session){
     ns = session$ns
 
+    gene_ref = sort(rownames(load_data("ccle_expr_and_drug_response")$expr))
+
     profile_choices <- reactive({
         list(all = ccle_id.list[["Gene"]], default = "TP53")
     })
@@ -117,20 +119,22 @@ server.modules_3_ccle_03 = function(input, output, session){
     observe({
         updateVirtualSelect(
         "Pancan_search_1",
-        choices = profile_choices()$all,
+        # choices = profile_choices()$all,
+        choices = gene_ref,
         selected = profile_choices()$default
         )
     })
 
     plot_func <- eventReactive(input$search_bttn, {
-        # # check whether valid out plot
-        # chect_plot = inherits(plot_func(), "try-error")
-        # if(chect_plot){
-        #     sendSweetAlert(session, title = "Warning", type = "error", text = "Please select a valid molecule.")
-        #     req(chect_plot)
-        # }
+        shiny::validate(
+            need(try(length(input$Pancan_search_1)<10), 
+                "Error: Less than 10-gene signature is supported.")
+        )
+
         id <- showNotification(h3("The task is running..."), duration = NULL, closeButton = FALSE, type = "message")
+
         on.exit(removeNotification(id), add = TRUE)  #reactive语句执行完毕时，运行remove命令
+
         p <- vis_gene_drug_response_asso(
             Gene = input$Pancan_search_1,
             output_form = input$output_form,
@@ -195,5 +199,4 @@ server.modules_3_ccle_03 = function(input, output, session){
             write.csv(data, file, row.names = FALSE)
         }
     )
-
 } 
