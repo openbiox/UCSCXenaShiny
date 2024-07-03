@@ -120,6 +120,8 @@ ui.modules_3_ccle_04 = function(id){
 server.modules_3_ccle_04 = function(input, output, session){
     ns = session$ns
 
+    gene_ref = sort(rownames(load_data("ccle_expr_and_drug_response")$expr))
+
     profile_choices <- reactive({
         list(all = ccle_id.list[["Gene"]], default = "TP53")
     })
@@ -127,12 +129,17 @@ server.modules_3_ccle_04 = function(input, output, session){
     observe({
         updateVirtualSelect(
         "Pancan_search_1",
-        choices = profile_choices()$all,
+        # choices = profile_choices()$all,
+        choices = gene_ref,
         selected = profile_choices()$default
         )
     })
 
     plot_func <- eventReactive(input$search_bttn, {
+        shiny::validate(
+            need(try(length(input$Pancan_search_1)<10), 
+                "Error: Less than 10-gene signature is supported.")
+        )
         id <- showNotification(h3("The task is running..."), duration = NULL, closeButton = FALSE, type = "message")
         on.exit(removeNotification(id), add = TRUE)  #reactive语句执行完毕时，运行remove命令
         p <- vis_gene_drug_response_diff(
