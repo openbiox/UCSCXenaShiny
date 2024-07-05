@@ -17,88 +17,39 @@ output$slick_output <- slickR::renderSlickR({
   x
 })
 
-observeEvent(input$link_to_q1, {
+
+observeEvent(input$link_to_q1_n, {
   updateNavbarPage(inputId = "navbar", 
-    selected = "TCGA+GTEx: Molecular Profile Distribution (Tumor VS Normal)")
+    selected = "TCGA (GTEx): Molecular comparison")
+  shinyjs::runjs("window.scrollTo(0, 0)")
+})
+
+observeEvent(input$link_to_q2_n, {
+  updateNavbarPage(inputId = "navbar", 
+    selected = "TCGA: Molecular correlation")
+  shinyjs::runjs("window.scrollTo(0, 0)")
+})
+
+observeEvent(input$link_to_q3_n, {
+  updateNavbarPage(inputId = "navbar", 
+    selected = "TCGA: Survival analysis")
   shinyjs::runjs("window.scrollTo(0, 0)")
 })
 
 
-observeEvent(input$link_to_q2, {
-  updateNavbarPage(inputId = "navbar", 
-    selected = "TCGA+GTEx: Molecular Profile Anatomy")
-  shinyjs::runjs("window.scrollTo(0, 0)")
-})
-
-observeEvent(input$link_to_q3, {
-  updateNavbarPage(inputId = "navbar", 
-    selected = "TCGA: Molecule-Molecule Correlation")
-  shinyjs::runjs("window.scrollTo(0, 0)")
-})
-
-observeEvent(input$link_to_q4, {
-  updateNavbarPage(inputId = "navbar", 
-    selected = "TCGA: Molecular Profile Cox Regression Analysis")
-  shinyjs::runjs("window.scrollTo(0, 0)")
-})
-
-observeEvent(input$link_to_q5, {
-  updateNavbarPage(inputId = "navbar", 
-    selected = "TCGA: Association Between Molecular Profile and Immune Signature")
-  shinyjs::runjs("window.scrollTo(0, 0)")
-})
-
-observeEvent(input$link_to_q6, {
-  updateNavbarPage(inputId = "navbar", 
-    selected = "TCGA: Association Between Molecular Profile and Tumor Immune Infiltration")
-  shinyjs::runjs("window.scrollTo(0, 0)")
-})
-
-observeEvent(input$link_to_q7, {
-  updateNavbarPage(inputId = "navbar", 
-    selected = "TCGA: Association Between Molecular Profile and TMB/Stemness/MSI (Radar Show)")
-  shinyjs::runjs("window.scrollTo(0, 0)")
-})
-
-observeEvent(input$link_to_q8, {
-  updateNavbarPage(inputId = "navbar", 
-    selected = "TCGA: Association Between Molecular Profile and Pathway Score")
-  shinyjs::runjs("window.scrollTo(0, 0)")
-})
-
-observeEvent(input$link_to_q9, {
-  updateNavbarPage(inputId = "navbar", 
-    selected = "TCGA: Association Between Molecular Profile and Gene Mutation")
-  shinyjs::runjs("window.scrollTo(0, 0)")
-})
-
-observeEvent(input$link_to_q10, {
-  updateNavbarPage(inputId = "navbar", 
-    selected = "TCGA: Molecular Profile Kaplan-Meier Analysis")
-  shinyjs::runjs("window.scrollTo(0, 0)")
-})
-
-observeEvent(input$link_to_q11, {
-  updateNavbarPage(inputId = "navbar", 
-    selected = "TCGA: Dimension Reduction Distribution")
-  shinyjs::runjs("window.scrollTo(0, 0)")
-})
-
-
-
-observeEvent(input$link_to_p1, {
+observeEvent(input$link_to_p1_n, {
   updateNavbarPage(inputId = "navbar", 
     selected = "TCGA: Comparison Analysis")
   shinyjs::runjs("window.scrollTo(0, 0)")
 })
 
-observeEvent(input$link_to_p2, {
+observeEvent(input$link_to_p2_n, {
   updateNavbarPage(inputId = "navbar", 
-    selected = "TCGA: Association Analysis")
+    selected = "TCGA: Correlation Analysis")
   shinyjs::runjs("window.scrollTo(0, 0)")
 })
 
-observeEvent(input$link_to_p3, {
+observeEvent(input$link_to_p3_n, {
   updateNavbarPage(inputId = "navbar", 
     selected = "TCGA: Survival Analysis")
   shinyjs::runjs("window.scrollTo(0, 0)")

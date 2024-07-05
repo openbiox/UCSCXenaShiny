@@ -112,20 +112,24 @@ query_general_id = function(){
 
   #### TCGA general id: molecule/index/immune/pathway/phenotype 
   ## molecule_profile
-  pancan_identifiers <- readRDS(
-    system.file(
-      "extdata", "pancan_identifier_list.rds",
-      package = "UCSCXenaShiny"
-    )
-  )
+  # pancan_identifiers <- readRDS(
+  #   system.file(
+  #     "extdata", "pancan_identifier_list.rds",
+  #     package = "UCSCXenaShiny"
+  #   )
+  # )
+  tcga_id = load_data("v2_tcga_id")
+  tcga_id.list = split(tcga_id$L3, tcga_id$L2)
+
   tcga_molecule_id = list(
-    `mRNA Expression` = list(all = pancan_identifiers$gene, default = "TP53"),
-    `Transcript Expression` = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
-    `DNA Methylation` = list(all = pancan_identifiers$gene, default = "TP53"),
-    `Protein Expression` = list(all = pancan_identifiers$protein, default = "P53"),
-    `miRNA Expression` = list(all = pancan_identifiers$miRNA, default = "hsa-miR-769-3p"),
-    `Mutation status` = list(all = pancan_identifiers$gene, default = "TP53"),
-    `Copy Number Variation` = list(all = pancan_identifiers$gene, default = "TP53")
+    `mRNA Expression` = list(all = tcga_id.list[["Gene"]], default = "TP53"),
+    # `Transcript Expression` = list(all = load_data("transcript_identifier"), default = "ENST00000000233"),
+    `Transcript Expression` = list(all = tcga_id.list[["Transcript"]], default = "ENST00000000233"),
+    `DNA Methylation` = list(all = tcga_id.list[["Gene"]], default = "TP53"),
+    `Protein Expression` = list(all = tcga_id.list[["Protein"]], default = "P53"),
+    `miRNA Expression` = list(all = tcga_id.list[["miRNA"]], default = "hsa-miR-769-3p"),
+    `Mutation status` = list(all = tcga_id.list[["Gene"]], default = "TP53"),
+    `Copy Number Variation` = list(all = tcga_id.list[["Gene"]], default = "TP53")
   )
 
   ## tumor_index

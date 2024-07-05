@@ -265,7 +265,7 @@ server.modules_download_dataset = function(input, output, session){
 		withProgress(message = "Please wait for a while.",{
 			data = lapply(seq(query_ids()), function(i){
 				id = query_ids()[i]
-				data_tmp = get_data(dataset = input$one_dataset,
+				data_tmp = UCSCXenaShiny:::get_data(dataset = input$one_dataset,
 				                    identifier = id,
 				                    host = input$one_datahub)
 				# 进度提醒
