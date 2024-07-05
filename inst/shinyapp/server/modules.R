@@ -159,14 +159,14 @@ observeEvent(req(input$navbar=="TPC ID Query"),{
 
 
 # # download data
-observeEvent(req(input$navbar=="Based on TCGA/PCAWG/CCLE Analysis"),{
+observeEvent(req(input$navbar=="The integrated TPC data"),{
     waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE, html = html_spin)
     waiter$show()
 	  callModule(server.modules_download_pancan, "modules_download_pancan")
     on.exit(waiter$hide())
 }, once = TRUE) 
 
-observeEvent(req(input$navbar=="Based on Repository Datasets"),{
+observeEvent(req(input$navbar=="The Repository Dataset"),{
     waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE, html = html_spin)
     waiter$show()
 	  callModule(server.modules_download_dataset, "modules_download_dataset")

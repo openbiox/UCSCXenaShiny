@@ -135,11 +135,11 @@ server.modules_3_ccle_02 = function(input, output, session){
         id <- showNotification(h3("The task is running..."), duration = NULL, closeButton = FALSE, type = "message")
         on.exit(removeNotification(id), add = TRUE)  #reactive语句执行完毕时，运行remove命令
         # check whether valid out plot
-        chect_plot = is.null(plot_func()) 
-        if(chect_plot){
-            sendSweetAlert(session, title = "Warning", type = "error", text = "Please select a valid molecule.")
-            req(chect_plot)
-        }
+        # chect_plot = is.null(plot_func()) 
+        # if(chect_plot){
+        #     sendSweetAlert(session, title = "Warning", type = "error", text = "Please select a valid molecule.")
+        #     req(chect_plot)
+        # }
         p <- vis_ccle_gene_cor(
             Gene1 = mol_info_1$molecule(),
             Gene2 = mol_info_2$molecule(),

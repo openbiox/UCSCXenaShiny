@@ -3,11 +3,11 @@ ui.page_download <- function() {
 	    title = "Download",
 	    icon = icon("cloud-arrow-down"),
 	    tabPanel(
-			"Based on TCGA/PCAWG/CCLE Analysis",
+			"The integrated TPC data",
 			ui.modules_download_pancan("modules_download_pancan")
 	    ),
 	    tabPanel(
-			"Based on Repository Datasets",
+			"The Repository Dataset",
 			ui.modules_download_dataset("modules_download_dataset")
 	    ),
 	)
