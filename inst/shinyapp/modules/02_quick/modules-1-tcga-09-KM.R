@@ -40,7 +40,7 @@ ui.modules_1_tcga_09 = function(id){
         bsTooltip(ns("groupby"), "Only valid for continuous variable, other than molecules from Copy Number Variation/Mutation status", 
                     placement = "right", trigger = "hover", options = list(container = "body")),
         shinyWidgets::actionBttn(
-          inputId = ns("submit_bt"), label = "Submit",
+          inputId = ns("submit_bt"), label = "Go!",
           style = "gradient",
           icon = icon("check"),
           color = "primary",
@@ -107,7 +107,7 @@ ui.modules_1_tcga_09 = function(id){
             background = "gray",
             collapsible = FALSE,
             style = "height:670px",
-            footer = "TIPs: Pull the sidebar to adjsut plot parameters or download results through the top-right widget.",
+            footer = "TIPs: Pull the sidebar to adjust plot parameters or download results through the top-right widget.",
             sidebar = boxSidebar(
                         id = ns("sidebar"),
                         width = 50,

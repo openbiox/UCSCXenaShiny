@@ -177,13 +177,14 @@ query_general_id = function(){
 
   #### PCAWG ID
   pcawg_id_option = tcga_id_option
-  pcawg_id_referrence = load_data("pcawg_identifier")
+  # pcawg_id_referrence = load_data("pcawg_identifier")
+  pcawg_id_referrence = load_data("v2_pcawg_id")
   pcawg_id_option$`Molecular profile` = list(
-       `mRNA Expression` = list(all = sort(pcawg_id_referrence$id_gene$Level3), default = "TP53"),
-       `Promoter Activity` = list(all = sort(pcawg_id_referrence$id_pro$Level3), default = "prmtr.1"),
-       `Gene Fusion` = list(all = sort(pcawg_id_referrence$id_fusion$Level3), default = "SAMD11"),
-       `miRNA Expression` = list(all = sort(pcawg_id_referrence$id_mi$Level3), default = "hsa-let-7a-2-3p"),
-       `APOBEC Mutagenesis` = list(all = sort(pcawg_id_referrence$id_maf$Level3), default = "A3A_or_A3B")
+       `mRNA Expression` = list(all = sort(v2_pcawg_id$L3[v2_pcawg_id$L2=="Gene"]), default = "TP53"),
+       `Promoter Activity` = list(all = sort(v2_pcawg_id$L3[v2_pcawg_id$L2=="Promoter"]), default = "prmtr.1"),
+       `Gene Fusion` = list(all = sort(v2_pcawg_id$L3[v2_pcawg_id$L2=="Fusion"]), default = "SAMD11"),
+       `miRNA Expression` = list(all = sort(v2_pcawg_id$L3[v2_pcawg_id$L2=="miRNA"]), default = "hsa-let-7a-2-3p"),
+       `APOBEC Mutagenesis` = list(all = sort(v2_pcawg_id$L3[v2_pcawg_id$L2=="Muta"]), default = "A3A_or_A3B")
     )
   pcawg_id_option$`Tumor index` = list(
        `Tumor Purity` = list(all = c("purity", "ploidy", "purity_conf_mad", "wgd_status", "wgd_uncertain"), 
@@ -197,12 +198,13 @@ query_general_id = function(){
 
   #### CCLE ID
   ccle_id_option = list()
-  ccle_id_referrence = load_data("ccle_identifier")
+  # ccle_id_referrence = load_data("ccle_identifier")
+  ccle_id_referrence = load_data("v2_ccle_id")
   ccle_id_option$`Molecular profile` = list(
-       `mRNA Expression` = list(all = sort(ccle_id_referrence$id_gene$Level3), default = "TP53"),
-       `Protein Expression` = list(all = sort(ccle_id_referrence$id_pro$Level3), default = "14-3-3_beta"),
-       `Copy Number Variation` = list(all = sort(ccle_id_referrence$id_cnv$Level3), default = "TP53"),
-       `Mutation status` = list(all = sort(ccle_id_referrence$id_mut$Level3), default = "TP53")
+       `mRNA Expression` = list(all = sort(v2_pcawg_id$L3[v2_pcawg_id$L2=="Gene"]), default = "TP53"),
+       `Protein Expression` = list(all = sort(v2_ccle_id$L3[v2_ccle_id$L2=="Protein"]), default = "14-3-3_beta"),
+       `Copy Number Variation` = list(all = sort(v2_pcawg_id$L3[v2_pcawg_id$L2=="Gene"]), default = "TP53"),
+       `Mutation status` = list(all = sort(v2_pcawg_id$L3[v2_pcawg_id$L2=="Gene"]), default = "TP53")
     )
   ccle_id_option$`Tumor index` = list(
        `Tumor Purity` = list(all = c("Purity", "Ploidy", "Genome Doublings", "Lineage"), 

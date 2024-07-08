@@ -3,6 +3,7 @@
 - Added gene and pathway cross-omics analysis functions/modules.
 - Added `app_run2()` function for custom app start with lightweight modules.
 - Fixed `pdf()` parameter for KM plot
+- Improve the UI of Custom TPC Modules.
 
 # UCSCXenaShiny 2.1.0
 
