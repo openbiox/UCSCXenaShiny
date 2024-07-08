@@ -1,10 +1,9 @@
 pandoc: 3.1.11
-pkgdown: 2.0.9
+pkgdown: 2.1.0
 pkgdown_sha: ~
 articles:
   api: api.html
-last_built: 2024-07-05T14:40Z
+last_built: 2024-07-08T04:57Z
 urls:
   reference: https://openbiox.github.io/UCSCXenaShiny/reference
   article: https://openbiox.github.io/UCSCXenaShiny/articles
-

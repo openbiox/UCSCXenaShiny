@@ -1,228 +1,79 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/404.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/CONTRIBUTING.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/articles/api.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/index.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/TCGA.organ.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/UCSCXenaShiny-package.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/analyze_gene_drug_response_asso.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/analyze_gene_drug_response_diff.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/app_run.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/app_run2.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/available_hosts.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/calc_pw_mut_cnv.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/ccle_absolute.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/ccle_info.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/ccle_info_fine.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/dot-opt_pancan.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/ezcor.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/ezcor_batch.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/ezcor_partial_cor.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/get_pancan_value.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/keep_cat_cols.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/load_data.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/mol_quick_analysis.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/pcawg_info.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/pcawg_info_fine.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/pcawg_purity.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/pipe.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/query_general_value.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/query_molecule_value.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/query_pancan_value.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/query_tcga_group.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/query_toil_value_df.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/tcga_clinical.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/tcga_clinical_fine.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/tcga_genome_instability.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/tcga_gtex.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/tcga_purity.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/tcga_subtypes.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/tcga_surv.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/tcga_surv_analysis.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/tcga_tmb.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/toil_info.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_ccle_gene_cor.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_ccle_tpm.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_dim_dist.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_TIL_cor.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_cor.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_cor_cancer.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_cross_omics.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_drug_response_asso.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_drug_response_diff.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_immune_cor.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_msi_cor.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_stemness_cor.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_tmb_cor.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_identifier_cor.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_identifier_dim_dist.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_identifier_grp_comparison.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_identifier_grp_surv.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_identifier_multi_cor.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_pancan_anatomy.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_pathway_cross_omics.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_pcawg_dist.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_pcawg_gene_cor.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_pcawg_unicox_tree.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_toil_Mut.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_toil_Mut_cancer.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_toil_TvsN.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_toil_TvsN_cancer.html</loc>
-  </url>
-  <url>
-    <loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_unicox_tree.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/404.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/CONTRIBUTING.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/LICENSE.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/articles/api.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/articles/index.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/authors.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/index.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/news/index.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/TCGA.organ.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/UCSCXenaShiny-package.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/analyze_gene_drug_response_asso.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/analyze_gene_drug_response_diff.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/app_run.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/app_run2.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/available_hosts.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/calc_pw_mut_cnv.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/ccle_absolute.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/ccle_info.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/ccle_info_fine.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/dot-opt_pancan.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/ezcor.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/ezcor_batch.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/ezcor_partial_cor.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/get_pancan_value.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/index.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/keep_cat_cols.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/load_data.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/mol_quick_analysis.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/pcawg_info.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/pcawg_info_fine.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/pcawg_purity.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/pipe.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/query_general_value.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/query_molecule_value.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/query_pancan_value.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/query_tcga_group.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/query_toil_value_df.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/tcga_clinical.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/tcga_clinical_fine.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/tcga_genome_instability.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/tcga_gtex.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/tcga_purity.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/tcga_subtypes.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/tcga_surv.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/tcga_surv_analysis.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/tcga_tmb.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/toil_info.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_ccle_gene_cor.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_ccle_tpm.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_dim_dist.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_TIL_cor.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_cor.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_cor_cancer.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_cross_omics.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_drug_response_asso.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_drug_response_diff.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_immune_cor.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_msi_cor.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_pw_cor.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_stemness_cor.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_tmb_cor.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_identifier_cor.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_identifier_dim_dist.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_identifier_grp_comparison.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_identifier_grp_surv.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_identifier_multi_cor.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_pancan_anatomy.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_pathway_cross_omics.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_pcawg_dist.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_pcawg_gene_cor.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_pcawg_unicox_tree.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_toil_Mut.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_toil_Mut_cancer.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_toil_TvsN.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_toil_TvsN_cancer.html</loc></url>
+<url><loc>https://openbiox.github.io/UCSCXenaShiny/reference/vis_unicox_tree.html</loc></url>
 </urlset>
+
