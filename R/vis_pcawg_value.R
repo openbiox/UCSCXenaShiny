@@ -354,8 +354,6 @@ vis_pcawg_gene_cor <- function(Gene1 = "CSF1R",
   # t1 <- query_pcawg_pancan_value(Gene1, data_type1)
   t1 <- query_pancan_value(Gene1, data_type1, database = "pcawg", opt_pancan=opt_pancan)
 
-
-
   unit1 <- switch(data_type1,
     cnv = NULL,
     mutation = NULL,
@@ -420,6 +418,11 @@ vis_pcawg_gene_cor <- function(Gene1 = "CSF1R",
 
   if (filter_tumor) {
     df %>% dplyr::filter(.data$type2 == "tumor") -> df
+  }
+
+  if(nrow(df)==0){
+    warning("No intersected samples for the two identifiers in the cohort")
+    return(NULL)
   }
 
   # print(dim(df))

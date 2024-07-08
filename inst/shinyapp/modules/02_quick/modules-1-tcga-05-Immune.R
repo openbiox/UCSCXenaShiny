@@ -8,9 +8,9 @@ ui.modules_1_tcga_05 = function(id){
         h4("3. Select TIL cell types"),
         selectInput(
             ns("immune_sig"), NULL,
-            choices = "Cibersort",
-            selected = c("Yasin", "Wolf", "Attractors", "ICR", 
-                         "c7atoms", "Bindea", "Cibersort")
+            choices = c("Yasin", "Wolf", "Attractors", "ICR", 
+                         "c7atoms", "Bindea", "Cibersort"),
+            selected = "Cibersort"
         ),
         h4("4. Select correlation method"),
         awesomeRadio(
@@ -92,7 +92,7 @@ ui.modules_1_tcga_05 = function(id){
             background = "gray",
             collapsible = FALSE,
             style = "height:600px",
-            footer = "TIPs: Pull the sidebar to adjsut plot parameters or download results through the top-right widget.",
+            footer = "TIPs: Pull the sidebar to adjust plot parameters or download results through the top-right widget.",
             sidebar = boxSidebar(
                         id = ns("sidebar"),
                         width = 50,

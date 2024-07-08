@@ -186,7 +186,7 @@ ui.modules_1_tcga_11 = function(id){
             status = "warning",
             background = "gray",
             collapsible = FALSE,
-            style = "height:805px",
+            style = "height:600px",
             footer = "TIPs: Click the bottom button to execute/update the analysis."
         ),
         box(out_ui,
@@ -196,8 +196,8 @@ ui.modules_1_tcga_11 = function(id){
             status = "warning",
             background = "gray",
             collapsible = FALSE,
-            style = "height:805px",
-            footer = "TIPs: Pull the sidebar to adjsut plot parameters or download results through the top-right widget.",
+            style = "height:600px",
+            footer = "TIPs: Pull the sidebar to adjust plot parameters or download results through the top-right widget.",
             sidebar = boxSidebar(
                         id = ns("sidebar"),
                         width = 50,

@@ -121,7 +121,7 @@ ui.modules_2_pcawg_02 = function(id){
             background = "gray",
             collapsible = FALSE,
             style = "height:600px",
-            footer = "TIPs: Pull the sidebar to adjsut plot parameters or download results through the top-right widget.",
+            footer = "TIPs: Pull the sidebar to adjust plot parameters or download results through the top-right widget.",
             sidebar = boxSidebar(
                         id = ns("sidebar"),
                         width = 50,
@@ -155,9 +155,11 @@ server.modules_2_pcawg_02 = function(input, output, session){
             color = input$color,
             alpha = input$alpha
         )
-        p <- p + themes_list[[input$theme]] +
-                theme(text = element_text(size = 20),
-                    legend.position = "none")
+        if(!is.null(p)){
+            p <- p + themes_list[[input$theme]] +
+                    theme(text = element_text(size = 20),
+                        legend.position = "none")
+        }
         return(p)
     })
 

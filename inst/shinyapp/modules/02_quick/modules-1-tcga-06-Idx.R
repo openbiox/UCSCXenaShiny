@@ -8,8 +8,8 @@ ui.modules_1_tcga_06 = function(id){
         h4("3. Select fearture type"),
         selectInput(
             ns("Type"), NULL,
-            choices = "Stemness",
-            selected = c("Stemness", "TMB", "MSI")
+            choices = c("Stemness", "TMB", "MSI"),
+            selected = "Stemness"
         ),
         h4("4. Select correlation method"),
         awesomeRadio(
@@ -88,7 +88,7 @@ ui.modules_1_tcga_06 = function(id){
             background = "gray",
             collapsible = FALSE,
             style = "height:600px",
-            footer = "TIPs: Pull the sidebar to adjsut plot parameters or download results through the top-right widget.",
+            footer = "TIPs: Pull the sidebar to adjust plot parameters or download results through the top-right widget.",
             sidebar = boxSidebar(
                         id = ns("sidebar"),
                         width = 50,

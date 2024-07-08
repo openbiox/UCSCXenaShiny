@@ -11,7 +11,7 @@ observeEvent(req(input$navbar=="TCGA: Molecular correlation"),{
   callModule(server.modules_1_tcga_04, "modules_1_tcga_04")
   callModule(server.modules_1_tcga_05, "modules_1_tcga_05")
   callModule(server.modules_1_tcga_06, "modules_1_tcga_06")
-  # callModule(server.modules_1_tcga_07, "modules_1_tcga_07")
+  callModule(server.modules_1_tcga_07, "modules_1_tcga_07")
 }, once = TRUE)  
 
 observeEvent(req(input$navbar=="TCGA: Survival analysis"),{

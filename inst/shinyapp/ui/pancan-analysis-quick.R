@@ -73,14 +73,6 @@ ui.page_pancan_quick <- function() {
         )
       )
     ),
-    # tabPanel("TCGA: Pathway cross analysis",
-    #   tabsetPanel(
-    #     tabPanel(
-    #       "mRNA — Mutation",
-    #       ui.modules_1_tcga_12("modules_1_tcga_12")
-    #     )
-    #   )
-    # ),
 
     tabPanel("PCAWG: Molecular comparison",
       tabsetPanel(
