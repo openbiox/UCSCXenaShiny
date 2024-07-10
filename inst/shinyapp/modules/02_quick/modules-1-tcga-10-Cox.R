@@ -101,6 +101,7 @@ server.modules_1_tcga_10 = function(input, output, session){
     plot_func = eventReactive(input$search_bttn, {
         id <- showNotification(h3("The task is running..."), duration = NULL, closeButton = FALSE, type = "message")
         on.exit(removeNotification(id), add = TRUE)  #reactive语句执行完毕时，运行remove命令
+
         p <- vis_unicox_tree(
             Gene = mol_info$molecule(),
             measure = input$measure,
@@ -108,6 +109,7 @@ server.modules_1_tcga_10 = function(input, output, session){
             data_type = mol_info$profile(),
             values = c(input$first_col, input$second_col, input$third_col)
         )
+        if(is.null(p)){return(NULL)}
         pdata <- p$data %>% 
             as.data.frame() %>%
             dplyr::select(cancer, measure, n_contrast, n_ref, beta, HR_log, lower_95_log, upper_95_log, Type, p.value)

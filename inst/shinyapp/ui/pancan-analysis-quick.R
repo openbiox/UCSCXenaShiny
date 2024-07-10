@@ -1,6 +1,6 @@
 ui.page_pancan_quick <- function() {
   navbarMenu(
-    title = "Custom T·P·C Modules",
+    title = "T·P·C Modules",
     icon = icon("buromobelexperte"),
 
     tabPanel(

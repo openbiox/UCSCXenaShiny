@@ -88,7 +88,7 @@ ui.modules_pancan_comp_m2o = function(id) {
 					h4(strong("S3.1 Set analysis parameters")), 
 					# br(),br(),
 					# h4("1. Set method"),
-					selectInput(ns("comp_method"), "Correlation method:",choices = c("t.test", "wilcox.test")),
+					selectInput(ns("comp_method"), "Comparison method:",choices = c("wilcox.test", "t.test"),selected="wilcoxon"),
 					shinyWidgets::actionBttn(
 						ns("cal_batch_comp"), "Run",
 				        style = "gradient",

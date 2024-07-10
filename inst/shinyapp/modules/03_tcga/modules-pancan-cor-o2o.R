@@ -90,7 +90,7 @@ ui.modules_pancan_cor_o2o = function(id) {
 					                   content = "analyze_cor_1"),  
 					style = "height:1100px",
 					h4(strong("S3.1 Set analysis parameters")), 
-					selectInput(ns("cor_method"), "Correlation method:",choices = c("Spearman", "Pearson")),
+					selectInput(ns("cor_method"), "Correlation method:",choices = c("Spearman", "Pearson"),selected="Spearman"),
 					h4(strong("S3.2 Set visualization parameters")), 
 					fluidRow(
 						column(3, colourpicker::colourInput(inputId = ns("line_color"), "Line color:", "#0000FF")),

@@ -146,10 +146,19 @@ server.modules_1_tcga_09 = function(input, output, session){
             load_data("tcga_surv"),
             by = "sample"
         )
+
         dat1 = tcga_surv_get(
             TCGA_cohort = input$Cancer, item = mol_info$molecule(),
             profile = mol_info$profile(), TCGA_cli_data = TCGA_cli_merged
         )
+        if(is.null(dat1)){dat1 = data.frame(
+                                    sampleID=NA, value=NA, 
+                                    OS=NA, OS.time=NA, 
+                                    DSS=NA, DSS.time=NA, 
+                                    DFI=NA, DFI.time=NA, 
+                                    PFI=NA, PFI.time=NA, 
+                                    gender=NA, age=NA, stage=NA)
+        } 
         # filter
         dat2 = dat_filter(data = dat1, age = input$age,
                           gender = input$sex, stage = input$stage, 
@@ -159,6 +168,10 @@ server.modules_1_tcga_09 = function(input, output, session){
 
 
     tips = eventReactive(input$submit_bt, {
+		shiny::validate(
+			need(try(nrow(sur_dat())>0), 
+				"Error: Please select a valid molecule.")
+		)
         if(mol_info$profile() == "mutation"){
             sur_dat2 = sur_dat() %>%
                     dplyr::mutate(group = value)
@@ -197,14 +210,12 @@ server.modules_1_tcga_09 = function(input, output, session){
 
     output$msg = renderPrint({cat(tips())})
 
-
-
-
     plot_func = eventReactive(input$submit_bt, {
         req(grep("Note", tips()))
         id <- showNotification(h3("The task is running..."), duration = NULL, closeButton = FALSE, type = "message")
         on.exit(removeNotification(id), add = TRUE)  #reactive语句执行完毕时，运行remove命令
         cutoff_mode = ifelse(input$groupby=="Optimal cutoff","Auto","Custom")
+
         p <- tcga_surv_plot(sur_dat(),
                             cutoff_mode = cutoff_mode, #"Custom",
                             cutpoint = c(50, 50),
@@ -218,6 +229,7 @@ server.modules_1_tcga_09 = function(input, output, session){
     w <- waiter::Waiter$new(id = ns("surplot"), html = waiter::spin_hexdots(), color = "black")
     observeEvent(input$submit_bt,{
         shinyjs::disable("submit_bt")
+
         output$surplot <- renderUI({
             w$show()
             output$plot = renderPlot(plot_func())

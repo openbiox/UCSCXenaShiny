@@ -91,7 +91,7 @@ ui.modules_pancan_cor_o2m = function(id) {
 					style = "height:1100px",
 					h4(strong("S3.1 Set analysis parameters")), 
 					# br(),
-					selectInput(ns("cor_method"), "Correlation method:",choices = c("Pearson", "Spearman")),
+					selectInput(ns("cor_method"), "Correlation method:",choices = c("Spearman","Pearson"), selected="Spearman"),
 					shinyWidgets::actionBttn(
 						ns("step3_plot_bar_1"), "Run (Calculate)",
 				        style = "gradient",

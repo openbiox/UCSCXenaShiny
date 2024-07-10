@@ -155,6 +155,7 @@ server.modules_1_tcga_03 = function(input, output, session){
             color = input$color,
             alpha = input$alpha
         )
+        if(is.null(p)){return(NULL)}
         p <- p + themes_list[[input$theme]] +
                 theme(text = element_text(size = 20),
                     legend.position = "none")
