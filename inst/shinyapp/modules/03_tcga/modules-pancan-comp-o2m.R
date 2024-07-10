@@ -91,7 +91,7 @@ ui.modules_pancan_comp_o2m = function(id) {
 					style = "height:1100px",
 
 					h4(strong("S3.1 Set analysis parameters")),
-					selectInput(ns("comp_method"), "Comparison method:",choices = c("t-test", "wilcoxon")),
+					selectInput(ns("comp_method"), "Comparison method:",choices = c("wilcoxon","t-test"),selected="wilcoxon"),
 					shinyWidgets::actionBttn(
 						ns("step3_plot_line_1"), "Run (Calculate)",
 				        style = "gradient",

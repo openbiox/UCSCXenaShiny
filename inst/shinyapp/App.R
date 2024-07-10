@@ -32,11 +32,11 @@ ui <- tagList(
     # inst/shinyapp/ui
     ui.page_home(),
     ui.page_repository(),
-    ui.page_general_analysis(),
     ui.page_pancan_quick(),
     ui.page_pancan_tcga(),
-    ui.page_PharmacoGenomics(),
+    ui.page_general_analysis(),
     ui.page_download(),
+    ui.page_PharmacoGenomics(),
     ui.page_help(),
     ui.page_developers(),
     footer = ui.footer(),

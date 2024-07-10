@@ -401,7 +401,7 @@ observeEvent(input$show_R_code, {
 
 # ref: https://stackoverflow.com/questions/38706965/is-there-any-way-for-an-actionbutton-to-navigate-to-another-tab-within-a-r-shi
 observeEvent(input$analyze_data, {
-  updateNavbarPage(session = session, inputId = "navbar", selected = "General Dataset Analysis")
+  updateNavbarPage(session = session, inputId = "navbar", selected = "General Analysis")
 })
 
 # Show alert info when select rows from table -----------------------------

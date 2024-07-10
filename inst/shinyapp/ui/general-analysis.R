@@ -12,7 +12,7 @@ ui.page_general_analysis <- function() {
   #   #          ui.sg.pancan.analysis("sg.pancan.analysis"))
   # )
   tabPanel(
-    title = "General Dataset Analysis",
+    title = "General Analysis",
     icon = icon("angle-double-down"),
     fluidRow(
       column(

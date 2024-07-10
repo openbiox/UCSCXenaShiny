@@ -1,6 +1,6 @@
 ui.page_pancan_tcga <- function() {
   navbarMenu(
-    title = "Personalized T·P·C Pipelines",
+    title = "T·P·C Pipelines",
     icon = icon("buromobelexperte"),
     tabPanel(
       "Introduction",

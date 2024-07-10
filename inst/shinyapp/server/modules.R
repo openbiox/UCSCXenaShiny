@@ -63,14 +63,6 @@ observeEvent(req(input$navbar=="CCLE: Drug analysis"),{
 html_spin = tagList(spin_1(), br(),
                     h2("Loading (Only needed for the first time)"))
 # TCGA pancan
-observeEvent(req(input$navbar=="TCGA: Cross-Omics Analysis"),{
-    waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE, html = html_spin)
-    waiter$show()
-		callModule(server.modules_pancan_cross_gene_o2m, "modules_pancan_cross_gene_o2m")
-		callModule(server.modules_pancan_cross_pw_o2m, "modules_pancan_cross_pw_o2m")
-    on.exit(waiter$hide())
-}, once = TRUE)  
-
 observeEvent(req(input$navbar=="TCGA: Correlation Analysis"),{
     waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE, html = html_spin)
     waiter$show()
@@ -98,7 +90,13 @@ observeEvent(req(input$navbar=="TCGA: Survival Analysis"),{
     on.exit(waiter$hide())
 }, once = TRUE)  
 
-
+observeEvent(req(input$navbar=="TCGA: Cross-Omics Analysis"),{
+    waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE, html = html_spin)
+    waiter$show()
+		callModule(server.modules_pancan_cross_gene_o2m, "modules_pancan_cross_gene_o2m")
+		callModule(server.modules_pancan_cross_pw_o2m, "modules_pancan_cross_pw_o2m")
+    on.exit(waiter$hide())
+}, once = TRUE)  
 
 # PCAWG 
 observeEvent(req(input$navbar=="PCAWG: Correlation Analysis"),{

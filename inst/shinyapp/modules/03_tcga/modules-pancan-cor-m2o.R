@@ -86,7 +86,7 @@ ui.modules_pancan_cor_m2o = function(id) {
 					                   content = "analyze_cor_3"),  
 
 					h4(strong("S3.1 Set analysis parameters")), 
-					selectInput(ns("cor_method"),"Correlation method:",choices = c("pearson", "spearman")),
+					selectInput(ns("cor_method"),"Correlation method:",choices = c("spearman","pearson"), selected="Spearman"),
 					shinyWidgets::actionBttn(
 						ns("cal_batch_cor"), "Run",
 				        style = "gradient",

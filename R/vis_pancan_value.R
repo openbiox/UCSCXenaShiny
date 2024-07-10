@@ -1166,13 +1166,13 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
     dplyr::distinct(.data$sample, .keep_all = TRUE)
 
   t1 <- query_pancan_value(Gene1, data_type = data_type1, opt_pancan = opt_pancan)
-  if (is.null(t1[[1]])) {
+  if (length(na.omit(t1[[1]]))==0) {
     warning("No data available", immediate. = TRUE)
     return(NULL)
   }
   if (is.list(t1)) t1 <- t1[[1]]
   t3 <- query_pancan_value(Gene2, data_type = data_type2, opt_pancan = opt_pancan)
-  if (is.null(t3[[1]])) {
+  if (length(na.omit(t1[[3]]))==0) {
     warning("No data available", immediate. = TRUE)
     return(NULL)
   }
