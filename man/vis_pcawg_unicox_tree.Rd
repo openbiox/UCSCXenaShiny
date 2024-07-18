@@ -8,7 +8,6 @@ vis_pcawg_unicox_tree(
   Gene = "TP53",
   measure = "OS",
   data_type = "mRNA",
-  threshold = 0.5,
   values = c("grey", "#E31A1C", "#377DB8"),
   opt_pancan = .opt_pancan
 )
@@ -20,8 +19,6 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 \item{measure}{a survival measure, e.g. "OS".}
 
 \item{data_type}{choose gene profile type, including "mRNA","transcript","methylation","miRNA","protein","cnv"}
-
-\item{threshold}{a expression cutoff, \code{0.5} for median.}
 
 \item{values}{the color to fill tumor or normal}
 
