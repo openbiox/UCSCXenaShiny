@@ -214,6 +214,8 @@ vis_pcawg_dist <- function(Gene = "TP53",
 #' @inheritParams vis_toil_TvsN
 #' @param measure a survival measure, e.g. "OS".
 #' @param data_type choose gene profile type, including "mRNA","transcript","methylation","miRNA","protein","cnv"
+#' @param use_optimal_cutoff use `surv_cutpoint` from survminer package for
+#' thresholding samples in each cancer type.
 #' @return a `ggplot` object
 #' @examples
 #' \dontrun{
@@ -221,8 +223,7 @@ vis_pcawg_dist <- function(Gene = "TP53",
 #' }
 #' @export
 
-
-vis_pcawg_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", 
+vis_pcawg_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", use_optimal_cutoff = FALSE,
   values = c("grey", "#E31A1C", "#377DB8"), opt_pancan = .opt_pancan) {
   pcawg_info <- load_data("pcawg_info")
 
@@ -249,9 +250,20 @@ vis_pcawg_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mR
 
   sss <- split(ss, ss$dcc_project_code)
   tissues <- names(sss)
-  unicox_res_all_cancers <- purrr::map(tissues, purrr::safely(function(cancer) {
+  .f = function(cancer) {
     sss_can <- sss[[cancer]]
-
+    
+    if (use_optimal_cutoff) {
+      sss_can <- sss_can %>%
+        survminer::surv_cutpoint(
+          time = paste0(measure, ".time"), event = measure,
+          variables = c("values"),
+          minprop = 0.25, progressbar = TRUE
+        ) %>%
+        survminer::surv_categorize(labels = c("Low", "High")) %>%
+        data.frame()
+    }
+    
     unicox_res_genes <- ezcox::ezcox(
       sss_can,
       covariates = "values",
@@ -259,11 +271,12 @@ vis_pcawg_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mR
       status = measure,
       verbose = FALSE
     )
-
+    
     unicox_res_genes$cancer <- cancer
     unicox_res_genes$measure <- measure
     return(unicox_res_genes)
-  })) %>% magrittr::set_names(tissues)
+  }
+  unicox_res_all_cancers <- purrr::map(tissues, purrr::safely(.f)) %>% magrittr::set_names(tissues)
 
   unicox_res_all_cancers <- unicox_res_all_cancers %>%
     purrr::map(~ .x$result) %>%

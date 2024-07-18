@@ -8,6 +8,7 @@ vis_pcawg_unicox_tree(
   Gene = "TP53",
   measure = "OS",
   data_type = "mRNA",
+  use_optimal_cutoff = FALSE,
   values = c("grey", "#E31A1C", "#377DB8"),
   opt_pancan = .opt_pancan
 )
@@ -19,6 +20,9 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 \item{measure}{a survival measure, e.g. "OS".}
 
 \item{data_type}{choose gene profile type, including "mRNA","transcript","methylation","miRNA","protein","cnv"}
+
+\item{use_optimal_cutoff}{use \code{surv_cutpoint} from survminer package for
+thresholding samples in each cancer type.}
 
 \item{values}{the color to fill tumor or normal}
 
