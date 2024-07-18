@@ -47,6 +47,7 @@
 <span>  Gene <span class="op">=</span> <span class="st">"TP53"</span>,</span>
 <span>  measure <span class="op">=</span> <span class="st">"OS"</span>,</span>
 <span>  data_type <span class="op">=</span> <span class="st">"mRNA"</span>,</span>
+<span>  use_optimal_cutoff <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey"</span>, <span class="st">"#E31A1C"</span>, <span class="st">"#377DB8"</span><span class="op">)</span>,</span>
 <span>  opt_pancan <span class="op">=</span> <span class="va">.opt_pancan</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -67,6 +68,11 @@ genomic signature (<code>"TP53 + 2 * KRAS - 1.3 * PTEN"</code>).</p></dd>
 
 <dt id="arg-data-type">data_type<a class="anchor" aria-label="anchor" href="#arg-data-type"></a></dt>
 <dd><p>choose gene profile type, including "mRNA","transcript","methylation","miRNA","protein","cnv"</p></dd>
+
+
+<dt id="arg-use-optimal-cutoff">use_optimal_cutoff<a class="anchor" aria-label="anchor" href="#arg-use-optimal-cutoff"></a></dt>
+<dd><p>use <code>surv_cutpoint</code> from survminer package for
+thresholding samples in each cancer type.</p></dd>
 
 
 <dt id="arg-values">values<a class="anchor" aria-label="anchor" href="#arg-values"></a></dt>
