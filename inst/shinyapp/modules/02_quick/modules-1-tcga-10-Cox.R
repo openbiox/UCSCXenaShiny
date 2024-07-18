@@ -105,7 +105,6 @@ server.modules_1_tcga_10 = function(input, output, session){
         p <- vis_unicox_tree(
             Gene = mol_info$molecule(),
             measure = input$measure,
-            threshold = 0.5,
             data_type = mol_info$profile(),
             values = c(input$first_col, input$second_col, input$third_col)
         )
