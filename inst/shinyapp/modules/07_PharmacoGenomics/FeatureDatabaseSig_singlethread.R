@@ -6,7 +6,7 @@ uiFeatureDatabaseSig <- function(id){
       # Select Features ----
       column(3,
              selectInput(inputId = ns("select_features1"), 
-                         "Please select the feature type:", 
+                         "Please select target feature type:", 
                          choices = c("Copy Number Data" = "cnv",
                                      "DNA Methylation" = "meth",
                                      "Gene Fusion" = "fusion",
@@ -20,7 +20,7 @@ uiFeatureDatabaseSig <- function(id){
       # Select specific feature ----
       column(3,
              selectizeInput(
-               ns("select_specific_feature"), "Feature Selection:", choices = NULL,
+               ns("select_specific_feature"), "Target feature:", choices = NULL,
                options = list(
                  placeholder = 'Please select a feature',
                  onInitialize = I('function() { this.setValue(""); }'), selected = ""
@@ -29,7 +29,7 @@ uiFeatureDatabaseSig <- function(id){
       # Select Feature to compare ----
       column(3,
              selectInput(inputId = ns("select_features2"), 
-                         "Please select the feature type:", 
+                         "Feature type to scan:", 
                          choices = c("Copy Number Data" = "cnv",
                                      "DNA Methylation" = "meth",
                                      "Gene Fusion" = "fusion",
@@ -87,7 +87,7 @@ serverFeatureDatabaseSig <- function(input, output, session){
                                            "mutation_site" = omics_search[omics_search$type %in% "mutation_site",]$omics,
                                            "fusion" = omics_search[omics_search$type %in% "fusion",]$omics)
     updateSelectizeInput(session = session, inputId = 'select_specific_feature',
-                         label = 'Feature Selection:', choices = features_search_sel$features, server = TRUE,
+                         label = 'Target feature:', choices = features_search_sel$features, server = TRUE,
                          options = list(placeholder = 'Please select a feature', onInitialize = I('function() { this.setValue(""); }')),
                          selected = ""
     )
@@ -132,7 +132,7 @@ serverFeatureDatabaseSig <- function(input, output, session){
     profile_vec2 <- profile_vec_list[[input$select_features2]]
     profile_comb <- expand.grid(profile_vec1, profile_vec2)
     re_list <- list()
-    withProgress(message = "Calculation(Please be patient)", value = 0, {
+    withProgress(message = "Running (please be patient)", value = 0, {
       waiter_show( # show the waiter
         html = spin_3(), # use a spinner
         color = transparent(0.1)
