@@ -234,8 +234,8 @@ server.modules_ga_dim_distribution <- function(
       } else {
         # !!Assume a dense matrix dataset is selected
         return(list(
-          all = if (is.null(custom_file$fData)) all_preload_identifiers else
-            unique(c(custom_file$fData[[1]], all_preload_identifiers)),
+          all = if (is.null(custom_file$fData)) unique(all_preload_identifiers) else
+            unique(c(custom_file$fData[[1]], unique(all_preload_identifiers))),
           selected = c("TP53", "PTEN", "KRAS")
         ))
       }

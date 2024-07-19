@@ -261,7 +261,8 @@ vis_pcawg_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mR
           minprop = 0.25, progressbar = TRUE
         ) %>%
         survminer::surv_categorize(labels = c("Low", "High")) %>%
-        data.frame()
+        data.frame() %>% 
+        dplyr::mutate(values = factor(values, levels = c("Low", "High")))
     }
     
     unicox_res_genes <- ezcox::ezcox(
