@@ -45,51 +45,62 @@ Group TPC samples by build-in or custom phenotype and support filtering or mergi
 \dontrun{
 query_tcga_group(group = "Age")
 
-query_tcga_group(cancer="BRCA", 
-              group = "Stage_ajcc"
-              )
-
-query_tcga_group(cancer="BRCA", 
-              group = "Stage_ajcc",
-              filter_by = list(
-                c("Code",c("TP"),"+"),
-                c("Stage_ajcc",c(NA),"-"))
-              )
-              
-query_tcga_group(cancer="BRCA", 
-                 group = "Stage_ajcc",
-                 filter_by = list(
-                   c("Age",c(0.5),"\%>"))
+query_tcga_group(
+  cancer = "BRCA",
+  group = "Stage_ajcc"
 )
 
-query_tcga_group(cancer="BRCA", 
-                 group = "Stage_ajcc",
-                 filter_by = list(
-                   c("Age",c(60),">"))
+query_tcga_group(
+  cancer = "BRCA",
+  group = "Stage_ajcc",
+  filter_by = list(
+    c("Code", c("TP"), "+"),
+    c("Stage_ajcc", c(NA), "-")
+  )
 )
 
-query_tcga_group(cancer="BRCA", 
-              group = "Stage_ajcc",
-              merge_by = list(
-                "Early"=c("Stage I"), 
-                "Late" = c("Stage II","Stage III","Stage IV"))
-              )
-
-query_tcga_group(cancer="BRCA", 
-                 group = "Age",
-                 merge_by = list(
-                   "Young"= c(20, 60), 
-                   "Old"= c(60, NA)
-                )
+query_tcga_group(
+  cancer = "BRCA",
+  group = "Stage_ajcc",
+  filter_by = list(
+    c("Age", c(0.5), "\%>")
+  )
 )
 
-query_tcga_group(cancer="BRCA", 
-                 group = "Age",
-                 merge_quantile = TRUE,
-                 merge_by = list(
-                   "Young"= c(0, 0.5), 
-                   "Old"= c(0.5, 1)
-                 )
+query_tcga_group(
+  cancer = "BRCA",
+  group = "Stage_ajcc",
+  filter_by = list(
+    c("Age", c(60), ">")
+  )
+)
+
+query_tcga_group(
+  cancer = "BRCA",
+  group = "Stage_ajcc",
+  merge_by = list(
+    "Early" = c("Stage I"),
+    "Late" = c("Stage II", "Stage III", "Stage IV")
+  )
+)
+
+query_tcga_group(
+  cancer = "BRCA",
+  group = "Age",
+  merge_by = list(
+    "Young" = c(20, 60),
+    "Old" = c(60, NA)
+  )
+)
+
+query_tcga_group(
+  cancer = "BRCA",
+  group = "Age",
+  merge_quantile = TRUE,
+  merge_by = list(
+    "Young" = c(0, 0.5),
+    "Old" = c(0.5, 1)
+  )
 )
 }
 }

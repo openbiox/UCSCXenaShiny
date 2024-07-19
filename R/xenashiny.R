@@ -1,6 +1,6 @@
 #' @title Xena Shiny App
 #' @description A Shiny App for UCSC Xena Data Hubs. See <https://github.com/openbiox/UCSCXenaShiny> for details.
-#' @keywords internal 
+#' @keywords internal
 "_PACKAGE"
 
 # The following block is used by usethis to automatically manage

@@ -54,7 +54,7 @@ query_molecule_value <- function(dataset, molecule, host = NULL) {
 
 #' A default setting for pan-cancer studies
 #' @export
-.opt_pancan = list(
+.opt_pancan <- list(
   # Toil
   toil_mRNA = list(norm = "tpm"),
   toil_transcript = list(),
@@ -94,17 +94,17 @@ query_molecule_value <- function(dataset, molecule, host = NULL) {
 
 #' @details
 #' `query_pancan_value()` provide convenient interface to download multi-omics
-#' data from 3 databases by specifying one or several canonical datasets. It is 
+#' data from 3 databases by specifying one or several canonical datasets. It is
 #' derived from `query_pancan_value()` and support query for genomic signature.
-#' To query comprehensive datasets that UCSCXena supports, users can check 
+#' To query comprehensive datasets that UCSCXena supports, users can check
 #' `UCSCXenaTools::XenaData` and use `get_pancan_value()` directly.
-#' 
-#'  Option `opt_pancan` is a nested list and allow to adjust the downloading details. 
-#'  For now, only `cnv(toil)`,`methylation(toil)`,`miRNA(toil)`,`miRNA(pcawg)`,`promoter(pcawg)` 
-#'  support optional parameters. The default set is `.opt_pancan` and we check meanings of sublist(parameters) 
-#'  through the following relationship. 
-#'  
-#' @section "toil" database: 
+#'
+#'  Option `opt_pancan` is a nested list and allow to adjust the downloading details.
+#'  For now, only `cnv(toil)`,`methylation(toil)`,`miRNA(toil)`,`miRNA(pcawg)`,`promoter(pcawg)`
+#'  support optional parameters. The default set is `.opt_pancan` and we check meanings of sublist(parameters)
+#'  through the following relationship.
+#'
+#' @section "toil" database:
 #'  1. mRNA--`get_pancan_gene_value()`
 #'  2. transcript--`get_pancan_transcript_value()`
 #'  3. protein--`get_pancan_protein_value()`
@@ -112,44 +112,43 @@ query_molecule_value <- function(dataset, molecule, host = NULL) {
 #'  5. cnv--`get_pancan_cn_value()`
 #'  6. methylation--`get_pancan_methylation_value()`
 #'  7. miRNA--`get_pancan_miRNA_value()`
-#' @section "ccle" database: 
+#' @section "ccle" database:
 #'  1. mRNA--`get_ccle_gene_value()`
 #'  2. protein--`get_ccle_protein_value()`
 #'  3. mutation--`get_ccle_mutation_status()`
 #'  4. cnv--`get_ccle_cn_value()`
-#' @section "pcawg" database: 
+#' @section "pcawg" database:
 #'  1. mRNA--`get_pcawg_gene_value()`
 #'  2. miRNA--`get_pcawg_miRNA_value()`
 #'  3. promoter--`get_pcawg_promoter_value()`
 #'  4. fusion--`get_pcawg_fusion_value()`
 #'  5. APOBEC--`get_pcawg_APOBEC_mutagenesis_value()`
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' query_pancan_value("KRAS")
 #' query_pancan_value("KRAS", database = "ccle")
 #' query_pancan_value("KRAS", database = "pcawg")
-#' 
-#' 
+#'
+#'
 #' query_pancan_value("ENSG00000000419",
 #'   database = "pcawg",
 #'   data_type = "fusion"
 #' ) # gene symbol also work
-#' 
+#'
 #' .opt_pancan
-#' 
-#' opt_pancan = list(toil_cnv = list(use_thresholded_data = FALSE))
-#' query_pancan_value("PTEN",data_type = "cnv", database = "toil", opt_pancan = opt_pancan)
-#' 
-#' 
-#' opt_pancan = list(toil_methylation = list(type = "450K",rule_out = "cg21115430", aggr = "Q25"))
-#' query_pancan_value("PTEN",data_type = "methylation", database = "toil", opt_pancan = opt_pancan)
-#' 
+#'
+#' opt_pancan <- list(toil_cnv = list(use_thresholded_data = FALSE))
+#' query_pancan_value("PTEN", data_type = "cnv", database = "toil", opt_pancan = opt_pancan)
+#'
+#'
+#' opt_pancan <- list(toil_methylation = list(type = "450K", rule_out = "cg21115430", aggr = "Q25"))
+#' query_pancan_value("PTEN", data_type = "methylation", database = "toil", opt_pancan = opt_pancan)
 #' }
 query_pancan_value <- function(molecule,
                                data_type = c(
                                  "mRNA", "transcript", "protein", "mutation",
-                                 "cnv",  "methylation", "miRNA",
+                                 "cnv", "methylation", "miRNA",
                                  "fusion", "promoter", "APOBEC"
                                ),
                                database = c("toil", "ccle", "pcawg"),
@@ -238,7 +237,6 @@ query_value <- function(identifier,
       mutation = get_ccle_mutation_status,
       cnv = get_ccle_cn_value,
       stop("Please choose one of c('mRNA','protein','mutation','cnv') for Toil database!")
-
     )
   } else if (database == "pcawg") {
     f <- switch(data_type,
@@ -251,5 +249,5 @@ query_value <- function(identifier,
     )
   }
 
-  do.call(f, c(identifier, opt_pancan[[paste0(database,"_",data_type)]]))
+  do.call(f, c(identifier, opt_pancan[[paste0(database, "_", data_type)]]))
 }

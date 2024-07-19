@@ -119,23 +119,25 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = c("Boxplot", "Violinplot"),
     )
 
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
-      p <- p + ggplot2::geom_text(aes(
-        x = .data$tissue,
-        y = max(tcga_gtex_withNormal$value) * 1.1,
-        label = .data$p.signif
-      ),
-      data = pv,
-      inherit.aes = FALSE
+      p <- p + ggplot2::geom_text(
+        aes(
+          x = .data$tissue,
+          y = max(tcga_gtex_withNormal$value) * 1.1,
+          label = .data$p.signif
+        ),
+        data = pv,
+        inherit.aes = FALSE
       )
     }
     if (Show.P.value == TRUE & Show.P.label == FALSE) {
-      p <- p + ggplot2::geom_text(aes(
-        x = .data$tissue,
-        y = max(tcga_gtex_withNormal$value) * 1.1,
-        label = as.character(signif(.data$p, 2))
-      ),
-      data = pv,
-      inherit.aes = FALSE
+      p <- p + ggplot2::geom_text(
+        aes(
+          x = .data$tissue,
+          y = max(tcga_gtex_withNormal$value) * 1.1,
+          label = as.character(signif(.data$p, 2))
+        ),
+        data = pv,
+        inherit.aes = FALSE
       )
     }
   }
@@ -192,23 +194,25 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = c("Boxplot", "Violinplot"),
     )
 
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
-      p <- p + ggplot2::geom_text(ggplot2::aes(
-        x = .data$tissue,
-        y = max(tcga_gtex_withNormal$value) * 1.1,
-        label = .data$p.signif
-      ),
-      data = pv,
-      inherit.aes = FALSE
+      p <- p + ggplot2::geom_text(
+        ggplot2::aes(
+          x = .data$tissue,
+          y = max(tcga_gtex_withNormal$value) * 1.1,
+          label = .data$p.signif
+        ),
+        data = pv,
+        inherit.aes = FALSE
       )
     }
     if (Show.P.value == TRUE & Show.P.label == FALSE) {
-      p <- p + ggplot2::geom_text(ggplot2::aes(
-        x = .data$tissue,
-        y = max(tcga_gtex_withNormal$value) * 1.1,
-        label = as.character(signif(.data$p, 2))
-      ),
-      data = pv,
-      inherit.aes = FALSE
+      p <- p + ggplot2::geom_text(
+        ggplot2::aes(
+          x = .data$tissue,
+          y = max(tcga_gtex_withNormal$value) * 1.1,
+          label = as.character(signif(.data$p, 2))
+        ),
+        data = pv,
+        inherit.aes = FALSE
       )
     }
   }
@@ -229,11 +233,11 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = c("Boxplot", "Violinplot"),
 #' }
 #' @export
 vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", use_optimal_cutoff = FALSE,
-      values = c("grey", "#E31A1C", "#377DB8"), opt_pancan = .opt_pancan) {
+                            values = c("grey", "#E31A1C", "#377DB8"), opt_pancan = .opt_pancan) {
   tcga_surv <- load_data("tcga_surv")
   tcga_gtex <- load_data("tcga_gtex")
 
-  t1 <- query_pancan_value(Gene, data_type = data_type, opt_pancan=opt_pancan)
+  t1 <- query_pancan_value(Gene, data_type = data_type, opt_pancan = opt_pancan)
   if (is.null(t1[[1]])) {
     warning("No data available", immediate. = TRUE)
     return(NULL)
@@ -243,7 +247,7 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", u
     message("All NAs returned, return NULL instead.")
     return(NULL)
   }
-  
+
   # we filter out normal tissue
   tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
 
@@ -255,9 +259,9 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", u
     dplyr::inner_join(tcga_gtex[, c("tissue", "sample")], by = "sample")
   sss <- split(ss, ss$tissue)
   tissues <- names(sss)
-  .f = function(cancer) {
+  .f <- function(cancer) {
     sss_can <- sss[[cancer]]
-    
+
     if (use_optimal_cutoff) {
       sss_can <- sss_can %>%
         survminer::surv_cutpoint(
@@ -265,8 +269,8 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", u
           variables = c("values"),
           minprop = 0.25, progressbar = TRUE
         ) %>%
-        survminer::surv_categorize(labels = c("Low", "High")) %>% 
-        data.frame() %>% 
+        survminer::surv_categorize(labels = c("Low", "High")) %>%
+        data.frame() %>%
         dplyr::mutate(values = factor(values, levels = c("Low", "High")))
     }
 
@@ -297,11 +301,11 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", u
     dplyr::mutate(Type = ifelse(.data$p.value < 0.05 & .data$HR_log > 0, "Risky", ifelse(.data$p.value < 0.05 & .data$HR_log < 0, "Protective", "NS"))) %>%
     dplyr::mutate(Type = factor(Type, levels = c("NS", "Risky", "Protective")))
   ## visualization
-  p <- unicox_res_all_cancers_df %>% 
-    dplyr::mutate(cancer = factor(.data$cancer, levels=rev(.data$cancer))) %>% 
+  p <- unicox_res_all_cancers_df %>%
+    dplyr::mutate(cancer = factor(.data$cancer, levels = rev(.data$cancer))) %>%
     ggplot2::ggplot(
       aes_string(x = "cancer", y = "HR_log", ymin = "lower_95_log", ymax = "upper_95_log", color = "Type")
-  ) +
+    ) +
     ggplot2::theme_bw() +
     ggplot2::geom_pointrange() +
     ggplot2::coord_flip() +
@@ -462,8 +466,9 @@ vis_pancan_anatomy <- function(Gene = "TP53",
 #' p <- vis_gene_immune_cor(Gene = "TP53")
 #' }
 #' @export
-vis_gene_immune_cor <- function(Gene = "TP53", cor_method = "spearman", 
-  data_type = "mRNA", Immune_sig_type = "Cibersort", Plot = "TRUE", opt_pancan = .opt_pancan) {
+vis_gene_immune_cor <- function(
+    Gene = "TP53", cor_method = "spearman",
+    data_type = "mRNA", Immune_sig_type = "Cibersort", Plot = "TRUE", opt_pancan = .opt_pancan) {
   tcga_pan_immune_signature <- load_data("tcga_pan_immune_signature")
   tcga_gtex <- load_data("tcga_gtex")
 
@@ -474,7 +479,7 @@ vis_gene_immune_cor <- function(Gene = "TP53", cor_method = "spearman",
     tidyr::pivot_longer(3:ncol(.), names_to = "sample", values_to = "score") %>%
     dplyr::mutate(sample = stringr::str_sub(.data$sample, 1, 15))
 
-  t1 <- query_pancan_value(Gene, data_type = data_type, opt_pancan=opt_pancan)
+  t1 <- query_pancan_value(Gene, data_type = data_type, opt_pancan = opt_pancan)
   if (is.null(t1[[1]])) {
     warning("No data available", immediate. = TRUE)
     return(NULL)
@@ -562,12 +567,13 @@ vis_gene_immune_cor <- function(Gene = "TP53", cor_method = "spearman",
 #' p <- vis_gene_tmb_cor(Gene = "TP53")
 #' }
 #' @export
-vis_gene_tmb_cor <- function(Gene = "TP53", cor_method = "spearman", 
+vis_gene_tmb_cor <- function(
+    Gene = "TP53", cor_method = "spearman",
     data_type = "mRNA", Plot = "TRUE", opt_pancan = .opt_pancan) {
   tcga_tmb <- load_data("tcga_tmb")
   tcga_gtex <- load_data("tcga_gtex")
 
-  t1 <- query_pancan_value(Gene, data_type = data_type, opt_pancan=opt_pancan)
+  t1 <- query_pancan_value(Gene, data_type = data_type, opt_pancan = opt_pancan)
   if (is.null(t1[[1]])) {
     warning("No data available", immediate. = TRUE)
     return(NULL)
@@ -639,12 +645,12 @@ vis_gene_tmb_cor <- function(Gene = "TP53", cor_method = "spearman",
 #' p <- vis_gene_msi_cor(Gene = "TP53")
 #' }
 #' @export
-vis_gene_msi_cor <- function(Gene = "TP53", cor_method = "spearman", 
-      data_type = "mRNA", Plot = "TRUE",opt_pancan = .opt_pancan) {
+vis_gene_msi_cor <- function(Gene = "TP53", cor_method = "spearman",
+                             data_type = "mRNA", Plot = "TRUE", opt_pancan = .opt_pancan) {
   tcga_msi <- load_data("tcga_MSI")
   tcga_gtex <- load_data("tcga_gtex")
 
-  t1 <- query_pancan_value(Gene, data_type = data_type, opt_pancan=opt_pancan)
+  t1 <- query_pancan_value(Gene, data_type = data_type, opt_pancan = opt_pancan)
   if (is.null(t1[[1]])) {
     warning("No data available", immediate. = TRUE)
     return(NULL)
@@ -740,8 +746,8 @@ vis_gene_msi_cor <- function(Gene = "TP53", cor_method = "spearman",
 #' #   group.colours = "#00AFBB") +
 #' #   theme(plot.title = element_text(hjust = .5))
 #' @export
-vis_gene_stemness_cor <- function(Gene = "TP53", cor_method = "spearman", 
-      data_type = "mRNA", Plot = "TRUE", opt_pancan = .opt_pancan) {
+vis_gene_stemness_cor <- function(Gene = "TP53", cor_method = "spearman",
+                                  data_type = "mRNA", Plot = "TRUE", opt_pancan = .opt_pancan) {
   tcga_stemness <- load_data("tcga_stemness")
   tcga_gtex <- load_data("tcga_gtex")
 
@@ -821,7 +827,7 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = c("Violinplot", "Dotplot"
                                  data_type = "mRNA", Show.P.value = FALSE,
                                  Show.P.label = FALSE, Method = "wilcox.test",
                                  values = c("#DF2020", "#DDDF21"),
-                                 TCGA.only = FALSE, Cancer = "ACC",opt_pancan = .opt_pancan) {
+                                 TCGA.only = FALSE, Cancer = "ACC", opt_pancan = .opt_pancan) {
   tcga_gtex <- load_data("tcga_gtex")
 
   Mode <- match.arg(Mode)
@@ -916,24 +922,26 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = c("Violinplot", "Dotplot"
 
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       if (TCGA.only == TRUE) stop("Can't compare with only one group")
-      p <- p + ggplot2::geom_text(aes(
-        x = 1.5,
-        y = max(data$value) * 1.1,
-        label = .data$p.signif
-      ),
-      data = pv,
-      inherit.aes = FALSE
+      p <- p + ggplot2::geom_text(
+        aes(
+          x = 1.5,
+          y = max(data$value) * 1.1,
+          label = .data$p.signif
+        ),
+        data = pv,
+        inherit.aes = FALSE
       )
     }
     if (Show.P.value == TRUE & Show.P.label == FALSE) {
       if (TCGA.only == TRUE) stop("Can't compare with only one group")
-      p <- p + ggplot2::geom_text(aes(
-        x = 1.5,
-        y = max(data$value) * 1.1,
-        label = as.character(signif(.data$p, 2))
-      ),
-      data = pv,
-      inherit.aes = FALSE
+      p <- p + ggplot2::geom_text(
+        aes(
+          x = 1.5,
+          y = max(data$value) * 1.1,
+          label = as.character(signif(.data$p, 2))
+        ),
+        data = pv,
+        inherit.aes = FALSE
       )
     }
   }
@@ -957,24 +965,26 @@ vis_toil_TvsN_cancer <- function(Gene = "TP53", Mode = c("Violinplot", "Dotplot"
 
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
       if (TCGA.only == TRUE) stop("Can't compare with only one group")
-      p <- p + ggplot2::geom_text(ggplot2::aes(
-        x = 1.5,
-        y = max(data$value) * 1.1,
-        label = .data$p.signif
-      ),
-      data = pv,
-      inherit.aes = FALSE
+      p <- p + ggplot2::geom_text(
+        ggplot2::aes(
+          x = 1.5,
+          y = max(data$value) * 1.1,
+          label = .data$p.signif
+        ),
+        data = pv,
+        inherit.aes = FALSE
       )
     }
     if (Show.P.value == TRUE & Show.P.label == FALSE) {
       if (TCGA.only == TRUE) stop("Can't compare with only one group")
-      p <- p + ggplot2::geom_text(ggplot2::aes(
-        x = 1.5,
-        y = max(data$value) * 1.1,
-        label = as.character(signif(.data$p, 2))
-      ),
-      data = pv,
-      inherit.aes = FALSE
+      p <- p + ggplot2::geom_text(
+        ggplot2::aes(
+          x = 1.5,
+          y = max(data$value) * 1.1,
+          label = as.character(signif(.data$p, 2))
+        ),
+        data = pv,
+        inherit.aes = FALSE
       )
     }
   }
@@ -1073,7 +1083,7 @@ vis_gene_cor <- function(Gene1 = "CSF1R",
       stringsAsFactors = FALSE
     ),
     by = "sample"
-  ) 
+  )
 
   df %>%
     dplyr::left_join(tcga_purity, by = "sample") -> df
@@ -1165,13 +1175,13 @@ vis_gene_cor_cancer <- function(Gene1 = "CSF1R",
     dplyr::distinct(.data$sample, .keep_all = TRUE)
 
   t1 <- query_pancan_value(Gene1, data_type = data_type1, opt_pancan = opt_pancan)
-  if (length(na.omit(t1[[1]]))==0) {
+  if (length(na.omit(t1[[1]])) == 0) {
     warning("No data available", immediate. = TRUE)
     return(NULL)
   }
   if (is.list(t1)) t1 <- t1[[1]]
   t3 <- query_pancan_value(Gene2, data_type = data_type2, opt_pancan = opt_pancan)
-  if (length(na.omit(t1[[3]]))==0) {
+  if (length(na.omit(t1[[3]])) == 0) {
     warning("No data available", immediate. = TRUE)
     return(NULL)
   }
@@ -1307,7 +1317,7 @@ vis_gene_TIL_cor <- function(Gene = "TP53",
   # we filter out normal tissue
   tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
 
-  t1 <- query_pancan_value(Gene, data_type = data_type, opt_pancan=opt_pancan)
+  t1 <- query_pancan_value(Gene, data_type = data_type, opt_pancan = opt_pancan)
   if (is.null(t1[[1]])) {
     warning("No data available", immediate. = TRUE)
     return(NULL)

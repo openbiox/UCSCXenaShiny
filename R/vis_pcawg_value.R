@@ -68,7 +68,7 @@ vis_pcawg_dist <- function(Gene = "TP53",
   pcawg_info <- load_data("pcawg_info")
 
   # t1 <- query_pcawg_pancan_value(Gene, data_type)
-  t1 <- query_pancan_value(Gene, data_type, database = "pcawg", opt_pancan=opt_pancan)
+  t1 <- query_pancan_value(Gene, data_type, database = "pcawg", opt_pancan = opt_pancan)
 
 
   unit <- switch(data_type,
@@ -89,7 +89,7 @@ vis_pcawg_dist <- function(Gene = "TP53",
     dplyr::inner_join(pcawg_info, by = "icgc_specimen_id")
 
   # table(pcawg_info$dcc_specimen_type)
-  pcawg_data <- t2 %>% 
+  pcawg_data <- t2 %>%
     dplyr::select("tpm", "dcc_project_code", "type2", "icgc_specimen_id")
   pcawg_data$type2 <- factor(pcawg_data$type2, c("tumor", "normal"))
 
@@ -131,23 +131,25 @@ vis_pcawg_dist <- function(Gene = "TP53",
     )
 
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
-      p <- p + ggplot2::geom_text(aes(
-        x = .data$dcc_project_code,
-        y = max(pcawg_data$tpm) * 1.1,
-        label = .data$p.signif
-      ),
-      data = pv,
-      inherit.aes = FALSE
+      p <- p + ggplot2::geom_text(
+        aes(
+          x = .data$dcc_project_code,
+          y = max(pcawg_data$tpm) * 1.1,
+          label = .data$p.signif
+        ),
+        data = pv,
+        inherit.aes = FALSE
       )
     }
     if (Show.P.value == TRUE & Show.P.label == FALSE) {
-      p <- p + ggplot2::geom_text(aes(
-        x = .data$dcc_project_code,
-        y = max(pcawg_data$tpm) * 1.1,
-        label = as.character(signif(.data$p, 2))
-      ),
-      data = pv,
-      inherit.aes = FALSE
+      p <- p + ggplot2::geom_text(
+        aes(
+          x = .data$dcc_project_code,
+          y = max(pcawg_data$tpm) * 1.1,
+          label = as.character(signif(.data$p, 2))
+        ),
+        data = pv,
+        inherit.aes = FALSE
       )
     }
   }
@@ -186,23 +188,25 @@ vis_pcawg_dist <- function(Gene = "TP53",
     )
 
     if (Show.P.value == TRUE & Show.P.label == TRUE) {
-      p <- p + ggplot2::geom_text(ggplot2::aes(
-        x = .data$dcc_project_code,
-        y = max(pcawg_data$tpm) * 1.1,
-        label = .data$p.signif
-      ),
-      data = pv,
-      inherit.aes = FALSE
+      p <- p + ggplot2::geom_text(
+        ggplot2::aes(
+          x = .data$dcc_project_code,
+          y = max(pcawg_data$tpm) * 1.1,
+          label = .data$p.signif
+        ),
+        data = pv,
+        inherit.aes = FALSE
       )
     }
     if (Show.P.value == TRUE & Show.P.label == FALSE) {
-      p <- p + ggplot2::geom_text(ggplot2::aes(
-        x = .data$dcc_project_code,
-        y = max(pcawg_data$tpm) * 1.1,
-        label = as.character(signif(.data$p, 2))
-      ),
-      data = pv,
-      inherit.aes = FALSE
+      p <- p + ggplot2::geom_text(
+        ggplot2::aes(
+          x = .data$dcc_project_code,
+          y = max(pcawg_data$tpm) * 1.1,
+          label = as.character(signif(.data$p, 2))
+        ),
+        data = pv,
+        inherit.aes = FALSE
       )
     }
   }
@@ -223,12 +227,13 @@ vis_pcawg_dist <- function(Gene = "TP53",
 #' }
 #' @export
 
-vis_pcawg_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", use_optimal_cutoff = FALSE,
-  values = c("grey", "#E31A1C", "#377DB8"), opt_pancan = .opt_pancan) {
+vis_pcawg_unicox_tree <- function(
+    Gene = "TP53", measure = "OS", data_type = "mRNA", use_optimal_cutoff = FALSE,
+    values = c("grey", "#E31A1C", "#377DB8"), opt_pancan = .opt_pancan) {
   pcawg_info <- load_data("pcawg_info")
 
   # t1 <- query_pcawg_pancan_value(Gene, data_type)
-  t1 <- query_pancan_value(Gene, data_type, database = "pcawg", opt_pancan=opt_pancan)
+  t1 <- query_pancan_value(Gene, data_type, database = "pcawg", opt_pancan = opt_pancan)
 
   unit <- switch(data_type,
     cnv = NULL,
@@ -250,9 +255,9 @@ vis_pcawg_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mR
 
   sss <- split(ss, ss$dcc_project_code)
   tissues <- names(sss)
-  .f = function(cancer) {
+  .f <- function(cancer) {
     sss_can <- sss[[cancer]]
-    
+
     if (use_optimal_cutoff) {
       sss_can <- sss_can %>%
         survminer::surv_cutpoint(
@@ -261,10 +266,10 @@ vis_pcawg_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mR
           minprop = 0.25, progressbar = TRUE
         ) %>%
         survminer::surv_categorize(labels = c("Low", "High")) %>%
-        data.frame() %>% 
+        data.frame() %>%
         dplyr::mutate(values = factor(values, levels = c("Low", "High")))
     }
-    
+
     unicox_res_genes <- ezcox::ezcox(
       sss_can,
       covariates = "values",
@@ -272,7 +277,7 @@ vis_pcawg_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mR
       status = measure,
       verbose = FALSE
     )
-    
+
     unicox_res_genes$cancer <- cancer
     unicox_res_genes$measure <- measure
     return(unicox_res_genes)
@@ -293,10 +298,9 @@ vis_pcawg_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mR
 
   unicox_res_all_cancers_df <- unicox_res_all_cancers_df[complete.cases(unicox_res_all_cancers_df), ]
   ## visualization
-  p <- unicox_res_all_cancers_df %>% 
-    dplyr::mutate(cancer = factor(.data$cancer, levels=rev(.data$cancer))) %>% 
-    ggplot2::ggplot(aes_string(x = "cancer", y = "HR_log", ymin = "lower_95_log", ymax = "upper_95_log", color = "Type")
-  ) +
+  p <- unicox_res_all_cancers_df %>%
+    dplyr::mutate(cancer = factor(.data$cancer, levels = rev(.data$cancer))) %>%
+    ggplot2::ggplot(aes_string(x = "cancer", y = "HR_log", ymin = "lower_95_log", ymax = "upper_95_log", color = "Type")) +
     ggplot2::theme_bw() +
     ggplot2::geom_pointrange() +
     ggplot2::coord_flip() +
@@ -350,7 +354,7 @@ vis_pcawg_gene_cor <- function(Gene1 = "CSF1R",
   pcawg_purity <- load_data("pcawg_purity")
 
   # t1 <- query_pcawg_pancan_value(Gene1, data_type1)
-  t1 <- query_pancan_value(Gene1, data_type1, database = "pcawg", opt_pancan=opt_pancan)
+  t1 <- query_pancan_value(Gene1, data_type1, database = "pcawg", opt_pancan = opt_pancan)
 
   unit1 <- switch(data_type1,
     cnv = NULL,
@@ -372,7 +376,7 @@ vis_pcawg_gene_cor <- function(Gene1 = "CSF1R",
     dplyr::inner_join(pcawg_info, by = c("icgc_specimen_id"))
 
   # t3 <- query_pcawg_pancan_value(Gene2, data_type2)
-  t3 <- query_pancan_value(Gene2, data_type2, database = "pcawg", opt_pancan=opt_pancan)
+  t3 <- query_pancan_value(Gene2, data_type2, database = "pcawg", opt_pancan = opt_pancan)
 
   unit2 <- switch(data_type2,
     cnv = NULL,
@@ -418,7 +422,7 @@ vis_pcawg_gene_cor <- function(Gene1 = "CSF1R",
     df %>% dplyr::filter(.data$type2 == "tumor") -> df
   }
 
-  if(nrow(df)==0){
+  if (nrow(df) == 0) {
     warning("No intersected samples for the two identifiers in the cohort")
     return(NULL)
   }

@@ -18,7 +18,7 @@
 #' @param cnv_type only used when profile is "cnv", can select from `c("Duplicated", "Normal", "Deleted")`.
 #' @param data a subset of result from `tcga_surv_get()`.
 #' @param opt_pancan specify one dataset for some molercular profiles
-#' 
+#'
 #' @return a `data.frame` or a plot.
 #' @export
 #' @examples
@@ -36,7 +36,8 @@ tcga_surv_get <- function(item,
                           TCGA_cli_data = dplyr::full_join(
                             load_data("tcga_clinical"),
                             load_data("tcga_surv"),
-                            by = "sample"),
+                            by = "sample"
+                          ),
                           opt_pancan = .opt_pancan) {
   stopifnot(length(item) == 1)
   profile <- match.arg(profile)
@@ -200,8 +201,8 @@ p_survplot <- function(data, palette = "aaas", ...) {
     ncensor.plot.height = 0.15,
     ggtheme = ggplot2::theme_classic(), # Change ggplot2 theme
     ...
-  ) #%+% ggplot2::guides(color = ggplot2::guide_legend(ncol = 3))
-  p$plot = p$plot %+% ggplot2::guides(color = ggplot2::guide_legend(ncol = 3))
+  ) # %+% ggplot2::guides(color = ggplot2::guide_legend(ncol = 3))
+  p$plot <- p$plot %+% ggplot2::guides(color = ggplot2::guide_legend(ncol = 3))
 
   attr(p, "data") <- na.omit(data[, c("time", "status", "group")])
   p

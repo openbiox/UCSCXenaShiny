@@ -25,9 +25,9 @@ get_ccle_cn_value <- function(identifier) {
 #'
 #' @describeIn get_pancan_value Fetch gene expression value from CCLE dataset
 #' @export
-get_ccle_gene_value <- function(identifier, norm = c("rpkm","nc")) {
+get_ccle_gene_value <- function(identifier, norm = c("rpkm", "nc")) {
   host <- "publicHub"
-  if(norm=="rpkm"){
+  if (norm == "rpkm") {
     dataset <- "ccle/CCLE_DepMap_18Q2_RNAseq_RPKM_20180502"
   } else {
     dataset <- "ccle/CCLE_DepMap_18Q2_RNAseq_reads_20180502.log2"
@@ -40,12 +40,12 @@ get_ccle_gene_value <- function(identifier, norm = c("rpkm","nc")) {
     save_data(expression, identifier, dataset, host)
   }
 
-  if(norm=="rpkm"){
+  if (norm == "rpkm") {
     unit <- "RPKM"
   } else {
     unit <- "log2(count+1)"
   }
-  
+
   report_dataset_info(dataset)
   res <- list(expression = expression, unit = unit)
   res

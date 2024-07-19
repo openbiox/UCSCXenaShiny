@@ -31,7 +31,7 @@ vis_toil_Mut <- function(mut_Gene = "TP53", Gene = NULL, data_type = NULL,
                          Method = c("wilcox.test", "t.test"),
                          values = c("#DF2020", "#DDDF21"),
                          draw_quantiles = c(0.25, 0.5, 0.75),
-                         trim = TRUE, opt_pancan=.opt_pancan) {
+                         trim = TRUE, opt_pancan = .opt_pancan) {
   Mode <- match.arg(Mode)
   Method <- match.arg(Method)
 
@@ -71,7 +71,7 @@ vis_toil_Mut <- function(mut_Gene = "TP53", Gene = NULL, data_type = NULL,
   merge_dat <- dplyr::inner_join(mut_dat, exp_dat) %>%
     dplyr::mutate(
       tissue = as.character(.data$tissue),
-      mut = factor(.data$mut, levels = c(1, 0), labels  = c("Mutation", "Wild"))
+      mut = factor(.data$mut, levels = c(1, 0), labels = c("Mutation", "Wild"))
     )
   group_stat <- table(merge_dat$tissue, merge_dat$mut)
   tcga_discard <- rownames(group_stat)[apply(group_stat, 1, min) < 3]
@@ -178,7 +178,7 @@ vis_toil_Mut_cancer <- function(mut_Gene = "TP53", Gene = NULL, data_type = NULL
                                 Method = c("wilcox.test", "t.test"),
                                 values = c("#DF2020", "#DDDF21"),
                                 draw_quantiles = c(0.25, 0.5, 0.75),
-                                trim = TRUE, Cancer = "ACC", opt_pancan=.opt_pancan) {
+                                trim = TRUE, Cancer = "ACC", opt_pancan = .opt_pancan) {
   Mode <- match.arg(Mode)
   Method <- match.arg(Method)
 
@@ -218,7 +218,7 @@ vis_toil_Mut_cancer <- function(mut_Gene = "TP53", Gene = NULL, data_type = NULL
   merge_dat <- dplyr::inner_join(mut_dat, exp_dat) %>%
     dplyr::mutate(
       tissue = as.character(.data$tissue),
-      mut = factor(.data$mut, levels = c(1, 0), labels  = c("Mutation", "Wild"))
+      mut = factor(.data$mut, levels = c(1, 0), labels = c("Mutation", "Wild"))
     ) %>%
     dplyr::filter(.data$tissue == Cancer) %>%
     dplyr::mutate(mut = paste0(.data$mut, "(", mut_Gene, ")"))

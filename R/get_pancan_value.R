@@ -86,63 +86,63 @@ try_query_value <- function(host, dataset,
                             rule_out = NULL,
                             aggr = c("NA", "mean", "Q0", "Q25", "Q50", "Q75", "Q100"),
                             max_try = 5L) {
-  aggr = match.arg(aggr)
+  aggr <- match.arg(aggr)
   Sys.sleep(0.05)
-  
+
   tryCatch(
     {
       message("Try querying data #", abs(max_try - 6L))
-      
+
       if (aggr != "NA") {
         # Designed for methylation data
         # be careful!
         message("Fetching all ids, take patience...")
-        #ids = UCSCXenaTools::fetch_dataset_identifiers(host, dataset)
+        # ids = UCSCXenaTools::fetch_dataset_identifiers(host, dataset)
         ## Download probeMap time-cost
         # xe = UCSCXenaTools::XenaQueryProbeMap(UCSCXenaTools::XenaGenerate(subset = XenaDatasets == dataset))
         # xd = UCSCXenaTools::XenaPrepare(UCSCXenaTools::XenaDownload(xe), col_names = FALSE)[, c(1, 2)]
         # xd = tidyr::separate_rows(xd, "X2", sep = ",")
-        
+
         ## Use the prepared ID referrence data
-        id_ref = load_data("pancan_identifier_help")[["id_molecule"]]
-        if(grepl("450", dataset)){
-          xd = id_ref[["id_M450"]]
+        id_ref <- load_data("pancan_identifier_help")[["id_molecule"]]
+        if (grepl("450", dataset)) {
+          xd <- id_ref[["id_M450"]]
         } else {
-          xd = id_ref[["id_M27K"]]
+          xd <- id_ref[["id_M27K"]]
         }
         # xd = ifelse(grepl("450", dataset), id_ref[["id_M450"]], id_ref[["id_M27K"]])
-        xd = xd %>%
-          dplyr::select("CpG", "Level3") %>% 
+        xd <- xd %>%
+          dplyr::select("CpG", "Level3") %>%
           dplyr::rename("X1" = "CpG", "X2" = "Level3")
-        
-        xd = dplyr::filter(xd, .data$X2 %in% identifiers)
-        
+
+        xd <- dplyr::filter(xd, .data$X2 %in% identifiers)
+
         if (!is.null(rule_out)) {
-          xd = dplyr::filter(xd, !.data$X1 %in% rule_out)  # X2 → X1
+          xd <- dplyr::filter(xd, !.data$X1 %in% rule_out) # X2 → X1
         }
-        ids = xd$X1
-        
-        d = UCSCXenaTools::fetch_dense_values(host, dataset,
-                                              identifiers = ids, samples = samples,
-                                              check = FALSE, use_probeMap = FALSE
+        ids <- xd$X1
+
+        d <- UCSCXenaTools::fetch_dense_values(host, dataset,
+          identifiers = ids, samples = samples,
+          check = FALSE, use_probeMap = FALSE
         )
-        f = switch(aggr,
-                   mean = function(x) mean(x, na.rm = TRUE),
-                   Q0 = function(x) quantile(x, 0, na.rm = TRUE),
-                   Q25 = function(x) quantile(x, 0.25, na.rm = TRUE),
-                   Q50 = function(x) quantile(x, 0.5, na.rm = TRUE),
-                   Q75 = function(x) quantile(x, 0.75, na.rm = TRUE),
-                   Q100 = function(x) quantile(x, 1, na.rm = TRUE))
-        
-        z = apply(d, 2, f)
+        f <- switch(aggr,
+          mean = function(x) mean(x, na.rm = TRUE),
+          Q0 = function(x) quantile(x, 0, na.rm = TRUE),
+          Q25 = function(x) quantile(x, 0.25, na.rm = TRUE),
+          Q50 = function(x) quantile(x, 0.5, na.rm = TRUE),
+          Q75 = function(x) quantile(x, 0.75, na.rm = TRUE),
+          Q100 = function(x) quantile(x, 1, na.rm = TRUE)
+        )
+
+        z <- apply(d, 2, f)
         matrix(z, nrow = 1, dimnames = list("aggr_methy_value", names(z)))
       } else {
         UCSCXenaTools::fetch_dense_values(host, dataset,
-                                          identifiers = identifiers, samples = samples,
-                                          check = check, use_probeMap = use_probeMap
+          identifiers = identifiers, samples = samples,
+          check = check, use_probeMap = use_probeMap
         )
       }
-      
     },
     error = function(e) {
       if (max_try == 1) {
@@ -166,21 +166,23 @@ try_query_value <- function(host, dataset,
 
 #' @describeIn get_pancan_value Fetch gene expression value from pan-cancer dataset
 #' @export
-get_pancan_gene_value <- function(identifier, norm = c("tpm","fpkm","nc")) {
+get_pancan_gene_value <- function(identifier, norm = c("tpm", "fpkm", "nc")) {
   host <- "toilHub"
-  
+
   norm <- match.arg(norm)
-  dataset <- switch(norm, 
-                   "tpm"="TcgaTargetGtex_rsem_gene_tpm",
-                   "fpkm"="TcgaTargetGtex_rsem_gene_fpkm",
-                   "nc"="TcgaTargetGtex_RSEM_Hugo_norm_count")
+  dataset <- switch(norm,
+    "tpm" = "TcgaTargetGtex_rsem_gene_tpm",
+    "fpkm" = "TcgaTargetGtex_rsem_gene_fpkm",
+    "nc" = "TcgaTargetGtex_RSEM_Hugo_norm_count"
+  )
   # dataset <- "TcgaTargetGtex_rsem_gene_tpm"
 
   expression <- get_data(dataset, identifier, host)
   unit <- switch(norm,
-                  "tpm"="log2(tpm+0.001)",
-                  "fpkm"="log2(fpkm+0.001)",
-                  "nc" = "log2(norm_count+1)")
+    "tpm" = "log2(tpm+0.001)",
+    "fpkm" = "log2(fpkm+0.001)",
+    "nc" = "log2(norm_count+1)"
+  )
   report_dataset_info(dataset)
   res <- list(expression = expression, unit = unit)
   res
@@ -194,13 +196,14 @@ get_pancan_transcript_value <- function(identifier, norm = c("tpm", "fpkm", "iso
   id <- identifier
   host <- "toilHub"
 
-  norm = match.arg(norm)
-  
-  dataset = switch(norm, 
-                   "tpm"="TcgaTargetGtex_rsem_isoform_tpm",
-                   "fpkm"="TcgaTargetGtex_RSEM_isoform_fpkm",
-                   "isopct"="TcgaTargetGtex_rsem_isopct")
-  
+  norm <- match.arg(norm)
+
+  dataset <- switch(norm,
+    "tpm" = "TcgaTargetGtex_rsem_isoform_tpm",
+    "fpkm" = "TcgaTargetGtex_RSEM_isoform_fpkm",
+    "isopct" = "TcgaTargetGtex_rsem_isopct"
+  )
+
   res_p <- check_exist_data("mp", dataset, host)
   if (res_p$ok) {
     ids <- res_p$data
@@ -215,9 +218,10 @@ get_pancan_transcript_value <- function(identifier, norm = c("tpm", "fpkm", "iso
 
   expression <- get_data(dataset, identifier, host)
   unit <- switch(norm,
-                 "tpm"="log2(tpm+0.001)",
-                 "fpkm"="log2(fpkm+0.001)",
-                 "isopct" = "IsoPct")
+    "tpm" = "log2(tpm+0.001)",
+    "fpkm" = "log2(fpkm+0.001)",
+    "isopct" = "IsoPct"
+  )
   report_dataset_info(dataset)
   res <- list(expression = expression, unit = unit)
   res
@@ -306,9 +310,6 @@ get_pancan_mutation_status <- function(identifier) {
 #' @describeIn get_pancan_value Fetch gene copy number value from pan-cancer dataset processed by GISTIC 2.0
 #' @export
 get_pancan_cn_value <- function(identifier, gistic2 = TRUE, use_thresholded_data = FALSE) {
-  
-  
-  
   if (gistic2 & use_thresholded_data) {
     host <- "tcgaHub"
     dataset <- "TCGA.PANCAN.sampleMap/Gistic2_CopyNumber_Gistic2_all_thresholded.by_genes"
@@ -317,8 +318,8 @@ get_pancan_cn_value <- function(identifier, gistic2 = TRUE, use_thresholded_data
     host <- "tcgaHub"
     dataset <- "TCGA.PANCAN.sampleMap/Gistic2_CopyNumber_Gistic2_all_data_by_genes"
     unit <- "Gistic2 copy number"
-  } else if (!gistic2){
-    host  <-  "pancanAtlasHub"
+  } else if (!gistic2) {
+    host <- "pancanAtlasHub"
     dataset <- "broad.mit.edu_PANCAN_Genome_Wide_SNP_6_whitelisted.gene.xena"
     unit <- "log(tumor/normal)"
   }
@@ -344,7 +345,7 @@ get_pancan_methylation_value <- function(identifier, type = c("450K", "27K"),
                                          rule_out = NULL,
                                          aggr = c("NA", "mean", "Q0", "Q25", "Q50", "Q75", "Q100")) {
   type <- match.arg(type)
-  aggr = match.arg(aggr)
+  aggr <- match.arg(aggr)
 
   if (type == "450K") {
     # host <- "pancanAtlasHub"
@@ -360,9 +361,9 @@ get_pancan_methylation_value <- function(identifier, type = c("450K", "27K"),
 
   data <- get_data(dataset, identifier, host, rule_out = rule_out, aggr = aggr)
   ## 去重，优先取No.16位字符为A的情况
-  data = sort(data)
-  names(data) = substr(names(data),1,15)
-  data = data[!duplicated(names(data))]
+  data <- sort(data)
+  names(data) <- substr(names(data), 1, 15)
+  data <- data[!duplicated(names(data))]
 
   unit <- "beta value"
   report_dataset_info(dataset)
@@ -449,7 +450,7 @@ save_data <- function(data, id, dataset, host, ...) {
   }
 
   message("Saving data to file ", f)
-  
+
   tryCatch(
     saveRDS(data, file = f),
     error = function(e) {

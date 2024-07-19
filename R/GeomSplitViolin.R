@@ -16,8 +16,7 @@ GeomSplitViolin <- ggproto("GeomSplitViolin", GeomViolin,
       both <- cbind(quantiles, aesthetics)
       quantile_grob <- GeomPath$draw_panel(both, ...)
       ggplot2:::ggname("geom_split_violin", grid::grobTree(GeomPolygon$draw_panel(newdata, ...), quantile_grob))
-    }
-    else {
+    } else {
       ggplot2:::ggname("geom_split_violin", GeomPolygon$draw_panel(newdata, ...))
     }
   }

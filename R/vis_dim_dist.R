@@ -13,37 +13,36 @@
 #'
 #' @examples
 #' \dontrun{
-#' group_info = tcga_clinical_fine %>% 
-#'   dplyr::filter(Cancer=="BRCA") %>% 
-#'   dplyr::select(Sample, Code) %>% 
-#'   dplyr::rename(Group=Code)
-#' 
+#' group_info <- tcga_clinical_fine %>%
+#'   dplyr::filter(Cancer == "BRCA") %>%
+#'   dplyr::select(Sample, Code) %>%
+#'   dplyr::rename(Group = Code)
+#'
 #' vis_dim_dist(
 #'   ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
 #'   group_info = group_info
 #' )
-#' 
 #' }
-#' 
+#'
 vis_dim_dist <- function(ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
-                          data_type = "mRNA", 
-                          group_info = NULL, 
-                          DR_method = c("PCA", "UMAP", "tSNE"),
-                          palette = "Set1", 
-                          add_margin = NULL,
-                          opt_pancan = .opt_pancan) {
+                         data_type = "mRNA",
+                         group_info = NULL,
+                         DR_method = c("PCA", "UMAP", "tSNE"),
+                         palette = "Set1",
+                         add_margin = NULL,
+                         opt_pancan = .opt_pancan) {
   # Mode <- match.arg(Mode)
   DR_method <- match.arg(DR_method)
-  
+
   if (length(ids) < 3) {
     stop("The number of valid ids is less than three. Please inspect the input ids and data_type(?query_pancan_value)")
   }
-  
+
   exp_raw <- tryCatch(
     {
       purrr::map(ids, function(x) {
         # x = ids[1]
-        data <- query_pancan_value(x, data_type = data_type, opt_pancan=opt_pancan)
+        data <- query_pancan_value(x, data_type = data_type, opt_pancan = opt_pancan)
         data <- data[[1]]
         data <- dplyr::tibble(Sample = names(data), y = as.numeric(data))
         colnames(data)[2] <- x
@@ -56,35 +55,37 @@ vis_dim_dist <- function(ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
       NULL
     }
   )
-  if (is.null(exp_raw)) return(NULL)
-  
-  
+  if (is.null(exp_raw)) {
+    return(NULL)
+  }
+
+
   # meta_raw = query_tcga_group(...)$data
   if (is.null(group_info)) {
     stop("Please input valid grouping information for `group_info` parameter.")
   }
-  if(!all(colnames(group_info) == c("Sample", "Group"))){
+  if (!all(colnames(group_info) == c("Sample", "Group"))) {
     stop("The group_info should have two colnames named `Sample` and `Group`.")
   }
-  meta_raw = group_info
-  meta_data = meta_raw %>% dplyr::filter(.data$Sample %in% exp_raw$Sample)
+  meta_raw <- group_info
+  meta_data <- meta_raw %>% dplyr::filter(.data$Sample %in% exp_raw$Sample)
 
-  if(nrow(meta_data)==0){
+  if (nrow(meta_data) == 0) {
     stop("No intersected samples are detected for the group_info.")
   }
-  if(length(unique(meta_data$Group))<2){
+  if (length(unique(meta_data$Group)) < 2) {
     stop("Less two valid groups are detected for the group_info.")
   }
 
-  
-  exp_data = exp_raw[match(meta_data$Sample, exp_raw$Sample), ]
+
+  exp_data <- exp_raw[match(meta_data$Sample, exp_raw$Sample), ]
   ids_NAN <- colnames(exp_data[, -1])[apply(exp_data[, -1], 2, function(x) all(is.na(x)))]
   ids_SD0 <- colnames(exp_data[, -1])[apply(exp_data[, -1], 2, function(x) stats::sd(x) == 0)] %>% na.omit()
   ids_OK <- setdiff(ids, c(ids_NAN, ids_SD0))
   # message(paste0((length(ids_OK)/length(ids))*100, "%"), " of input ids were obtained")
   exp_data <- exp_data[, which(!colnames(exp_data) %in% c(ids_NAN, ids_SD0))]
 
-  
+
   if (DR_method == "PCA") {
     pca_obj <- prcomp(exp_data[, ids_OK], center = TRUE, scale = TRUE)
     res_dims <- pca_obj$x[, 1:2] %>%
@@ -114,15 +115,15 @@ vis_dim_dist <- function(ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
       as.data.frame() %>%
       dplyr::rename("UMAP_1" = "V1", "UMAP_2" = "V2")
   }
-  
+
   res_dims <- cbind(res_dims, meta_data) %>%
     dplyr::inner_join(exp_data)
-  
-  
+
+
   ## Step5: ggplot scatter plot
 
 
-  group_levels = unique(res_dims$Group)
+  group_levels <- unique(res_dims$Group)
 
 
   if (length(group_levels) > 6) {
@@ -135,8 +136,8 @@ vis_dim_dist <- function(ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
     colors <- RColorBrewer::brewer.pal(n = 6, name = palette)[seq(group_levels)]
     shapes <- c(15:20)[seq(group_levels)]
   }
-  
-  
+
+
   p <- ggplot2::ggplot(res_dims, aes_string(colnames(res_dims)[1], colnames(res_dims)[2], color = "Group", shape = "Group")) +
     ggplot2::geom_point() +
     ggplot2::stat_ellipse() +
@@ -153,14 +154,14 @@ vis_dim_dist <- function(ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
     ) +
     ggplot2::scale_color_manual(values = colors) +
     ggplot2::scale_shape_manual(values = shapes)
-  
+
   if (!is.null(add_margin)) {
     geom_type <- switch(add_margin,
-                        "density" = geom_density,
-                        "boxplot" = geom_boxplot,
-                        stop("Please choose one of density/boxplot marginal type")
+      "density" = geom_density,
+      "boxplot" = geom_boxplot,
+      stop("Please choose one of density/boxplot marginal type")
     )
-    
+
     p_right <- cowplot::axis_canvas(p, axis = "x") +
       geom_type(
         data = p$data, aes_string(x = colnames(p$data)[1], fill = "Group"),

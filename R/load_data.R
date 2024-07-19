@@ -5,7 +5,7 @@
 #' extra data from Zenodo, e.g., `options(xena.zenodoDir = "/home/xxx/dataset")`.
 #'
 #' @param name a dataset name. Could be one of
-#' 
+#'
 #' **Builtin datasets**:
 #'   - `ccle_absolute`: CCLE ABSOLUTE result.
 #'   - `ccle_info`: CCLE information.
@@ -44,7 +44,7 @@
 #'   - `pcawg_PW`: ssGSEA scores of HALLMARK, KEGG, IOBR terms for PCAWG samples.
 #'   - ...
 
-#'   
+#'
 #' @return a dataset, typically a `data.frame`.
 #' @export
 #'
@@ -80,8 +80,9 @@ load_data <- function(name) {
       # Download it to inst/extdata from zenodo
       # Then load it
       data_url <- file.path("https://zenodo.org/record/12525057/files", name2)
-      if (tryCatch(httr::status_code(httr::HEAD(data_url)), 
-                   error = function(e) 404) != 200) {
+      if (tryCatch(httr::status_code(httr::HEAD(data_url)),
+        error = function(e) 404
+      ) != 200) {
         # Use an alternative OSS approach
         data_url <- file.path("https://ucscxenashiny-1301043367.cos.ap-shanghai.myqcloud.com", name2)
       }

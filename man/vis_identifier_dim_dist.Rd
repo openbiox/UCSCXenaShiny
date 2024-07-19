@@ -43,19 +43,5 @@ a \code{ggplot} object.
 NOTE: the dataset must be dense matrix in UCSC Xena data hubs.
 }
 \examples{
-\donttest{
-library(UCSCXenaTools)
-expr_dataset <- "TCGA.LUAD.sampleMap/HiSeqV2_percentile"
-ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A")
-
-cli_dataset <- "TCGA.LUAD.sampleMap/LUAD_clinicalMatrix"
-cli_df <- XenaGenerate(
-  subset = XenaDatasets == cli_dataset
-) \%>\%
-  XenaQuery() \%>\%
-  XenaDownload() \%>\%
-  XenaPrepare()
-grp_df = cli_df[, c("sampleID", "gender")]
-vis_identifier_dim_dist(expr_dataset, ids, grp_df, DR_method="PCA")
-}
+# vis_identifier_dim_dist(expr_dataset, ids, grp_df, DR_method="PCA")
 }

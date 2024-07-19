@@ -28,6 +28,6 @@ Run UCSC Xena Shiny App with specifc content
 }
 \examples{
 \dontrun{
-app_run2(content = 's')
+app_run2(content = "s")
 }
 }

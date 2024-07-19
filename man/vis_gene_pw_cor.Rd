@@ -51,8 +51,10 @@ Visualize Correlation between Gene and Pathway signature Score
 }
 \examples{
 \dontrun{
-vis_gene_pw_cor(Gene = "TP53", data_type = "mRNA", 
-                pw_name = "HALLMARK_ADIPOGENESIS",
-                cancer_choose = "BRCA")
+vis_gene_pw_cor(
+  Gene = "TP53", data_type = "mRNA",
+  pw_name = "HALLMARK_ADIPOGENESIS",
+  cancer_choose = "BRCA"
+)
 }
 }

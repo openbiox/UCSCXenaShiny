@@ -16,9 +16,11 @@
 #' @return a `ggplot` object or  dataframe
 #' @examples
 #' \dontrun{
-#' vis_gene_pw_cor(Gene = "TP53", data_type = "mRNA", 
-#'                 pw_name = "HALLMARK_ADIPOGENESIS",
-#'                 cancer_choose = "BRCA")
+#' vis_gene_pw_cor(
+#'   Gene = "TP53", data_type = "mRNA",
+#'   pw_name = "HALLMARK_ADIPOGENESIS",
+#'   cancer_choose = "BRCA"
+#' )
 #' }
 
 #' @export
@@ -33,12 +35,12 @@ vis_gene_pw_cor <- function(Gene = "TP53",
                             alpha = 0.5,
                             color = "#000000",
                             filter_tumor = TRUE,
-                            opt_pancan = .opt_pancan){
+                            opt_pancan = .opt_pancan) {
   if (!file.exists(file.path(get_zenodo_dir(), "tcga_PW.rda"))) {
     print("This is the first download from zenodo, please wait a few minutes.")
   }
   toil_sig_score <- load_data("tcga_PW")
-  toil_sig_meta  <- load_data("tcga_PW_meta")
+  toil_sig_meta <- load_data("tcga_PW_meta")
   if (!is.null(pw_name)) {
     if (!(pw_name %in% toil_sig_meta$ID)) {
       stop("You need provide valid pathway name (see load_data('tcga_PW_meta'))")
@@ -63,15 +65,15 @@ vis_gene_pw_cor <- function(Gene = "TP53",
   toil_sig_score <- load_data("tcga_PW")
 
   tcga_gtex <- load_data("tcga_gtex")
-  if(use_all){
-    cancer_choose2 = as.character(unique(tcga_gtex$tissue))
+  if (use_all) {
+    cancer_choose2 <- as.character(unique(tcga_gtex$tissue))
   } else {
-    cancer_choose2 = cancer_choose
+    cancer_choose2 <- cancer_choose
   }
-  if(filter_tumor){
-    filter_tumor2 = 'tumor'
+  if (filter_tumor) {
+    filter_tumor2 <- "tumor"
   } else {
-    filter_tumor2 = c('tumor','normal')
+    filter_tumor2 <- c("tumor", "normal")
   }
   tcga_sp <- tcga_gtex %>%
     dplyr::filter(.data$type2 == filter_tumor2) %>%
@@ -80,7 +82,8 @@ vis_gene_pw_cor <- function(Gene = "TP53",
     as.character()
 
   res_pan_spe <- toil_sig_score[rownames(toil_sig_score) %in% tcga_sp, pw_name, drop = F] %>%
-    as.data.frame() %>% tibble::rownames_to_column("Sample") %>%  
+    as.data.frame() %>%
+    tibble::rownames_to_column("Sample") %>%
     tidyr::pivot_longer(!"Sample", names_to = "pw_name", values_to = "pw_score") %>%
     dplyr::left_join(s) %>%
     dplyr::mutate(identifier = Gene, .before = 1) %>%

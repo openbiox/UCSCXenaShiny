@@ -37,16 +37,15 @@ Visualize the distribution difference of samples after dimension reduction analy
 }
 \examples{
 \dontrun{
-group_info = tcga_clinical_fine \%>\% 
-  dplyr::filter(Cancer=="BRCA") \%>\% 
-  dplyr::select(Sample, Code) \%>\% 
-  dplyr::rename(Group=Code)
+group_info <- tcga_clinical_fine \%>\%
+  dplyr::filter(Cancer == "BRCA") \%>\%
+  dplyr::select(Sample, Code) \%>\%
+  dplyr::rename(Group = Code)
 
 vis_dim_dist(
   ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
   group_info = group_info
 )
-
 }
 
 }

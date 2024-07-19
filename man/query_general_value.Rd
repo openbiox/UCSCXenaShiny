@@ -2,7 +2,7 @@
 % Please edit documentation in R/query_general.R
 \name{query_general_value}
 \alias{query_general_value}
-\title{download data for shiny general analysis}
+\title{Download data for shiny general analysis}
 \usage{
 query_general_value(
   L1,
@@ -30,25 +30,26 @@ query_general_value(
 \item{custom_metadata}{user customized metadata}
 }
 \description{
-download data for shiny general analysis
+Download data for shiny general analysis
 }
 \examples{
 \dontrun{
-general_value_id = UCSCXenaShiny:::query_general_id()
-tcga_value_option = general_value_id[["value"]][[1]]
-tcga_index_value = tcga_value_option[["Tumor index"]]
-tcga_immune_value = tcga_value_option[["Immune Infiltration"]]
-tcga_pathway_value = tcga_value_option[["Pathway activity"]]
-tcga_phenotype_value = tcga_value_option[["Phenotype data"]]
+general_value_id <- UCSCXenaShiny:::query_general_id()
+tcga_value_option <- general_value_id[["value"]][[1]]
+tcga_index_value <- tcga_value_option[["Tumor index"]]
+tcga_immune_value <- tcga_value_option[["Immune Infiltration"]]
+tcga_pathway_value <- tcga_value_option[["Pathway activity"]]
+tcga_phenotype_value <- tcga_value_option[["Phenotype data"]]
+
 clinical_phe = tcga_phenotype_value[["Clinical Phenotype"]]
 x_data = UCSCXenaShiny:::query_general_value(
            "Molecular profile", "mRNA Expression", "TP53", "toil",
-           tcga_index_value, tcga_immune_value, tcga_pathway_value, 
+           tcga_index_value, tcga_immune_value, tcga_pathway_value,
            clinical_phe)
-                                             
+
 y_data = UCSCXenaShiny:::query_general_value(
            "Immune Infiltration", "CIBERSORT", "Monocyte", "toil",
-           tcga_index_value, tcga_immune_value, tcga_pathway_value, 
+           tcga_index_value, tcga_immune_value, tcga_pathway_value,
            clinical_phe)
 }
 }

@@ -210,8 +210,7 @@ ezcor_batch <- function(data,
     }
     res2 <- dplyr::bind_rows(res)
     return(res2)
-  }
-  else {
+  } else {
     all_cols <- unique(c(var1, var2))
     ss <- ss[, all_cols]
     res <- purrr::map(

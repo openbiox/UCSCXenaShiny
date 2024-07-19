@@ -93,12 +93,11 @@ query_pancan_value("ENSG00000000419",
 
 .opt_pancan
 
-opt_pancan = list(toil_cnv = list(use_thresholded_data = FALSE))
-query_pancan_value("PTEN",data_type = "cnv", database = "toil", opt_pancan = opt_pancan)
+opt_pancan <- list(toil_cnv = list(use_thresholded_data = FALSE))
+query_pancan_value("PTEN", data_type = "cnv", database = "toil", opt_pancan = opt_pancan)
 
 
-opt_pancan = list(toil_methylation = list(type = "450K",rule_out = "cg21115430", aggr = "Q25"))
-query_pancan_value("PTEN",data_type = "methylation", database = "toil", opt_pancan = opt_pancan)
-
+opt_pancan <- list(toil_methylation = list(type = "450K", rule_out = "cg21115430", aggr = "Q25"))
+query_pancan_value("PTEN", data_type = "methylation", database = "toil", opt_pancan = opt_pancan)
 }
 }

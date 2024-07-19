@@ -46,7 +46,7 @@ vis_identifier_cor <- function(dataset1, id1, dataset2, id2, samples = NULL,
   } else {
     id1_value <- query_molecule_value(dataset1, id1)
   }
-  
+
   if (dataset1 == "custom_feature_dataset") {
     id2_value <- query_custom_feature_value(id2)
   } else {
@@ -130,11 +130,14 @@ vis_identifier_multi_cor <- function(dataset, ids, samples = NULL,
   matrix.type <- match.arg(matrix.type)
   type <- match.arg(type)
   p.adjust.method <- match.arg(p.adjust.method)
-  
+
   df <- purrr::map(ids, function(x) {
     message("Querying data of identifier ", x, " from dataset: ", dataset)
-    data <- if (dataset == "custom_feature_dataset") query_custom_feature_value(x) else
+    data <- if (dataset == "custom_feature_dataset") {
+      query_custom_feature_value(x)
+    } else {
       query_molecule_value(dataset, x)
+    }
     data <- dplyr::tibble(
       sample = names(data),
       y = as.numeric(data)
@@ -229,8 +232,11 @@ vis_identifier_grp_comparison <- function(dataset = NULL, id = NULL, grp_df, sam
 
   if (!is.null(dataset) && !is.null(id)) {
     message("Querying data of identifier ", id, " from dataset ", dataset, " for comparison")
-    id_value <- if (dataset == "custom_feature_dataset") query_custom_feature_value(id) else
+    id_value <- if (dataset == "custom_feature_dataset") {
+      query_custom_feature_value(id)
+    } else {
       query_molecule_value(dataset, id)
+    }
     df <- dplyr::tibble(
       sample = names(id_value),
       X = as.numeric(id_value)
@@ -263,7 +269,7 @@ vis_identifier_grp_comparison <- function(dataset = NULL, id = NULL, grp_df, sam
       y = !!colnames(df)[2],
       # grouping.var = grouping.var,
       grouping.var = !!rlang::sym(colnames(df)[4]),
-      type  = type,
+      type = type,
       pairwise.comparisons = pairwise.comparisons,
       p.adjust.method = p.adjust.method,
       ggtheme = ggtheme,
@@ -276,7 +282,7 @@ vis_identifier_grp_comparison <- function(dataset = NULL, id = NULL, grp_df, sam
       data = df,
       x = !!colnames(df)[3],
       y = !!colnames(df)[2],
-      type  = type,
+      type = type,
       pairwise.comparisons = pairwise.comparisons,
       p.adjust.method = p.adjust.method,
       ggtheme = ggtheme,
@@ -337,8 +343,11 @@ vis_identifier_grp_surv <- function(dataset = NULL,
 
   if (!is.null(dataset) && !is.null(id)) {
     message("Querying data of identifier ", id, " from dataset ", dataset, " for survival analysis")
-    id_value <- if (dataset == "custom_feature_dataset") query_custom_feature_value(id) else
+    id_value <- if (dataset == "custom_feature_dataset") {
+      query_custom_feature_value(id)
+    } else {
       query_molecule_value(dataset, id)
+    }
     df <- dplyr::tibble(
       sample = names(id_value),
       value = as.numeric(id_value)

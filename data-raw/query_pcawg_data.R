@@ -21,37 +21,38 @@
 library("UCSCXenaTools")
 
 # Generate dataset(s) information
-dataset_query <- structure(list(
-  hosts = c(
-    "https://pcawg.xenahubs.net",
-    "https://pcawg.xenahubs.net",
-    "https://pcawg.xenahubs.net",
-    "https://pcawg.xenahubs.net",
-    "https://pcawg.xenahubs.net"
+dataset_query <- structure(
+  list(
+    hosts = c(
+      "https://pcawg.xenahubs.net",
+      "https://pcawg.xenahubs.net",
+      "https://pcawg.xenahubs.net",
+      "https://pcawg.xenahubs.net",
+      "https://pcawg.xenahubs.net"
+    ),
+    datasets = c(
+      "sp_specimen_type",
+      "project_code_sp",
+      "survival_sp",
+      "pcawg_specimen_histology_August2016_v9",
+      "pcawg_donor_clinical_August2016_v9_sp"
+    ),
+    url = c(
+      `https://pcawg.xenahubs.net` = "https://pcawg.xenahubs.net/download/sp_specimen_type",
+      `https://pcawg.xenahubs.net` = "https://pcawg.xenahubs.net/download/project_code_sp",
+      `https://pcawg.xenahubs.net` = "https://pcawg.xenahubs.net/download/survival_sp",
+      `https://pcawg.xenahubs.net` = "https://pcawg.xenahubs.net/download/pcawg_specimen_histology_August2016_v9",
+      `https://pcawg.xenahubs.net` = "https://pcawg.xenahubs.net/download/pcawg_donor_clinical_August2016_v9_sp"
+    ),
+    browse = c(
+      "https://xenabrowser.net/datapages/?dataset=sp_specimen_type&host=https://pcawg.xenahubs.net",
+      "https://xenabrowser.net/datapages/?dataset=project_code_sp&host=https://pcawg.xenahubs.net",
+      "https://xenabrowser.net/datapages/?dataset=survival_sp&host=https://pcawg.xenahubs.net",
+      "https://xenabrowser.net/datapages/?dataset=pcawg_specimen_histology_August2016_v9&host=https://pcawg.xenahubs.net",
+      "https://xenabrowser.net/datapages/?dataset=pcawg_donor_clinical_August2016_v9_sp&host=https://pcawg.xenahubs.net"
+    )
   ),
-  datasets = c(
-    "sp_specimen_type",
-    "project_code_sp",
-    "survival_sp",
-    "pcawg_specimen_histology_August2016_v9",
-    "pcawg_donor_clinical_August2016_v9_sp"
-  ),
-  url = c(
-    `https://pcawg.xenahubs.net` = "https://pcawg.xenahubs.net/download/sp_specimen_type",
-    `https://pcawg.xenahubs.net` = "https://pcawg.xenahubs.net/download/project_code_sp",
-    `https://pcawg.xenahubs.net` = "https://pcawg.xenahubs.net/download/survival_sp",
-    `https://pcawg.xenahubs.net` = "https://pcawg.xenahubs.net/download/pcawg_specimen_histology_August2016_v9",
-    `https://pcawg.xenahubs.net` = "https://pcawg.xenahubs.net/download/pcawg_donor_clinical_August2016_v9_sp"
-  ),
-  browse = c(
-    "https://xenabrowser.net/datapages/?dataset=sp_specimen_type&host=https://pcawg.xenahubs.net",
-    "https://xenabrowser.net/datapages/?dataset=project_code_sp&host=https://pcawg.xenahubs.net",
-    "https://xenabrowser.net/datapages/?dataset=survival_sp&host=https://pcawg.xenahubs.net",
-    "https://xenabrowser.net/datapages/?dataset=pcawg_specimen_histology_August2016_v9&host=https://pcawg.xenahubs.net",
-    "https://xenabrowser.net/datapages/?dataset=pcawg_donor_clinical_August2016_v9_sp&host=https://pcawg.xenahubs.net"
-  )
-),
-row.names = c(NA, -5L), class = c("tbl_df", "tbl", "data.frame")
+  row.names = c(NA, -5L), class = c("tbl_df", "tbl", "data.frame")
 )
 
 # Download dataset(s)

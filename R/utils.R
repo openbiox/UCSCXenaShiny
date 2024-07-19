@@ -59,5 +59,7 @@ rm_cache_dir <- function() {
 
 # https://stackoverflow.com/questions/6029743/merge-or-combine-by-rownames
 mbind <- function(...) {
-  Reduce( function(x,y){cbind(x,y[match(row.names(x),row.names(y)),])}, list(...) )
+  Reduce(function(x, y) {
+    cbind(x, y[match(row.names(x), row.names(y)), ])
+  }, list(...))
 }
