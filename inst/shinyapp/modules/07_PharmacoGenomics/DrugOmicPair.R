@@ -17,7 +17,7 @@ uiDrugOmicPair <- function(id){
       # Select omics ----
       column(4,
              selectizeInput(
-               ns("select_specific_omic"), "Molecule Selection:", choices = NULL,
+               ns("select_specific_omic"), "Molecule selection:", choices = NULL,
                options = list(
                  placeholder = 'Please select a molecular feature',
                  onInitialize = I('function() { this.setValue(""); }'), selected = "ABCC3"
@@ -27,7 +27,7 @@ uiDrugOmicPair <- function(id){
       # Select drugs ----
       column(4,
              selectizeInput(
-               ns("select_specific_drug"), "Drug Selection:", choices = NULL,
+               ns("select_specific_drug"), "Drug selection:", choices = NULL,
                options = list(
                  placeholder = 'Please select a drug',
                  onInitialize = I('function() { this.setValue(""); }'), selected = "YM-155"
@@ -66,7 +66,7 @@ serverDrugOmicPair <- function(input, output, session){
                                      "mutation_site" = omics_search[omics_search$type %in% "mutation_site",]$omics,
                                      "fusion" = omics_search[omics_search$type %in% "fusion",]$omics)
     updateSelectizeInput(session = session, inputId = 'select_specific_omic',
-                         label = 'Molecule Selection:', choices = omics_search_sel$omics, server = TRUE,
+                         label = 'Molecule selection:', choices = omics_search_sel$omics, server = TRUE,
                          options = list(placeholder = 'Please select a molecular feature', onInitialize = I('function() { this.setValue(""); }')),
                          selected = "ABCC3"
     )
@@ -74,7 +74,7 @@ serverDrugOmicPair <- function(input, output, session){
   
   ## Drugs ----
   updateSelectizeInput(session = session, inputId = 'select_specific_drug',
-                       label = 'Drug Selection:', choices = drugs_search$drugs, server = TRUE,
+                       label = 'Drug selection:', choices = drugs_search$drugs, server = TRUE,
                        options = list(placeholder = 'Please select a drug', onInitialize = I('function() { this.setValue(""); }')),
                        selected = "YM-155"
   )

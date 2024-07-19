@@ -166,7 +166,7 @@ ui.page_home <- function() {
         column(12, #offset = 1,
           tags$ul(
             tags$li("2024-06-25: Design gene and pathway cross-omics analysis",style = "font-size: 20px;"),
-            tags$li("2024-02-14: Incorporate the PharmacoGenomics analysis modules",style = "font-size: 20px;"),
+            tags$li("2024-02-14: Incorporate the PharmacoGenomics modules",style = "font-size: 20px;"),
             tags$li("2024-01-21: Adjust homepge with slick gallery to show basic page help.",style = "font-size: 20px;"),
             tags$li("2024-01-16: Introduce MSigDB genesets for molecule batch analysis.",style = "font-size: 20px;"),
             tags$li("2023-12-20: Add download modules that support data requisition.",style = "font-size: 20px;"),

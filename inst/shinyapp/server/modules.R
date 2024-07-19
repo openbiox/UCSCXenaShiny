@@ -1,3 +1,6 @@
+html_spin = tagList(spin_1(), br(),
+                    h2("Loading independent modules (Only needed for the first time)"))
+
 # # quick module
 observeEvent(req(input$navbar=="TCGA (GTEx): Molecular comparison"),{
   callModule(server.modules_1_tcga_01, "modules_1_tcga_01")
@@ -23,9 +26,9 @@ observeEvent(req(input$navbar=="TCGA: Dimension reduction"),{
   callModule(server.modules_1_tcga_11, "modules_1_tcga_11")
 }, once = TRUE)  
 
-observeEvent(req(input$navbar=="TCGA: Pathway cross analysis"),{
-  callModule(server.modules_1_tcga_12, "modules_1_tcga_12")
-}, once = TRUE)  
+# observeEvent(req(input$navbar=="TCGA: Pathway cross analysis"),{
+#   callModule(server.modules_1_tcga_12, "modules_1_tcga_12")
+# }, once = TRUE)  
 
 observeEvent(req(input$navbar=="PCAWG: Molecular comparison"),{
   callModule(server.modules_2_pcawg_01, "modules_2_pcawg_01")
@@ -50,7 +53,7 @@ observeEvent(req(input$navbar=="CCLE: Molecular correlation"),{
 }, once = TRUE)   
 
 observeEvent(req(input$navbar=="CCLE: Drug analysis"),{
-  waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE)
+  waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE, html = html_spin)
   waiter$show()
   callModule(server.modules_3_ccle_03, "modules_3_ccle_03")
   callModule(server.modules_3_ccle_04, "modules_3_ccle_04")
@@ -60,8 +63,7 @@ observeEvent(req(input$navbar=="CCLE: Drug analysis"),{
 
 
 ## TPC 
-html_spin = tagList(spin_1(), br(),
-                    h2("Loading (Only needed for the first time)"))
+
 # TCGA pancan
 observeEvent(req(input$navbar=="TCGA: Correlation Analysis"),{
     waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE, html = html_spin)
@@ -147,7 +149,7 @@ observeEvent(req(input$navbar=="CCLE: Comparison Analysis"),{
 
 # # identifier help
 observeEvent(req(input$navbar=="TPC ID Query"),{
-  waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE)
+  waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE, html = html_spin)
   waiter$show()
 	callModule(server.modules_id_reference, "modules_id_reference")
   on.exit(waiter$hide())
@@ -174,14 +176,14 @@ observeEvent(req(input$navbar=="The Repository Dataset"),{
 
 # PharmacoGenomics
 observeEvent(req(input$navbar %in% c(
-  "Drugs-omics pairs Analysis",
-  "Profiles Display: Features across different types",
-  "Profiles Display: Profile of drug sensitivity",
-  "Features database significant analysis",
+  "Drug-Omics Correlation Analysis",
+  "Feature Abundance Profile in Databases",
+  "Dimension Reduction Profile of Cell Drug Sensitivity",
+  "Feature Scaling Association Analysis",
   "Statistics and Annotations"
 )),{
 
-    waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE)
+    waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE, html = html_spin)
     waiter$show()
     message("Preprocessing drug omics data...")
     source(system.file("shinyapp/PGdata.R", package = "UCSCXenaShiny"))

@@ -1,24 +1,24 @@
 ui.page_PharmacoGenomics <- function() {
   navbarMenu(
-    title = "PharmacoGenomics Analysis",
+    title = "PharmacoGenomics",
     icon = icon("buromobelexperte"),
-    ## Drugs-omics pairs analysis ----
+    ## Drug-Omics Correlation Analysis ----
     tabPanel(
-      "Drugs-omics pairs Analysis",
+      "Drug-Omics Correlation Analysis",
       uiDrugOmicPair("DrugOmicPair")
     ),
     ## Profiles Display ----
     tabPanel(
-      "Profiles Display: Features across different types",
+      "Feature Abundance Profile in Databases",
       uiFeatureAcrossType("FeatureAcrossType")
     ),
     tabPanel(
-      "Profiles Display: Profile of drug sensitivity",
+      "Dimension Reduction Profile of Cell Drug Sensitivity",
       uiProfileDrugSens("ProfileDrugSens")  
     ),
     ## Features database significant analysis ----
     tabPanel(
-      "Scaling features associations analysis",
+      "Feature Scaling Association Analysis",
       uiFeatureDatabaseSig("FeatureDatabaseSig")
     ),
     ## Statistics and Annotations ----

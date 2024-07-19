@@ -74,7 +74,7 @@ profile_vec_list$drug <- profile_vec_list$drug[!profile_vec_list$drug %in% c("OP
 ## clean OP*
 rm(list = ls()[grepl("OP", ls())])
 
-## some preprocess for Drugs-omics pairs analysis
+## some preprocess for Drug-Omics Correlation Analysis
 tmp <- list()
 
 tmp$omic_sel <- c("exp", "meth", "protein", "cnv")

@@ -20,7 +20,7 @@ uiFeatureDatabaseSig <- function(id){
       # Select specific feature ----
       column(3,
              selectizeInput(
-               ns("select_specific_feature"), "Features Selection:", choices = NULL,
+               ns("select_specific_feature"), "Feature Selection:", choices = NULL,
                options = list(
                  placeholder = 'Please select a feature',
                  onInitialize = I('function() { this.setValue(""); }'), selected = ""
@@ -87,7 +87,7 @@ serverFeatureDatabaseSig <- function(input, output, session){
                                            "mutation_site" = omics_search[omics_search$type %in% "mutation_site",]$omics,
                                            "fusion" = omics_search[omics_search$type %in% "fusion",]$omics)
     updateSelectizeInput(session = session, inputId = 'select_specific_feature',
-                         label = 'Features Selection:', choices = features_search_sel$features, server = TRUE,
+                         label = 'Feature Selection:', choices = features_search_sel$features, server = TRUE,
                          options = list(placeholder = 'Please select a feature', onInitialize = I('function() { this.setValue(""); }')),
                          selected = ""
     )

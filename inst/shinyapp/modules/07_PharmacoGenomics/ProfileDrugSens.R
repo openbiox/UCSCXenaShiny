@@ -14,20 +14,19 @@ uiProfileDrugSens <- function(id){
       mainPanel(
         column(6,
                radioButtons(inputId = ns("Select_profile_type"), 
-                            strong("Visualization Types"),
+                            strong("Visualization Type:"),
                             choices = list("TSNE" = "TSNE",
                                            "MAD&MEDIAN" = "MAD"), selected = "TSNE")),
         column(6,
                selectizeInput(
-                 ns("select_specific_drug"), "Drugs Selection", choices = NULL,
+                 ns("select_specific_drug"), "Drug Selection:", choices = NULL,
                  options = list(
                    placeholder = 'You can highlight targeted drug',
                    onInitialize = I('function() { this.setValue(""); }'), selected = ""
                  ))
         ),
         column(12,
-               plotly::plotlyOutput(ns("p_drug_sens")),
-               # p("You can interact with the above ggplotly-based plot", align = "center"))
+               plotly::plotlyOutput(ns("p_drug_sens"))
         )
       )
     ))
@@ -47,7 +46,7 @@ serverProfileDrugSens <- function(input, output, session){
                                   "Prism" = drugs_search2[drugs_search2$type %in% "Prism",]$drugs
     )
     updateSelectizeInput(session = session, inputId = 'select_specific_drug',
-                         label = 'Drugs Selection', choices = drugs_search3$drugs, server = TRUE,
+                         label = 'Drug Selection:', choices = drugs_search3$drugs, server = TRUE,
                          options = list(placeholder = 'You can highlight targeted drug', onInitialize = I('function() { this.setValue(""); }')),
                          selected = ""
     )
