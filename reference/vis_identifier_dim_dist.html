@@ -100,81 +100,8 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/UCSCXenaTools/" class="external-link">UCSCXenaTools</a></span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> =========================================================================================</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> UCSCXenaTools version 1.4.8</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Project URL: https://github.com/ropensci/UCSCXenaTools</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Usages: https://cran.r-project.org/web/packages/UCSCXenaTools/vignettes/USCSXenaTools.html</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> If you use it in published research, please cite:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Wang et al., (2019). The UCSCXenaTools R package: a toolkit for accessing genomics data</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   from UCSC Xena platform, from cancer multi-omics to single-cell RNA-seq.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   Journal of Open Source Software, 4(40), 1627, https://doi.org/10.21105/joss.01627</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> =========================================================================================</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>                               --Enjoy it--</span>
-<span class="r-in"><span><span class="va">expr_dataset</span> <span class="op">&lt;-</span> <span class="st">"TCGA.LUAD.sampleMap/HiSeqV2_percentile"</span></span></span>
-<span class="r-in"><span><span class="va">ids</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TP53"</span>, <span class="st">"KRAS"</span>, <span class="st">"PTEN"</span>, <span class="st">"MDM2"</span>, <span class="st">"CDKN1A"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">cli_dataset</span> <span class="op">&lt;-</span> <span class="st">"TCGA.LUAD.sampleMap/LUAD_clinicalMatrix"</span></span></span>
-<span class="r-in"><span><span class="va">cli_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://docs.ropensci.org/UCSCXenaTools/reference/XenaGenerate.html" class="external-link">XenaGenerate</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  subset <span class="op">=</span> <span class="va">XenaDatasets</span> <span class="op">==</span> <span class="va">cli_dataset</span></span></span>
-<span class="r-in"><span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://docs.ropensci.org/UCSCXenaTools/reference/XenaQuery.html" class="external-link">XenaQuery</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://docs.ropensci.org/UCSCXenaTools/reference/XenaDownload.html" class="external-link">XenaDownload</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://docs.ropensci.org/UCSCXenaTools/reference/XenaPrepare.html" class="external-link">XenaPrepare</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> This will check url status, please be patient.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> All downloaded files will under directory /tmp/Rtmp8CVOPq.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The 'trans_slash' option is FALSE, keep same directory structure as Xena.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Creating directories for datasets...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Downloading TCGA.LUAD.sampleMap/LUAD_clinicalMatrix</span>
-<span class="r-in"><span><span class="va">grp_df</span> <span class="op">=</span> <span class="va">cli_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sampleID"</span>, <span class="st">"gender"</span><span class="op">)</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="fu">vis_identifier_dim_dist</span><span class="op">(</span><span class="va">expr_dataset</span>, <span class="va">ids</span>, <span class="va">grp_df</span>, DR_method<span class="op">=</span><span class="st">"PCA"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Querying data of identifier TP53 from dataset TCGA.LUAD.sampleMap/HiSeqV2_percentile for DR</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #5</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Tried 5 times but failed, please check URL or your internet connection or try it later!</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Saving data to file /tmp/Rtmp8CVOPq/UCSCXenaShiny/7bac6e7df6c078cb307b55eb3cc0c512.rds</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Querying data of identifier KRAS from dataset TCGA.LUAD.sampleMap/HiSeqV2_percentile for DR</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #5</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Tried 5 times but failed, please check URL or your internet connection or try it later!</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Saving data to file /tmp/Rtmp8CVOPq/UCSCXenaShiny/7493d9720bf5ffdc743df4da9dc46cf4.rds</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Querying data of identifier PTEN from dataset TCGA.LUAD.sampleMap/HiSeqV2_percentile for DR</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #5</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Tried 5 times but failed, please check URL or your internet connection or try it later!</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Saving data to file /tmp/Rtmp8CVOPq/UCSCXenaShiny/61bd4abf1c20b6812eda21c33f2c8df1.rds</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Querying data of identifier MDM2 from dataset TCGA.LUAD.sampleMap/HiSeqV2_percentile for DR</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #5</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Tried 5 times but failed, please check URL or your internet connection or try it later!</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Saving data to file /tmp/Rtmp8CVOPq/UCSCXenaShiny/b1b235f5007458d1a9eabe92b19a0798.rds</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Querying data of identifier CDKN1A from dataset TCGA.LUAD.sampleMap/HiSeqV2_percentile for DR</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Try querying data #5</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Tried 5 times but failed, please check URL or your internet connection or try it later!</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Saving data to file /tmp/Rtmp8CVOPq/UCSCXenaShiny/fa7de4460d6e82e06e87c58bd81833ac.rds</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> access data failed, the message is provided below</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Join columns in `x` must be present in the data.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> Problem with `sample`.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
-<span class="r-in"><span><span class="co"># }</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># vis_identifier_dim_dist(expr_dataset, ids, grp_df, DR_method="PCA")</span></span></span>
+<span class="r-in"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
