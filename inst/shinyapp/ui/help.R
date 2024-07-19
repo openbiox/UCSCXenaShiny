@@ -12,8 +12,8 @@ ui.page_help <- function() {
     tabPanel(
       "Quick Guide",
       fluidPage(
-        tags$iframe(style="height:1000px; width:100%", src="Quick_guide.pdf")
-        # tags$iframe(style="height:1000px; width:100%", src="https://github.com/lishensuo/utils/blob/main/Quick_guide.pdf")
+        #tags$iframe(style="height:1000px; width:100%", src="Quick_guide.pdf")
+        tags$iframe(style="height:1000px; width:100%", src="https://ucscxenashiny-1301043367.cos.ap-shanghai.myqcloud.com/Quick_guide.pdf")
       )
     ),
     tabPanel(title = a("Tutorial Book", 

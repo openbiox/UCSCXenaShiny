@@ -21,7 +21,14 @@ by Google Chrome for being considered unsafe: 3659, 4045, 5060,
 5061, 6000, 6566, 6665:6669 and 6697. Up to twenty random
 ports will be tried.}
 
-\item{content}{a: all module; s: simplfied module; q: quick tpc modules; p: personalized tpc pipelines; d: pharmcogenomics}
+\item{content}{Modules to enable.
+\itemize{
+\item \code{a}: all modules
+\item \code{s}: only loading basic modules;
+\item \code{q}: add tpc (TCGA, PCAWG, CCLE) modules
+\item \code{p}: add tpc pipelines
+\item \code{d}: add pharmcogenomics modules
+}}
 }
 \description{
 Run UCSC Xena Shiny App with specifc content
