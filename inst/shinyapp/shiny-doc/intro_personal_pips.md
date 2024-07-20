@@ -7,7 +7,7 @@
 
 
 <center>
-<img src="https://raw.githubusercontent.com/lishensuo/images2/main/img01/image-20240708162416954.png" alt="image-20240413163342892"  style="zoom:50%";/>
+<img src="https://ucscxenashiny-1301043367.cos.ap-shanghai.myqcloud.com/Shiny-figures/helper_intro_personal_pips_1.png" alt="helper_intro_personal_pips_1"  style="zoom:50%";/>
 </center>
 
 
@@ -20,7 +20,7 @@
 
 
 <center>
-<img src="https://raw.githubusercontent.com/lishensuo/images2/main/img01/image-20240413163712074.png" alt="image-20240413163712074" style="zoom:80%;" />
+<img src="https://ucscxenashiny-1301043367.cos.ap-shanghai.myqcloud.com/Shiny-figures/helper_intro_personal_pips_2.png" alt="helper_intro_personal_pips_2" style="zoom:80%;" />
 </center>
 
 

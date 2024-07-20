@@ -23,14 +23,14 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 \item{option}{A character string indicating the color map option to use.
 Eight options are available:
 \itemize{
- \item "magma" (or "A")
- \item "inferno" (or "B")
- \item "plasma" (or "C")
- \item "viridis" (or "D")
- \item "cividis" (or "E")
- \item "rocket" (or "F")
- \item "mako" (or "G")
- \item "turbo" (or "H")
+\item \code{"magma"} (or \code{"A"})
+\item \code{"inferno"} (or \code{"B"})
+\item \code{"plasma"} (or \code{"C"})
+\item \code{"viridis"} (or \code{"D"})
+\item \code{"cividis"} (or \code{"E"})
+\item \code{"rocket"} (or \code{"F"})
+\item \code{"mako"} (or \code{"G"})
+\item \code{"turbo"} (or \code{"H"})
 }}
 
 \item{opt_pancan}{specify one dataset for some molercular profiles}

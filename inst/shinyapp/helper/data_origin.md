@@ -10,7 +10,7 @@
 >5. Select the aggregation method for calculating gene-level methylation. By default, the mean of the selected CpG sites will be calculated.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/lishensuo/images2/main/img01/image-20240114135857453.png" alt="image-20240114135857453"  width="450" />
+<img src="https://ucscxenashiny-1301043367.cos.ap-shanghai.myqcloud.com/Shiny-figures/helper_data_origin.png" alt="helper_data_origin"  width="450" />
 </p>
 
 ---

@@ -46,7 +46,7 @@
 
 
 
-<img src="https://raw.githubusercontent.com/lishensuo/images2/main/img01/image-20240621164513902.png" alt="image-20240621164513902"   width="700"/>
+<img src="https://ucscxenashiny-1301043367.cos.ap-shanghai.myqcloud.com/Shiny-figures/helper_cross_gene.png" alt="helper_cross_gene"   width="700"/>
 
 
 

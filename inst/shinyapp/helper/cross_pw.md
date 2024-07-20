@@ -33,7 +33,7 @@
 
 
 
-<img src="https://raw.githubusercontent.com/lishensuo/images2/main/img01/image-20240622145708792.png" alt="image-20240622145708792"  width="700"/>
+<img src="https://ucscxenashiny-1301043367.cos.ap-shanghai.myqcloud.com/Shiny-figures//helper_cross_pw.png" alt="helper_cross_pw"  width="700"/>
 
 
 
