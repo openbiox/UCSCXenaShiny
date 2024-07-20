@@ -2,7 +2,7 @@
 - <font size="4">You can (1) set the basic signature information and (2) molecular formula, (3) calculate the signature value and add into **Custom metadata** (Data subtype) of Phenotype data (Data type) for analysis;</font>
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/lishensuo/images2/main/img01/image-20240114153109823.png" alt="image-20240114153109823"    width="700"  />
+<img src="https://ucscxenashiny-1301043367.cos.ap-shanghai.myqcloud.com/Shiny-figures/helper_add_signature.png" alt="helper_add_signature"    width="700"  />
 </p>
 
 ---

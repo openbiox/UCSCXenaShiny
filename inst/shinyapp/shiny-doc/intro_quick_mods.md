@@ -7,7 +7,7 @@
 
 
 <center>
-<img src="https://raw.githubusercontent.com/lishensuo/images2/main/img01/image-20240413111957810.png" alt="image-20240413111957810" style="zoom:50%;" />
+<img src="https://ucscxenashiny-1301043367.cos.ap-shanghai.myqcloud.com/Shiny-figures/helper_intro_quick_mods_1.png" alt="helper_intro_quick_mods_1" style="zoom:50%;" />
 </center>
 
 
@@ -18,7 +18,7 @@
 - <font size="5">The [dashboard](https://github.com/RinteRface/shinydashboardPlus)-based **box** layouts are adopted for simple and intuitive representation. The **left box** is usually for data selection and analytical parameters adjustment. The **right box** is usually for display of result plot and one **sidebar panel** can be pulled to adjust  visualization options and download results.</font>
 
 <center>
-<img src="https://raw.githubusercontent.com/lishensuo/images2/main/img01/image-20240413113535287.png" alt="image-20240413113535287" />
+<img src="https://ucscxenashiny-1301043367.cos.ap-shanghai.myqcloud.com/Shiny-figures/helper_intro_quick_mods_2.png" alt="helper_intro_quick_mods_2" />
 </center>
 
 ## 2. Molecular database

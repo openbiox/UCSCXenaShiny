@@ -6,7 +6,7 @@
 > 3. In the "**File**" way, choose IDs by uploading an one-column file. You can download the example data to check the format requirements.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/lishensuo/images2/main/img01/image-20240114170836444.png" alt="image-20240114170836444"   width="700"/>
+<img src="https://ucscxenashiny-1301043367.cos.ap-shanghai.myqcloud.com/Shiny-figures/helper_get_batch_data.png" alt="helper_get_batch_data"   width="700"/>
 </p>
 
 ---

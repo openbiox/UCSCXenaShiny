@@ -5,7 +5,7 @@
 
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/lishensuo/images2/main/img01/image-20240114161343441.png" alt="image-20240114161343441" width="700"/>
+<img src="https://ucscxenashiny-1301043367.cos.ap-shanghai.myqcloud.com/Shiny-figures/helper_get_one_data.png" alt="helper_get_one_data" width="700"/>
 </p>
 
 ---
