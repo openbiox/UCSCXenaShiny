@@ -1,9 +1,9 @@
-#' Visualize the distribution difference of samples after dimension reduction analysis
+#' Visualize the distribution difference of samples after dimensionality reduction analysis
 #'
 #' @param ids molecular identifiers (>=3)
 #' @param data_type molecular types, refer to query_pancan_value() function
 #' @param group_info two-column grouping information with names 'Sample','Group'
-#' @param DR_method the dimension reduction method
+#' @param DR_method the dimensionality reduction method
 #' @param palette the color setting of RColorBrewer
 #' @param add_margin the marginal plot (NULL, "density", "boxplot")
 #' @param opt_pancan specify one dataset for some molercular profiles

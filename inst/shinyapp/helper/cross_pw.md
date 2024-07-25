@@ -33,7 +33,7 @@
 
 
 
-<img src="https://ucscxenashiny-1301043367.cos.ap-shanghai.myqcloud.com/Shiny-figures//helper_cross_pw.png" alt="helper_cross_pw"  width="700"/>
+<img src="https://ucscxenashiny-1301043367.cos.ap-shanghai.myqcloud.com/Shiny-figures/helper_cross_pw.png" alt="helper_cross_pw"  width="700"/>
 
 
 

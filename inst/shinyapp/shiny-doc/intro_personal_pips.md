@@ -1,5 +1,5 @@
 <center>
-<h1>Personalized TPC pipelines</h1>
+<h1>TPC pipelines</h1>
 </center>
 
 
@@ -30,4 +30,4 @@
 
 
 
-> <font size="5">Tips: The menu of `Custom TPC modules` enable specific and quick  TPC molecular analysis, such as tumor and tomor comparison, molecule and molecule correlation.</font>
+> <font size="5">Tips: The menu of `TPC modules` enable specific and quick  TPC molecular analysis, such as tumor and tomor comparison, molecule and molecule correlation.</font>

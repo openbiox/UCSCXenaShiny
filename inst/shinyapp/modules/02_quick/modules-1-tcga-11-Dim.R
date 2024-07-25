@@ -182,7 +182,7 @@ ui.modules_1_tcga_11 = function(id){
         box(main_ui,
             width = 5,
             solidHeader = TRUE,
-            title = "Quick TCGA Analysis: Dimension reduction analysis", 
+            title = "Quick TCGA Analysis: Dimensionality reduction analysis", 
             status = "warning",
             background = "gray",
             collapsible = FALSE,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/vis_identifier_dim_dist.R
 \name{vis_identifier_dim_dist}
 \alias{vis_identifier_dim_dist}
-\title{Visualize the distribution difference of samples after Molecule Identifier dimension reduction analysis}
+\title{Visualize the distribution difference of samples after Molecule Identifier dimensionality reduction analysis}
 \usage{
 vis_identifier_dim_dist(
   dataset = NULL,
@@ -30,7 +30,7 @@ vis_identifier_dim_dist(
 
 \item{return.data}{whether to reture the raw meta/matrix data (list) instead of plot}
 
-\item{DR_method}{the dimension reduction method}
+\item{DR_method}{the dimensionality reduction method}
 
 \item{add_margin}{the marginal plot (NULL, "density", "boxplot")}
 

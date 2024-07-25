@@ -37,8 +37,8 @@ See the [UCSCXenaShiny v2 Book](https://lishensuo.github.io/UCSCXenaShiny_Book/i
 - `.opt_pancan` : Default setting for alternative TPC datasets.
 - `mol_quick_analysis()`: Quick molecule analysis and report generation based on TCGA dataset.
 - `query_tcga_group()`: Group TPC samples by build-in or custom phenotype and support filtering or merging operations.
-- `vis_dim_dist()`: Visualize the distribution difference of TCGA samples after dimension reduction analysis.
-- `vis_identifier_dim_dist()`: Visualize the distribution difference of samples after Molecule Identifier dimension reduction analysis.
+- `vis_dim_dist()`: Visualize the distribution difference of TCGA samples after dimensionality reduction analysis.
+- `vis_identifier_dim_dist()`: Visualize the distribution difference of samples after Molecule Identifier dimensionality reduction analysis.
 - `vis_toil_Mut()`: Visualize molecular profile difference between mutation and wild status of queried gene.
 - `vis_toil_Mut_cancer()`: Visualize molecular profile difference between mutation and wild status of queried gene in Single Cancer Type
 
@@ -50,13 +50,13 @@ See the [UCSCXenaShiny v2 Book](https://lishensuo.github.io/UCSCXenaShiny_Book/i
   
 - General Dataset  Analysis
 
-  - Added one general dimension reduction analysis module.
+  - Added one general dimensionality reduction analysis module.
 
 - Quick TPC Analysis
 
   - Added one module for association analysis between molecule and pathway;
   - Added one module for association analysis between molecule and mutation;
-  - Added one module for dimension reduction analysis.
+  - Added one module for dimensionality reduction analysis.
 
 - Personalized Analysis
 

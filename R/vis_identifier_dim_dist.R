@@ -1,4 +1,4 @@
-#' Visualize the distribution difference of samples after Molecule Identifier dimension reduction analysis
+#' Visualize the distribution difference of samples after Molecule Identifier dimensionality reduction analysis
 #'
 #' NOTE: the dataset must be dense matrix in UCSC Xena data hubs.
 #'
@@ -10,7 +10,7 @@
 #' - The second column refers to groups indicated in axis X.
 #' @param samples default is `NULL`, can be common sample names for two datasets.
 #' @param return.data whether to reture the raw meta/matrix data (list) instead of plot
-#' @param DR_method the dimension reduction method
+#' @param DR_method the dimensionality reduction method
 #' @param add_margin the marginal plot (NULL, "density", "boxplot")
 #' @param palette the color setting of RColorBrewer
 #'

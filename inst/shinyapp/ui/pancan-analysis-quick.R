@@ -65,10 +65,10 @@ ui.page_pancan_quick <- function() {
       )
     ),
 
-    tabPanel("TCGA: Dimension reduction",
+    tabPanel("TCGA: Dimensionality reduction",
       tabsetPanel(
         tabPanel(
-          "Dimension reduction",
+          "Dimensionality reduction",
           ui.modules_1_tcga_11("modules_1_tcga_11")
         )
       )

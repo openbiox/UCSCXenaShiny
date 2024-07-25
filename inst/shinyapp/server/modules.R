@@ -22,7 +22,7 @@ observeEvent(req(input$navbar=="TCGA: Survival analysis"),{
   callModule(server.modules_1_tcga_10, "modules_1_tcga_10")
 }, once = TRUE)  
 
-observeEvent(req(input$navbar=="TCGA: Dimension reduction"),{
+observeEvent(req(input$navbar=="TCGA: Dimensionality reduction"),{
   callModule(server.modules_1_tcga_11, "modules_1_tcga_11")
 }, once = TRUE)  
 

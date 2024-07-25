@@ -425,7 +425,11 @@ mol_quick_analysis <- function(molecule, data_type, out_dir = ".", out_report = 
   print("##### Step1: Query the moleluce value... #####")
   mol_data <- query_pancan_value(molecule, data_type = data_type, database = "toil")
   if (is.list(mol_data)) mol_data <- mol_data[[1]]
-
+  
+  if (all(is.na(mol_data))) {
+    message("All NAs returned, return NULL instead.")
+    return(NULL)
+  }
 
   print(paste0("=== ", "Clinical phenotype"))
   mol_data_df <- suppressMessages(data.frame(
