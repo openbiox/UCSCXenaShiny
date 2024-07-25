@@ -134,7 +134,10 @@ server.home_search_box <- function(input, output, session) {
           Show.P.value = input$pdist_show_p_value,
           Show.P.label = input$pdist_show_p_label
         )
-
+        shiny::validate(
+          need(try(inherits(p,'gg')), 
+            "Error: Please select a valid molecule.")
+        )
         p + cowplot::theme_cowplot() + ggpubr::rotate_x_text(45)
       })
     }
@@ -233,23 +236,31 @@ server.home_search_box <- function(input, output, session) {
   observeEvent(input$report_1, {
     w$show()
     output$tip1 = renderText({
-      paste0("Tip: You now can run step2 or step3. (",
-        format(Sys.time(), "%H:%M:%S"), ")")
+      if(report_1_OK()) {
+        paste0("Tip: You now can run step2 or step3. (",
+          format(Sys.time(), "%H:%M:%S"), ")")
+      } else {
+        "Error: Please exit and select a valid molecule."
+      }
     })
   })
 
-
+  report_1_OK <- reactiveVal(TRUE)
   observeEvent(input$report_1, {    
     time_stamp = format(Sys.time(), "%Y-%m-%d_%H-%M-%S")
     res_dat = mol_quick_analysis(molecule = input$Pancan_search, 
                        data_type = input$Pancan_search_type, 
                        out_dir = tempdir(), out_report = FALSE)
 
+    if(is.null(res_dat)) {
+      report_1_OK(FALSE)
+    } 
+    shiny::validate(
+      need(try(!is.null(res_dat)), 
+        "Error: Please exit and select a valid molecule.")
+    )
 
-
-
-    output$report_2 = downloadHandler(
-      
+    output$report_2 = downloadHandler(   
       filename = paste0(time_stamp,"_report.html"),
       content = function(file) {
         tempReport <- file.path(tempdir(), paste0(time_stamp,"_report.Rmd"))

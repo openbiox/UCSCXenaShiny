@@ -216,7 +216,7 @@ server.modules_ga_dim_distribution <- function(
     show_table <- selected_database_add_url_and_phenotype()
     selectInput(
       inputId = ns("ga_data2_id"),
-      label = "Select dataset for DR(Dimension Reduction):",
+      label = "Select dataset for DR(Dimensionality reduction):",
       choices = c("NONE", unique(show_table$XenaDatasets)),
       selected = "NONE",
       multiple = FALSE

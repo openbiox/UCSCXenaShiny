@@ -2,7 +2,7 @@
 % Please edit documentation in R/vis_dim_dist.R
 \name{vis_dim_dist}
 \alias{vis_dim_dist}
-\title{Visualize the distribution difference of samples after dimension reduction analysis}
+\title{Visualize the distribution difference of samples after dimensionality reduction analysis}
 \usage{
 vis_dim_dist(
   ids = c("TP53", "KRAS", "PTEN", "MDM2", "CDKN1A"),
@@ -21,7 +21,7 @@ vis_dim_dist(
 
 \item{group_info}{two-column grouping information with names 'Sample','Group'}
 
-\item{DR_method}{the dimension reduction method}
+\item{DR_method}{the dimensionality reduction method}
 
 \item{palette}{the color setting of RColorBrewer}
 
@@ -33,7 +33,7 @@ vis_dim_dist(
 a ggplot object or rawdata list
 }
 \description{
-Visualize the distribution difference of samples after dimension reduction analysis
+Visualize the distribution difference of samples after dimensionality reduction analysis
 }
 \examples{
 \dontrun{

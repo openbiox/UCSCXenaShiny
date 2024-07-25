@@ -1,5 +1,5 @@
 <center>
-<h1>Custom TPC modules</h1>
+<h1>TPC modules</h1>
 </center>
 
 
@@ -60,5 +60,5 @@
 
 
 
-> <font size="5">Tips: The menu of `Personalized TPC Pipelins` supports more general and personalized TPC molecular analysis, including alternative datasets, precise data preparation and versatile modes.</font>
+> <font size="5">Tips: The menu of `TPC Pipelins` supports more general and personalized TPC molecular analysis, including alternative datasets, precise data preparation and versatile modes.</font>
 

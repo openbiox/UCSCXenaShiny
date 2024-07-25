@@ -264,7 +264,7 @@ download_feat_Server = function(input, output, session, database = "toil",#id_op
 		x_data$cancer = clinical_phe[,2,drop=T][match(x_data$Sample, clinical_phe$Sample)]
 		x_data = x_data[,c("id","level1","level2","Sample","value","cancer")] %>%
 			dplyr::arrange(cancer,Sample)
-		shinyjs::enable("query_data")
+		# shinyjs::enable("query_data")
 		x_data
 	})
 
@@ -276,6 +276,8 @@ download_feat_Server = function(input, output, session, database = "toil",#id_op
 		output$x_axis_data_table = renderUI({
 			if(table.ui){
 				output$x_tmp_table = renderDataTable({
+					shinyjs::enable("query_data")
+					
 					shiny::validate(
 						need(try(nrow(download_data())>0), 
 							"No sample data  available. Please inspect operations in Preset step."),
