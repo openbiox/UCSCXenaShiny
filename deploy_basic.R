@@ -22,5 +22,5 @@ options(xena.cacheDir = xena.cacheDir, xena.zenodoDir = xena.zenodoDir)
 options(xena.runMode = "server")
 
 library(UCSCXenaShiny)
-app_run2("server", content = "sq")
+app_run2("server", content = "s")
 
