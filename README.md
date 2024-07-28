@@ -7,10 +7,14 @@ status](https://www.r-pkg.org/badges/version/UCSCXenaShiny)](https://cran.r-proj
 ![R-CMD-check](https://github.com/openbiox/UCSCXenaShiny/workflows/R-CMD-check/badge.svg)
 [![check in Biotreasury](https://img.shields.io/badge/Biotreasury-collected-brightgreen)](https://biotreasury.rjmart.cn/#/tool?id=61144)
 
+![](https://ucscxenashiny-1301043367.cos.ap-shanghai.myqcloud.com/Shiny-figures/Github_readme.png)
+
 **UCSCXenaShiny** is an R package for interactively exploring UCSC Xena.
 It is mainly designed to provide a web app (built on the top of [`{shiny}`](https://shiny.posit.co/) framework and [`{UCSCXenaTools}`](https://github.com/ropensci/UCSCXenaTools/) package) for downloading,
 analyzing and visualizing datasets from [UCSC
 Xena](https://xenabrowser.net/datapages/).
+
+
 
 ![Alt](https://repobeats.axiom.co/api/embed/2f1f0c9a7a5c3c710febb3ee3d1e26f249d5a3ed.svg "Repobeats analytics image")
 
@@ -191,6 +195,17 @@ Option `xena.runMode` can be used to control the way how the Shiny works.
 It can be 'client' or 'server'. You can directly set it in `app_run()`.
 
 ## :movie_camera: Videos
+
+#### UCSCXenaShiny v2
+**Chinese website**
+- Home page: <https://www.bilibili.com/video/BV1rT421k7Zv>
+- T•P•C Modules: <https://www.bilibili.com/video/BV1E14218779> 
+- T•P•C Pipelines: <https://www.bilibili.com/video/BV141421t71g>
+- Repository/General Analysis/Download: <https://www.bilibili.com/video/BV1TZ421K7VH>
+
+**English website**: <https://www.youtube.com/watch?v=VnIlzcVB1Ow&list=PLN1jxcOQONG6pH8zvHr-qhI3MMtvluITf>
+
+#### UCSCXenaShiny v1
 
 - Home page: <https://www.bilibili.com/video/bv1R84y1F7WT>.
 - Repository page: <https://www.bilibili.com/video/bv1Mq4y1J73o>.
