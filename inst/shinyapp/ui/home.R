@@ -7,6 +7,9 @@ ui.page_home <- function() {
         tags$link(rel = "stylesheet", type = "text/css", href = "bootstrap4.css")
       ),
       fluidRow(
+        tags$p(style = "color: red", "This app serves as an archive version of UCSCXenaShiny, where we only focus on maintaining its normal running and NOT ensuring bug fixes. For updated features, please refer to v2 (https://github.com/openbiox/UCSCXenaShiny).")
+      ),
+      fluidRow(
         column(
           6,
           tags$div(
