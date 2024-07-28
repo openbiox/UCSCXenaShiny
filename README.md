@@ -24,7 +24,9 @@ Shixiang Wang<sup>\#</sup>, Yi Xiong<sup>\#</sup>, Longfei Zhao<sup>\#</sup>, Ka
 
 ## :cloud: Use on cloud
 
-If you don't want to install R and packages locally, or you have no programming experience, try using this tool on `Oncoharmony Network` (<http://shiny.zhoulab.ac.cn/UCSCXenaShiny>) or `Hiplot ORG` platform (<https://shiny.hiplot.cn/ucsc-xena-shiny>).
+If you don't want to install R and packages locally, or you have no programming experience, try using this tool on `Oncoharmony Network` (`<http://shiny.zhoulab.ac.cn/UCSCXenaShiny>`) or `Hiplot ORG` platform (`<https://shiny.hiplot.cn/ucsc-xena-shiny>`).
+
+We have deployed two additional apps: a basic version of V2 (`https://shiny.zhoulab.ac.cn/UCSCXenaShiny_basic/`) and an archive version of V1 (`https://shiny.zhoulab.ac.cn/UCSCXenaShinyV1/`, code please see v1 branch).
 
 ## :snake: Use with Conda
 
