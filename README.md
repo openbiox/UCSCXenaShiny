@@ -18,17 +18,25 @@ Xena](https://xenabrowser.net/datapages/).
 
 ![Alt](https://repobeats.axiom.co/api/embed/2f1f0c9a7a5c3c710febb3ee3d1e26f249d5a3ed.svg "Repobeats analytics image")
 
-Please cite the following article when you used **UCSCXenaShiny** in your study:
+Please cite any of the following articles when you used **UCSCXenaShiny** in your study:
 
 ---------------
 
-Shixiang Wang<sup>\#</sup>, Yi Xiong<sup>\#</sup>, Longfei Zhao<sup>\#</sup>, Kai Gu<sup>\#</sup>, Yin Li, Fei Zhao, Jianfeng Li, Mingjie Wang, Haitao Wang, Ziyu Tao, Tao Wu, Yichao Zheng, Xuejun Li, Xue-Song Liu, UCSCXenaShiny: An R/CRAN Package for Interactive Analysis of UCSC Xena Data, Bioinformatics, 2021;, btab561, https://doi.org/10.1093/bioinformatics/btab561.
+**V2**
+
+- Li S, et al. UCSCXenaShiny v2: Facilitating Integrative and Personalized Oncology Omics Analysis. 2024 (In preparation)
+
+**V1**
+
+- Shixiang Wang<sup>\#</sup>, Yi Xiong<sup>\#</sup>, Longfei Zhao<sup>\#</sup>, Kai Gu<sup>\#</sup>, Yin Li, Fei Zhao, Jianfeng Li, Mingjie Wang, Haitao Wang, Ziyu Tao, Tao Wu, Yichao Zheng, Xuejun Li, Xue-Song Liu, UCSCXenaShiny: An R/CRAN Package for Interactive Analysis of UCSC Xena Data, Bioinformatics, 2021;, btab561, https://doi.org/10.1093/bioinformatics/btab561.
 
 ---------------
 
 ## :cloud: Use on cloud
 
-If you don't want to install R and packages locally, or you have no programming experience, try using this tool on `Oncoharmony Network` (<http://shiny.zhoulab.ac.cn/UCSCXenaShiny>) or `Hiplot ORG` platform (<https://shiny.hiplot.cn/ucsc-xena-shiny>).
+If you don't want to install R and packages locally, or you have no programming experience, try using this tool on `Oncoharmony Network` (`http://shiny.zhoulab.ac.cn/UCSCXenaShiny`) or `Hiplot ORG` platform (`https://shiny.hiplot.cn/ucsc-xena-shiny`).
+
+We have deployed two additional apps: a basic version of V2 (`https://shiny.zhoulab.ac.cn/UCSCXenaShiny_basic/`) and an archive version of V1 (`https://shiny.zhoulab.ac.cn/UCSCXenaShinyV1/`, code please see v1 branch).
 
 ## :snake: Use with Conda
 
