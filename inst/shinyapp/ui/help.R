@@ -40,7 +40,7 @@ ui.page_help <- function() {
     #   )
     # ),
     tabPanel(a("UCSCXenaShiny v1", 
-               href="https://shixiangwang.shinyapps.io/ucscxenashiny/",
+               href="https://shiny.zhoulab.ac.cn/UCSCXenaShinyV1/",
                target="_blank")
     )
   )
