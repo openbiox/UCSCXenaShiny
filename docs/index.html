@@ -18,7 +18,7 @@
       "<link id=\"css\" rel=\"stylesheet\" href=\"https://bootswatch.com/3/flatly/bootstrap.css\" onload=\"document.documentElement.style.display = ''\">"
     );
   }
-</script><title>Interactive Analysis of UCSC Xena Data • UCSCXenaShiny</title>
+</script><title>Interactive Analysis of UCSC Xena Data • UCSCXenaShinyV1</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -52,7 +52,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">UCSCXenaShiny</a>
+        <a class="navbar-link" href="index.html">UCSCXenaShinyV1</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.7</span>
       </span>
     </div>
@@ -86,7 +86,7 @@
         </li>
         
         <li>
-  <a href="https://github.com/openbiox/UCSCXenaShiny/" class="external-link">
+  <a href="https://github.com/openbiox/UCSCXenaShinyV1/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -108,16 +108,16 @@
       </header><div class="row">
   <div class="contents col-md-9">
 <div class="section level1">
-<div class="page-header"><h1 id="ucscxenashiny-">UCSCXenaShiny <img src="https://raw.githubusercontent.com/openbiox/wiki/master/static/img/logo-long.png" align="right" width="200"><a class="anchor" aria-label="anchor" href="#ucscxenashiny-"></a>
+<div class="page-header"><h1 id="UCSCXenaShinyV1-">UCSCXenaShinyV1 <img src="https://raw.githubusercontent.com/openbiox/wiki/master/static/img/logo-long.png" align="right" width="200"><a class="anchor" aria-label="anchor" href="#UCSCXenaShinyV1-"></a>
 </h1></div>
 
-<p><strong>UCSCXenaShiny</strong> is an R package for interactively exploring UCSC Xena. It is mainly designed to provide a web app (built on the top of <a href="https://shiny.rstudio.com/" class="external-link"><code>{shiny}</code></a> framework and <a href="https://github.com/ropensci/UCSCXenaTools/" class="external-link"><code>{UCSCXenaTools}</code></a> package) for downloading, analyzing and visualizing datasets from <a href="https://xenabrowser.net/datapages/" class="external-link">UCSC Xena</a>.</p>
+<p><strong>UCSCXenaShinyV1</strong> is an R package for interactively exploring UCSC Xena. It is mainly designed to provide a web app (built on the top of <a href="https://shiny.rstudio.com/" class="external-link"><code>{shiny}</code></a> framework and <a href="https://github.com/ropensci/UCSCXenaTools/" class="external-link"><code>{UCSCXenaTools}</code></a> package) for downloading, analyzing and visualizing datasets from <a href="https://xenabrowser.net/datapages/" class="external-link">UCSC Xena</a>.</p>
 <div class="figure">
 <img src="https://repobeats.axiom.co/api/embed/2f1f0c9a7a5c3c710febb3ee3d1e26f249d5a3ed.svg" title="Repobeats analytics image" alt=""><p class="caption">Alt</p>
 </div>
-<p>Please cite the following article when you used <strong>UCSCXenaShiny</strong> in your study:</p>
+<p>Please cite the following article when you used <strong>UCSCXenaShinyV1</strong> in your study:</p>
 <hr>
-<p>Shixiang Wang<sup>#</sup>, Yi Xiong<sup>#</sup>, Longfei Zhao<sup>#</sup>, Kai Gu<sup>#</sup>, Yin Li, Fei Zhao, Jianfeng Li, Mingjie Wang, Haitao Wang, Ziyu Tao, Tao Wu, Yichao Zheng, Xuejun Li, Xue-Song Liu, UCSCXenaShiny: An R/CRAN Package for Interactive Analysis of UCSC Xena Data, Bioinformatics, 2021;, btab561, <a href="https://doi.org/10.1093/bioinformatics/btab561" class="external-link uri">https://doi.org/10.1093/bioinformatics/btab561</a>.</p>
+<p>Shixiang Wang<sup>#</sup>, Yi Xiong<sup>#</sup>, Longfei Zhao<sup>#</sup>, Kai Gu<sup>#</sup>, Yin Li, Fei Zhao, Jianfeng Li, Mingjie Wang, Haitao Wang, Ziyu Tao, Tao Wu, Yichao Zheng, Xuejun Li, Xue-Song Liu, UCSCXenaShinyV1: An R/CRAN Package for Interactive Analysis of UCSC Xena Data, Bioinformatics, 2021;, btab561, <a href="https://doi.org/10.1093/bioinformatics/btab561" class="external-link uri">https://doi.org/10.1093/bioinformatics/btab561</a>.</p>
 <hr>
 <div class="section level2">
 <h2 id="cloud-use-on-cloud">
@@ -137,28 +137,28 @@
 <th>Platforms</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td><a href="https://github.com/conda-forge/r-ucscxenashiny-feedstock" class="external-link"><img src="https://img.shields.io/badge/recipe-r--ucscxenashiny-green.svg" alt="Conda Recipe"></a></td>
-<td><a href="https://github.com/conda-forge/r-ucscxenashiny-feedstock" class="external-link"><img src="https://img.shields.io/conda/dn/conda-forge/r-ucscxenashiny.svg" alt="Conda Downloads"></a></td>
-<td><a href="https://github.com/conda-forge/r-ucscxenashiny-feedstock" class="external-link"><img src="https://img.shields.io/conda/vn/conda-forge/r-ucscxenashiny.svg" alt="Conda Version"></a></td>
-<td><a href="https://github.com/conda-forge/r-ucscxenashiny-feedstock" class="external-link"><img src="https://img.shields.io/conda/pn/conda-forge/r-ucscxenashiny.svg" alt="Conda Platforms"></a></td>
+<td><a href="https://github.com/conda-forge/r-UCSCXenaShinyV1-feedstock" class="external-link"><img src="https://img.shields.io/badge/recipe-r--UCSCXenaShinyV1-green.svg" alt="Conda Recipe"></a></td>
+<td><a href="https://github.com/conda-forge/r-UCSCXenaShinyV1-feedstock" class="external-link"><img src="https://img.shields.io/conda/dn/conda-forge/r-UCSCXenaShinyV1.svg" alt="Conda Downloads"></a></td>
+<td><a href="https://github.com/conda-forge/r-UCSCXenaShinyV1-feedstock" class="external-link"><img src="https://img.shields.io/conda/vn/conda-forge/r-UCSCXenaShinyV1.svg" alt="Conda Version"></a></td>
+<td><a href="https://github.com/conda-forge/r-UCSCXenaShinyV1-feedstock" class="external-link"><img src="https://img.shields.io/conda/pn/conda-forge/r-UCSCXenaShinyV1.svg" alt="Conda Platforms"></a></td>
 </tr></tbody>
 </table>
 <p>Install from <code>conda-forge</code> channel with:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install <span class="at">-c</span> conda-forge r-ucscxenashiny</span></code></pre></div>
-<p>It is possible to list all of the versions of <code>r-ucscxenashiny</code> available on your platform with:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> search r-ucscxenashiny <span class="at">--channel</span> conda-forge</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install <span class="at">-c</span> conda-forge r-UCSCXenaShinyV1</span></code></pre></div>
+<p>It is possible to list all of the versions of <code>r-UCSCXenaShinyV1</code> available on your platform with:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> search r-UCSCXenaShinyV1 <span class="at">--channel</span> conda-forge</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="package-use-with-docker">
 <span class="emoji" data-emoji="package">📦</span> Use with Docker<a class="anchor" aria-label="anchor" href="#package-use-with-docker"></a>
 </h2>
-<p><img alt="Docker Image Version (latest by date)" src="https://img.shields.io/docker/v/shixiangwang/ucscxenashiny?color=blue"><img alt="Docker Image Size (latest by date)" src="https://img.shields.io/docker/image-size/shixiangwang/ucscxenashiny"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/shixiangwang/ucscxenashiny"></p>
-<p>UCSCXenaShiny has corresponding docker image at <a href="https://hub.docker.com/r/shixiangwang/ucscxenashiny/" class="external-link uri">https://hub.docker.com/r/shixiangwang/ucscxenashiny/</a>, you can install the latest version with:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> pull shixiangwang/ucscxenashiny</span></code></pre></div>
-<p>All versions can be found at <a href="https://hub.docker.com/r/shixiangwang/ucscxenashiny/tags/" class="external-link uri">https://hub.docker.com/r/shixiangwang/ucscxenashiny/tags/</a>. To use a specified version (e.g., <code>v1.0.2</code>), run the following command to install:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> pull shixiangwang/ucscxenashiny:v1.0.2</span></code></pre></div>
+<p><img alt="Docker Image Version (latest by date)" src="https://img.shields.io/docker/v/shixiangwang/UCSCXenaShinyV1?color=blue"><img alt="Docker Image Size (latest by date)" src="https://img.shields.io/docker/image-size/shixiangwang/UCSCXenaShinyV1"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/shixiangwang/UCSCXenaShinyV1"></p>
+<p>UCSCXenaShinyV1 has corresponding docker image at <a href="https://hub.docker.com/r/shixiangwang/UCSCXenaShinyV1/" class="external-link uri">https://hub.docker.com/r/shixiangwang/UCSCXenaShinyV1/</a>, you can install the latest version with:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> pull shixiangwang/UCSCXenaShinyV1</span></code></pre></div>
+<p>All versions can be found at <a href="https://hub.docker.com/r/shixiangwang/UCSCXenaShinyV1/tags/" class="external-link uri">https://hub.docker.com/r/shixiangwang/UCSCXenaShinyV1/tags/</a>. To use a specified version (e.g., <code>v1.0.2</code>), run the following command to install:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> pull shixiangwang/UCSCXenaShinyV1:v1.0.2</span></code></pre></div>
 <p>Then run the docker image with:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="at">--name</span> xenashiny <span class="at">-p</span> 3838:3838 shixiangwang/ucscxenashiny</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="at">--name</span> xenashiny <span class="at">-p</span> 3838:3838 shixiangwang/UCSCXenaShinyV1</span></code></pre></div>
 <p>Now you should find the Shiny when you open URL <code>http://127.0.0.1:3838</code> with your web browser. If you deploy the docker in a public (cloud) Linux server, change <code>127.0.0.1</code> to the host IP.</p>
 <p>You can manage the deployed container with the following commands:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stop the container</span></span>
@@ -170,21 +170,21 @@
 <h2 id="arrow_double_down-manual-installation">
 <span class="emoji" data-emoji="arrow_double_down">⏬</span> Manual installation<a class="anchor" aria-label="anchor" href="#arrow_double_down-manual-installation"></a>
 </h2>
-<p>You can install stable release of <strong>UCSCXenaShiny</strong> from CRAN with:</p>
+<p>You can install stable release of <strong>UCSCXenaShinyV1</strong> from CRAN with:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"UCSCXenaShiny"</span><span class="op">)</span></code></pre></div>
-<p>You can install the development version of <strong>UCSCXenaShiny</strong> from Github with:</p>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"UCSCXenaShinyV1"</span><span class="op">)</span></code></pre></div>
+<p>You can install the development version of <strong>UCSCXenaShinyV1</strong> from Github with:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"openbiox/UCSCXenaShiny"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"openbiox/UCSCXenaShinyV1"</span><span class="op">)</span></code></pre></div>
 <p>Or Gitee (for Chinese users):</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_git.html" class="external-link">install_git</a></span><span class="op">(</span><span class="st">"https://gitee.com/XenaShiny/UCSCXenaShiny"</span><span class="op">)</span></code></pre></div>
-<p>Other dependent R packages specific to the Shiny application will be automatically installed when you start with <code><a href="reference/app_run.html">app_run()</a></code> command. If you failed to install <strong>UCSCXenaShiny</strong>, please check if the following system dependencies have been properly installed or see <a href="#hammer_and_wrench-troubleshooting"><strong>Troubleshooting</strong></a> section for specific installation issues.</p>
+<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_git.html" class="external-link">install_git</a></span><span class="op">(</span><span class="st">"https://gitee.com/XenaShiny/UCSCXenaShinyV1"</span><span class="op">)</span></code></pre></div>
+<p>Other dependent R packages specific to the Shiny application will be automatically installed when you start with <code><a href="reference/app_run.html">app_run()</a></code> command. If you failed to install <strong>UCSCXenaShinyV1</strong>, please check if the following system dependencies have been properly installed or see <a href="#hammer_and_wrench-troubleshooting"><strong>Troubleshooting</strong></a> section for specific installation issues.</p>
 <div class="section level3">
 <h3 id="system-dependencies-installation">System dependencies installation<a class="anchor" aria-label="anchor" href="#system-dependencies-installation"></a>
 </h3>
 <p>When you use Windows/MacOS, please skip reading this sub-section.</p>
-<p>As Linux distributions are very diverse, here we only test the installation of <strong>UCSCXenaShiny</strong> on common used Ubuntu/CentOS. If you are using other Linux distributions, you need to solve the system dependencies installation problems yourself when you encounter R package installation errors. However, the installation of system dependencies on Ubuntu/CentOS could be very good references.</p>
+<p>As Linux distributions are very diverse, here we only test the installation of <strong>UCSCXenaShinyV1</strong> on common used Ubuntu/CentOS. If you are using other Linux distributions, you need to solve the system dependencies installation problems yourself when you encounter R package installation errors. However, the installation of system dependencies on Ubuntu/CentOS could be very good references.</p>
 <blockquote>
 <p>Please note all commands below are execuated with <code>root</code>.</p>
 </blockquote>
@@ -202,7 +202,7 @@
 </h2>
 <p>First load package:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/openbiox/UCSCXenaShiny" class="external-link">UCSCXenaShiny</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/openbiox/UCSCXenaShinyV1" class="external-link">UCSCXenaShinyV1</a></span><span class="op">)</span></code></pre></div>
 <p>Start Shiny in your R console (ignore this if you just want to use functions in this package):</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="reference/app_run.html">app_run</a></span><span class="op">(</span><span class="op">)</span>
@@ -214,9 +214,9 @@
 <span class="co"># i.e.,</span>
 <span class="co">#</span>
 <span class="co"># app_run("server")</span></code></pre></div>
-<p>If you want deploy UCSC Xena Shiny with Shiny Server, please copy <code>App.R</code> and <code>www/</code> directory under <a href="https://github.com/openbiox/UCSCXenaShiny/tree/master/inst/shinyapp" class="external-link"><code>shinyapp</code></a>. <code>xena.runMode</code> on the top of <code>App.R</code> is recommended to set as <code>"server"</code> instead of <code>"client"</code> (default).</p>
+<p>If you want deploy UCSC Xena Shiny with Shiny Server, please copy <code>App.R</code> and <code>www/</code> directory under <a href="https://github.com/openbiox/UCSCXenaShinyV1/tree/master/inst/shinyapp" class="external-link"><code>shinyapp</code></a>. <code>xena.runMode</code> on the top of <code>App.R</code> is recommended to set as <code>"server"</code> instead of <code>"client"</code> (default).</p>
 <p>For advanced users, examples for illustrating useful functions to obtain and analyze data are described in vignette.</p>
-<p>All exported data and functions are organized at <a href="https://openbiox.github.io/UCSCXenaShiny/reference/index.html" class="external-link">here</a>.</p>
+<p>All exported data and functions are organized at <a href="https://openbiox.github.io/UCSCXenaShinyV1/reference/index.html" class="external-link">here</a>.</p>
 <p><code>xena.cacheDir</code> and <code>xena.zenodoDir</code> are two options to control where to store data.</p>
 <p>e.g.,</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
@@ -344,9 +344,9 @@
     <div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li><a href="https://cloud.r-project.org/package=UCSCXenaShiny" class="external-link">View on CRAN</a></li>
-<li><a href="https://github.com/openbiox/UCSCXenaShiny/" class="external-link">Browse source code</a></li>
-<li><a href="https://github.com/openbiox/UCSCXenaShiny/issues" class="external-link">Report a bug</a></li>
+<li><a href="https://cloud.r-project.org/package=UCSCXenaShinyV1" class="external-link">View on CRAN</a></li>
+<li><a href="https://github.com/openbiox/UCSCXenaShinyV1/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/openbiox/UCSCXenaShinyV1/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
@@ -368,7 +368,7 @@
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li><a href="authors.html#citation">Citing UCSCXenaShiny</a></li>
+<li><a href="authors.html#citation">Citing UCSCXenaShinyV1</a></li>
 </ul>
 </div>
 
@@ -391,10 +391,10 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://cran.r-project.org/package=UCSCXenaShiny" class="external-link"><img src="https://www.r-pkg.org/badges/version/UCSCXenaShiny" alt="CRAN status"></a></li>
-<li><a href="https://cran.r-project.org/package=UCSCXenaShiny" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/UCSCXenaShiny?color=orange"></a></li>
+<li><a href="https://cran.r-project.org/package=UCSCXenaShinyV1" class="external-link"><img src="https://www.r-pkg.org/badges/version/UCSCXenaShinyV1" alt="CRAN status"></a></li>
+<li><a href="https://cran.r-project.org/package=UCSCXenaShinyV1" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/UCSCXenaShinyV1?color=orange"></a></li>
 <li><a href="https://lifecycle.r-lib.org/articles/stages.html" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-blue.svg" alt="lifecycle"></a></li>
-<li><a href="https://github.com/openbiox/UCSCXenaShiny/" class="external-link"><img src="https://tokei.rs/b1/github/openbiox/UCSCXenaShiny?category=code" alt="Lines Of Code"></a></li>
+<li><a href="https://github.com/openbiox/UCSCXenaShinyV1/" class="external-link"><img src="https://tokei.rs/b1/github/openbiox/UCSCXenaShinyV1?category=code" alt="Lines Of Code"></a></li>
 <li><a href="https://biotreasury.rjmart.cn/#/tool?id=61144" class="external-link"><img src="https://img.shields.io/badge/Biotreasury-collected-brightgreen" alt="check in Biotreasury"></a></li>
 </ul>
 </div>

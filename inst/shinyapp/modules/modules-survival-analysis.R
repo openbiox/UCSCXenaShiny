@@ -33,7 +33,7 @@ ui.modules_sur_plot <- function(id) {
           shinyWidgets::pickerInput(
             inputId = ns("protein_input"),
             label = "Protein",
-            choices = UCSCXenaShiny:::.all_pancan_proteins,
+            choices = UCSCXenaShinyV1:::.all_pancan_proteins,
             selected = NULL,
             options = list(
               `live-search` = TRUE,

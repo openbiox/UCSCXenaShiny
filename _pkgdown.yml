@@ -86,5 +86,5 @@ reference:
   - title: Others
     desc: Other docs
     contents:
-    - UCSCXenaShiny
+    - UCSCXenaShinyV1
     - keep_cat_cols

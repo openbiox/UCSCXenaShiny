@@ -167,7 +167,7 @@ server.modules_ccle_genecor <- function(input, output, session) {
   profile_choices2 <- reactive({
     switch(input$profile2,
       mRNA = list(all = pancan_identifiers$gene, default = "JAK3"),
-      protein = list(all = UCSCXenaShiny:::.all_ccle_proteins, default = "p53_Caution"),
+      protein = list(all = UCSCXenaShinyV1:::.all_ccle_proteins, default = "p53_Caution"),
       cnv = list(all = pancan_identifiers$gene, default = "TP53"),
       list(all = "NONE", default = "NONE")
     )

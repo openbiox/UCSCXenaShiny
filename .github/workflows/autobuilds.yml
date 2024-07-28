@@ -16,7 +16,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: shixiangwang/ucscxenashiny
+          images: shixiangwang/UCSCXenaShinyV1
       # -
       #   name: Set up QEMU
       #   uses: docker/setup-qemu-action@v1

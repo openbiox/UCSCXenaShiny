@@ -12,7 +12,7 @@ print(Sys.info())
 options(xena.cacheDir = "/xena", xena.zenodoDir = "/xena/datasets")
 options(xena.runMode = "server")
 
-library(UCSCXenaShiny)
+library(UCSCXenaShinyV1)
 
 tryCatch({
   # Preload datasets
@@ -24,5 +24,5 @@ tryCatch({
 })
 
 shiny::shinyAppFile(
-  system.file("shinyapp", "App.R", package = "UCSCXenaShiny")
+  system.file("shinyapp", "App.R", package = "UCSCXenaShinyV1")
 )

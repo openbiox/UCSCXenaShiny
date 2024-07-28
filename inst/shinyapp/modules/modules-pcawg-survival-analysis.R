@@ -290,9 +290,9 @@ server.modules_pcawg_sur_plot <- function(input, output, session) {
         }
         
         if (input$profile %in% c("mRNA", "miRNA_TMM", "miRNA_UQ","promoter_raw" ,"APOBEC")) {
-          p <- UCSCXenaShiny:::sur_plot(filter_dat(), input$cutoff_mode, input$cutpoint, palette = color_palette)
+          p <- UCSCXenaShinyV1:::sur_plot(filter_dat(), input$cutoff_mode, input$cutpoint, palette = color_palette)
         } else {
-          p <- UCSCXenaShiny:::p_survplot(filter_dat(), palette = color_palette)
+          p <- UCSCXenaShinyV1:::p_survplot(filter_dat(), palette = color_palette)
         }
         return(p)
       } else {

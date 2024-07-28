@@ -42,13 +42,13 @@ get_run_mode <- function() {
 }
 
 get_cache_dir <- function() {
-  path <- getOption("xena.cacheDir", default = file.path(tempdir(), "UCSCXenaShiny"))
+  path <- getOption("xena.cacheDir", default = file.path(tempdir(), "UCSCXenaShinyV1"))
   # message("Path for storing data is ", path, ". You can set it with options(xena.cacheDir = xxx)")
   path
 }
 
 get_zenodo_dir <- function() {
-  path <- getOption("xena.zenodoDir", default = system.file("extdata", package = "UCSCXenaShiny"))
+  path <- getOption("xena.zenodoDir", default = system.file("extdata", package = "UCSCXenaShinyV1"))
   # message("Path for storing zenodo extra data is ", path, ". You can set it with options(xena.zenodoDir = xxx)")
   path
 }

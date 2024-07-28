@@ -1,4 +1,4 @@
 library(testthat)
-library(UCSCXenaShiny)
+library(UCSCXenaShinyV1)
 
-test_check("UCSCXenaShiny")
+test_check("UCSCXenaShinyV1")

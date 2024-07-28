@@ -12,7 +12,7 @@
 #' }
 query_toil_value_df <- function(identifier = "TP53") {
   df <- get_pancan_gene_value(identifier = identifier)
-  data("toil_info", package = "UCSCXenaShiny", envir = environment())
+  data("toil_info", package = "UCSCXenaShinyV1", envir = environment())
   toil_info <- toil_info %>%
     dplyr::left_join(dplyr::tibble(
       sample = names(df$expression),

@@ -84,7 +84,7 @@ server.modules_ccle_dist <- function(input, output, session) {
   profile_choices <- reactive({
     switch(input$profile,
       mRNA = list(all = pancan_identifiers$gene, default = "TP53"),
-      protein = list(all = UCSCXenaShiny:::.all_ccle_proteins, default = "p53_Caution"),
+      protein = list(all = UCSCXenaShinyV1:::.all_ccle_proteins, default = "p53_Caution"),
       cnv = list(all = pancan_identifiers$gene, default = "TP53"),
       list(all = "NONE", default = "NONE")
     )

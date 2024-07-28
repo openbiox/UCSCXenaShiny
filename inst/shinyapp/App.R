@@ -4,7 +4,7 @@ message("Run mode: ", xena.runMode)
 
 if (is.null(getOption("xena.cacheDir"))) {
   options(xena.cacheDir = switch(xena.runMode,
-                                 client = file.path(tempdir(), "UCSCXenaShiny"), 
+                                 client = file.path(tempdir(), "UCSCXenaShinyV1"), 
                                  server = "~/.xenashiny"
   ))
 }
@@ -73,7 +73,7 @@ pacman::p_load(
   ggpubr,
   plotly,
   UCSCXenaTools,
-  UCSCXenaShiny,
+  UCSCXenaShinyV1,
   shiny,
   shinyBS,
   shinyjs,
@@ -136,7 +136,7 @@ TCGA_cli_merged <- dplyr::full_join(
 pancan_identifiers <- readRDS(
   system.file(
     "extdata", "pancan_identifier_list.rds",
-    package = "UCSCXenaShiny"
+    package = "UCSCXenaShinyV1"
   )
 )
 all_preload_identifiers <- c("NONE", as.character(unlist(pancan_identifiers)))
@@ -201,13 +201,13 @@ dcc_project_code_choices <- c(
 mycolor <- c(RColorBrewer::brewer.pal(12, "Paired"))
 
 # Put modules here --------------------------------------------------------
-modules_path <- system.file("shinyapp", "modules", package = "UCSCXenaShiny", mustWork = TRUE)
+modules_path <- system.file("shinyapp", "modules", package = "UCSCXenaShinyV1", mustWork = TRUE)
 modules_file <- dir(modules_path, pattern = "\\.R$", full.names = TRUE)
 sapply(modules_file, function(x, y) source(x, local = y), y = environment())
 
 
 # Put page UIs here -----------------------------------------------------
-pages_path <- system.file("shinyapp", "ui", package = "UCSCXenaShiny", mustWork = TRUE)
+pages_path <- system.file("shinyapp", "ui", package = "UCSCXenaShinyV1", mustWork = TRUE)
 pages_file <- dir(pages_path, pattern = "\\.R$", full.names = TRUE)
 sapply(pages_file, function(x, y) source(x, local = y), y = environment())
 
@@ -215,7 +215,7 @@ sapply(pages_file, function(x, y) source(x, local = y), y = environment())
 # Obtain path to individual server code parts ----------------------------
 server_file <- function(x) {
   server_path <- system.file("shinyapp", "server",
-    package = "UCSCXenaShiny", mustWork = TRUE
+    package = "UCSCXenaShinyV1", mustWork = TRUE
   )
   file.path(server_path, x)
 }
@@ -265,9 +265,9 @@ get_data_df <- function(dataset, id) {
   } else {
     message("Querying data of identifier ", id, " from dataset ", dataset)
     id_value <- if (dataset == "custom_feature_dataset") {
-      UCSCXenaShiny:::query_custom_feature_value(id)
+      UCSCXenaShinyV1:::query_custom_feature_value(id)
     } else {
-      UCSCXenaShiny::query_molecule_value(dataset, id)
+      UCSCXenaShinyV1::query_molecule_value(dataset, id)
     }
     df <- dplyr::tibble(
       sample = names(id_value),

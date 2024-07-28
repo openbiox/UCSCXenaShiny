@@ -1,5 +1,5 @@
 ui.page_help <- function() {
-  md_prefix <- system.file("shinyapp/shiny-doc", package = "UCSCXenaShiny")
+  md_prefix <- system.file("shinyapp/shiny-doc", package = "UCSCXenaShinyV1")
   set_md_path <- function(x) {
     file.path(md_prefix, x)
   }
@@ -20,7 +20,7 @@ ui.page_help <- function() {
       )
     ),
     tabPanel(a("Package doc", 
-               href="https://openbiox.github.io/UCSCXenaShiny/index.html",
+               href="https://openbiox.github.io/UCSCXenaShinyV1/index.html",
                target="_blank")),
     tabPanel(
       "Citation",

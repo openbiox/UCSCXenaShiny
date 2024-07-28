@@ -20,6 +20,6 @@
 app_run <- function(runMode = "client", port = getOption("shiny.port")) {
   runMode <- match.arg(runMode, choices = c("client", "server"))
   options(xena.runMode = runMode)
-  shiny::shinyAppFile(system.file("shinyapp", "App.R", package = "UCSCXenaShiny"),
+  shiny::shinyAppFile(system.file("shinyapp", "App.R", package = "UCSCXenaShinyV1"),
                       options = list(port = port))
 }

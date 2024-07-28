@@ -62,7 +62,7 @@ load_data <- function(name) {
   )
   if (name %in% available_datasets) {
     # The data is builtin
-    data(list = name, package = "UCSCXenaShiny", envir = environment())
+    data(list = name, package = "UCSCXenaShinyV1", envir = environment())
   } else {
     if (!file.exists(data_path)) {
       # Download it to inst/extdata from zenodo

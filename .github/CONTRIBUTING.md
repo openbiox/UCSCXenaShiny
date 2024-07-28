@@ -1,6 +1,6 @@
-# Contributing to UCSCXenaShiny
+# Contributing to UCSCXenaShinyV1
 
-This outlines how to propose a change to UCSCXenaShiny. For more detailed
+This outlines how to propose a change to UCSCXenaShinyV1. For more detailed
 info about contributing to this, and other tidyverse packages, please see the
 [**development contributing guide**](https://rstd.io/tidy-contrib).
 
@@ -40,7 +40,7 @@ GitHub username, and links to relevant issue(s)/PR(s).
 
 ### Code of Conduct
 
-Please note that the UCSCXenaShiny project is released with a
+Please note that the UCSCXenaShinyV1 project is released with a
 [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this
 project you agree to abide by its terms.
 

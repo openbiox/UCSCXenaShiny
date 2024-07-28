@@ -1,73 +1,73 @@
-# UCSCXenaShiny <img src="https://raw.githubusercontent.com/openbiox/wiki/master/static/img/logo-long.png" align="right" width="200"/>
+# UCSCXenaShinyV1 <img src="https://raw.githubusercontent.com/openbiox/wiki/master/static/img/logo-long.png" align="right" width="200"/>
 
 [![CRAN
-status](https://www.r-pkg.org/badges/version/UCSCXenaShiny)](https://cran.r-project.org/package=UCSCXenaShiny)
-[![](https://cranlogs.r-pkg.org/badges/grand-total/UCSCXenaShiny?color=orange)](https://cran.r-project.org/package=UCSCXenaShiny)
+status](https://www.r-pkg.org/badges/version/UCSCXenaShinyV1)](https://cran.r-project.org/package=UCSCXenaShinyV1)
+[![](https://cranlogs.r-pkg.org/badges/grand-total/UCSCXenaShinyV1?color=orange)](https://cran.r-project.org/package=UCSCXenaShinyV1)
 [![lifecycle](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html)
-![R-CMD-check](https://github.com/openbiox/UCSCXenaShiny/workflows/R-CMD-check/badge.svg)
+![R-CMD-check](https://github.com/openbiox/UCSCXenaShinyV1/workflows/R-CMD-check/badge.svg)
 [![Lines Of
-Code](https://tokei.rs/b1/github/openbiox/UCSCXenaShiny?category=code)](https://github.com/openbiox/UCSCXenaShiny/)
+Code](https://tokei.rs/b1/github/openbiox/UCSCXenaShinyV1?category=code)](https://github.com/openbiox/UCSCXenaShinyV1/)
 [![check in Biotreasury](https://img.shields.io/badge/Biotreasury-collected-brightgreen)](https://biotreasury.rjmart.cn/#/tool?id=61144)
 [![Gitter](https://badges.gitter.im/ShixiangWang/community.svg)](https://gitter.im/ShixiangWang/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-**UCSCXenaShiny** is an R package for interactively exploring UCSC Xena.
+**UCSCXenaShinyV1** is an R package for interactively exploring UCSC Xena.
 It is mainly designed to provide a web app (built on the top of [`{shiny}`](https://shiny.rstudio.com/) framework and [`{UCSCXenaTools}`](https://github.com/ropensci/UCSCXenaTools/) package) for downloading,
 analyzing and visualizing datasets from [UCSC
 Xena](https://xenabrowser.net/datapages/).
 
 ![Alt](https://repobeats.axiom.co/api/embed/2f1f0c9a7a5c3c710febb3ee3d1e26f249d5a3ed.svg "Repobeats analytics image")
 
-Please cite the following article when you used **UCSCXenaShiny** in your study:
+Please cite the following article when you used **UCSCXenaShinyV1** in your study:
 
 ---------------
 
-Shixiang Wang<sup>\#</sup>, Yi Xiong<sup>\#</sup>, Longfei Zhao<sup>\#</sup>, Kai Gu<sup>\#</sup>, Yin Li, Fei Zhao, Jianfeng Li, Mingjie Wang, Haitao Wang, Ziyu Tao, Tao Wu, Yichao Zheng, Xuejun Li, Xue-Song Liu, UCSCXenaShiny: An R/CRAN Package for Interactive Analysis of UCSC Xena Data, Bioinformatics, 2021;, btab561, https://doi.org/10.1093/bioinformatics/btab561.
+Shixiang Wang<sup>\#</sup>, Yi Xiong<sup>\#</sup>, Longfei Zhao<sup>\#</sup>, Kai Gu<sup>\#</sup>, Yin Li, Fei Zhao, Jianfeng Li, Mingjie Wang, Haitao Wang, Ziyu Tao, Tao Wu, Yichao Zheng, Xuejun Li, Xue-Song Liu, UCSCXenaShinyV1: An R/CRAN Package for Interactive Analysis of UCSC Xena Data, Bioinformatics, 2021;, btab561, https://doi.org/10.1093/bioinformatics/btab561.
 
 ---------------
 
 ## :cloud: Use on cloud
 
-If you don't want to install R and packages locally, or you have no programming experience, try using this tool on `Hiplot-academic` platform (<https://shiny.hiplot-academic.com/ucsc-xena-shiny/>) or `shinyapps.io` (<https://shixiangwang.shinyapps.io/ucscxenashiny/>).
+If you don't want to install R and packages locally, or you have no programming experience, try using this tool on `Hiplot-academic` platform (<https://shiny.hiplot-academic.com/ucsc-xena-shiny/>) or `shinyapps.io` (<https://shixiangwang.shinyapps.io/UCSCXenaShinyV1/>).
 
 ## :snake: Use with Conda
 
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
-| [![Conda Recipe](https://img.shields.io/badge/recipe-r--ucscxenashiny-green.svg)](https://github.com/conda-forge/r-ucscxenashiny-feedstock) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/r-ucscxenashiny.svg)](https://github.com/conda-forge/r-ucscxenashiny-feedstock) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/r-ucscxenashiny.svg)](https://github.com/conda-forge/r-ucscxenashiny-feedstock) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/r-ucscxenashiny.svg)](https://github.com/conda-forge/r-ucscxenashiny-feedstock) |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-r--UCSCXenaShinyV1-green.svg)](https://github.com/conda-forge/r-UCSCXenaShinyV1-feedstock) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/r-UCSCXenaShinyV1.svg)](https://github.com/conda-forge/r-UCSCXenaShinyV1-feedstock) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/r-UCSCXenaShinyV1.svg)](https://github.com/conda-forge/r-UCSCXenaShinyV1-feedstock) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/r-UCSCXenaShinyV1.svg)](https://github.com/conda-forge/r-UCSCXenaShinyV1-feedstock) |
 
 Install from `conda-forge` channel with:
 
 ```bash
-conda install -c conda-forge r-ucscxenashiny
+conda install -c conda-forge r-UCSCXenaShinyV1
 ```
 
-It is possible to list all of the versions of `r-ucscxenashiny` available on your platform with:
+It is possible to list all of the versions of `r-UCSCXenaShinyV1` available on your platform with:
 
 ```bash
-conda search r-ucscxenashiny --channel conda-forge
+conda search r-UCSCXenaShinyV1 --channel conda-forge
 ```
 
 ## :package: Use with Docker
 
-<img alt="Docker Image Version (latest by date)" src="https://img.shields.io/docker/v/shixiangwang/ucscxenashiny?color=blue"> <img alt="Docker Image Size (latest by date)" src="https://img.shields.io/docker/image-size/shixiangwang/ucscxenashiny"> <img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/shixiangwang/ucscxenashiny">
+<img alt="Docker Image Version (latest by date)" src="https://img.shields.io/docker/v/shixiangwang/UCSCXenaShinyV1?color=blue"> <img alt="Docker Image Size (latest by date)" src="https://img.shields.io/docker/image-size/shixiangwang/UCSCXenaShinyV1"> <img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/shixiangwang/UCSCXenaShinyV1">
 
-UCSCXenaShiny has corresponding docker image at <https://hub.docker.com/r/shixiangwang/ucscxenashiny/>, you can install the latest version with:
+UCSCXenaShinyV1 has corresponding docker image at <https://hub.docker.com/r/shixiangwang/UCSCXenaShinyV1/>, you can install the latest version with:
 
 ```bash
-docker pull shixiangwang/ucscxenashiny
+docker pull shixiangwang/UCSCXenaShinyV1
 ```
 
-All versions can be found at <https://hub.docker.com/r/shixiangwang/ucscxenashiny/tags/>.
+All versions can be found at <https://hub.docker.com/r/shixiangwang/UCSCXenaShinyV1/tags/>.
 To use a specified version (e.g., `v1.0.2`), run the following command to install:
 
 ```bash
-docker pull shixiangwang/ucscxenashiny:v1.0.2
+docker pull shixiangwang/UCSCXenaShinyV1:v1.0.2
 ```
 
 Then run the docker image with:
 
 ```bash
-docker run -d --name xenashiny -p 3838:3838 shixiangwang/ucscxenashiny
+docker run -d --name xenashiny -p 3838:3838 shixiangwang/UCSCXenaShinyV1
 ```
 
 Now you should find the Shiny when you open URL `http://127.0.0.1:3838` with your web browser.
@@ -84,32 +84,32 @@ docker start xenashiny
 
 ## :arrow_double_down: Manual installation
 
-You can install stable release of **UCSCXenaShiny** from CRAN with:
+You can install stable release of **UCSCXenaShinyV1** from CRAN with:
 
 ```r
-install.packages("UCSCXenaShiny")
+install.packages("UCSCXenaShinyV1")
 ```
 
-You can install the development version of **UCSCXenaShiny** from Github
+You can install the development version of **UCSCXenaShinyV1** from Github
 with:
 
 ```r
-remotes::install_github("openbiox/UCSCXenaShiny")
+remotes::install_github("openbiox/UCSCXenaShinyV1")
 ```
 
 Or Gitee (for Chinese users):
 
 ```r
-remotes::install_git("https://gitee.com/XenaShiny/UCSCXenaShiny")
+remotes::install_git("https://gitee.com/XenaShiny/UCSCXenaShinyV1")
 ```
 
-Other dependent R packages specific to the Shiny application will be automatically installed when you start with `app_run()` command. If you failed to install **UCSCXenaShiny**, please check if the following system dependencies have been properly installed or see [**Troubleshooting**](#hammer_and_wrench-troubleshooting) section for specific installation issues.
+Other dependent R packages specific to the Shiny application will be automatically installed when you start with `app_run()` command. If you failed to install **UCSCXenaShinyV1**, please check if the following system dependencies have been properly installed or see [**Troubleshooting**](#hammer_and_wrench-troubleshooting) section for specific installation issues.
 
 ### System dependencies installation
 
 When you use Windows/MacOS, please skip reading this sub-section.
 
-As Linux distributions are very diverse,  here we only test the installation of **UCSCXenaShiny** on common used Ubuntu/CentOS. If you are using other Linux distributions, you need to solve the system dependencies installation problems yourself when you encounter R package installation errors. However, the installation of system dependencies on Ubuntu/CentOS could be very good references.
+As Linux distributions are very diverse,  here we only test the installation of **UCSCXenaShinyV1** on common used Ubuntu/CentOS. If you are using other Linux distributions, you need to solve the system dependencies installation problems yourself when you encounter R package installation errors. However, the installation of system dependencies on Ubuntu/CentOS could be very good references.
 
 > Please note all commands below are execuated with `root`.
 
@@ -134,7 +134,7 @@ yum update -y && yum install -y libcurl-devel openssl-devel libxml2-devel \
 First load package:
 
 ```r
-library(UCSCXenaShiny)
+library(UCSCXenaShinyV1)
 ```
 
 Start Shiny in your R console (ignore this if you just want to use functions in this package):
@@ -151,12 +151,12 @@ app_run()
 # app_run("server")
 ```
 
-If you want deploy UCSC Xena Shiny with Shiny Server, please copy `App.R` and `www/` directory under [`shinyapp`](https://github.com/openbiox/UCSCXenaShiny/tree/master/inst/shinyapp).
+If you want deploy UCSC Xena Shiny with Shiny Server, please copy `App.R` and `www/` directory under [`shinyapp`](https://github.com/openbiox/UCSCXenaShinyV1/tree/master/inst/shinyapp).
 `xena.runMode` on the top of `App.R` is recommended to set as `"server"` instead of `"client"` (default).
 
 For advanced users, examples for illustrating useful functions to obtain and analyze data are described in vignette.
 
-All exported data and functions are organized at [here](https://openbiox.github.io/UCSCXenaShiny/reference/index.html).
+All exported data and functions are organized at [here](https://openbiox.github.io/UCSCXenaShinyV1/reference/index.html).
 
 `xena.cacheDir` and `xena.zenodoDir` are two options to control where to store data.
 

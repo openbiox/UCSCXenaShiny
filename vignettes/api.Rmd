@@ -21,10 +21,10 @@ knitr::opts_chunk$set(
 )
 ```
 
-Firstly, assume you have already installed **UCSCXenaShiny** package.
+Firstly, assume you have already installed **UCSCXenaShinyV1** package.
 
 ```{r setup}
-library(UCSCXenaShiny)
+library(UCSCXenaShinyV1)
 ```
 
 ## Fetch Data
@@ -124,4 +124,4 @@ vis_unicox_tree(
 
 ### Other Functions and Data
 
-All exported data and functions are organized at [here](https://openbiox.github.io/UCSCXenaShiny/reference/index.html).
+All exported data and functions are organized at [here](https://openbiox.github.io/UCSCXenaShinyV1/reference/index.html).

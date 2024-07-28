@@ -2,7 +2,7 @@
 
 Extra datasets cleaned from UCSCXena hubs or references are deposited in [Zenodo repo](https://zenodo.org/record/5548587).
 
-You can download them directly from the Zenodo repo or using `get_data()` function provided in UCSCXenaShiny R package.
+You can download them directly from the Zenodo repo or using `get_data()` function provided in UCSCXenaShinyV1 R package.
 
 If you want to know the dataset source, you can check the "data_source" attribute.
 
