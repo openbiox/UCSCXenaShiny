@@ -9,10 +9,10 @@ print(Sys.info())
 
 # Set options and run app
 
-if(dir.exists("/xena")){ 
+if(dir.exists("/app/xena")){ 
   # hiplot
-  xena.cacheDir = "/xena"
-  xena.zenodoDir = "/xena/datasets"
+  xena.cacheDir = "/app/xena"
+  xena.zenodoDir = "/app/xena/zdatasets"
 } else {
   # zhoulab
   xena.cacheDir = "/home/shiny/apps/xena/cache"
