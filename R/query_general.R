@@ -334,9 +334,12 @@ query_general_value <- function(L1, L2, L3,
     }
   } else {
     if (is.null(tpc_value_nonomics)) {
-      tpc_value_nonomics <- load_data(paste0("v2_", database, "_value_nonomics"))
+      if(database=="toil"){
+        tpc_value_nonomics <- load_data(paste0("v2_tcga_value_nonomics"))
+      } else {
+        tpc_value_nonomics <- load_data(paste0("v2_", database, "_value_nonomics"))
+      }
     }
-
     if (L2 != "Custom metadata") {
       L1_label <- switch(L1,
         `Tumor index` = "Index",
