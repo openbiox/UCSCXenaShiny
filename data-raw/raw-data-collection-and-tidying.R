@@ -99,14 +99,32 @@ attr(tcga_stemness, "data_source") <- "https://pancanatlas.xenahubs.net"
 # access date:2020-06-17
 # from https://gdc.cancer.gov/about-data/publications/PanCanStemness-2018
 ## genome instability
-gi_data <- data.table::fread("data-raw/Purity_Ploidy_All_Samples_9_28_16.tsv", data.table = F)
-gi_data <- gi_data %>%
-  dplyr::select(c(3, 5, 6, 7, 9, 10))
-gi_data <- gi_data %>%
-  dplyr::select(sample, purity, ploidy, Genome_doublings = `Genome doublings`, Cancer_DNA_fraction = `Cancer DNA fraction`, Subclonal_genome_fraction = `Subclonal genome fraction`) %>%
+# 部分TCGA样本ID不符合常规的格式
+gi_data_raw <- data.table::fread("Purity_Ploidy_All_Samples_9_28_16.tsv", data.table = F)
+gi_data <- gi_data_raw %>%
+  dplyr::select(c(3, 5, 6, 7, 9, 10)) %>%
+  dplyr::select(sample, purity, ploidy, Genome_doublings = `Genome doublings`, 
+                Cancer_DNA_fraction = `Cancer DNA fraction`, 
+                Subclonal_genome_fraction = `Subclonal genome fraction`)
+
+head(gi_data$sample[!grepl("^TCGA", gi_data$sample)])
+# [1] "GBM-TCGA-02-0001-Tumor" "GBM-TCGA-02-0006-Tumor" "GBM-TCGA-02-0007-Tumor" "GBM-TCGA-02-0009-Tumor"
+# [5] "GBM-TCGA-02-0010-Tumor" "GBM-TCGA-02-0011-Tumor"
+
+table(grepl("^TCGA", gi_data$sample))
+# FALSE  TRUE 
+# 795  9997 
+# 9997个样本符合常规TCGA ID，795个样本不符合
+# 解决方式：直接丢弃795个样本
+
+gi_data_res1 = gi_data %>% 
+  dplyr::filter(grepl("^TCGA", sample)) %>%
   dplyr::mutate(sample = stringr::str_sub(sample, 1, 15))
 
-tcga_genome_instability <- gi_data
+gi_data_res1 = gi_data_res1[order(gi_data_res1$sample),]
+rownames(gi_data_res1) = seq(nrow(gi_data_res1))
+
+tcga_genome_instability <- gi_data_res1
 attr(tcga_genome_instability, "data_source") <- "DOI:https://doi.org/10.1016/j.cell.2018.03.034"
 
 #-------purity data----------------------------------------
