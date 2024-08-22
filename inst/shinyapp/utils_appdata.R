@@ -92,7 +92,7 @@ tcga_id_option = list(
     ),
     "TIMER" = list(
       "all" = tcga_id.list[["TIMER"]],
-      "default" = "Monocyte"
+      "default" = "Macrophage"
     ),
     "XCELL" = list(
       "all" = tcga_id.list[["XCELL"]],

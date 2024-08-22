@@ -264,51 +264,50 @@ download_feat_Server = function(input, output, session, database = "toil",#id_op
 		x_data$cancer = clinical_phe[,2,drop=T][match(x_data$Sample, clinical_phe$Sample)]
 		x_data = x_data[,c("id","level1","level2","Sample","value","cancer")] %>%
 			dplyr::arrange(cancer,Sample)
-		# shinyjs::enable("query_data")
+		shinyjs::enable("query_data")
 		x_data
 	})
 
 	w <- waiter::Waiter$new(id = ns("x_axis_data_table"), html = waiter::spin_hexdots(), color = "black")
 
-	observeEvent(input$query_data,{
-		
-		w$show()
-		output$x_axis_data_table = renderUI({
-			if(table.ui){
-				output$x_tmp_table = renderDataTable({
-					shinyjs::enable("query_data")
-					
-					shiny::validate(
-						need(try(nrow(download_data())>0), 
-							"No sample data  available. Please inspect operations in Preset step."),
-					)
-					if(check_numeric){
+	# observeEvent(input$query_data,{
+	observe({
+		if (input$query_data>0) {
+			w$show()
+			output$x_axis_data_table = renderUI({
+				if(table.ui){
+					output$x_tmp_table = renderDataTable({
+						# shinyjs::enable("query_data")
 						shiny::validate(
-							need(try(class(download_data()$value)!="character"), 
-								"Please select a numeric variable."),
-						)	
-					}
-					x_axis_data_ = download_data()[,c("Sample","value","cancer")]
+							need(try(nrow(download_data())>0), 
+								"No sample data  available. Please inspect operations in Preset step."),
+						)
+						if(check_numeric){
+							shiny::validate(
+								need(try(class(download_data()$value)!="character"), 
+									"Please select a numeric variable."),
+							)	
+						}
+						x_axis_data_ = download_data()[,c("Sample","value","cancer")]
 
-					if(class(x_axis_data_[,"value"])=="numeric"){
-						x_axis_data_[,"value"] = round(x_axis_data_[,"value"], digits = 3)
-					}
-					datatable(x_axis_data_, 
-						options = list(pageLength = 3,
-							columnDefs = list(list(className = 'dt-center', targets="_all")))
-					)
-				}) 
-				dataTableOutput(ns("x_tmp_table"))
-			} else {
-				output$x_tmp_table = renderPrint({
-					# ids_num = nrow()
-					cat(paste0("Tip: identifier values of ", nrow(download_data()), " samples are prepared."))
-				})
-				verbatimTextOutput(ns("x_tmp_table"))
-			}
-
-		})
-		
+						if(class(x_axis_data_[,"value"])=="numeric"){
+							x_axis_data_[,"value"] = round(x_axis_data_[,"value"], digits = 3)
+						}
+						datatable(x_axis_data_, 
+							options = list(pageLength = 3,
+								columnDefs = list(list(className = 'dt-center', targets="_all")))
+						)
+					}) 
+					dataTableOutput(ns("x_tmp_table"))
+				} else {
+					output$x_tmp_table = renderPrint({
+						# ids_num = nrow()
+						cat(paste0("Tip: identifier values of ", nrow(download_data()), " samples are prepared."))
+					})
+					verbatimTextOutput(ns("x_tmp_table"))
+				}
+			})
+		}		
 	})
 
 	# observeEvent(input$query_data,{

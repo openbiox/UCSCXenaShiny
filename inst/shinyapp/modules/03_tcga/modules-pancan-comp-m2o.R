@@ -229,7 +229,8 @@ server.modules_pancan_comp_m2o = function(input, output, session) {
 				data = dplyr::inner_join(y_data, group_data) %>%
 					dplyr::select(Sample, value, group, everything()) %>% na.omit()
 				# 检查数据是否合理
-				if(nrow(data)==0 | sd(data$value)==0 | length(unique(data$group))==1) return(c(NaN, NaN, NaN))
+				if(nrow(data)==0 | sd(data$value)==0) return(c(NaN, NaN, NaN))
+				if(length(unique(data$group))==1 | min(table(data$group))<3) return(c(NaN, NaN, NaN))
 				
 				if(input$comp_method == "t.test"){
 					comp_obj = t.test(value ~ group, data)

@@ -213,7 +213,7 @@ server.modules_pancan_cor_m2o = function(input, output, session) {
 				xy_data = x_datas %>%
 					dplyr::filter(x_id == L3_x) %>%
 					dplyr::inner_join(y_data) %>% as.data.frame()
-				if(nrow(na.omit(xy_data))==0){return(c(NaN, NaN))}
+				if(nrow(na.omit(xy_data))<3){return(c(NaN, NaN))}
 			    cor_obj = cor.test(xy_data[,"x_value"],xy_data[,"y_value"],
 			                       method = input$cor_method)
 			    incProgress(1 / length(L3s_x()), detail = paste0("(Finished ",i,"/",length(L3s_x()),")"))

@@ -268,10 +268,10 @@ server.modules_pancan_comp_o2o = function(input, output, session) {
 		shiny::validate(
 			need(try(nrow(merge_data_box())>0), 
 				"Please inspect whether to set groups or download variable data in S2 or S3 step."),
-		)
-		shiny::validate(
 			need(try(length(unique(merge_data_box()$group))==2), 
-				"No enough samples for comparing, please check your input."),
+				"No two groups for comparing, please check your input."),
+			need(try(min(table(merge_data_box()$group))>2),   
+				"No enough samples (n≤3) for one group for comparing, please check your input."),	
 		)
 		merge_data_box = merge_data_box()
 

@@ -269,6 +269,8 @@ server.modules_pancan_cor_o2o = function(input, output, session) {
 		shiny::validate(
 			need(try(nrow(merge_data_sct())>0), 
 				"Please inspect whether to get valid data in Step2."),
+			need(try(nrow(merge_data_sct())>2), 
+				"Please adjust to ensure that enough samples (n≥3) are included for analysis.")
 		)
 		p = plot_cor_o2o(
 			data = merge_data_sct(), cor_method = input$cor_method,
