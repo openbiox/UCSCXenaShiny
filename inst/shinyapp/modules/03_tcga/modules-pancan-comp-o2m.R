@@ -265,7 +265,7 @@ server.modules_pancan_comp_o2m = function(input, output, session) {
 		    merge_data_line() %>%
 		      dplyr::group_by(cancer, group) %>%
 		      dplyr::summarise(n1=n()) %>%
-		      dplyr::filter(n1>=2) %>% # 每小组的样本数大于等于2
+		      dplyr::filter(n1>=3) %>% # 每小组的样本数大于等于3
 		      dplyr::distinct(cancer, group) %>%
 		      dplyr::count(cancer,name = "n2") %>%
 		      dplyr::filter(n2==2) %>% dplyr::pull("cancer") # 每个肿瘤有两组

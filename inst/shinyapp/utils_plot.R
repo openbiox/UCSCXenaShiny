@@ -97,7 +97,12 @@ plot_comb_o2m = function(data1, data2, x_name, title_name,
 		
     p1 = ggplot(data1_sub) +
         stat_summary(aes(x=cancer, y=value, color=group),
-                    position=position_dodge(width=0.5)) +   
+                    # colour = "gray",
+                    position=position_dodge(width=0.5)) + 
+        geom_jitter(aes(x=cancer, y=value, color=group),
+                    position=position_dodge(width=0.5), size = 1, 
+                    # colour = "gray", 
+                    alpha = 0.4) +
         xlab("") + ylab(x_name) + ggtitle(label = title_name) + #转置
 		scale_color_manual(values = c(group_1_color_2, group_2_color_2)) +
         coord_flip() + custom_theme

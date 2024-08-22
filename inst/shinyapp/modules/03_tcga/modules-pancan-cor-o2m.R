@@ -253,9 +253,16 @@ server.modules_pancan_cor_o2m = function(input, output, session) {
 		colnames(x_axis_data)[c(1:3,5)] = paste0("x_",colnames(x_axis_data)[c(1:3,5)])
 		y_axis_data = y_axis_data()
 		colnames(y_axis_data)[c(1:3,5)] = paste0("y_",colnames(y_axis_data)[c(1:3,5)])
-
 		data = dplyr::inner_join(x_axis_data, y_axis_data) %>%
 			dplyr::select(cancer, Sample, everything())
+		
+		data <- data %>%
+			dplyr::filter(cancer %in% (
+				data %>%
+					dplyr::count(cancer) %>%
+					dplyr::filter(n > 2) %>%
+					dplyr::pull(cancer)
+			))
 		# print(head(data))
 		data
 	})
