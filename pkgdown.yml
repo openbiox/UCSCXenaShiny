@@ -3,7 +3,7 @@ pkgdown: 2.1.0
 pkgdown_sha: ~
 articles:
   api: api.html
-last_built: 2024-08-22T12:48Z
+last_built: 2024-08-26T04:12Z
 urls:
   reference: https://openbiox.github.io/UCSCXenaShiny/reference
   article: https://openbiox.github.io/UCSCXenaShiny/articles
