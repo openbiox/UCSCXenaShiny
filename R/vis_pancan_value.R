@@ -258,10 +258,14 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", u
     dplyr::inner_join(tcga_surv, by = "sample") %>%
     dplyr::inner_join(tcga_gtex[, c("tissue", "sample")], by = "sample")
   sss <- split(ss, ss$tissue)
+  # discard cancer types with constant values (e.g. all TP53-wild samples)
+  sss = sss[sapply(sss, function(x){stats::sd(x$values)!=0})]
   tissues <- names(sss)
   .f <- function(cancer) {
     sss_can <- sss[[cancer]]
-
+    # By default, cox analysis based on continuous molecule values. HR>0: Higher values, More risky. 
+    # Set use_optimal_cutoff as TRUE: Divide into 2 groups (Low/High) according the optimal cutoff. Then, 
+    ## cox analysis based on discrete molecule groups. HR>0: 'High' Group are more risky.
     if (use_optimal_cutoff) {
       sss_can <- sss_can %>%
         survminer::surv_cutpoint(
