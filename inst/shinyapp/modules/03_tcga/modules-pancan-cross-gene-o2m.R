@@ -257,11 +257,11 @@ server.modules_pancan_cross_gene_o2m = function(input, output, session) {
 		Sys.sleep(0.5)
 
 		output$step2_2_text = renderPrint({
-			cat(paste0("Tip: (1) mRNA is ", 
+			cat(paste0("Tips: \n(1) mRNA is ", 
 					   ifelse(check_omics$mRNA,"OK; ","missing; "),
-					   "(2) Mutation is ",
+					   "\n(2) Mutation is ",
 					   ifelse(check_omics$mutation,"OK; ","missing; "),
-					   "(2) CNV is ",
+					   "\n(3) CNV is ",
 					   ifelse(check_omics$cnv,"OK.","missing.")
 			))
 		})

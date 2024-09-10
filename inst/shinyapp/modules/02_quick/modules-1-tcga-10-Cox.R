@@ -3,7 +3,7 @@ ui.modules_1_tcga_10 = function(id){
 
     main_ui = tagList(
         mol_quick_select_UI(ns("id"), "tcga", 
-            c("mRNA","transcript","methylation","miRNA","protein", "cnv")),
+            c("mRNA","transcript","methylation","miRNA","protein", "cnv", "mutation")),
         
         h4("3. Select TCGA endpoint type"),
         selectInput(ns("measure"), NULL,c("OS", "DSS", "DFI", "PFI")),
