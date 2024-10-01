@@ -223,7 +223,7 @@ vis_toil_TvsN <- function(Gene = "TP53", Mode = c("Boxplot", "Violinplot"),
 #'
 #' @inheritParams vis_toil_TvsN
 #' @param measure a survival measure, e.g. "OS".
-#' @param data_type choose gene profile type, including "mRNA","transcript","methylation","miRNA","protein","cnv"
+#' @param data_type choose gene profile type, including "mRNA","transcript","methylation","miRNA","protein","mutation","cnv"
 #' @param use_optimal_cutoff use `surv_cutpoint` from survminer package for
 #' thresholding samples in each cancer type.
 #' @return a `ggplot` object

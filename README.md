@@ -24,7 +24,8 @@ Please cite any of the following articles when you used **UCSCXenaShiny** in you
 
 **V2**
 
-- Li S, et al. UCSCXenaShiny v2: Facilitating Integrative and Personalized Oncology Omics Analysis. 2024 (In preparation)
+- Shensuo Li, Yuzhong Peng, Minjun Chen, Yankun Zhao, Yi Xiong, Jianfeng Li, Peng Luo, Haitao Wang, Fei Zhao, Qi Zhao, Yanru Cui, Sujun Chen, Jian-Guo Zhou, Shixiang Wang,  Facilitating integrative and personalized oncology omics analysis with UCSCXenaShiny, Communications Biology, 1200 (2024),  https://doi.org/10.1038/s42003-024-06891-2
+
 
 **V1**
 

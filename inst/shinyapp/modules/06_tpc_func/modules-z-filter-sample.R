@@ -273,7 +273,9 @@ filter_samples_Server = function(input, output, session, database="toil", #id_op
 	    `Tumor index` = input$tumor_index,
 	    `Immune Infiltration` = input$immune_infiltration,
 	    `Pathway activity` = input$pathway_activity,
-	    `Custom metadata` = input$custom_metadata
+	    # `Custom metadata` = input$custom_metadata
+		`Phenotype data` = input$phenotype_data
+
 	  )
 	})
 	add_level3 = reactive({
@@ -282,7 +284,10 @@ filter_samples_Server = function(input, output, session, database="toil", #id_op
 	    `Tumor index` = input$tumor_index_id,
 	    `Immune Infiltration` = input$immune_infiltration_id,
 	    `Pathway activity` = input$pathway_activity_id,
-	    `Custom metadata` = input$custom_metadata_id
+	    # `Custom metadata` = input$custom_metadata_id
+		`Phenotype data` = input$phenotype_data_id
+
+		
 	  )
 	})
 
@@ -320,6 +325,8 @@ filter_samples_Server = function(input, output, session, database="toil", #id_op
 			L1_x = str_split(add_phes$name[[i]], "--")[[1]][1]   # Level-1
 			L2_x = str_split(add_phes$name[[i]], "--")[[1]][2]    # Level-2
 			L3_x = str_split(add_phes$name[[i]], "--")[[1]][3] # Level-3
+			print(add_phes$name[[i]])
+			print(c(L1_x, L2_x, L3_x))
 
 			if(is.null(opt_pancan)){
 				opt_pancan = .opt_pancan
