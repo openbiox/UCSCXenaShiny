@@ -7,11 +7,14 @@ Project URL: https://github.com/openbiox/UCSCXenaShiny
 Usages: https://openbiox.github.io/UCSCXenaShiny/
 
 If you use it in published research, please cite:
-  Shixiang Wang, Yi Xiong, Longfei Zhao, Kai Gu, Yin Li, Fei Zhao, Jianfeng Li,
-  Mingjie Wang, Haitao Wang, Ziyu Tao, Tao Wu, Yichao Zheng, Xuejun Li, Xue-Song Liu,
-  UCSCXenaShiny: An R/CRAN Package for Interactive Analysis of UCSC Xena Data,
-  Bioinformatics, 2021;, btab561, https://doi.org/10.1093/bioinformatics/btab561.
+  Shensuo Li, Yuzhong Peng, Minjun Chen, Yankun Zhao, Yi Xiong, Jianfeng Li, Peng Luo, 
+  Haitao Wang, Fei Zhao, Qi Zhao, Yanru Cui, Sujun Chen, Jian-Guo Zhou, Shixiang Wang,  
+  Facilitating integrative and personalized oncology omics analysis with UCSCXenaShiny, 
+  Communications Biology, 1200 (2024),  https://doi.org/10.1038/s42003-024-06891-2
 =========================================================================================
                               --Enjoy it--")
   base::packageStartupMessage(msg)
 }
+
+
+

@@ -19,7 +19,7 @@ genomic signature (\code{"TP53 + 2 * KRAS - 1.3 * PTEN"}).}
 
 \item{measure}{a survival measure, e.g. "OS".}
 
-\item{data_type}{choose gene profile type, including "mRNA","transcript","methylation","miRNA","protein","cnv"}
+\item{data_type}{choose gene profile type, including "mRNA","transcript","methylation","miRNA","protein","mutation","cnv"}
 
 \item{use_optimal_cutoff}{use \code{surv_cutpoint} from survminer package for
 thresholding samples in each cancer type.}

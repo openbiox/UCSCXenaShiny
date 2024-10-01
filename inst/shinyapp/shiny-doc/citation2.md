@@ -1,6 +1,32 @@
 <center> <h2> UCSCXenaShiny v2 </h2> </center>
 
-- <font size="5">The manuscript is preparing to submit. Please be waiting for some time.</font>
+- <font size="5">Shensuo Li, Yuzhong Peng, Minjun Chen, Yankun Zhao, Yi Xiong, Jianfeng Li, Peng Luo, Haitao Wang, Fei Zhao, Qi Zhao, Yanru Cui, Sujun Chen, Jian-Guo Zhou, Shixiang Wang,  Facilitating integrative and personalized oncology omics analysis with UCSCXenaShiny, Communications Biology, 1200 (2024),  https://doi.org/10.1038/s42003-024-06891-2</font>
+
+- <font size="5">PMID: [39341906](https://pubmed.ncbi.nlm.nih.gov/39341906/)</font>
+- <font size="5">Bibtex format: </font>
+
+```
+@ARTICLE{Li2024-yd,
+  title    = "Facilitating integrative and personalized oncology omics analysis with UCSCXenaShiny",
+  author   = "Li, Shensuo and Peng, Yuzhong and Chen, Minjun and Zhao, Yankun and Xiong, Yi and Li, Jianfeng and Luo, Peng and Wang, Haitao and Zhao, Fei and Zhao, Qi and Cui, Yanru and Chen, Sujun and Zhou, Jian-Guo and Wang, Shixiang",
+  abstract = "The continuous generation of multi-omics and phenotype data is propelling advancements in precision oncology. UCSCXenaShiny was developed as an interactive tool for exploring thousands of cancer datasets available on UCSC Xena. However, its capacity for comprehensive and personalized pan-cancer data analysis is being challenged by the growing demands. Here, we introduce UCSCXenaShiny v2, a milestone update through a variety of improvements. Firstly, by integrating multidimensional data and implementing adaptable sample settings, we create a suite of robust TPC (TCGA, PCAWG, CCLE) analysis pipelines. These pipelines empower users to conduct in-depth analyses of correlation, comparison, and survival in three modes: Individual, Pan-cancer and Batch screen. Additionally, the tool includes download interfaces that enable users to access diverse data and outcomes, several features also facilitate the joint analysis of drug sensitivity and multi-omics of cancer cell lines. UCSCXenaShiny v2 is an open-source R package and a web application, freely accessible at https://github.com/openbiox/UCSCXenaShiny.",
+  journal  = "Commun. Biol.",
+  volume   =  7,
+  number   =  1,
+  pages    = "1200",
+  month    =  sep,
+  year     =  2024,
+  language = "en"
+}
+```
+
+
+
+
+
+
+
+
 
 <br>
 
