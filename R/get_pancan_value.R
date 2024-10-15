@@ -348,15 +348,15 @@ get_pancan_methylation_value <- function(identifier, type = c("450K", "27K"),
   aggr <- match.arg(aggr)
 
   if (type == "450K") {
-    # host <- "pancanAtlasHub"
-    # dataset <- "jhu-usc.edu_PANCAN_HumanMethylation450.betaValue_whitelisted.tsv.synapse_download_5096262.xena"
-    host <- "gdcHub"
-    dataset <- "GDC-PANCAN.methylation450.tsv"
+    host <- "pancanAtlasHub"
+    dataset <- "jhu-usc.edu_PANCAN_HumanMethylation450.betaValue_whitelisted.tsv.synapse_download_5096262.xena"
+    # host <- "gdcHub"
+    # dataset <- "GDC-PANCAN.methylation450.tsv"
   } else {
-    # host <- "tcgaHub"
-    # dataset <- "TCGA.PANCAN.sampleMap/HumanMethylation27"
-    host <- "gdcHub"
-    dataset <- "GDC-PANCAN.methylation27.tsv"
+    host <- "tcgaHub"
+    dataset <- "TCGA.PANCAN.sampleMap/HumanMethylation27"
+    # host <- "gdcHub"
+    # dataset <- "GDC-PANCAN.methylation27.tsv"
   }
 
   data <- get_data(dataset, identifier, host, rule_out = rule_out, aggr = aggr)
