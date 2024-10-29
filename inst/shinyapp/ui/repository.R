@@ -22,7 +22,7 @@ ui.page_repository <- function() {
             "ATAC-seq", "Single Cell"
           ),
           choiceValues = c(
-            "publicHub", "tcgaHub", "gdcHub", "icgcHub", "pancanAtlasHub",
+            "publicHub", "tcgaHub", "gdcHub", "gdcHubV18", "icgcHub", "pancanAtlasHub",
             "toilHub", "treehouseHub", "pcawgHub", "atacseqHub", "singlecellHub"
           ),
           selected = "gdcHub",
