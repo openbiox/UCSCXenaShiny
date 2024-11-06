@@ -16,7 +16,7 @@ ui.page_repository <- function() {
         shinyWidgets::prettyCheckboxGroup("hubs_text", "Active Data Hub:",
           choiceNames = c(
             "UCSC Public", "TCGA",
-            "GDC", "ICGC",
+            "GDC", "GDC V8", "ICGC",
             "Pan-Cancer Atlas", "TOIL",
             "Treehouse", "PCAWG",
             "ATAC-seq", "Single Cell"
