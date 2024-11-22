@@ -8,8 +8,8 @@
 <title>Examples of Accessible Functions • UCSCXenaShiny</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Examples of Accessible Functions">
 </head>
 <body>
@@ -60,7 +60,7 @@
                         <h4 data-toc-skip class="author">Shixiang Wang,
 Yi Xiong, Longfei Zhao, Kai Gu, Yin Li, Fei Zhao</h4>
             
-            <h4 data-toc-skip class="date">2024-11-06</h4>
+            <h4 data-toc-skip class="date">2024-11-22</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/openbiox/UCSCXenaShiny/blob/master/vignettes/api.Rmd" class="external-link"><code>vignettes/api.Rmd</code></a></small>
       <div class="d-none name"><code>api.Rmd</code></div>
@@ -134,7 +134,7 @@ value unit is <code>log2(tpm+0.001)</code>.</p>
 <span><span class="co">#&gt; Try querying data #5</span></span>
 <span><span class="co">#&gt; Warning in value[[3L]](cond): Tried 5 times but failed, please check URL or</span></span>
 <span><span class="co">#&gt; your internet connection or try it later!</span></span>
-<span><span class="co">#&gt; Saving data to file /tmp/RtmpWFoyCs/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
+<span><span class="co">#&gt; Saving data to file /tmp/RtmpC7bD6h/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
 <span><span class="co">#&gt; More info about dataset please run following commands:</span></span>
 <span><span class="co">#&gt;   library(UCSCXenaTools)</span></span>
 <span><span class="co">#&gt;   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span></span></code></pre></div>
@@ -177,7 +177,7 @@ value unit is <code>log2(tpm+0.001)</code>.</p>
 </h3>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/vis_toil_TvsN.html">vis_toil_TvsN</a></span><span class="op">(</span>Gene <span class="op">=</span> <span class="st">"TP53"</span>, Mode <span class="op">=</span> <span class="st">"Violinplot"</span>, Show.P.value <span class="op">=</span> <span class="cn">FALSE</span>, Show.P.label <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Reading cache data /tmp/RtmpWFoyCs/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
+<span><span class="co">#&gt; Reading cache data /tmp/RtmpC7bD6h/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
 <span><span class="co">#&gt; Try querying data #1</span></span>
 <span><span class="co">#&gt; Try querying data #2</span></span>
 <span><span class="co">#&gt; Try querying data #3</span></span>
@@ -185,7 +185,7 @@ value unit is <code>log2(tpm+0.001)</code>.</p>
 <span><span class="co">#&gt; Try querying data #5</span></span>
 <span><span class="co">#&gt; Warning in value[[3L]](cond): Tried 5 times but failed, please check URL or</span></span>
 <span><span class="co">#&gt; your internet connection or try it later!</span></span>
-<span><span class="co">#&gt; Saving data to file /tmp/RtmpWFoyCs/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
+<span><span class="co">#&gt; Saving data to file /tmp/RtmpC7bD6h/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
 <span><span class="co">#&gt; More info about dataset please run following commands:</span></span>
 <span><span class="co">#&gt;   library(UCSCXenaTools)</span></span>
 <span><span class="co">#&gt;   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span></span>
@@ -207,7 +207,7 @@ value unit is <code>log2(tpm+0.001)</code>.</p>
 <span>  TCGA.only <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  Cancer <span class="op">=</span> <span class="st">"ACC"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Reading cache data /tmp/RtmpWFoyCs/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
+<span><span class="co">#&gt; Reading cache data /tmp/RtmpC7bD6h/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
 <span><span class="co">#&gt; Try querying data #1</span></span>
 <span><span class="co">#&gt; Try querying data #2</span></span>
 <span><span class="co">#&gt; Try querying data #3</span></span>
@@ -215,7 +215,7 @@ value unit is <code>log2(tpm+0.001)</code>.</p>
 <span><span class="co">#&gt; Try querying data #5</span></span>
 <span><span class="co">#&gt; Warning in value[[3L]](cond): Tried 5 times but failed, please check URL or</span></span>
 <span><span class="co">#&gt; your internet connection or try it later!</span></span>
-<span><span class="co">#&gt; Saving data to file /tmp/RtmpWFoyCs/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
+<span><span class="co">#&gt; Saving data to file /tmp/RtmpC7bD6h/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
 <span><span class="co">#&gt; More info about dataset please run following commands:</span></span>
 <span><span class="co">#&gt;   library(UCSCXenaTools)</span></span>
 <span><span class="co">#&gt;   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span></span>
@@ -245,7 +245,7 @@ PANCAN Dataset<a class="anchor" aria-label="anchor" href="#visualize-relationshi
 <span>  measure <span class="op">=</span> <span class="st">"OS"</span>,</span>
 <span>  values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey"</span>, <span class="st">"#E31A1C"</span>, <span class="st">"#377DB8"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Reading cache data /tmp/RtmpWFoyCs/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
+<span><span class="co">#&gt; Reading cache data /tmp/RtmpC7bD6h/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
 <span><span class="co">#&gt; Try querying data #1</span></span>
 <span><span class="co">#&gt; Try querying data #2</span></span>
 <span><span class="co">#&gt; Try querying data #3</span></span>
@@ -253,7 +253,7 @@ PANCAN Dataset<a class="anchor" aria-label="anchor" href="#visualize-relationshi
 <span><span class="co">#&gt; Try querying data #5</span></span>
 <span><span class="co">#&gt; Warning in value[[3L]](cond): Tried 5 times but failed, please check URL or</span></span>
 <span><span class="co">#&gt; your internet connection or try it later!</span></span>
-<span><span class="co">#&gt; Saving data to file /tmp/RtmpWFoyCs/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
+<span><span class="co">#&gt; Saving data to file /tmp/RtmpC7bD6h/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
 <span><span class="co">#&gt; More info about dataset please run following commands:</span></span>
 <span><span class="co">#&gt;   library(UCSCXenaTools)</span></span>
 <span><span class="co">#&gt;   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span></span>
