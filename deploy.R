@@ -26,3 +26,4 @@ library(UCSCXenaShiny)
 shiny::shinyAppFile(
   system.file("shinyapp", "App.R", package = "UCSCXenaShiny")
 )
+

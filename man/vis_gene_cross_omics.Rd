@@ -11,6 +11,8 @@ vis_gene_cross_omics(
   n_trans = 5,
   n_methy = 5,
   seed = 42,
+  add_mean_trans = TRUE,
+  add_mean_methy = TRUE,
   pval_mrna = c(0.05, 0.01, 0.001),
   return_list = FALSE
 )
@@ -27,6 +29,10 @@ vis_gene_cross_omics(
 \item{n_methy}{The number of sampling CpG sites or specific CpG identifiers.}
 
 \item{seed}{The seed of sampling.}
+
+\item{add_mean_trans}{Add overall column to display the mean values of all gene's transcripts.}
+
+\item{add_mean_methy}{Add overall column to display the mean values of all gene's cpg sites.}
 
 \item{pval_mrna}{The P value thresholds}
 

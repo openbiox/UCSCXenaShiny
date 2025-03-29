@@ -73,6 +73,7 @@ ui.modules_pancan_cross_gene_o2m = function(id) {
 					verbatimTextOutput(ns("step2_2_text")),
 					br(),
 					h4(strong("S2.3 Load transcript data")),
+					checkboxInput(ns("overall_trans"), label = "Add overall(mean) values for all transcripts", value = TRUE),
 					virtualSelectInput(
 						inputId = ns("trans_id"),
 						multiple = TRUE,
@@ -91,6 +92,7 @@ ui.modules_pancan_cross_gene_o2m = function(id) {
 					verbatimTextOutput(ns("step2_3_text")),
 					br(),
 					h4(strong("S2.4 Load methylation (450K) data")),
+					checkboxInput(ns("overall_methy"), label = "Add overall(mean) values for all cpg sites", value = TRUE),
 					virtualSelectInput(
 						inputId = ns("methy_id"),
 						multiple = TRUE,
@@ -304,7 +306,7 @@ server.modules_pancan_cross_gene_o2m = function(input, output, session) {
 			check_omics$valid_trans = input$trans_id[valid_trans]
 		})
 		output$step2_3_text = renderPrint({
-			cat(paste0("Tip: ",length(check_omics$valid_trans)," valid transcript is OK."))
+			cat(paste0("Tip: ",length(check_omics$valid_trans)," valid transcript(s) is cached."))
 		})
 	})
 
@@ -331,24 +333,25 @@ server.modules_pancan_cross_gene_o2m = function(input, output, session) {
 				gene_methy_tmp = query_pancan_value(input$gene_id, "methylation", opt_pancan=opt_pancan)
 			}
 		})
-		output$step2_4_text = renderPrint({
-			cat(paste0("Tip: Methylation is OK."))
-		})
 		check_omics$valid_methy = input$methy_id
+		output$step2_4_text = renderPrint({
+			# cat(paste0("Tip: Methylation is OK."))
+			cat(paste0("Tip: ",length(check_omics$valid_methy)," valid cpg site(s) is cached."))
+		})
 	})
 
 	plot_func = eventReactive(input$step3_plot,{
 		shiny::validate(
 			need(all(check_omics$mRNA,check_omics$mRNA,check_omics$mRNA), 
 				"Please load valid mRNA/Mutation/CNV data in Step2.2"),
-			need(try(length(check_omics$valid_trans)>0), 
-				"Please load valid transcript data in Step2.3"),
-			need(try(length(check_omics$valid_methy)>0), 
-				"Please load valid methylation data in Step2.4"),
-			need(try(length(check_omics$valid_trans)<10), 
-				"Please select less than 10 transcript in Step2.3"),
-			need(try(length(check_omics$valid_methy)<10), 
-				"Please select less than 10 methylation CpG sites in Step2.4"),
+			# need(try(length(check_omics$valid_trans)>0), 
+			# 	"Please load valid transcript data in Step2.3"),
+			# need(try(length(check_omics$valid_methy)>0), 
+			# 	"Please load valid methylation data in Step2.4"),
+			need(try(length(check_omics$valid_trans)<15), 
+				"Please select less than 15 transcript in Step2.3"),
+			need(try(length(check_omics$valid_methy)<15), 
+				"Please select less than 15 methylation CpG sites in Step2.4"),
 		)
 		shinyjs::disable("step3_plot")
 		res = vis_gene_cross_omics(input$gene_id,
@@ -356,11 +359,12 @@ server.modules_pancan_cross_gene_o2m = function(input, output, session) {
 							 tumor_samples = cancer_choose$filter_phe_id,
 							 n_trans = check_omics$valid_trans,
 							 n_methy = check_omics$valid_methy,
+							 add_mean_trans = input$overall_trans,
+							 add_mean_methy = input$overall_methy,
 							 return_list = TRUE)
         shinyjs::enable("step3_plot")
 		res
 	})
-
 
 	output$funky_plot = renderPlot({plot_func()$plot})
 
