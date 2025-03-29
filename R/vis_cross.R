@@ -16,8 +16,12 @@ vis_gene_cross_omics <- function(gene = "TP53",
                                  tumor_projects = NULL,
                                  tumor_samples = NULL,
                                  n_trans = 5, n_methy = 5, seed = 42,
+                                 add_mean_trans = TRUE, add_mean_methy = TRUE, 
                                  pval_mrna = c(0.05, 0.01, 0.001),
                                  return_list = FALSE) {
+  # # If input is gene signature, cannot stat and plot transcript&methylation data
+  # is_signature <- grepl(" ", molecule)
+
   tcga_gtex <- load_data("tcga_gtex")
   tcga_clinical_fine <- load_data("tcga_clinical_fine")
   if (is.null(tumor_projects)) {
@@ -41,7 +45,8 @@ vis_gene_cross_omics <- function(gene = "TP53",
 
   #### Omics--mRNA
   gene_mrna <- query_pancan_value(gene, "mRNA") %>%
-    .[["expression"]] %>%
+    # .[["expression"]] %>%
+    .[[1]] %>% # For single gene, the first name is 'expression'; For gene signature, the first name is 'value'
     as.data.frame() %>%
     dplyr::rename("Exp" = ".") %>%
     tibble::rownames_to_column("sample") %>%
@@ -102,8 +107,10 @@ vis_gene_cross_omics <- function(gene = "TP53",
     opt_pancan = opt_pancan
   ) %>%
     as.data.frame() %>%
-    dplyr::select("data") %>%
-    dplyr::rename("CNV" = "data") %>%
+    # dplyr::select("data") %>%
+    # dplyr::rename("CNV" = "data") %>%
+    dplyr::select(1) %>% 
+    dplyr::rename(CNV = 1) %>% 
     tibble::rownames_to_column("sample") %>%
     dplyr::inner_join(tcga_clinical_fine2, by = c("sample" = "Sample"))
 
@@ -139,16 +146,19 @@ vis_gene_cross_omics <- function(gene = "TP53",
     dplyr::pull(.data$Level3)
   set.seed(seed)
   if (inherits(n_trans, "character")) {
-    if (length(n_trans) > 10) stop("Less than 10 CpG sites are supported!")
+    if (length(n_trans) > 15) stop("Less than 15 transcripts are supported!")
     trans_sle <- n_trans[n_trans %in% Trans_sub]
   } else if (inherits(n_trans, "numeric")) {
-    if (n_trans > 10) stop("Less than 10 transcripts are supported!")
+    if (n_trans > 15) stop("Less than 15 transcripts are supported!")
     trans_sle <- unique(sample(Trans_sub, n_trans, replace = n_trans > length(Trans_sub)))
+  } else if (is.null(n_trans)) {
+    trans_sle = NULL
   }
 
-  if (all(is.na(n_trans)) | length(trans_sle) == 0) {
+  if (length(trans_sle) == 0 & !add_mean_trans) {
     gene_trans_n <- 0
   } else {
+    if (add_mean_trans) {trans_sle = c(trans_sle, gene)}
     gene_trans <- lapply(seq(trans_sle), function(i) {
       # i = 1
       gene_trans_tmp <- query_pancan_value(
@@ -168,9 +178,12 @@ vis_gene_cross_omics <- function(gene = "TP53",
     gene_trans_plot <- gene_trans[, apply(gene_trans, 2, stats::sd) != 0, drop = FALSE] %>%
       as.data.frame() %>%
       tibble::rownames_to_column("tissue")
+    if (gene %in% colnames(gene_trans_plot)){
+      colnames(gene_trans_plot)[which(colnames(gene_trans_plot) %in% gene)] = "ENST_Overall"
+    }
     gene_trans_n <- ncol(gene_trans_plot) - 1
+    
   }
-
 
   #### Omics--Methylation
   Methy450_sub <- load_data("v2_tpc_id_help")$tcga$id_M450 %>%
@@ -178,20 +191,31 @@ vis_gene_cross_omics <- function(gene = "TP53",
     dplyr::pull(.data$CpG)
   set.seed(seed)
   if (inherits(n_methy, "character")) {
-    if (length(n_methy) > 10) stop("Less than 10 CpG sites are supported!")
+    if (length(n_methy) > 15) stop("Less than 15 CpG sites are supported!")
     cpg_sites <- n_methy[n_methy %in% Methy450_sub]
   } else if (inherits(n_methy, "numeric")) {
-    if (n_methy > 10) stop("Less than 10 CpG sites are supported!")
+    if (n_methy > 15) stop("Less than 15 CpG sites are supported!")
     cpg_sites <- unique(sample(Methy450_sub, n_methy, replace = n_methy > length(Methy450_sub)))
+  } else if (is.null(n_trans)) {
+    cpg_sites = NULL
   }
-  if (all(is.na(n_methy)) | length(cpg_sites) == 0) {
+  if (length(cpg_sites) == 0 & !add_mean_methy) {
     gene_methy_n <- 0
   } else {
+    if (add_mean_methy) {cpg_sites = c(cpg_sites, gene)}
     gene_methy_cpgs <- lapply(seq(cpg_sites), function(i) {
       # i = 1
+      print(i)
       opt_pancan <- .opt_pancan
-      opt_pancan$toil_methylation$rule_out <- setdiff(Methy450_sub, cpg_sites[i])
-      opt_pancan$toil_methylation$aggr <- "mean"
+      if (cpg_sites[i] == gene){
+        # Gene level
+        opt_pancan$toil_methylation$aggr <- "NA"
+        opt_pancan$toil_methylation$rule_out <- NULL
+      } else {
+        # CpG site level
+        opt_pancan$toil_methylation$aggr <- "mean"
+        opt_pancan$toil_methylation$rule_out <- setdiff(Methy450_sub, cpg_sites[i])
+      }
       gene_methy_tmp <- query_pancan_value(
         gene, "methylation",
         opt_pancan = opt_pancan
@@ -211,6 +235,9 @@ vis_gene_cross_omics <- function(gene = "TP53",
       do.call(cbind, .) %>%
       tibble::rownames_to_column("Cancer")
     gene_methy_plot <- gene_methy_cpgs
+    if (gene %in% colnames(gene_methy_plot)){
+      colnames(gene_methy_plot)[which(colnames(gene_methy_plot) %in% gene)] = "cg_Overall"
+    }
     gene_methy_n <- ncol(gene_methy_plot) - 1
   }
 

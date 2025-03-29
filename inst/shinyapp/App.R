@@ -6,6 +6,8 @@ message("Starting...")
 ui <- tagList(
   tags$head(
     tags$title("XenaShiny"),
+    # tags$link(rel = "icon", type="image/svg+xml", href = "./icon.svg"),
+    tags$link(rel = "icon", type="image/png", href = "./icon.png"),
     tags$link(rel = "stylesheet", type = "text/css", href = "./css/global.css")
   ),
 
