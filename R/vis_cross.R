@@ -6,6 +6,8 @@
 #' @param n_trans The number of sampling transcripts or specific transcript identifiers.
 #' @param n_methy The number of sampling CpG sites or specific CpG identifiers.
 #' @param seed The seed of sampling.
+#' @param add_mean_trans Add overall column to display the mean values of all gene's transcripts.
+#' @param add_mean_methy Add overall column to display the mean values of all gene's cpg sites.
 #' @param pval_mrna The P value thresholds
 #' @param return_list TRUE returns a list including plot object and data. FALSE just returns plot.
 #'
