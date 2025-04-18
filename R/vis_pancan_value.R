@@ -252,13 +252,18 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", u
   tcga_gtex <- tcga_gtex %>% dplyr::filter(.data$type2 != "normal")
 
   message(paste0("Get data value for ", Gene))
-  s <- data.frame(sample = names(t1), values = t1)
+  # NA values could appear, especially in signature calculation:
+  # For instance, patient-1 expressed GeneA, but not expressed GeneB, then
+  # signature GeneA + GeneB will be NA for patient-1
+  s <- data.frame(sample = names(t1), values = t1) %>%
+    dplyr::filter(!is.na(.data$values)) 
   ## we use median cutoff here
   ss <- s %>%
+    dplyr::filter(!is.na(.data$values)) %>% 
     dplyr::inner_join(tcga_surv, by = "sample") %>%
     dplyr::inner_join(tcga_gtex[, c("tissue", "sample")], by = "sample")
   sss <- split(ss, ss$tissue)
-  # discard cancer types with constant values (e.g. all TP53-wild samples)
+  # discard cancer types with constant values
   sss = sss[sapply(sss, function(x){stats::sd(x$values)!=0})]
   tissues <- names(sss)
   .f <- function(cancer) {
