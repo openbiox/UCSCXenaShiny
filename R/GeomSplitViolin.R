@@ -23,7 +23,7 @@ GeomSplitViolin <- ggproto("GeomSplitViolin", GeomViolin,
 )
 # Visualize Violin plot
 create_quantile_segment_frame <- function(data, draw_quantiles, split = FALSE, grp = NULL) {
-  interleave <- "ggplot2" %:::% "interleave"
+  interleave <- "vctrs" %:::% "vec_interleave"
   dens <- cumsum(data$density) / sum(data$density)
   suppressWarnings(ecdf <- stats::approxfun(dens, data$y))
   ys <- ecdf(draw_quantiles)

@@ -1,5 +1,6 @@
 # UCSCXenaShiny 2.2.0
 
+- Adapted `interleave()`.
 - Added gene and pathway cross-omics analysis functions/modules.
 - Added `app_run2()` function for custom app start with lightweight modules.
 - Fixed `pdf()` parameter for KM plot
