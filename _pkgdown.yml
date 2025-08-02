@@ -46,6 +46,7 @@ reference:
     - query_tcga_group
     - query_toil_value_df
     - get_pancan_value
+    - get_nonomics_value
     - available_hosts
     
   - title: Analysis and Visualiation for Pan-Cancer Study
