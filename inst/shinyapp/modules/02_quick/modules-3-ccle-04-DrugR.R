@@ -89,7 +89,7 @@ ui.modules_3_ccle_04 = function(id){
         box(main_ui,
             width = 5,
             solidHeader = TRUE,
-            title = "Quick Analysis: Compare between tumor and normal", 
+            title = "Quick Analysis: Analyze Difference of Drug Response between Gene (Signature) High and Low Expression", 
             status = "primary",
             background = "gray",
             collapsible = FALSE,
