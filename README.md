@@ -203,7 +203,16 @@ options(xena.runMode = "server")
 Option `xena.runMode` can be used to control the way how the Shiny works.
 It can be 'client' or 'server'. You can directly set it in `app_run()`.
 
-## :movie_camera: Videos
+## :open_book: Book tutorials
+
+We have prepared the book tutorials to introduce the detailed usage of UCSCXenaShiny based on R Markdown and bookdown. 
+
+- https://lishensuo.github.io/UCSCXenaShiny_Book
+
+
+## :movie_camera: Video tutorials
+
+Users can also watch the video tutorials and follow the step-by-step operations to quickly learn how to use UCSCXenaShiny.
 
 #### UCSCXenaShiny v2
 **Chinese website**
