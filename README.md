@@ -1,4 +1,4 @@
-# UCSCXenaShiny <img src="https://raw.githubusercontent.com/lishensuo/images2/main/img01ucsc.png" align="right" width="150" height="150" />
+# UCSCXenaShiny <img src="https://raw.githubusercontent.com/lishensuo/images2/main/img01ucsc.png" align="right" width="130" height="150" />
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/UCSCXenaShiny)](https://cran.r-project.org/package=UCSCXenaShiny)
