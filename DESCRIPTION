@@ -46,6 +46,7 @@ Imports:
     UCSCXenaTools,
     utils
 Suggests: 
+    circlize,
     ComplexHeatmap,
     covr (>= 3.2.1),
     cowplot,
@@ -56,6 +57,7 @@ Suggests:
     ggrepel,
     ggstatsplot,
     glue,
+    grid,
     knitr,
     pacman,
     pheatmap,

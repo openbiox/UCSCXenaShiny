@@ -327,13 +327,101 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
     })
   })
   
-  # Generate heatmap
-  heatmap_plot <- reactive({
+  # Sample grouping logic
+  sample_groups <- eventReactive(input$ga_filter_button, {
     req(heatmap_data())
     
-    withProgress(message = "Generating heatmap...", value = 0, {
-      data <- heatmap_data()
+    data <- heatmap_data()
+    available_samples <- data$sample
+    
+    if (input$grouping_method == "custom") {
+      # Parse custom groups
+      req(input$custom_groups)
       
+      tryCatch({
+        group_lines <- strsplit(input$custom_groups, "\n")[[1]]
+        group_lines <- group_lines[nzchar(group_lines)]  # Remove empty lines
+        
+        group_list <- list()
+        for (line in group_lines) {
+          if (grepl(":", line)) {
+            parts <- strsplit(line, ":")[[1]]
+            group_name <- trimws(parts[1])
+            samples <- trimws(strsplit(parts[2], ",")[[1]])
+            
+            # Filter to only include available samples
+            samples <- samples[samples %in% available_samples]
+            
+            if (length(samples) > 0) {
+              group_list[[group_name]] <- samples
+            }
+          }
+        }
+        
+        if (length(group_list) == 0) {
+          showNotification("No valid groups found in custom input", type = "warning")
+          return(NULL)
+        }
+        
+        # Create a data frame with sample-group mapping
+        group_df <- purrr::map2_dfr(group_list, names(group_list), function(samples, group_name) {
+          data.frame(sample = samples, group = group_name, stringsAsFactors = FALSE)
+        })
+        
+        return(group_df)
+        
+      }, error = function(e) {
+        showNotification(paste("Error parsing custom groups:", e$message), type = "error")
+        return(NULL)
+      })
+      
+    } else if (input$grouping_method == "phenotype") {
+      # Use phenotype variable for grouping
+      req(input$ga_data_phenotype_id, input$ga_grouping_variable)
+      
+      tryCatch({
+        if (input$ga_data_phenotype_id == "custom_phenotype_dataset") {
+          req(custom_file$pData)
+          phenotype_data <- custom_file$pData
+        } else {
+          # Query phenotype data from Xena
+          # This would need to be implemented with proper Xena query functions
+          showNotification("Phenotype-based grouping not yet fully implemented for Xena data", type = "info")
+          return(NULL)
+        }
+        
+        # Create grouping based on phenotype variable
+        sample_col <- colnames(phenotype_data)[1]
+        group_col <- input$ga_grouping_variable
+        
+        group_df <- phenotype_data[, c(sample_col, group_col)]
+        colnames(group_df) <- c("sample", "group")
+        
+        # Filter to only include samples present in expression data
+        group_df <- group_df[group_df$sample %in% available_samples, ]
+        
+        # Remove NA values
+        group_df <- group_df[!is.na(group_df$group), ]
+        
+        return(group_df)
+        
+      }, error = function(e) {
+        showNotification(paste("Error processing phenotype groups:", e$message), type = "error")
+        return(NULL)
+      })
+    }
+    
+    return(NULL)
+  })
+  
+  # Enhanced heatmap generation with grouping
+  heatmap_plot_with_groups <- reactive({
+    req(heatmap_data())
+    
+    data <- heatmap_data()
+    groups <- sample_groups()
+    
+    withProgress(message = "Generating heatmap with groupings...", value = 0, {
       incProgress(0.5, detail = "Creating heatmap")
       
       tryCatch({
@@ -351,7 +439,35 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
           return(NULL)
         }
         
-        # Try to use ComplexHeatmap first, fall back to pheatmap
+        # Prepare column annotations if groups are available
+        col_annotation <- NULL
+        if (!is.null(groups) && nrow(groups) > 0) {
+          # Create annotation data frame
+          sample_order <- colnames(data_matrix)
+          annotation_df <- data.frame(
+            sample = sample_order,
+            stringsAsFactors = FALSE
+          )
+          
+          # Add group information
+          annotation_df$group <- groups$group[match(annotation_df$sample, groups$sample)]
+          annotation_df$group[is.na(annotation_df$group)] <- "Ungrouped"
+          
+          # Create column annotation for ComplexHeatmap
+          if (requireNamespace("ComplexHeatmap", quietly = TRUE)) {
+            # Generate distinct colors for groups
+            unique_groups <- unique(annotation_df$group)
+            group_colors <- RColorBrewer::brewer.pal(min(length(unique_groups), 11), "Set3")
+            names(group_colors) <- unique_groups
+            
+            col_annotation <- ComplexHeatmap::HeatmapAnnotation(
+              Group = annotation_df$group,
+              col = list(Group = group_colors)
+            )
+          }
+        }
+        
+        # Generate heatmap based on available packages
         if (requireNamespace("ComplexHeatmap", quietly = TRUE)) {
           # Create color function
           if (input$color_palette %in% c("viridis", "plasma", "inferno", "magma")) {
@@ -384,7 +500,8 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
             show_column_names = input$show_col_names,
             clustering_method_rows = input$clustering_method,
             clustering_method_columns = input$clustering_method,
-            heatmap_legend_param = list(title = "Expression")
+            heatmap_legend_param = list(title = "Expression"),
+            top_annotation = col_annotation
           )
           
         } else if (requireNamespace("pheatmap", quietly = TRUE)) {
@@ -404,6 +521,26 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
             colors <- RColorBrewer::brewer.pal(11, input$color_palette)
           }
           
+          # Prepare annotation for pheatmap
+          annotation_col <- NULL
+          annotation_colors <- NULL
+          if (!is.null(groups) && nrow(groups) > 0) {
+            sample_order <- colnames(data_matrix)
+            annotation_df <- data.frame(
+              Group = groups$group[match(sample_order, groups$sample)],
+              row.names = sample_order,
+              stringsAsFactors = FALSE
+            )
+            annotation_df$Group[is.na(annotation_df$Group)] <- "Ungrouped"
+            annotation_col <- annotation_df
+            
+            # Generate colors for groups
+            unique_groups <- unique(annotation_df$Group)
+            group_colors <- RColorBrewer::brewer.pal(min(length(unique_groups), 11), "Set3")
+            names(group_colors) <- unique_groups
+            annotation_colors <- list(Group = group_colors)
+          }
+          
           # Generate pheatmap
           p <- pheatmap::pheatmap(
             data_matrix,
@@ -413,6 +550,8 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
             show_colnames = input$show_col_names,
             clustering_method = input$clustering_method,
             color = colors,
+            annotation_col = annotation_col,
+            annotation_colors = annotation_colors,
             silent = TRUE
           )
           
@@ -437,7 +576,49 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
   })
   
   output$ga_output <- renderPlot({
-    heatmap_plot()
+    # Check if grouping is applied
+    if (!is.null(sample_groups()) && input$ga_filter_button > 0) {
+      heatmap_plot_with_groups()
+    } else {
+      # Use basic heatmap without grouping
+      req(heatmap_data())
+      
+      data <- heatmap_data()
+      
+      tryCatch({
+        # Convert to matrix format (genes in rows, samples in columns)
+        data_matrix <- as.matrix(data[, -1])  # Remove sample column
+        rownames(data_matrix) <- data$sample
+        data_matrix <- t(data_matrix)  # Transpose so genes are rows
+        
+        # Remove NA rows and columns
+        data_matrix <- data_matrix[rowSums(is.na(data_matrix)) < ncol(data_matrix), ]
+        data_matrix <- data_matrix[, colSums(is.na(data_matrix)) < nrow(data_matrix)]
+        
+        if (nrow(data_matrix) == 0 || ncol(data_matrix) == 0) {
+          return(NULL)
+        }
+        
+        # Generate basic heatmap
+        if (requireNamespace("pheatmap", quietly = TRUE)) {
+          colors <- RColorBrewer::brewer.pal(11, input$color_palette)
+          pheatmap::pheatmap(
+            data_matrix,
+            cluster_rows = input$cluster_rows,
+            cluster_cols = input$cluster_cols,
+            show_rownames = input$show_row_names,
+            show_colnames = input$show_col_names,
+            clustering_method = input$clustering_method,
+            color = colors,
+            silent = TRUE
+          )
+        } else {
+          NULL
+        }
+      }, error = function(e) {
+        NULL
+      })
+    }
   })
   
   # Data table output
@@ -462,14 +643,55 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
       paste0(Sys.Date(), "_custom_heatmap.", input$device)
     },
     content = function(file) {
-      p <- heatmap_plot()
+      # Get the appropriate plot
+      p <- if (!is.null(sample_groups()) && input$ga_filter_button > 0) {
+        heatmap_plot_with_groups()
+      } else if (!is.null(heatmap_data())) {
+        # Generate basic plot for download
+        data <- heatmap_data()
+        data_matrix <- as.matrix(data[, -1])
+        rownames(data_matrix) <- data$sample
+        data_matrix <- t(data_matrix)
+        
+        if (requireNamespace("pheatmap", quietly = TRUE)) {
+          colors <- RColorBrewer::brewer.pal(11, input$color_palette)
+          pheatmap::pheatmap(
+            data_matrix,
+            cluster_rows = input$cluster_rows,
+            cluster_cols = input$cluster_cols,
+            show_rownames = input$show_row_names,
+            show_colnames = input$show_col_names,
+            clustering_method = input$clustering_method,
+            color = colors,
+            silent = TRUE
+          )
+        } else {
+          NULL
+        }
+      } else {
+        NULL
+      }
+      
       if (!is.null(p)) {
         if (input$device == "png") {
           png(file, width = input$width, height = input$height, units = "in", res = 300)
         } else {
           pdf(file, width = input$width, height = input$height)
         }
-        print(p)
+        
+        # Handle different plot types
+        if (inherits(p, "Heatmap")) {
+          # ComplexHeatmap object
+          ComplexHeatmap::draw(p)
+        } else if (inherits(p, "pheatmap")) {
+          # pheatmap object
+          grid::grid.newpage()
+          grid::grid.draw(p$gtable)
+        } else {
+          # Regular plot
+          print(p)
+        }
+        
         dev.off()
       }
     }
