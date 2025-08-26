@@ -6,6 +6,7 @@ ui.modules_ga_custom_heatmap <- function(id) {
         3,
         wellPanel(
           h4("Heatmap Controls"),
+          helpText("Create custom heatmaps with expression data. Select genes and configure visualization options."),
           uiOutput(ns("ga_data1_id")),
           virtualSelectInput(
             inputId = ns("ga_data1_mid"), # molecule identifier
@@ -80,8 +81,15 @@ ui.modules_ga_custom_heatmap <- function(id) {
         3,
         wellPanel(
           h4("Sample Grouping"),
+          helpText("Define custom sample groups or use phenotype data to group samples for visualization."),
           uiOutput(ns("ga_data_phenotype_id")),
           uiOutput(ns("ga_grouping_variable")),
+          selectInput(
+            inputId = ns("grouping_method"),
+            label = "Grouping method:",
+            choices = c("Phenotype variable" = "phenotype", "Custom definition" = "custom"),
+            selected = "phenotype"
+          ),
           conditionalPanel(
             condition = paste0("input['", ns("grouping_method"), "'] == 'custom'"),
             textAreaInput(
@@ -89,13 +97,8 @@ ui.modules_ga_custom_heatmap <- function(id) {
               label = "Custom groups (one group per line, samples separated by commas):",
               placeholder = "Group1: TCGA-AA-3502,TCGA-AA-3506\nGroup2: TCGA-AA-3510,TCGA-AA-3514",
               rows = 4
-            )
-          ),
-          selectInput(
-            inputId = ns("grouping_method"),
-            label = "Grouping method:",
-            choices = c("Phenotype variable" = "phenotype", "Custom definition" = "custom"),
-            selected = "phenotype"
+            ),
+            helpText("Format: GroupName: sample1,sample2,sample3")
           ),
           actionBttn(
             inputId = ns("ga_filter_button"),
