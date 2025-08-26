@@ -46,6 +46,7 @@ Imports:
     UCSCXenaTools,
     utils
 Suggests: 
+    cBioPortalData,
     covr (>= 3.2.1),
     cowplot,
     DT (>= 0.5),

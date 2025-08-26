@@ -92,7 +92,8 @@ query_tcga_group <- function(database = c("toil", "pcawg", "ccle"),
   meta_data <- switch(database,
     "toil" = UCSCXenaShiny::tcga_clinical_fine,
     "pcawg" = UCSCXenaShiny::pcawg_info_fine,
-    "ccle" = UCSCXenaShiny::ccle_info_fine
+    "ccle" = UCSCXenaShiny::ccle_info_fine,
+    "cbioportal" = data.frame(Sample = character(0), Cancer = character(0)) # placeholder
   )
   colnames(meta_data)[1:2] <- c("Sample", "Cancer") # CCLE:c("CCLE_name","Primary_Site)
 

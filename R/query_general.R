@@ -238,9 +238,33 @@ query_general_id <- function() {
     `Custom metadata` = list(all = NULL, default = NULL)
   )
 
+  #### cBioPortal ID - Basic configuration for now
+  cbioportal_id_option <- list()
+  cbioportal_id_option$`Molecular profile` <- list(
+    `mRNA Expression` = list(all = c("TP53", "MDM2", "EGFR", "KRAS", "PIK3CA"), default = "TP53"),
+    `Copy Number` = list(all = c("TP53", "MDM2", "EGFR", "KRAS", "PIK3CA"), default = "TP53"),
+    `Mutations` = list(all = c("TP53", "MDM2", "EGFR", "KRAS", "PIK3CA"), default = "TP53")
+  )
+  cbioportal_id_option$`Tumor index` <- list(NULL)
+  cbioportal_id_option$`Immune Infiltration` <- list(NULL)
+  cbioportal_id_option$`Pathway activity` <- list(NULL)
+  cbioportal_id_option$`Phenotype data` <- list(
+    `Clinical Phenotype` = list(
+      all = c("Overall Survival Status", "Age", "Gender", "Cancer Type"),
+      default = "Age"
+    ),
+    `Custom metadata` = list(all = NULL, default = NULL)
+  )
+
+  ## cBioPortal value options - placeholder for now
+  cbioportal_value_option <- list(
+    "Molecular profile" = list("Gene Expression" = data.frame()),
+    "Phenotype data" = list("Clinical Phenotype" = data.frame())
+  )
+
   res_merge <- list(
-    value = list(tcga_value_option, pcawg_value_option, ccle_value_option),
-    id = list(tcga_id_option, pcawg_id_option, ccle_id_option)
+    value = list(tcga_value_option, pcawg_value_option, ccle_value_option, cbioportal_value_option),
+    id = list(tcga_id_option, pcawg_id_option, ccle_id_option, cbioportal_id_option)
   )
 
   return(res_merge)
