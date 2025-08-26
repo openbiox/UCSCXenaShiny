@@ -37,6 +37,7 @@ ui <- tagList(
     ui.page_pancan_quick(),
     ui.page_pancan_tcga(),
     ui.page_general_analysis(),
+    ui.page_cbioportal(),
     ui.page_download(),
     ui.page_PharmacoGenomics(),
     ui.page_help(),
@@ -64,6 +65,7 @@ server <- function(input, output, session) {
   source(server_file("repository.R"), local = TRUE)
   source(server_file("modules.R"), local = TRUE)
   source(server_file("general-analysis.R"), local = TRUE)
+  source(server_file("cbioportal-analysis.R"), local = TRUE)
   observe_helpers(help_dir = system.file("shinyapp", "helper", package = "UCSCXenaShiny"))
 }
 
