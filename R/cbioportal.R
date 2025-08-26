@@ -78,7 +78,7 @@ extract_cbioportal_molecular_data <- function(study_data, data_type = "geneExp")
       # Convert to long format
       df <- as.data.frame(assay_data) %>%
         tibble::rownames_to_column("id") %>%
-        tidyr::pivot_longer(cols = -id, names_to = "Sample", values_to = "value")
+        tidyr::pivot_longer(cols = -"id", names_to = "Sample", values_to = "value")
       
       return(df)
     }
@@ -127,5 +127,37 @@ get_cbioportal_data_types <- function(study_data) {
   }, error = function(e) {
     warning("Failed to get data types: ", e$message)
     return(character(0))
+  })
+}
+
+#' Get cBioPortal gene expression value
+#'
+#' @param identifier Character, gene symbol
+#' @param study_id Character, cBioPortal study identifier  
+#' @return list with expression data and unit
+#' @export
+get_cbioportal_gene_value <- function(identifier, study_id) {
+  if (!requireNamespace("cBioPortalData", quietly = TRUE)) {
+    stop("Package 'cBioPortalData' is required for cBioPortal functionality")
+  }
+  
+  tryCatch({
+    # Get study data
+    study_data <- get_cbioportal_study_data(study_id)
+    if (is.null(study_data)) {
+      return(list(data = data.frame(), unit = ""))
+    }
+    
+    # Extract gene expression data
+    molecular_data <- extract_cbioportal_molecular_data(study_data, "geneExp")
+    
+    # Filter for specific gene
+    gene_data <- molecular_data[molecular_data$id == identifier, ]
+    
+    unit <- "mRNA expression (log2)"
+    return(list(expression = gene_data, unit = unit))
+  }, error = function(e) {
+    warning("Failed to get cBioPortal gene value for ", identifier, ": ", e$message)
+    return(list(expression = data.frame(), unit = ""))
   })
 }

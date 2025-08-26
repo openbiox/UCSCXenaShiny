@@ -134,6 +134,26 @@ ui.page_pancan_quick <- function() {
           ui.modules_3_ccle_04("modules_3_ccle_04")
         )
       )
+    ),
+
+    tabPanel("cBioPortal: Molecular analysis",
+      tabsetPanel(
+        tabPanel(
+          "Gene-Gene Correlation",
+          ui.modules_cbioportal_correlation("modules_cbioportal_correlation")
+        ),
+        tabPanel(
+          "Study Explorer",
+          fluidRow(
+            column(
+              12,
+              h3("Browse cBioPortal Studies"),
+              p("Explore available cancer studies and molecular data from cBioPortal."),
+              ui.modules_cbioportal_study_selector("quick_study_explorer")
+            )
+          )
+        )
+      )
     )
   )
 }

@@ -60,6 +60,15 @@ observeEvent(req(input$navbar=="CCLE: Drug analysis"),{
   on.exit(waiter$hide())
 }, once = TRUE)  
 
+# cBioPortal modules
+observeEvent(req(input$navbar=="cBioPortal: Molecular analysis"),{
+  waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE, html = html_spin)
+  waiter$show()
+  callModule(modules_cbioportal_correlation_Server, "modules_cbioportal_correlation")
+  callModule(modules_cbioportal_study_selector_Server, "quick_study_explorer")
+  on.exit(waiter$hide())
+}, once = TRUE)
+
 
 
 ## TPC 
