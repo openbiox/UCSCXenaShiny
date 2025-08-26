@@ -169,6 +169,11 @@ observeEvent(req(input$navbar=="General Analysis"),{
     selected_database_rm_phenotype, selected_database_add_url_and_phenotype,
     custom_file
   )
+  callModule(
+    server.modules_ga_custom_heatmap, "module_ga_custom_heatmap",
+    selected_database_rm_phenotype, selected_database_add_url_and_phenotype,
+    custom_file
+  )
 }, once = TRUE)  
 
 

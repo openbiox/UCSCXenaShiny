@@ -46,6 +46,8 @@ Imports:
     UCSCXenaTools,
     utils
 Suggests: 
+    circlize,
+    ComplexHeatmap,
     covr (>= 3.2.1),
     cowplot,
     DT (>= 0.5),
@@ -55,8 +57,10 @@ Suggests:
     ggrepel,
     ggstatsplot,
     glue,
+    grid,
     knitr,
     pacman,
+    pheatmap,
     plotly,
     plyr,
     RColorBrewer (>= 1.1.2),
@@ -67,7 +71,9 @@ Suggests:
     survival,
     survminer,
     testthat (>= 2.0.1),
-    umap
+    tidyHeatmap,
+    umap,
+    viridis
 VignetteBuilder: 
     knitr
 Encoding: UTF-8

@@ -96,6 +96,10 @@ ui.page_general_analysis <- function() {
       tabPanel(
         "Dimension-Reduction",
         ui.modules_ga_dim_distribution("module_ga_dim_distribution")
+      ),
+      tabPanel(
+        "Custom-Heatmap",
+        ui.modules_ga_custom_heatmap("module_ga_custom_heatmap")
       )
     )
   )
