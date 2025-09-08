@@ -1,10 +1,9 @@
 # UCSCXenaShiny <img src="https://raw.githubusercontent.com/lishensuo/images2/main/img01ucsc.png" align="right" width="130" height="150" />
 
-[![CRAN
-status](https://www.r-pkg.org/badges/version/UCSCXenaShiny)](https://cran.r-project.org/package=UCSCXenaShiny)
+[![CRAN status](https://www.r-pkg.org/badges/version/UCSCXenaShiny)](https://cran.r-project.org/package=UCSCXenaShiny)
 [![](https://cranlogs.r-pkg.org/badges/grand-total/UCSCXenaShiny?color=orange)](https://cran.r-project.org/package=UCSCXenaShiny)
 [![lifecycle](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html) 
-![R-CMD-check](https://github.com/openbiox/UCSCXenaShiny/workflows/R-CMD-check/badge.svg)
+[![R-CMD-check](https://github.com/openbiox/UCSCXenaShiny/actions/workflows/r-check.yml/badge.svg?branch=master)](https://github.com/openbiox/UCSCXenaShiny/actions/workflows/r-check.yml)
 [![check in Biotreasury](https://img.shields.io/badge/Biotreasury-collected-brightgreen)](https://biotreasury.rjmart.cn/#/tool?id=61144)
 
 ![](https://ucscxenashiny-1301043367.cos.ap-shanghai.myqcloud.com/Shiny-figures/Github_readme.png)
