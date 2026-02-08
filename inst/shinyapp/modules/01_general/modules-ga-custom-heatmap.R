@@ -417,8 +417,8 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
       incProgress(0.5, detail = "Creating heatmap")
       
       tryCatch({
-        # Check if grouping is applied
-        has_groups <- !is.null(groups) && nrow(groups) > 0 && input$ga_filter_button > 0
+        # Check if grouping is applied (sample_groups() is only populated when filter button is clicked)
+        has_groups <- !is.null(groups) && nrow(groups) > 0
         
         # Merge group information if available
         if (has_groups) {
@@ -432,6 +432,7 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
         palette_name <- input$color_palette
         
         # Create base heatmap
+        # Note: scale = "row" applies z-score normalization per gene for better visualization
         p <- data %>%
           tidyHeatmap::heatmap(
             .row = gene,
@@ -500,7 +501,7 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
           pdf(file, width = input$width, height = input$height)
         }
         
-        # tidyHeatmap returns a ComplexHeatmap object
+        # Print the heatmap (tidyHeatmap handles rendering internally)
         print(p)
         
         dev.off()
