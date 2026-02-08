@@ -169,11 +169,15 @@ modules_cbioportal_study_selector_Server <- function(input, output, session, dat
     if (!is.null(input$data_type_selection) && !is.null(input$study_selection)) {
       withProgress(message = paste("Loading molecular data..."), {
         tryCatch({
-          # For now, we'll load data without specifying genes (could be memory intensive for large studies)
-          # In production, you might want to limit this or load on-demand
+          # NOTE: Loading all genes without filtering could be memory intensive for large studies.
+          # In production, consider:
+          # 1. Adding a gene filter input field
+          # 2. Implementing pagination
+          # 3. Loading data on-demand for specific analyses
+          # For now, setting genes = NULL loads all available data for the profile
           molecular_data <- get_cbioportal_molecular_data(
             study_id = input$study_selection,
-            genes = NULL,  # Load all genes - could be limited in production
+            genes = NULL,  # TODO: Consider adding gene filter for large studies
             molecular_profile_id = input$data_type_selection,
             base_url = "public"
           )

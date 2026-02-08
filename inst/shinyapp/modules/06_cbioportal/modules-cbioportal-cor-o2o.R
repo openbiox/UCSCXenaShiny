@@ -161,8 +161,8 @@ modules_cbioportal_correlation_Server <- function(input, output, session) {
     req(values$correlation_data)
     
     cor_data <- values$correlation_data
-    # Capitalize column names for display
-    colnames(cor_data) <- c("Sample", paste(input$gene_x, "Expression"), paste(input$gene_y, "Expression"))
+    # Rename columns for display - the data has lowercase 'sample' from the API
+    names(cor_data) <- c("Sample", paste(input$gene_x, "Expression"), paste(input$gene_y, "Expression"))
     
     DT::datatable(
       cor_data,
