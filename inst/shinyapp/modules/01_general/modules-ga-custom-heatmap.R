@@ -6,7 +6,7 @@ ui.modules_ga_custom_heatmap <- function(id) {
         3,
         wellPanel(
           h4("Heatmap Controls"),
-          helpText("Create custom heatmaps with expression data. Select genes and configure visualization options."),
+          helpText("Create custom heatmaps with molecular data. Select features/genes and configure visualization options."),
           uiOutput(ns("ga_data1_id")),
           virtualSelectInput(
             inputId = ns("ga_data1_mid"), # molecule identifier
@@ -19,7 +19,7 @@ ui.modules_ga_custom_heatmap <- function(id) {
           ),
           numericInput(
             inputId = ns("max_genes"), 
-            label = "Maximum genes to display:", 
+            label = "Maximum features to display:", 
             value = 50, 
             min = 5, 
             max = 500,
@@ -33,7 +33,7 @@ ui.modules_ga_custom_heatmap <- function(id) {
           ),
           materialSwitch(
             inputId = ns("cluster_rows"),
-            label = "Cluster rows (genes)?",
+            label = "Cluster rows (features)?",
             value = TRUE,
             status = "primary"
           ),
@@ -45,7 +45,7 @@ ui.modules_ga_custom_heatmap <- function(id) {
           ),
           materialSwitch(
             inputId = ns("show_row_names"),
-            label = "Show gene names?",
+            label = "Show feature names?",
             value = TRUE,
             status = "primary"
           ),
@@ -145,23 +145,14 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
                                            custom_file) {
   ns <- session$ns
   
-  # Data source selection
-  data1_choices <- reactive({
-    req(selected_database_rm_phenotype())
-    
-    choices <- as.list(selected_database_rm_phenotype()$XenaDatasets)
-    names(choices) <- paste(selected_database_rm_phenotype()$XenaCohorts,
-                          selected_database_rm_phenotype()$XenaDatasets,
-                          sep = " - ")
-    choices
-  })
-  
+  # Data source selection - simplified to match other GA modules
   output$ga_data1_id <- renderUI({
+    show_table <- selected_database_rm_phenotype()
     selectInput(
       inputId = ns("ga_data1_id"),
-      label = "Data for heatmap:",
-      choices = data1_choices(),
-      selected = data1_choices()[[1]],
+      label = "Select dataset for heatmap:",
+      choices = c("NONE", unique(show_table$XenaDatasets)),
+      selected = "NONE",
       multiple = FALSE
     )
   })
@@ -241,10 +232,16 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
   heatmap_data_long <- eventReactive(input$ga_go, {
     req(input$ga_data1_id, input$ga_data1_mid)
     
+    # Validate dataset selection
+    if (input$ga_data1_id == "NONE") {
+      showNotification("Please select a dataset first", type = "warning")
+      return(NULL)
+    }
+    
     withProgress(message = "Loading data...", value = 0, {
-      incProgress(0.3, detail = "Fetching expression data")
+      incProgress(0.3, detail = "Fetching molecular data")
       
-      # Query data for multiple genes
+      # Query data for multiple genes/features
       df <- purrr::map(input$ga_data1_mid, function(x) {
         message("Querying data of identifier ", x, " from dataset: ", input$ga_data1_id)
         
@@ -258,7 +255,7 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
             names(data_vector) <- custom_data[[sample_col]]
             data_vector
           } else {
-            showNotification(paste("Gene", x, "not found in custom data"), type = "warning")
+            showNotification(paste("Feature", x, "not found in custom data"), type = "warning")
             return(NULL)
           }
         } else {
@@ -286,25 +283,25 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
       
       # Combine all data
       if (length(df) == 0) {
-        showNotification("No valid data found for selected genes", type = "error")
+        showNotification("No valid data found for selected features", type = "error")
         return(NULL)
       }
       
       final_df <- dplyr::bind_rows(df)
       
       if (is.null(final_df) || nrow(final_df) == 0) {
-        showNotification("No data available for selected genes", type = "error")
+        showNotification("No data available for selected features", type = "error")
         return(NULL)
       }
       
       incProgress(0.3, detail = "Processing data")
       
-      # Filter genes if needed
-      genes_to_include <- input$ga_data1_mid
-      if (length(genes_to_include) > input$max_genes) {
-        genes_to_include <- genes_to_include[1:input$max_genes]
-        final_df <- final_df %>% dplyr::filter(gene %in% genes_to_include)
-        showNotification(paste("Limited to", input$max_genes, "genes"), type = "message")
+      # Filter features if needed
+      features_to_include <- input$ga_data1_mid
+      if (length(features_to_include) > input$max_genes) {
+        features_to_include <- features_to_include[1:input$max_genes]
+        final_df <- final_df %>% dplyr::filter(gene %in% features_to_include)
+        showNotification(paste("Limited to", input$max_genes, "features"), type = "message")
       }
       
       # Remove rows with NA values
@@ -434,7 +431,7 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
         palette_name <- input$color_palette
         
         # Create base heatmap
-        # Note: scale = "row" applies z-score normalization per gene for better visualization
+        # Note: scale = "row" applies z-score normalization per feature for better visualization
         # clustering_method is applied to both rows and columns
         p <- data %>%
           tidyHeatmap::heatmap(
