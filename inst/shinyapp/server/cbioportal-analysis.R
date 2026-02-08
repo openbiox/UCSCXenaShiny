@@ -1,9 +1,8 @@
 # cBioPortal Analysis Server
-source(module_file("06_cbioportal/modules-cbioportal-study-selector.R"), local = TRUE)
-source(module_file("06_cbioportal/modules-cbioportal-cor-o2o.R"), local = TRUE)
+# Note: Module files are already loaded by app_preset.R
 
-# Initialize cBioPortal modules
-callModule(modules_cbioportal_correlation_Server, "modules_cbioportal_correlation")
-
-# Study explorer standalone module
-callModule(modules_cbioportal_study_selector_Server, "study_explorer")
+# Initialize cBioPortal modules for the main "cBioPortal Analysis" tab
+observeEvent(req(input$navbar=="cBioPortal Analysis"),{
+  callModule(modules_cbioportal_correlation_Server, "modules_cbioportal_correlation")
+  callModule(modules_cbioportal_study_selector_Server, "study_explorer")
+}, once = TRUE)
