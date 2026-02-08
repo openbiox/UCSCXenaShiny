@@ -25,8 +25,24 @@ get_cbioportal_studies <- function(base_url = NULL) {
     
     # Initialize the cBioPortal database connection
     # This is required before making API calls
-    suppressMessages({
-      cbioportalR::set_cbioportal_db(db = base_url)
+    # Suppress success messages but allow errors to propagate
+    result <- tryCatch({
+      suppressMessages({
+        cbioportalR::set_cbioportal_db(db = base_url)
+      })
+      TRUE
+    }, error = function(e) {
+      # Connection failed - provide helpful error message
+      msg <- paste0(
+        "Failed to connect to cBioPortal API. ",
+        "This could be due to:\n",
+        "  • Network connectivity issues\n",
+        "  • cBioPortal server temporarily unavailable\n",
+        "  • Firewall blocking access to www.cbioportal.org\n\n",
+        "Please check your internet connection and try again.\n",
+        "Original error: ", e$message
+      )
+      stop(msg, call. = FALSE)
     })
     
     # Get studies from cBioPortal
@@ -35,7 +51,7 @@ get_cbioportal_studies <- function(base_url = NULL) {
     # Convert to base data.frame for compatibility
     return(as.data.frame(studies))
   }, error = function(e) {
-    warning("Failed to connect to cBioPortal: ", e$message)
+    warning("cBioPortal connection error: ", e$message)
     return(data.frame())
   })
 }

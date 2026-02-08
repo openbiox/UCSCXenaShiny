@@ -6,76 +6,103 @@ ui.modules_cbioportal_study_selector <- function(id) {
     fluidRow(
       column(
         12,
-        h4(strong("Step 1: Select cBioPortal Study"), style = "color: #2c3e50;"),
-        br(),
-        
-        # Study selection interface
-        fluidRow(
-          column(
-            8,
-            selectInput(
-              inputId = ns("study_selection"),
-              label = "Choose a study:",
-              choices = NULL,
-              selected = NULL,
-              multiple = FALSE,
-              width = "100%"
+        # Step 1: Study Selection
+        wellPanel(
+          style = "background-color: #ffffff; border: 2px solid #dee2e6; padding: 15px;",
+          h4(
+            icon("database"), 
+            strong("Step 1: Select cBioPortal Study"), 
+            style = "color: #2c3e50; margin-top: 0;"
+          ),
+          hr(),
+          
+          # Study selection interface
+          fluidRow(
+            column(
+              12,
+              # Refresh button at top for better workflow
+              div(
+                style = "margin-bottom: 15px;",
+                actionButton(
+                  inputId = ns("load_studies"),
+                  label = "Refresh Studies from cBioPortal",
+                  icon = icon("refresh"),
+                  class = "btn-primary btn-lg",
+                  style = "width: 100%;"
+                )
+              )
             )
           ),
-          column(
-            4,
-            br(),
-            actionButton(
-              inputId = ns("load_studies"),
-              label = "Refresh Studies",
-              icon = icon("refresh"),
-              class = "btn-primary",
-              style = "width: 100%; margin-top: 5px;"
+          
+          fluidRow(
+            column(
+              12,
+              selectInput(
+                inputId = ns("study_selection"),
+                label = "Choose a study:",
+                choices = NULL,
+                selected = NULL,
+                multiple = FALSE,
+                width = "100%"
+              )
             )
+          ),
+          
+          # Study information display
+          wellPanel(
+            style = "background-color: #f8f9fa; border: 1px solid #dee2e6; margin-top: 10px;",
+            h5(icon("info-circle"), " Study Information", style = "margin-top: 0;"),
+            verbatimTextOutput(ns("study_info"))
           )
         ),
         
-        # Study information display
-        br(),
+        # Step 2: Data Type Selection
         wellPanel(
-          style = "background-color: #f8f9fa; border: 1px solid #dee2e6;",
-          verbatimTextOutput(ns("study_info"))
-        ),
-        
-        br(),
-        h4(strong("Step 2: Select Data Type"), style = "color: #2c3e50;"),
-        
-        # Data type selection
-        fluidRow(
-          column(
-            8,
-            selectInput(
-              inputId = ns("data_type_selection"),
-              label = "Choose data type:",
-              choices = NULL,
-              selected = NULL,
-              multiple = FALSE,
-              width = "100%"
+          style = "background-color: #ffffff; border: 2px solid #dee2e6; padding: 15px;",
+          h4(
+            icon("table"), 
+            strong("Step 2: Select Data Type"), 
+            style = "color: #2c3e50; margin-top: 0;"
+          ),
+          hr(),
+          
+          # Data type selection
+          fluidRow(
+            column(
+              12,
+              selectInput(
+                inputId = ns("data_type_selection"),
+                label = "Choose data type:",
+                choices = NULL,
+                selected = NULL,
+                multiple = FALSE,
+                width = "100%"
+              )
             )
           ),
-          column(
-            4,
-            br(),
-            actionButton(
-              inputId = ns("load_data"),
-              label = "Load Data",
-              icon = icon("download"),
-              class = "btn-success",
-              style = "width: 100%; margin-top: 5px;"
+          
+          fluidRow(
+            column(
+              12,
+              div(
+                style = "margin-top: 10px;",
+                actionButton(
+                  inputId = ns("load_data"),
+                  label = "Load Selected Data",
+                  icon = icon("download"),
+                  class = "btn-success btn-lg",
+                  style = "width: 100%;"
+                )
+              )
             )
+          ),
+          
+          # Data loading status
+          wellPanel(
+            style = "background-color: #f8f9fa; border: 1px solid #dee2e6; margin-top: 15px;",
+            h5(icon("check-circle"), " Data Status", style = "margin-top: 0;"),
+            verbatimTextOutput(ns("data_status"))
           )
-        ),
-        
-        # Data loading status
-        br(),
-        wellPanel(
-          style = "background-color: #f8f9fa; border: 1px solid #dee2e6;",
-          verbatimTextOutput(ns("data_status"))
         )
       )
     )
@@ -97,7 +124,7 @@ modules_cbioportal_study_selector_Server <- function(input, output, session, dat
   # Load studies on module initialization and refresh button
   observeEvent(c(input$load_studies, TRUE), {
     if (is.null(values$studies) || input$load_studies > 0) {
-      withProgress(message = "Loading cBioPortal studies...", {
+      withProgress(message = "Connecting to cBioPortal...", {
         tryCatch({
           studies <- get_cbioportal_studies(base_url = "public")
           values$studies <- studies
@@ -105,9 +132,45 @@ modules_cbioportal_study_selector_Server <- function(input, output, session, dat
           if (nrow(studies) > 0) {
             study_choices <- setNames(studies$studyId, paste0(studies$name, " (", studies$studyId, ")"))
             updateSelectInput(session, "study_selection", choices = study_choices)
-            showNotification("Studies loaded successfully!", type = "success")
+            showNotification(
+              paste0("✓ Successfully loaded ", nrow(studies), " cancer studies from cBioPortal!"),
+              type = "success",
+              duration = 5
+            )
           } else {
-            showNotification("No studies found or connection failed.", type = "warning")
+            showNotification(
+              HTML(paste0(
+                "<strong>Connection Issue</strong><br/>",
+                "Unable to load studies from cBioPortal.<br/>",
+                "<small>Please check your internet connection and try again.</small>"
+              )),
+              type = "warning",
+              duration = 10
+            )
+          }
+        }, error = function(e) {
+          # Show detailed error message to help troubleshoot
+          error_msg <- if (grepl("connect", e$message, ignore.case = TRUE)) {
+            HTML(paste0(
+              "<strong>Network Connection Error</strong><br/>",
+              "Cannot reach cBioPortal server (www.cbioportal.org)<br/><br/>",
+              "<small><strong>Possible solutions:</strong><br/>",
+              "• Check your internet connection<br/>",
+              "• Verify firewall settings allow access to cBioPortal<br/>",
+              "• Try again in a few moments<br/>",
+              "• Contact your IT administrator if the issue persists</small>"
+            ))
+          } else {
+            HTML(paste0(
+              "<strong>Error Loading Studies</strong><br/>",
+              "<small>", gsub("\n", "<br/>", e$message), "</small>"
+            ))
+          }
+          showNotification(error_msg, type = "error", duration = 15)
+        })
+      })
+    }
+  }, ignoreNULL = FALSE, ignoreInit = FALSE)
           }
         }, error = function(e) {
           showNotification(paste("Error loading studies:", e$message), type = "error")
