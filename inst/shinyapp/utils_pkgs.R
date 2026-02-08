@@ -1,5 +1,5 @@
 if (!requireNamespace("pacman")) {
-  install.packages("pacman", repos = "http://cran.r-project.org")
+  install.packages("pacman")
 }
 library(pacman)
 
@@ -74,7 +74,7 @@ if (!requireNamespace("ggradar")) {
 
 if (packageVersion("UCSCXenaTools") < "1.4.4") {
   tryCatch(
-    install.packages("UCSCXenaTools", repos = "http://cran.r-project.org"),
+    install.packages("UCSCXenaTools"),
     error = function(e) {
       warning("UCSCXenaTools <1.4.4, this shiny has a known issue (the download button cannot be used) to work with it. Please upate this package!",
         immediate. = TRUE
