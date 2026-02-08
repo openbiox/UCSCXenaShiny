@@ -338,45 +338,20 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
     available_samples <- unique(data$sample)
     
     if (input$grouping_method == "custom") {
-      # Parse custom groups
+      # Parse custom groups using package function
       req(input$custom_groups)
       
-      tryCatch({
-        group_lines <- strsplit(input$custom_groups, "\n")[[1]]
-        group_lines <- group_lines[nzchar(group_lines)]  # Remove empty lines
-        
-        group_list <- list()
-        for (line in group_lines) {
-          if (grepl(":", line)) {
-            parts <- strsplit(line, ":")[[1]]
-            group_name <- trimws(parts[1])
-            samples <- trimws(strsplit(parts[2], ",")[[1]])
-            
-            # Filter to only include available samples
-            samples <- samples[samples %in% available_samples]
-            
-            if (length(samples) > 0) {
-              group_list[[group_name]] <- samples
-            }
-          }
-        }
-        
-        if (length(group_list) == 0) {
-          showNotification("No valid groups found in custom input", type = "warning")
-          return(NULL)
-        }
-        
-        # Create a data frame with sample-group mapping
-        group_df <- purrr::map2_dfr(group_list, names(group_list), function(samples, group_name) {
-          data.frame(sample = samples, group = group_name, stringsAsFactors = FALSE)
-        })
-        
-        return(group_df)
-        
-      }, error = function(e) {
-        showNotification(paste("Error parsing custom groups:", e$message), type = "error")
+      groups <- parse_custom_groups(
+        group_text = input$custom_groups,
+        available_samples = available_samples
+      )
+      
+      if (is.null(groups)) {
+        showNotification("Failed to parse custom groups", type = "warning")
         return(NULL)
-      })
+      }
+      
+      return(groups)
       
     } else if (input$grouping_method == "phenotype") {
       # Use phenotype variable for grouping
@@ -415,7 +390,7 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
     return(NULL)
   })
   
-  # Generate heatmap using tidyHeatmap
+  # Generate heatmap using package function
   heatmap_plot <- reactive({
     req(heatmap_data_long())
     
@@ -431,46 +406,39 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
       incProgress(0.5, detail = "Creating heatmap")
       
       tryCatch({
-        # Check if grouping is applied (sample_groups() is only populated when filter button is clicked)
-        has_groups <- !is.null(groups) && nrow(groups) > 0
+        # Use the package function to generate heatmap
+        heatmap <- generate_custom_heatmap(
+          data = data,
+          cluster_rows = input$cluster_rows,
+          cluster_columns = input$cluster_cols,
+          clustering_method = input$clustering_method,
+          show_row_names = input$show_row_names,
+          show_column_names = input$show_col_names,
+          color_palette = input$color_palette,
+          scale = "row"
+        )
         
-        # Merge group information if available
-        if (has_groups) {
-          data <- data %>%
+        # If groups are defined, regenerate with groups
+        if (!is.null(groups) && nrow(groups) > 0) {
+          # Merge groups with data
+          data_with_groups <- data %>%
             dplyr::left_join(groups, by = "sample") %>%
             dplyr::mutate(group = ifelse(is.na(group), "Ungrouped", group))
-        }
-        
-        # Set up color palette
-        # tidyHeatmap natively accepts:
-        # - viridis palette names: "viridis", "plasma", "inferno", "magma"
-        # - RColorBrewer palette names: "RdYlBu", "RdBu", "Spectral", etc.
-        palette_name <- input$color_palette
-        
-        # Create base heatmap
-        # Note: scale = "row" applies z-score normalization per feature for better visualization
-        # clustering_method is applied to both rows and columns
-        p <- data %>%
-          tidyHeatmap::heatmap(
-            .row = gene,
-            .column = sample,
-            .value = value,
-            scale = "row",
-            clustering_method = input$clustering_method,
+          
+          # Regenerate with groups
+          heatmap <- generate_custom_heatmap(
+            data = data_with_groups,
             cluster_rows = input$cluster_rows,
             cluster_columns = input$cluster_cols,
+            clustering_method = input$clustering_method,
             show_row_names = input$show_row_names,
             show_column_names = input$show_col_names,
-            palette_value = palette_name
+            color_palette = input$color_palette,
+            scale = "row"
           )
-        
-        # Add group annotation if groups are defined
-        # annotation_tile automatically assigns distinct colors to each group
-        if (has_groups) {
-          p <- p %>% tidyHeatmap::annotation_tile(group)
         }
         
-        return(p)
+        return(heatmap)
         
       }, error = function(e) {
         showNotification(paste("Error generating heatmap:", e$message), type = "error")
