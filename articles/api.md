@@ -67,7 +67,7 @@ gene_expr <- query_pancan_value("TP53")
 #> Try querying data #1
 #> -> Checking if the dataset has probeMap...
 #> -> Done. ProbeMap is found.
-#> Saving data to file /tmp/RtmpuseOj8/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds
+#> Saving data to file /tmp/Rtmpy29Xpm/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds
 #> More info about dataset please run following commands:
 #>   library(UCSCXenaTools)
 #>   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %>% XenaBrowse()
@@ -112,7 +112,7 @@ miRNA_expr <- query_pancan_value("hsa-let-7a-2-3p", data_type = "miRNA")
 
 ``` r
 vis_toil_TvsN(Gene = "TP53", Mode = "Violinplot", Show.P.value = FALSE, Show.P.label = FALSE)
-#> Reading cache data /tmp/RtmpuseOj8/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds
+#> Reading cache data /tmp/Rtmpy29Xpm/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds
 #> More info about dataset please run following commands:
 #>   library(UCSCXenaTools)
 #>   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %>% XenaBrowse()
@@ -150,7 +150,7 @@ vis_toil_TvsN_cancer(
   TCGA.only = FALSE,
   Cancer = "ACC"
 )
-#> Reading cache data /tmp/RtmpuseOj8/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds
+#> Reading cache data /tmp/Rtmpy29Xpm/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds
 #> More info about dataset please run following commands:
 #>   library(UCSCXenaTools)
 #>   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %>% XenaBrowse()
@@ -181,7 +181,7 @@ vis_unicox_tree(
   measure = "OS",
   values = c("grey", "#E31A1C", "#377DB8")
 )
-#> Reading cache data /tmp/RtmpuseOj8/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds
+#> Reading cache data /tmp/Rtmpy29Xpm/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds
 #> More info about dataset please run following commands:
 #>   library(UCSCXenaTools)
 #>   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %>% XenaBrowse()
