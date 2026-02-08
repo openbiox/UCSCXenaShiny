@@ -72,6 +72,16 @@ if (!requireNamespace("ggradar")) {
   )
 }
 
+if (!requireNamespace("slickR")) {
+  pacman::p_load(remotes)
+  tryCatch(
+    remotes::install_github("yonicd/slickR"),
+    error = function(e) {
+      message("please install slickR manually")
+    }
+  )
+}
+
 if (packageVersion("UCSCXenaTools") < "1.4.4") {
   tryCatch(
     install.packages("UCSCXenaTools"),
