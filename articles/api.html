@@ -60,7 +60,7 @@
                         <h4 data-toc-skip class="author">Shixiang Wang,
 Yi Xiong, Longfei Zhao, Kai Gu, Yin Li, Fei Zhao</h4>
             
-            <h4 data-toc-skip class="date">2025-09-08</h4>
+            <h4 data-toc-skip class="date">2026-02-08</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/openbiox/UCSCXenaShiny/blob/master/vignettes/api.Rmd" class="external-link"><code>vignettes/api.Rmd</code></a></small>
       <div class="d-none name"><code>api.Rmd</code></div>
@@ -117,7 +117,7 @@ value unit is <code>log2(tpm+0.001)</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gene_expr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/query_pancan_value.html">query_pancan_value</a></span><span class="op">(</span><span class="st">"TP53"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; =========================================================================================</span></span>
-<span><span class="co">#&gt; UCSCXenaTools version 1.6.1</span></span>
+<span><span class="co">#&gt; UCSCXenaTools version 1.7.0</span></span>
 <span><span class="co">#&gt; Project URL: https://github.com/ropensci/UCSCXenaTools</span></span>
 <span><span class="co">#&gt; Usages: https://cran.r-project.org/web/packages/UCSCXenaTools/vignettes/USCSXenaTools.html</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -130,7 +130,7 @@ value unit is <code>log2(tpm+0.001)</code>.</p>
 <span><span class="co">#&gt; Try querying data #1</span></span>
 <span><span class="co">#&gt; -&gt; Checking if the dataset has probeMap...</span></span>
 <span><span class="co">#&gt; -&gt; Done. ProbeMap is found.</span></span>
-<span><span class="co">#&gt; Saving data to file /tmp/RtmpZXYrLA/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
+<span><span class="co">#&gt; Saving data to file /tmp/RtmpwTtblX/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
 <span><span class="co">#&gt; More info about dataset please run following commands:</span></span>
 <span><span class="co">#&gt;   library(UCSCXenaTools)</span></span>
 <span><span class="co">#&gt;   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span></span></code></pre></div>
@@ -175,11 +175,28 @@ value unit is <code>log2(tpm+0.001)</code>.</p>
 </h3>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/vis_toil_TvsN.html">vis_toil_TvsN</a></span><span class="op">(</span>Gene <span class="op">=</span> <span class="st">"TP53"</span>, Mode <span class="op">=</span> <span class="st">"Violinplot"</span>, Show.P.value <span class="op">=</span> <span class="cn">FALSE</span>, Show.P.label <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Reading cache data /tmp/RtmpZXYrLA/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
+<span><span class="co">#&gt; Reading cache data /tmp/RtmpwTtblX/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
 <span><span class="co">#&gt; More info about dataset please run following commands:</span></span>
 <span><span class="co">#&gt;   library(UCSCXenaTools)</span></span>
-<span><span class="co">#&gt;   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span></span></code></pre></div>
-<p><img src="api_files/figure-html/unnamed-chunk-9-1.png" width="1152" style="display: block; margin: auto;"></p>
+<span><span class="co">#&gt;   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span></span>
+<span><span class="co">#&gt; Warning: `aes_string()` was deprecated in ggplot2 3.0.0.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Please use tidy evaluation idioms with `aes()`.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> See also `vignette("ggplot2-in-packages")` for more information.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> The deprecated feature was likely used in the <span style="color: #0000BB;">UCSCXenaShiny</span> package.</span></span>
+<span><span class="co">#&gt;   Please report the issue at</span></span>
+<span><span class="co">#&gt;   <span style="color: #0000BB; font-style: italic;">&lt;https://github.com/openbiox/UCSCXenaShiny/issues&gt;</span>.</span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">This warning is displayed once per session.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">Call `lifecycle::last_lifecycle_warnings()` to see where this warning was</span></span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">generated.</span></span></span>
+<span><span class="co">#&gt; Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Please use `linewidth` instead.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> The deprecated feature was likely used in the <span style="color: #0000BB;">UCSCXenaShiny</span> package.</span></span>
+<span><span class="co">#&gt;   Please report the issue at</span></span>
+<span><span class="co">#&gt;   <span style="color: #0000BB; font-style: italic;">&lt;https://github.com/openbiox/UCSCXenaShiny/issues&gt;</span>.</span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">This warning is displayed once per session.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">Call `lifecycle::last_lifecycle_warnings()` to see where this warning was</span></span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">generated.</span></span></span></code></pre></div>
+<p><img src="api_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="" width="1152" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="compare-gene-expression-level-in-single-cancer-type">Compare Gene Expression Level in Single Cancer Type<a class="anchor" aria-label="anchor" href="#compare-gene-expression-level-in-single-cancer-type"></a>
@@ -195,13 +212,13 @@ value unit is <code>log2(tpm+0.001)</code>.</p>
 <span>  TCGA.only <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  Cancer <span class="op">=</span> <span class="st">"ACC"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Reading cache data /tmp/RtmpZXYrLA/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
+<span><span class="co">#&gt; Reading cache data /tmp/RtmpwTtblX/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
 <span><span class="co">#&gt; More info about dataset please run following commands:</span></span>
 <span><span class="co">#&gt;   library(UCSCXenaTools)</span></span>
 <span><span class="co">#&gt;   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span></span>
 <span><span class="co">#&gt; Counting P value</span></span>
 <span><span class="co">#&gt; Counting P value finished</span></span></code></pre></div>
-<p><img src="api_files/figure-html/unnamed-chunk-10-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="api_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="compare-gene-expression-level-in-different-anatomic-regions">Compare Gene Expression Level in Different Anatomic Regions<a class="anchor" aria-label="anchor" href="#compare-gene-expression-level-in-different-anatomic-regions"></a>
@@ -225,12 +242,12 @@ PANCAN Dataset<a class="anchor" aria-label="anchor" href="#visualize-relationshi
 <span>  measure <span class="op">=</span> <span class="st">"OS"</span>,</span>
 <span>  values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey"</span>, <span class="st">"#E31A1C"</span>, <span class="st">"#377DB8"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Reading cache data /tmp/RtmpZXYrLA/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
+<span><span class="co">#&gt; Reading cache data /tmp/RtmpwTtblX/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds</span></span>
 <span><span class="co">#&gt; More info about dataset please run following commands:</span></span>
 <span><span class="co">#&gt;   library(UCSCXenaTools)</span></span>
 <span><span class="co">#&gt;   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %&gt;% XenaBrowse()</span></span>
 <span><span class="co">#&gt; Get data value for TP53</span></span></code></pre></div>
-<p><img src="api_files/figure-html/unnamed-chunk-11-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><img src="api_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="other-functions-and-data">Other Functions and Data<a class="anchor" aria-label="anchor" href="#other-functions-and-data"></a>
@@ -249,7 +266,7 @@ PANCAN Dataset<a class="anchor" aria-label="anchor" href="#visualize-relationshi
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
