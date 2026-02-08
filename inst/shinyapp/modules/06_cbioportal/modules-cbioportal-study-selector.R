@@ -12,29 +12,35 @@ ui.modules_cbioportal_study_selector <- function(id) {
         # Study selection interface
         fluidRow(
           column(
-            6,
+            8,
             selectInput(
               inputId = ns("study_selection"),
               label = "Choose a study:",
               choices = NULL,
               selected = NULL,
-              multiple = FALSE
+              multiple = FALSE,
+              width = "100%"
             )
           ),
           column(
-            6,
+            4,
+            br(),
             actionButton(
               inputId = ns("load_studies"),
               label = "Refresh Studies",
               icon = icon("refresh"),
-              class = "btn-primary"
+              class = "btn-primary",
+              style = "width: 100%; margin-top: 5px;"
             )
           )
         ),
         
         # Study information display
         br(),
-        verbatimTextOutput(ns("study_info")),
+        wellPanel(
+          style = "background-color: #f8f9fa; border: 1px solid #dee2e6;",
+          verbatimTextOutput(ns("study_info"))
+        ),
         
         br(),
         h4(strong("Step 2: Select Data Type"), style = "color: #2c3e50;"),
@@ -42,29 +48,35 @@ ui.modules_cbioportal_study_selector <- function(id) {
         # Data type selection
         fluidRow(
           column(
-            6,
+            8,
             selectInput(
               inputId = ns("data_type_selection"),
               label = "Choose data type:",
               choices = NULL,
               selected = NULL,
-              multiple = FALSE
+              multiple = FALSE,
+              width = "100%"
             )
           ),
           column(
-            6,
+            4,
+            br(),
             actionButton(
               inputId = ns("load_data"),
               label = "Load Data",
               icon = icon("download"),
-              class = "btn-success"
+              class = "btn-success",
+              style = "width: 100%; margin-top: 5px;"
             )
           )
         ),
         
         # Data loading status
         br(),
-        verbatimTextOutput(ns("data_status"))
+        wellPanel(
+          style = "background-color: #f8f9fa; border: 1px solid #dee2e6;",
+          verbatimTextOutput(ns("data_status"))
+        )
       )
     )
   )

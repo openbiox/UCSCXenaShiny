@@ -23,6 +23,12 @@ get_cbioportal_studies <- function(base_url = NULL) {
       base_url <- "public"
     }
     
+    # Initialize the cBioPortal database connection
+    # This is required before making API calls
+    suppressMessages({
+      cbioportalR::set_cbioportal_db(db = base_url)
+    })
+    
     # Get studies from cBioPortal
     studies <- cbioportalR::available_studies(base_url = base_url)
     
