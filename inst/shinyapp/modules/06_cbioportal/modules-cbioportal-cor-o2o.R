@@ -94,50 +94,28 @@ modules_cbioportal_correlation_Server <- function(input, output, session) {
   
   # Run correlation analysis
   observeEvent(input$run_correlation, {
-    req(study_data()$molecular_data, input$gene_x, input$gene_y)
+    req(study_data()$study_id, input$gene_x, input$gene_y)
     
     withProgress(message = "Running correlation analysis...", {
       tryCatch({
-        molecular_data <- study_data()$molecular_data
-        
-        # Filter data for selected genes
-        gene_x_data <- molecular_data[molecular_data$id == input$gene_x, ]
-        gene_y_data <- molecular_data[molecular_data$id == input$gene_y, ]
-        
-        if (nrow(gene_x_data) == 0) {
-          showNotification(paste("Gene", input$gene_x, "not found in the data"), type = "warning")
-          return()
-        }
-        
-        if (nrow(gene_y_data) == 0) {
-          showNotification(paste("Gene", input$gene_y, "not found in the data"), type = "warning")
-          return()
-        }
-        
-        # Merge data for correlation
-        correlation_data <- merge(
-          gene_x_data[, c("Sample", "value")],
-          gene_y_data[, c("Sample", "value")],
-          by = "Sample",
-          suffixes = c("_x", "_y")
+        # Use the new correlation function
+        result <- get_cbioportal_gene_correlation(
+          gene_x = input$gene_x,
+          gene_y = input$gene_y,
+          study_id = study_data()$study_id,
+          base_url = "public"
         )
         
-        # Remove NA values
-        correlation_data <- correlation_data[complete.cases(correlation_data), ]
-        
-        if (nrow(correlation_data) < 3) {
-          showNotification("Insufficient data points for correlation analysis", type = "warning")
+        if (is.null(result$correlation)) {
+          showNotification("Could not calculate correlation - check gene symbols and data availability", type = "warning")
           return()
         }
         
-        # Calculate correlation
-        cor_result <- cor.test(correlation_data$value_x, correlation_data$value_y)
-        
-        values$correlation_data <- correlation_data
-        values$correlation_result <- cor_result
+        values$correlation_data <- result$data
+        values$correlation_result <- result$correlation
         
         showNotification(
-          paste("Correlation analysis completed. R =", round(cor_result$estimate, 3)), 
+          paste("Correlation analysis completed. R =", round(result$correlation$estimate, 3)), 
           type = "success"
         )
         
@@ -183,6 +161,7 @@ modules_cbioportal_correlation_Server <- function(input, output, session) {
     req(values$correlation_data)
     
     cor_data <- values$correlation_data
+    # Capitalize column names for display
     colnames(cor_data) <- c("Sample", paste(input$gene_x, "Expression"), paste(input$gene_y, "Expression"))
     
     DT::datatable(
@@ -214,9 +193,9 @@ modules_cbioportal_correlation_Server <- function(input, output, session) {
     }
     
     if (!is.null(study_data()$molecular_data)) {
-      unique_genes <- length(unique(study_data()$molecular_data$id))
-      unique_samples <- length(unique(study_data()$molecular_data$Sample))
-      lines <- c(lines, paste("Molecular Data: ", unique_genes, "genes x", unique_samples, "samples"))
+      unique_genes <- length(unique(study_data()$molecular_data$gene))
+      unique_samples <- length(unique(study_data()$molecular_data$sample))
+      lines <- c(lines, paste("Molecular Data:", unique_genes, "genes x", unique_samples, "samples"))
     }
     
     if (!is.null(values$correlation_result)) {

@@ -87,7 +87,7 @@ modules_cbioportal_study_selector_Server <- function(input, output, session, dat
     if (is.null(values$studies) || input$load_studies > 0) {
       withProgress(message = "Loading cBioPortal studies...", {
         tryCatch({
-          studies <- get_cbioportal_studies()
+          studies <- get_cbioportal_studies(base_url = "public")
           values$studies <- studies
           
           if (nrow(studies) > 0) {
@@ -126,22 +126,36 @@ modules_cbioportal_study_selector_Server <- function(input, output, session, dat
   # Load study data when study is selected
   observeEvent(input$study_selection, {
     if (!is.null(input$study_selection) && input$study_selection != "") {
-      withProgress(message = paste("Loading data for study:", input$study_selection), {
+      withProgress(message = paste("Loading metadata for study:", input$study_selection), {
         tryCatch({
-          study_data <- get_cbioportal_study_data(input$study_selection)
-          values$selected_study_data <- study_data
+          # Get study info
+          study_info <- get_cbioportal_study_info(input$study_selection, base_url = "public")
           
-          if (!is.null(study_data)) {
-            # Get available data types
-            data_types <- get_cbioportal_data_types(study_data)
-            updateSelectInput(session, "data_type_selection", choices = data_types)
+          # Get available molecular profiles
+          profiles <- get_cbioportal_profiles(input$study_selection, base_url = "public")
+          
+          if (nrow(profiles) > 0) {
+            # Filter to expression/RNA profiles
+            rna_profiles <- profiles[grepl("rna|mrna|expression", profiles$name, ignore.case = TRUE), ]
             
-            # Extract clinical data
-            values$clinical_data <- extract_cbioportal_clinical_data(study_data)
-            
-            showNotification("Study data loaded successfully!", type = "success")
+            if (nrow(rna_profiles) > 0) {
+              profile_choices <- setNames(
+                rna_profiles$molecularProfileId,
+                paste0(rna_profiles$name, " (", rna_profiles$datatype, ")")
+              )
+              updateSelectInput(session, "data_type_selection", choices = profile_choices)
+              values$selected_study_data <- list(info = study_info, profiles = profiles)
+              
+              # Load clinical data
+              values$clinical_data <- get_cbioportal_clinical_data(input$study_selection, base_url = "public")
+              
+              showNotification("Study metadata loaded successfully!", type = "success")
+            } else {
+              showNotification("No RNA expression profiles found for this study.", type = "warning")
+              updateSelectInput(session, "data_type_selection", choices = NULL)
+            }
           } else {
-            showNotification("Failed to load study data.", type = "error")
+            showNotification("No molecular profiles found for this study.", type = "error")
           }
         }, error = function(e) {
           showNotification(paste("Error loading study data:", e$message), type = "error")
@@ -152,19 +166,27 @@ modules_cbioportal_study_selector_Server <- function(input, output, session, dat
   
   # Load molecular data when data type is selected
   observeEvent(input$load_data, {
-    if (!is.null(input$data_type_selection) && !is.null(values$selected_study_data)) {
-      withProgress(message = paste("Loading", input$data_type_selection, "data..."), {
+    if (!is.null(input$data_type_selection) && !is.null(input$study_selection)) {
+      withProgress(message = paste("Loading molecular data..."), {
         tryCatch({
-          molecular_data <- extract_cbioportal_molecular_data(
-            values$selected_study_data, 
-            input$data_type_selection
+          # For now, we'll load data without specifying genes (could be memory intensive for large studies)
+          # In production, you might want to limit this or load on-demand
+          molecular_data <- get_cbioportal_molecular_data(
+            study_id = input$study_selection,
+            genes = NULL,  # Load all genes - could be limited in production
+            molecular_profile_id = input$data_type_selection,
+            base_url = "public"
           )
-          values$molecular_data <- molecular_data
           
-          showNotification(
-            paste("Loaded", nrow(molecular_data), "data points for", input$data_type_selection), 
-            type = "success"
-          )
+          if (nrow(molecular_data) > 0) {
+            values$molecular_data <- molecular_data
+            showNotification(
+              paste("Loaded", nrow(molecular_data), "data points"), 
+              type = "success"
+            )
+          } else {
+            showNotification("No molecular data found for selected profile.", type = "warning")
+          }
         }, error = function(e) {
           showNotification(paste("Error loading molecular data:", e$message), type = "error")
         })

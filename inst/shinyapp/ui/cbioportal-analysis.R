@@ -74,11 +74,11 @@ ui.page_cbioportal <- function() {
               tags$a("cBioPortal for Cancer Genomics", 
                      href = "https://www.cbioportal.org/", target = "_blank"),
               br(),
-              tags$a("cBioPortalData R Package", 
-                     href = "https://waldronlab.io/cBioPortalData/", target = "_blank"),
+              tags$a("cbioportalR R Package", 
+                     href = "https://www.karissawhiting.com/cbioportalR/", target = "_blank"),
               br(),
               tags$a("API Documentation", 
-                     href = "https://docs.cbioportal.org/6.-web-api-and-clients/api-and-api-clients", target = "_blank")
+                     href = "https://docs.cbioportal.org/web-api-and-clients/", target = "_blank")
             )
           )
         )
