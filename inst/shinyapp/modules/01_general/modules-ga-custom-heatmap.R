@@ -417,8 +417,11 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
       incProgress(0.5, detail = "Creating heatmap")
       
       tryCatch({
+        # Check if grouping is applied
+        has_groups <- !is.null(groups) && nrow(groups) > 0 && input$ga_filter_button > 0
+        
         # Merge group information if available
-        if (!is.null(groups) && nrow(groups) > 0 && input$ga_filter_button > 0) {
+        if (has_groups) {
           data <- data %>%
             dplyr::left_join(groups, by = "sample") %>%
             dplyr::mutate(group = ifelse(is.na(group), "Ungrouped", group))
@@ -444,7 +447,7 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
           )
         
         # Add group annotation if groups are defined
-        if (!is.null(groups) && nrow(groups) > 0 && input$ga_filter_button > 0 && "group" %in% colnames(data)) {
+        if (has_groups) {
           p <- p %>% tidyHeatmap::annotation_tile(group)
         }
         
