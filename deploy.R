@@ -9,10 +9,14 @@ print(Sys.info())
 
 # Set options and run app
 
-if(dir.exists("/app/xena")){ 
+if (dir.exists("/app/xena")){ 
   # hiplot
   xena.cacheDir = "/app/xena"
   xena.zenodoDir = "/app/xena/zdatasets"
+} else if (dir.exists("/xena")) {
+  # wanglab shiny server docker
+  xena.cacheDir = "/xena/cache"
+  xena.zenodoDir = "/xena/datasets/"
 } else {
   # zhoulab
   xena.cacheDir = "/home/shiny/apps/xena/cache"
