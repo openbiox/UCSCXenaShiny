@@ -427,12 +427,15 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
             dplyr::mutate(group = ifelse(is.na(group), "Ungrouped", group))
         }
         
-        # Set up color palette - tidyHeatmap accepts viridis palettes as strings
-        # or RColorBrewer palette names
+        # Set up color palette
+        # tidyHeatmap natively accepts:
+        # - viridis palette names: "viridis", "plasma", "inferno", "magma"
+        # - RColorBrewer palette names: "RdYlBu", "RdBu", "Spectral", etc.
         palette_name <- input$color_palette
         
         # Create base heatmap
         # Note: scale = "row" applies z-score normalization per gene for better visualization
+        # clustering_method is applied to both rows and columns
         p <- data %>%
           tidyHeatmap::heatmap(
             .row = gene,
@@ -448,6 +451,7 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
           )
         
         # Add group annotation if groups are defined
+        # annotation_tile automatically assigns distinct colors to each group
         if (has_groups) {
           p <- p %>% tidyHeatmap::annotation_tile(group)
         }
