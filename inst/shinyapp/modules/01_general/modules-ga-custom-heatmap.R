@@ -276,7 +276,7 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
         }) %>%
         purrr::keep(~ !is.null(.))
       
-      # Add gene names to each data frame
+      # Add feature identifiers to each data frame (stored in 'gene' column for consistency)
       for (i in seq_along(df)) {
         df[[i]]$gene <- input$ga_data1_mid[i]
       }
