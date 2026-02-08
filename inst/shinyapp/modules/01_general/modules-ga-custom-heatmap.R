@@ -8,7 +8,6 @@ ui.modules_ga_custom_heatmap <- function(id) {
           h4("Heatmap Controls"),
           helpText("Create custom heatmaps with molecular data. Select features/genes and configure visualization options."),
           uiOutput(ns("ga_data1_id")),
-          helpText(icon("info-circle"), "Features will be loaded automatically when you select a dataset. First 10-20 features are selected by default."),
           virtualSelectInput(
             inputId = ns("ga_data1_mid"), # molecule identifier
             label = "Gene/Feature identifiers:",
@@ -186,84 +185,30 @@ server.modules_ga_custom_heatmap <- function(input, output, session,
     )
   })
   
-  # Dynamic feature loading based on selected dataset
+  # Simple feature selection from preloaded identifiers
   observe({
-    req(input$ga_data1_id)
-    
-    # Don't load for NONE or custom dataset
-    if (input$ga_data1_id == "NONE") {
-      updateVirtualSelect(
-        "ga_data1_mid",
-        choices = if (is.null(custom_file$fData)) all_preload_identifiers else
-          unique(c(colnames(custom_file$fData)[-1], all_preload_identifiers)),
-        selected = character(0)
-      )
-      return()
+    # Use all_preload_identifiers which contains Gene, Protein, miRNA identifiers
+    # Select first 15 as defaults
+    available_features <- if (is.null(custom_file$fData)) {
+      all_preload_identifiers
+    } else {
+      unique(c(colnames(custom_file$fData)[-1], all_preload_identifiers))
     }
     
-    if (input$ga_data1_id == "custom_feature_dataset") {
-      req(custom_file$fData)
-      features <- colnames(custom_file$fData)[-1]
-      # Select first 10 or 20 features by default
-      default_n <- min(15, length(features))
-      updateVirtualSelect(
-        "ga_data1_mid",
-        choices = features,
-        selected = if (length(features) > 0) features[1:default_n] else character(0)
-      )
-      return()
+    # Select first 15 features by default (excluding "NONE" if present)
+    features_for_selection <- setdiff(available_features, "NONE")
+    default_n <- min(15, length(features_for_selection))
+    default_selection <- if (length(features_for_selection) >= default_n) {
+      features_for_selection[1:default_n]
+    } else {
+      features_for_selection
     }
     
-    # For Xena datasets, fetch features dynamically
-    withProgress(message = "Loading available features...", value = 0.5, {
-      tryCatch({
-        # Fetch up to 100 features from the dataset
-        features <- get_dataset_features(input$ga_data1_id, n_max = 100)
-        
-        if (!is.null(features) && length(features) > 0) {
-          # Select first 10-20 features by default
-          default_n <- min(15, length(features))
-          default_selection <- features[1:default_n]
-          
-          updateVirtualSelect(
-            "ga_data1_mid",
-            choices = features,
-            selected = default_selection
-          )
-          
-          showNotification(
-            paste0("Loaded ", length(features), " features from dataset. ",
-                   "First ", default_n, " selected by default."),
-            type = "message",
-            duration = 5
-          )
-        } else {
-          # Fallback to pre-loaded identifiers if fetch fails
-          updateVirtualSelect(
-            "ga_data1_mid",
-            choices = all_preload_identifiers,
-            selected = c("TP53", "KRAS", "PTEN")
-          )
-          showNotification(
-            "Could not load features from dataset. Using default gene list.",
-            type = "warning",
-            duration = 5
-          )
-        }
-      }, error = function(e) {
-        # Fallback on error
-        updateVirtualSelect(
-          "ga_data1_mid",
-          choices = all_preload_identifiers,
-          selected = c("TP53", "KRAS", "PTEN")
-        )
-        showNotification(
-          paste("Error loading features:", e$message),
-          type = "warning",
-          duration = 5
-        )
-      })
-    })
+    updateVirtualSelect(
+      "ga_data1_mid",
+      choices = available_features,
+      selected = default_selection
+    )
   })
   
   # Dynamic phenotype variable selection
