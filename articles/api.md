@@ -3,9 +3,10 @@
 Firstly, assume you have already installed **UCSCXenaShiny** package.
 
 ``` r
+
 library(UCSCXenaShiny)
 #> =========================================================================================
-#> UCSCXenaShiny version 2.2.0
+#> UCSCXenaShiny version 2.2.1
 #> Project URL: https://github.com/openbiox/UCSCXenaShiny
 #> Usages: https://openbiox.github.io/UCSCXenaShiny/
 #> 
@@ -34,6 +35,7 @@ Pan-Cancer dataset for single identifier (e.g., gene, protein).
 Check parameters:
 
 ``` r
+
 args(query_pancan_value)
 #> function (molecule, data_type = c("mRNA", "transcript", "protein", 
 #>     "mutation", "cnv", "methylation", "miRNA", "fusion", "promoter", 
@@ -52,6 +54,7 @@ Let’s check several examples.
 ### Fetch Gene Expression
 
 ``` r
+
 gene_expr <- query_pancan_value("TP53")
 #> =========================================================================================
 #> UCSCXenaTools version 1.7.0
@@ -67,13 +70,14 @@ gene_expr <- query_pancan_value("TP53")
 #> Try querying data #1
 #> -> Checking if the dataset has probeMap...
 #> -> Done. ProbeMap is found.
-#> Saving data to file /tmp/Rtmpy29Xpm/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds
+#> Saving data to file /tmp/RtmpIp2tWo/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds
 #> More info about dataset please run following commands:
 #>   library(UCSCXenaTools)
 #>   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %>% XenaBrowse()
 ```
 
 ``` r
+
 str(gene_expr)
 #> List of 2
 #>  $ expression: Named num [1:19131] 4.79 5.89 5.52 4.43 2.38 ...
@@ -85,24 +89,28 @@ str(gene_expr)
 ### Fetch Transcript Expression
 
 ``` r
+
 transcript_expr <- query_pancan_value("ENST00000000233", data_type = "transcript")
 ```
 
 ### Fetch Gene CNV
 
 ``` r
+
 gene_cnv <- query_pancan_value("TP53", data_type = "cnv")
 ```
 
 ### Fetch Gene Mutation
 
 ``` r
+
 gene_mut <- query_pancan_value("TP53", data_type = "mutation")
 ```
 
 ### Fetch miRNA mature strand expression
 
 ``` r
+
 miRNA_expr <- query_pancan_value("hsa-let-7a-2-3p", data_type = "miRNA")
 ```
 
@@ -111,8 +119,9 @@ miRNA_expr <- query_pancan_value("hsa-let-7a-2-3p", data_type = "miRNA")
 ### Visualize Single Gene Expression in PANCAN Dataset
 
 ``` r
+
 vis_toil_TvsN(Gene = "TP53", Mode = "Violinplot", Show.P.value = FALSE, Show.P.label = FALSE)
-#> Reading cache data /tmp/Rtmpy29Xpm/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds
+#> Reading cache data /tmp/RtmpIp2tWo/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds
 #> More info about dataset please run following commands:
 #>   library(UCSCXenaTools)
 #>   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %>% XenaBrowse()
@@ -140,6 +149,7 @@ vis_toil_TvsN(Gene = "TP53", Mode = "Violinplot", Show.P.value = FALSE, Show.P.l
 ### Compare Gene Expression Level in Single Cancer Type
 
 ``` r
+
 vis_toil_TvsN_cancer(
   Gene = "TP53",
   Mode = "Violinplot",
@@ -150,7 +160,7 @@ vis_toil_TvsN_cancer(
   TCGA.only = FALSE,
   Cancer = "ACC"
 )
-#> Reading cache data /tmp/Rtmpy29Xpm/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds
+#> Reading cache data /tmp/RtmpIp2tWo/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds
 #> More info about dataset please run following commands:
 #>   library(UCSCXenaTools)
 #>   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %>% XenaBrowse()
@@ -176,12 +186,13 @@ output](https://gitee.com/ShixiangWang/ImageCollection/raw/master/png/2021032213
 ### Visualize Relationship between Gene Expression and Prognosis in the PANCAN Dataset
 
 ``` r
+
 vis_unicox_tree(
   Gene = "TP53",
   measure = "OS",
   values = c("grey", "#E31A1C", "#377DB8")
 )
-#> Reading cache data /tmp/Rtmpy29Xpm/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds
+#> Reading cache data /tmp/RtmpIp2tWo/UCSCXenaShiny/4822f991b17cbdab3831c455be7620b2.rds
 #> More info about dataset please run following commands:
 #>   library(UCSCXenaTools)
 #>   XenaGenerate(subset = XenaDatasets == "TcgaTargetGtex_rsem_gene_tpm") %>% XenaBrowse()

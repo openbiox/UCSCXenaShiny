@@ -85,7 +85,7 @@ vis_identifier_multi_cor(
 - ...:
 
   other parameters passing to
-  [ggstatsplot::ggcorrmat](https://indrajeetpatil.github.io/ggstatsplot/reference/ggcorrmat.html).
+  [ggstatsplot::ggcorrmat](https://www.indrapatil.com/ggstatsplot/reference/ggcorrmat.html).
 
 ## Value
 

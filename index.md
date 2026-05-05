@@ -59,8 +59,8 @@ please see v1 branch).
 
 ## 🐍 Use with Conda
 
-| Name                                                                                                                                        | Downloads                                                                                                                                       | Version                                                                                                                                       | Platforms                                                                                                                                       |
-|---------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| Name | Downloads | Version | Platforms |
+|----|----|----|----|
 | [![Conda Recipe](https://img.shields.io/badge/recipe-r--ucscxenashiny-green.svg)](https://github.com/conda-forge/r-ucscxenashiny-feedstock) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/r-ucscxenashiny.svg)](https://github.com/conda-forge/r-ucscxenashiny-feedstock) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/r-ucscxenashiny.svg)](https://github.com/conda-forge/r-ucscxenashiny-feedstock) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/r-ucscxenashiny.svg)](https://github.com/conda-forge/r-ucscxenashiny-feedstock) |
 
 Install from `conda-forge` channel with:
@@ -145,6 +145,7 @@ docker start xenashiny
 You can install stable release of **UCSCXenaShiny** from CRAN with:
 
 ``` r
+
 install.packages("UCSCXenaShiny")
 ```
 
@@ -152,12 +153,14 @@ You can install the development version of **UCSCXenaShiny** from Github
 with:
 
 ``` r
+
 remotes::install_github("openbiox/UCSCXenaShiny")
 ```
 
 Or r-universe:
 
 ``` r
+
 install.packages("UCSCXenaShiny", repos = c("https://openbiox.r-universe.dev", "https://cran.r-project.org"))
 ```
 
@@ -201,6 +204,7 @@ yum update -y && yum install -y libcurl-devel openssl-devel libxml2-devel \
 First load package:
 
 ``` r
+
 library(UCSCXenaShiny)
 ```
 
@@ -208,6 +212,7 @@ Start Shiny in your R console (ignore this if you just want to use
 functions in this package):
 
 ``` r
+
 app_run()
 # At default, the Shiny is running under client mode
 # It means the data queried from remote UCSC Xena server will
@@ -237,6 +242,7 @@ store data.
 e.g.,
 
 ``` r
+
 xena.cacheDir = "/xena"
 xena.zenodoDir = "/xena/datasets"
 
@@ -334,6 +340,7 @@ Analysis/Download: <https://www.bilibili.com/video/BV1TZ421K7VH>
     version in R console can fix this.**
 
     ``` r
+
     packageurl <- "https://cran.r-project.org/src/contrib/Archive/nloptr/nloptr_1.2.1.tar.gz"
 
     install.packages(packageurl, repos=NULL, type="source")
@@ -347,6 +354,7 @@ Analysis/Download: <https://www.bilibili.com/video/BV1TZ421K7VH>
     **Install it by hand in R console.**
 
     ``` r
+
     install.packages("pacman")
     ```
 
@@ -355,6 +363,7 @@ Analysis/Download: <https://www.bilibili.com/video/BV1TZ421K7VH>
     **Install it by hand in R cosole.**
 
     ``` r
+
     install.packages("shinythemes")
     ```
 
@@ -363,6 +372,7 @@ Analysis/Download: <https://www.bilibili.com/video/BV1TZ421K7VH>
     **Install it by hand in R cosole.**
 
     ``` r
+
     if (!requireNamespace("gganatogram")) {
        library(remotes)
        tryCatch(
@@ -379,6 +389,7 @@ Analysis/Download: <https://www.bilibili.com/video/BV1TZ421K7VH>
     **Install it by hand in R cosole.**
 
     ``` r
+
     if (!requireNamespace("ggradar")) {
        library(remotes)
        tryCatch(

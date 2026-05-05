@@ -86,7 +86,7 @@ vis_identifier_grp_comparison(
 - ggtheme:
 
   A `{ggplot2}` theme. Default value is
-  [`theme_ggstatsplot()`](https://indrajeetpatil.github.io/ggstatsplot/reference/theme_ggstatsplot.html).
+  [`theme_ggstatsplot()`](https://www.indrapatil.com/ggstatsplot/reference/theme_ggstatsplot.html).
   Any of the `{ggplot2}` themes (e.g.,
   [`ggplot2::theme_bw()`](https://ggplot2.tidyverse.org/reference/ggtheme.html)),
   or themes from extension packages are allowed (e.g.,
@@ -94,7 +94,7 @@ vis_identifier_grp_comparison(
   etc.). But note that sometimes these themes will remove some of the
   details that `{ggstatsplot}` plots typically contains. For example, if
   relevant,
-  [`ggbetweenstats()`](https://indrajeetpatil.github.io/ggstatsplot/reference/ggbetweenstats.html)
+  [`ggbetweenstats()`](https://www.indrapatil.com/ggstatsplot/reference/ggbetweenstats.html)
   shows details about multiple comparison test as a label on the
   secondary Y-axis. Some themes (e.g.
   `ggthemes::theme_fivethirtyeight()`) will remove the secondary Y-axis
@@ -103,9 +103,9 @@ vis_identifier_grp_comparison(
 - ...:
 
   other parameters passing to
-  [ggstatsplot::ggbetweenstats](https://indrajeetpatil.github.io/ggstatsplot/reference/ggbetweenstats.html)
+  [ggstatsplot::ggbetweenstats](https://www.indrapatil.com/ggstatsplot/reference/ggbetweenstats.html)
   or
-  [ggstatsplot::ggwithinstats](https://indrajeetpatil.github.io/ggstatsplot/reference/ggwithinstats.html).
+  [ggstatsplot::ggwithinstats](https://www.indrapatil.com/ggstatsplot/reference/ggwithinstats.html).
 
 ## Value
 

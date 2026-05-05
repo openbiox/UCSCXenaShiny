@@ -1,5 +1,7 @@
 # Changelog
 
+## UCSCXenaShiny 2.2.1
+
 ## UCSCXenaShiny 2.2.0
 
 CRAN release: 2025-08-01
@@ -107,6 +109,7 @@ comprehensive guidance.
 - Supported getting more flexible methylation value.
 
 ``` r
+
 UCSCXenaShiny::get_pancan_methylation_value(
   "RCAN2",
   rule_out = c("cg21115430", "cg19452802"), 
@@ -130,6 +133,7 @@ UCSCXenaShiny::get_pancan_methylation_value(
 Test code:
 
 ``` r
+
 vis_gene_tmb_cor("`ZFAT-AS1` + `SNORD116-1` + SPATA31D1", data_type = "methylation")
 ```
 
