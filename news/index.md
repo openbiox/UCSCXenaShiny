@@ -2,6 +2,8 @@
 
 ## UCSCXenaShiny 2.2.1
 
+CRAN release: 2026-05-05
+
 ## UCSCXenaShiny 2.2.0
 
 CRAN release: 2025-08-01
