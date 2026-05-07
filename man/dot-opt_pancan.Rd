@@ -5,7 +5,7 @@
 \alias{.opt_pancan}
 \title{A default setting for pan-cancer studies}
 \format{
-An object of class \code{list} of length 16.
+An object of class \code{list} of length 17.
 }
 \usage{
 .opt_pancan

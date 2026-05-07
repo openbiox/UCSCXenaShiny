@@ -78,3 +78,6 @@ docs
 inst/extdata/OP*
 inst/extdata/tcga_armcalls.rda
 inst/extdata/tcga_dna_repair.rda
+
+.playwright-mcp/
+Rplots.pdf

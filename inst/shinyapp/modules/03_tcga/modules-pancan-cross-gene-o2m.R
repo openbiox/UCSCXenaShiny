@@ -342,8 +342,8 @@ server.modules_pancan_cross_gene_o2m = function(input, output, session) {
 
 	plot_func = eventReactive(input$step3_plot,{
 		shiny::validate(
-			need(all(check_omics$mRNA,check_omics$mRNA,check_omics$mRNA), 
-				"Please load valid mRNA/Mutation/CNV data in Step2.2"),
+			need(check_omics$mRNA, 
+				"Please load valid mRNA data in Step2.2"),
 			# need(try(length(check_omics$valid_trans)>0), 
 			# 	"Please load valid transcript data in Step2.3"),
 			# need(try(length(check_omics$valid_methy)>0), 

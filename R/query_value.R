@@ -69,6 +69,7 @@ query_molecule_value <- function(dataset, molecule, host = NULL) {
   pcawg_miRNA = list(norm = "TMM"),
   pcawg_promoter = list(type = "relative"),
   pcawg_APOBEC = list(),
+  pcawg_mutation = list(),
   # CCLE
   ccle_mRNA = list(norm = "rpkm"),
   ccle_protein = list(),
@@ -236,7 +237,7 @@ query_value <- function(identifier,
       protein = get_ccle_protein_value,
       mutation = get_ccle_mutation_status,
       cnv = get_ccle_cn_value,
-      stop("Please choose one of c('mRNA','protein','mutation','cnv') for Toil database!")
+      stop("Please choose one of c('mRNA','protein','mutation','cnv') for CCLE database!")
     )
   } else if (database == "pcawg") {
     f <- switch(data_type,
@@ -245,9 +246,11 @@ query_value <- function(identifier,
       miRNA = get_pcawg_miRNA_value,
       promoter = get_pcawg_promoter_value,
       APOBEC = get_pcawg_APOBEC_mutagenesis_value,
-      stop("Please choose one of c('mRNA','fusion','miRNA','promoter','APOBEC') for Toil database!")
+      mutation = get_pcawg_mutation_status,
+      cnv = get_pcawg_cn_value,
+      stop("Please choose one of c('mRNA','fusion','miRNA','promoter','APOBEC','mutation','cnv') for PCAWG database!")
     )
   }
 
-  do.call(f, c(identifier, opt_pancan[[paste0(database, "_", data_type)]]))
+  do.call(f, c(list(identifier), opt_pancan[[paste0(database, "_", data_type)]]))
 }

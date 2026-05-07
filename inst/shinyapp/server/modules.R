@@ -126,6 +126,14 @@ observeEvent(req(input$navbar=="PCAWG: Survival Analysis"),{
     on.exit(waiter$hide())
 }, once = TRUE)  
 
+observeEvent(req(input$navbar=="PCAWG: Cross-Omics Analysis"),{
+    waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE, html = html_spin)
+    waiter$show()
+    callModule(server.modules_pcawg_cross_gene_o2m, "modules_pcawg_cross_gene_o2m")
+    callModule(server.modules_pcawg_cross_pw_o2m, "modules_pcawg_cross_pw_o2m")
+    on.exit(waiter$hide())
+}, once = TRUE)  
+
 
 # CCLE
 observeEvent(req(input$navbar=="CCLE: Correlation Analysis"),{
@@ -141,6 +149,13 @@ observeEvent(req(input$navbar=="CCLE: Comparison Analysis"),{
     waiter$show()
     callModule(server.modules_ccle_comp_o2o, "modules_ccle_comp_o2o")
     callModule(server.modules_ccle_comp_m2o, "modules_ccle_comp_m2o")
+    on.exit(waiter$hide())
+}, once = TRUE) 
+
+observeEvent(req(input$navbar=="CCLE: Cross-Omics Analysis"),{
+    waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE, html = html_spin)
+    waiter$show()
+    callModule(server.modules_ccle_cross_gene_o2m, "modules_ccle_cross_gene_o2m")
     on.exit(waiter$hide())
 }, once = TRUE) 
 

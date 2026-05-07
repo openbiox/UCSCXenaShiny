@@ -19,6 +19,7 @@
 \alias{get_pcawg_promoter_value}
 \alias{get_pcawg_miRNA_value}
 \alias{get_pcawg_APOBEC_mutagenesis_value}
+\alias{get_pcawg_mutation_status}
 \title{Fetch Identifier Value from Pan-cancer Dataset}
 \usage{
 get_ccle_cn_value(identifier)
@@ -73,6 +74,8 @@ get_pcawg_APOBEC_mutagenesis_value(
     "ytCa_rtCa_BH_Fisher_p-value", "ytCa_rtCa_Fisher_p-value", "ytCa_to_G+ytCa_to_T",
     "ytca+tgar")
 )
+
+get_pcawg_mutation_status(identifier)
 }
 \arguments{
 \item{identifier}{a length-1 character representing a gene symbol, ensembl gene id, or probe id.
@@ -147,7 +150,9 @@ Identifier includes gene/probe etc.
 
 \item \code{get_pcawg_miRNA_value()}: Fetch specimen-level miRNA value from PCAWG cohort
 
-\item \code{get_pcawg_APOBEC_mutagenesis_value()}: Fetch specimen-level gene fusion value from PCAWG cohort
+\item \code{get_pcawg_APOBEC_mutagenesis_value()}: Fetch gene fusion value from PCAWG cohort
+
+\item \code{get_pcawg_mutation_status()}: Fetch gene mutation info from PCAWG cohort
 
 }}
 \examples{

@@ -102,7 +102,7 @@ get_pcawg_miRNA_value <- function(identifier, norm = c("TMM", "UQ")) {
 }
 
 
-#' @describeIn get_pancan_value Fetch specimen-level gene fusion value from PCAWG cohort
+#' @describeIn get_pancan_value Fetch gene fusion value from PCAWG cohort
 #' @export
 get_pcawg_APOBEC_mutagenesis_value <- function(identifier = c(
                                                  "tCa_MutLoad_MinEstimate", "APOBECtCa_enrich",
@@ -124,4 +124,58 @@ get_pcawg_APOBEC_mutagenesis_value <- function(identifier = c(
   res
 }
 
-## 突变数据直接用表格展示??
+#' @describeIn get_pancan_value Fetch gene mutation info from PCAWG cohort
+#' @export
+get_pcawg_mutation_status <- function(identifier) {
+  if (utils::packageVersion("UCSCXenaTools") < "1.3.2") {
+    stop("You need to update 'UCSCXenaTools' (>=1.3.2).", call. = FALSE)
+  }
+
+  host <- "https://pcawg.xenahubs.net"
+  dataset <- "October_2016_whitelist_2583.snv_mnv_indel.maf.coding.xena"
+  report_dataset_info(dataset)
+
+  res <- check_exist_data(identifier, dataset, host)
+  if (res$ok) {
+    data <- res$data
+  } else {
+    query_list <- UCSCXenaTools::fetch_sparse_values(host, dataset, identifier)
+    data <- as.data.frame(query_list$rows)
+    data <- dplyr::full_join(
+      dplyr::tibble(
+        sampleID = query_list$samples
+      ),
+      data,
+      by = "sampleID"
+    )
+    save_data(data, identifier, dataset, host)
+  }
+
+  report_dataset_info(dataset)
+  data
+}
+
+#' @describeIn get_pancan_value Fetch gene copy number value from PCAWG cohort
+#' @export
+get_pcawg_cn_value <- function(identifier) {
+  host <- "https://pcawg.xenahubs.net"
+  dataset <- "20170119_final_consensus_copynumber_sp"
+
+  res <- check_exist_data(identifier, dataset, host)
+  if (res$ok) {
+    data <- res$data
+  } else {
+    query_list <- fetch_dense_values(host, dataset, identifier, use_probeMap = FALSE)
+    data <- as.data.frame(t(query_list))
+    data <- data %>%
+      tibble::rownames_to_column("sampleID") %>%
+      dplyr::rename(data = 2)
+    save_data(data, identifier, dataset, host)
+  }
+
+  report_dataset_info(dataset)
+  res <- list(data = data$data, unit = "")
+  names(res$data) <- data$sampleID
+  res
+}
+

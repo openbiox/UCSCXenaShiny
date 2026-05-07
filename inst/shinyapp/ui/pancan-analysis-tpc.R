@@ -154,6 +154,22 @@ ui.page_pancan_tcga <- function() {
         )
       )
     ),
+    tabPanel(
+      "PCAWG: Cross-Omics Analysis",
+      h1("PCAWG Cross-Omics Analysis", align = "center"),
+      tabsetPanel(
+        tabPanel(
+          "Gene Cross-Omics Analysis",
+          br(),
+          ui.modules_pcawg_cross_gene_o2m("modules_pcawg_cross_gene_o2m")
+        ),
+        tabPanel(
+          "Pathway Cross-Omics Analysis",
+          br(),
+          ui.modules_pcawg_cross_pw_o2m("modules_pcawg_cross_pw_o2m")
+        ),
+      )
+    ),
     #### CCLE
     tabPanel(
       "CCLE: Correlation Analysis",
@@ -186,6 +202,17 @@ ui.page_pancan_tcga <- function() {
             ui.modules_ccle_comp_m2o("modules_ccle_comp_m2o")
           )
         ) 
+    ),
+    tabPanel(
+      "CCLE: Cross-Omics Analysis",
+      h1("CCLE Cross-Omics Analysis", align = "center"),
+      tabsetPanel(
+        tabPanel(
+          "Gene Cross-Omics Analysis",
+          br(),
+          ui.modules_ccle_cross_gene_o2m("modules_ccle_cross_gene_o2m")
+        ),
+      )
     )
   )
 }
