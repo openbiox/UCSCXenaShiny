@@ -41,15 +41,17 @@ tcga_immune_value <- tcga_value_option[["Immune Infiltration"]]
 tcga_pathway_value <- tcga_value_option[["Pathway activity"]]
 tcga_phenotype_value <- tcga_value_option[["Phenotype data"]]
 
-clinical_phe = tcga_phenotype_value[["Clinical Phenotype"]]
-x_data = UCSCXenaShiny:::query_general_value(
-           "Molecular profile", "mRNA Expression", "TP53", "toil",
-           tcga_index_value, tcga_immune_value, tcga_pathway_value,
-           clinical_phe)
+clinical_phe <- tcga_phenotype_value[["Clinical Phenotype"]]
+x_data <- UCSCXenaShiny:::query_general_value(
+  "Molecular profile", "mRNA Expression", "TP53", "toil",
+  tcga_index_value, tcga_immune_value, tcga_pathway_value,
+  clinical_phe
+)
 
-y_data = UCSCXenaShiny:::query_general_value(
-           "Immune Infiltration", "CIBERSORT", "Monocyte", "toil",
-           tcga_index_value, tcga_immune_value, tcga_pathway_value,
-           clinical_phe)
+y_data <- UCSCXenaShiny:::query_general_value(
+  "Immune Infiltration", "CIBERSORT", "Monocyte", "toil",
+  tcga_index_value, tcga_immune_value, tcga_pathway_value,
+  clinical_phe
+)
 }
 }
