@@ -23,6 +23,11 @@ available_hosts <- function() {
 #' `XenaDatasets` of [UCSCXenaTools::XenaData].
 #' @param host a character vector representing host name(s), e.g. "toilHub".
 #' @param samples a character vector representing samples want to be returned.
+#' @param norm a character string specifying the normalization type. For gene expression,
+#' allowed values include \code{"tpm"}, \code{"fpkm"}, \code{"nc"} (norm count);
+#' for transcript expression: \code{"tpm"}, \code{"fpkm"}, \code{"isopct"};
+#' for CCLE gene expression: \code{"rpkm"}, \code{"reads"};
+#' for PCAWG miRNA expression: \code{"TMM"}, \code{"UQ"}.
 #' @param ... other parameters.
 #' @return a named vector or `list`.
 #'
