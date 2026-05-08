@@ -26,16 +26,14 @@ app_run <- function(runMode = "client", port = getOption("shiny.port")) {
 }
 
 
-
-
 #' Run UCSC Xena Shiny App with specifc content
 #'
 #' @importFrom shiny shinyAppFile
 #' @inheritParams shiny::runApp
 #' @param runMode default is 'client' for personal user, set it to 'server' for running on server.
-#' @param content Modules to enable. 
+#' @param content Modules to enable.
 #' - `a`: all modules
-#' - `s`: only loading basic modules; 
+#' - `s`: only loading basic modules;
 #' - `q`: add tpc (TCGA, PCAWG, CCLE) modules
 #' - `p`: add tpc pipelines
 #' - `d`: add pharmcogenomics modules

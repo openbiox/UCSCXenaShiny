@@ -228,8 +228,9 @@ vis_pcawg_dist <- function(Gene = "TP53",
 #' @export
 
 vis_pcawg_unicox_tree <- function(
-    Gene = "TP53", measure = "OS", data_type = "mRNA", use_optimal_cutoff = FALSE,
-    values = c("grey", "#E31A1C", "#377DB8"), opt_pancan = .opt_pancan) {
+  Gene = "TP53", measure = "OS", data_type = "mRNA", use_optimal_cutoff = FALSE,
+  values = c("grey", "#E31A1C", "#377DB8"), opt_pancan = .opt_pancan
+) {
   pcawg_info <- load_data("pcawg_info")
 
   # t1 <- query_pcawg_pancan_value(Gene, data_type)

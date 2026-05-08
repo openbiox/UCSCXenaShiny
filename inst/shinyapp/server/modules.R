@@ -156,6 +156,7 @@ observeEvent(req(input$navbar=="CCLE: Cross-Omics Analysis"),{
     waiter <- waiter::Waiter$new(color = "grey", fadeout = TRUE, html = html_spin)
     waiter$show()
     callModule(server.modules_ccle_cross_gene_o2m, "modules_ccle_cross_gene_o2m")
+    callModule(server.modules_ccle_cross_pw_o2m, "modules_ccle_cross_pw_o2m")
     on.exit(waiter$hide())
 }, once = TRUE) 
 

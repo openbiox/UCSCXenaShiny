@@ -78,8 +78,6 @@ query_molecule_value <- function(dataset, molecule, host = NULL) {
 )
 
 
-
-
 #' Query Single Identifier or Signature Value from Pan-cancer Database
 #'
 #' @param molecule a molecular identifier (e.g., "TP53") or a formula specifying

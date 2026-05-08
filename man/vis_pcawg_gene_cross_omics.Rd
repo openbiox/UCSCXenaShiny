@@ -7,6 +7,9 @@
 vis_pcawg_gene_cross_omics(
   gene = "TP53",
   tumor_projects = NULL,
+  n_promoter = 0,
+  add_mean_promoter = FALSE,
+  promoter_type = c("relative", "raw", "outlier"),
   return_list = FALSE
 )
 }
@@ -14,6 +17,12 @@ vis_pcawg_gene_cross_omics(
 \item{gene}{a gene symbol identifier (e.g., "TP53")}
 
 \item{tumor_projects}{Select specific PCAWG projects. Default NULL, indicating all.}
+
+\item{n_promoter}{number of promoters to show.}
+
+\item{add_mean_promoter}{whether to add median promoter activity.}
+
+\item{promoter_type}{one of "relative", "raw", "outlier".}
 
 \item{return_list}{TRUE returns a list including plot object and data. FALSE just returns plot.}
 }

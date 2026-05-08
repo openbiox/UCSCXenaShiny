@@ -73,7 +73,7 @@ ui.modules_pcawg_cross_pw_o2m = function(id) {
 					h2("S3: Analyze & Visualize", align = "center") %>% 
 						helper(type = "markdown", size = "l", fade = TRUE, 
 					                   title = "Analyze & Visualize", 
-					                   content = "cross_pw"), 
+					                   content = "pcawg_cross_pw"), 
 					style = "height:1100px",
 					shinyWidgets::actionBttn(
 						ns("step3_plot"), "Run (Visualize)",

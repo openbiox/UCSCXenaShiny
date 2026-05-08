@@ -164,8 +164,6 @@ vis_toil_Mut <- function(mut_Gene = "TP53", Gene = NULL, data_type = NULL,
 }
 
 
-
-
 #' Visualize molecular profile difference between mutation and wild status of queried gene in Single Cancer Type
 #' @inheritParams vis_toil_Mut
 #' @param Cancer select cancer cohort(s).

@@ -97,7 +97,6 @@ query_tcga_group <- function(database = c("toil", "pcawg", "ccle"),
   colnames(meta_data)[1:2] <- c("Sample", "Cancer") # CCLE:c("CCLE_name","Primary_Site)
 
 
-
   # Step2: add user-customized data
   if (!is.null(custom)) {
     dup_names <- intersect(colnames(meta_data)[-1:-2], colnames(custom)[-1])
@@ -166,7 +165,6 @@ query_tcga_group <- function(database = c("toil", "pcawg", "ccle"),
       }
     }
   }
-
 
 
   # step3-2: filter by sample id

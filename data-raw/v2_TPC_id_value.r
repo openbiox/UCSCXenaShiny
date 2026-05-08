@@ -36,7 +36,6 @@ tcga_id_1_1 <- tcga_id_1_1 %>%
 tmp <- load_data("pancan_identifier_help")[["id_molecule"]]$id_gene$Level3
 
 
-
 tcga_id_1_2 <- data.frame(
   L1 = "Molecule",
   L2 = "Transcript",
@@ -62,7 +61,6 @@ tcga_id_1 <- do.call(
 table(tcga_id_1$L2)
 # Gene      miRNA    Protein Transcript
 # 17295        743        258     197045
-
 
 
 ## L2: Index

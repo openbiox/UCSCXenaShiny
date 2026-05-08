@@ -1,80 +1,69 @@
-#' @describeIn get_pancan_value Fetch copy number value from CCLE dataset
-#' @export
-get_ccle_cn_value <- function(identifier) {
-  host <- "publicHub"
-  dataset <- "ccle/CCLE_copynumber_byGene_2013-12-03"
-
-  res <- check_exist_data(identifier, dataset, host)
-  if (res$ok) {
-    data <- res$data
-  } else {
-    data <- get_pancan_value(identifier, dataset = dataset, host = host)
-    save_data(data, identifier, dataset, host)
-  }
-
-  unit <- "log(copy number/2)"
-  report_dataset_info(dataset)
-  res <- list(data = data, unit = unit)
-  res
-}
-
-
-
-
-#' @param norm normalization method
-#'
 #' @describeIn get_pancan_value Fetch gene expression value from CCLE dataset
 #' @export
-get_ccle_gene_value <- function(identifier, norm = c("rpkm", "nc")) {
-  host <- "publicHub"
+get_ccle_gene_value <- function(identifier, norm = c("rpkm", "reads")) {
+  host_name <- "publicHub"
+  host_url <- "https://ucscpublic.xenahubs.net"
+  norm <- match.arg(norm)
   if (norm == "rpkm") {
     dataset <- "ccle/CCLE_DepMap_18Q2_RNAseq_RPKM_20180502"
-  } else {
-    dataset <- "ccle/CCLE_DepMap_18Q2_RNAseq_reads_20180502.log2"
-  }
-  res <- check_exist_data(identifier, dataset, host)
-  if (res$ok) {
-    expression <- res$data
-  } else {
-    expression <- get_pancan_value(identifier, dataset = dataset, host = host)
-    save_data(expression, identifier, dataset, host)
-  }
-
-  if (norm == "rpkm") {
     unit <- "RPKM"
   } else {
+    dataset <- "ccle/CCLE_DepMap_18Q2_RNAseq_reads_20180502.log2"
     unit <- "log2(count+1)"
   }
 
+  res <- check_exist_data(identifier, dataset, host_name)
+  if (res$ok) {
+    data <- res$data
+  } else {
+    query_list <- UCSCXenaTools::fetch_dense_values(host_url, dataset, identifier, use_probeMap = FALSE)
+    data <- as.data.frame(t(query_list))
+    data <- data %>%
+      tibble::rownames_to_column("sampleID") %>%
+      dplyr::rename(data = 2)
+    save_data(data, identifier, dataset, host_name)
+  }
+
   report_dataset_info(dataset)
-  res <- list(expression = expression, unit = unit)
+  res <- list(data = data$data, unit = unit)
+  names(res$data) <- data$sampleID
   res
 }
-
 
 #' @describeIn get_pancan_value Fetch gene protein expression value from CCLE dataset
 #' @export
 get_ccle_protein_value <- function(identifier) {
-  ## NOTE: Only ~200 proteins available, so many identifiers will return NAs
-  host <- "publicHub"
+  host_name <- "publicHub"
+  host_url <- "https://ucscpublic.xenahubs.net"
   dataset <- "ccle/CCLE_RPPA_20180123"
 
-  res <- check_exist_data(identifier, dataset, host)
+  res <- check_exist_data(identifier, dataset, host_name)
   if (res$ok) {
-    expression <- res$data
+    data <- res$data
   } else {
-    expression <- get_pancan_value(identifier, dataset = dataset, host = host)
-    save_data(expression, identifier, dataset, host)
+    query_list <- UCSCXenaTools::fetch_dense_values(host_url, dataset, identifier, use_probeMap = FALSE)
+    data <- as.data.frame(t(query_list))
+    data <- data %>%
+      tibble::rownames_to_column("sampleID")
+    if (length(identifier) == 1) {
+      colnames(data)[2] <- "data"
+    }
+    save_data(data, identifier, dataset, host_name)
   }
 
-  unit <- "norm_value"
   report_dataset_info(dataset)
-  res <- list(expression = expression, unit = unit)
+  unit <- "log(copy number/2)"
+  if (length(identifier) == 1) {
+    res_data <- data$data
+    names(res_data) <- data$sampleID
+    res <- list(data = res_data, unit = unit)
+  } else {
+    res <- list(data = data, unit = unit)
+  }
   res
 }
 
-## .p_dataset_field("https://ucscpublic.xenahubs.net", "ccle/CCLE_RPPA_20180123")
-## NOTE: this is different from .all_pancan_proteins
+
 .all_ccle_proteins <- c(
   "14-3-3_beta", "14-3-3_epsilon_Caution", "14-3-3_zeta", "4E-BP1",
   "4E-BP1_pS65", "4E-BP1_pT37_T46", "4E-BP1_pT70", "53BP1", "A-Raf_pS299_Caution",
@@ -123,9 +112,6 @@ get_ccle_protein_value <- function(identifier) {
   "p90RSK_Caution", "p90RSK_pT359_S363_Caution", "p90RSK_pT573_Caution"
 )
 
-# NOTE this result is different from get_pancan_mutation_status!
-# It is maf like format, needs further processing.
-# See ?read.maf to get nonsync mutation
 #' @describeIn get_pancan_value Fetch gene mutation info from CCLE dataset
 #' @export
 get_ccle_mutation_status <- function(identifier) {
@@ -133,15 +119,16 @@ get_ccle_mutation_status <- function(identifier) {
     stop("You need to update 'UCSCXenaTools' (>=1.3.2).", call. = FALSE)
   }
 
-  host <- "https://ucscpublic.xenahubs.net"
+  host_name <- "publicHub"
+  host_url <- "https://ucscpublic.xenahubs.net"
   dataset <- "ccle/CCLE_DepMap_18Q2_maf_20180502"
   report_dataset_info(dataset)
 
-  res <- check_exist_data(identifier, dataset, host)
+  res <- check_exist_data(identifier, dataset, host_name)
   if (res$ok) {
     data <- res$data
   } else {
-    query_list <- UCSCXenaTools::fetch_sparse_values(host, dataset, identifier)
+    query_list <- UCSCXenaTools::fetch_sparse_values(host_url, dataset, identifier)
     data <- as.data.frame(query_list$rows)
     data <- dplyr::full_join(
       dplyr::tibble(
@@ -150,9 +137,42 @@ get_ccle_mutation_status <- function(identifier) {
       data,
       by = "sampleID"
     )
-    save_data(data, identifier, dataset, host)
+    save_data(data, identifier, dataset, host_name)
   }
 
   report_dataset_info(dataset)
   data
+}
+
+#' @describeIn get_pancan_value Fetch gene copy number value from CCLE dataset
+#' @export
+get_ccle_cn_value <- function(identifier) {
+  host_name <- "publicHub"
+  host_url <- "https://ucscpublic.xenahubs.net"
+  dataset <- "ccle/CCLE_copynumber_byGene_2013-12-03"
+
+  res <- check_exist_data(identifier, dataset, host_name)
+  if (res$ok) {
+    data <- res$data
+  } else {
+    query_list <- UCSCXenaTools::fetch_dense_values(host_url, dataset, identifier, use_probeMap = FALSE)
+    data <- as.data.frame(t(query_list))
+    data <- data %>%
+      tibble::rownames_to_column("sampleID")
+    if (length(identifier) == 1) {
+      colnames(data)[2] <- "data"
+    }
+    save_data(data, identifier, dataset, host_name)
+  }
+
+  report_dataset_info(dataset)
+  unit <- "log(copy number/2)"
+  if (length(identifier) == 1) {
+    res_data <- data$data
+    names(res_data) <- data$sampleID
+    res <- list(data = res_data, unit = unit)
+  } else {
+    res <- list(data = data, unit = unit)
+  }
+  res
 }

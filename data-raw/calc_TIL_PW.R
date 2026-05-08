@@ -49,8 +49,6 @@ dim(tcga_PW)
 save(tcga_PW, file = "tcga_PW.rda")
 
 
-
-
 sig_meta <- data.frame(sig_name = names(merge.list)) %>%
   dplyr::mutate(sig_type = str_split(sig_name, "_", simplify = T)[, 1]) %>%
   dplyr::mutate(sig_name2 = str_match(sig_name, "^.*?_(.*)$")[, 2])
@@ -246,7 +244,6 @@ codes_df_anno <- read.csv("codes_df_anno.csv")
 table(pcawg_info$dcc_project_code)
 
 
-
 pcawg_info_filt <- pcawg_info %>%
   dplyr::filter(dcc_project_code %in% codes_df_anno$code) %>%
   dplyr::filter(icgc_specimen_id %in% colnames(exp_sub))
@@ -307,11 +304,8 @@ pcawg_til <- as.data.frame(t(score_merge))
 save(pcawg_til, file = "pcawg_TIL.rda")
 
 
-
-
 # ############# 4. Compare PCAWG immune infilltration score whether or not TPM transformation ################
 # # 以PCAWG中BRCA-US项目中的98个TCGA样本比较与tcga-TIL.rda分析结果的相关性
-
 
 
 # pcawg_TIL = load_data("pcawg_TIL")

@@ -93,11 +93,6 @@ id_molecule.list <- list(
 )
 
 
-
-
-
-
-
 ### tumor index
 library(UCSCXenaShiny)
 tumor_index_list <- list(
@@ -132,7 +127,6 @@ id_tumor_index.list <- lapply(id_tumor_index.list, function(x) {
 })
 
 
-
 ### immune infiltration
 tcga_TIL <- load_data("tcga_TIL")
 TIL_signatures <- colnames(tcga_TIL)[-1]
@@ -149,7 +143,6 @@ id_TIL.list <- split(TIL_meta, TIL_meta$Level2)
 id_TIL.list <- lapply(id_TIL.list, function(x) {
   x <- x %>% tibble::remove_rownames()
 })
-
 
 
 ### pathway score
@@ -169,7 +162,6 @@ id_PW.list <- split(PW_meta, PW_meta$Level2)
 id_PW.list <- lapply(id_PW.list, function(x) {
   x <- x %>% tibble::remove_rownames()
 })
-
 
 
 ### 合并上述4类数据

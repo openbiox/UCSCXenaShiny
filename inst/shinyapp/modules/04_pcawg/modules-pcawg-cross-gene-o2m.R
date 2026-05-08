@@ -60,7 +60,7 @@ ui.modules_pcawg_cross_gene_o2m = function(id) {
 					checkboxInput(ns("add_mean_promoter"), "Add median promoter activity", value = FALSE),
 					selectInput(ns("promoter_type"), "Promoter type:", choices = c("relative", "raw", "outlier")),
 					br(),
-					h4(strong("S2.3 Load mRNA/Mutation/Fusion/CNV/Promoter data")),
+					h4(strong("S2.3 Load mRNA/Mutation/Fusion/miRNA/Promoter data")),
 					shinyWidgets::actionBttn(
 						ns("step2_2_load"), "Load",
 				        style = "gradient",
@@ -81,7 +81,7 @@ ui.modules_pcawg_cross_gene_o2m = function(id) {
 					h2("S3: Analyze & Visualize", align = "center") %>% 
 						helper(type = "markdown", size = "l", fade = TRUE, 
 					                   title = "Analyze & Visualize", 
-					                   content = "cross_gene"), 
+					                   content = "pcawg_cross_gene"), 
 					style = "height:1100px",
 					shinyWidgets::actionBttn(
 						ns("step3_plot"), "Run (Visualize)",
@@ -184,7 +184,7 @@ server.modules_pcawg_cross_gene_o2m = function(input, output, session) {
 	})
 
 
-	check_omics = reactiveValues(mRNA=TRUE,mutation=TRUE,fusion=TRUE)
+	check_omics = reactiveValues(mRNA=TRUE,mutation=TRUE,fusion=TRUE,miRNA=TRUE,promoter=TRUE)
 
 	updateVirtualSelect(
 		"gene_id",
@@ -199,22 +199,36 @@ server.modules_pcawg_cross_gene_o2m = function(input, output, session) {
 		check_omics$mRNA <- TRUE
 		check_omics$mutation <- TRUE
 		check_omics$fusion <- TRUE
+		check_omics$miRNA <- TRUE
+		check_omics$promoter <- TRUE
 
-		id <- notify(h3("[1/3] Caching mRNA data..."))
+		id <- notify(h3("[1/5] Caching mRNA data..."))
 		on.exit(removeNotification(id), add = TRUE)
 
 		dat_tmp = query_pancan_value(input$gene_id, "mRNA", database = "pcawg")
 		if(is.null(dat_tmp$data) || all(is.na(dat_tmp$data))){check_omics$mRNA=FALSE}
 		Sys.sleep(0.5)
 
-		notify(h3("[2/3] Caching mutation data..."), id = id)
+		notify(h3("[2/5] Caching mutation data..."), id = id)
 		dat_tmp = query_pancan_value(input$gene_id, "mutation", database = "pcawg")
 		if(is.null(dat_tmp$sampleID) || all(is.na(dat_tmp$sampleID))){check_omics$mutation=FALSE}
 		Sys.sleep(0.5)
 
-		notify(h3("[3/3] Caching fusion data..."), id = id)
+		notify(h3("[3/5] Caching fusion data..."), id = id)
 		dat_tmp = query_pancan_value(input$gene_id, "fusion", database = "pcawg")
 		if(is.null(dat_tmp$data) || all(is.na(dat_tmp$data))){check_omics$fusion=FALSE}
+		Sys.sleep(0.5)
+
+		notify(h3("[4/5] Caching miRNA data..."), id = id)
+		dat_tmp = query_pancan_value(input$gene_id, "miRNA", database = "pcawg")
+		if(is.null(dat_tmp$data) || all(is.na(dat_tmp$data))){check_omics$miRNA=FALSE}
+		Sys.sleep(0.5)
+
+		notify(h3("[5/5] Caching promoter data..."), id = id)
+		Promoter_sub <- load_data("v2_tpc_id_help")$pcawg$id_pro %>%
+			dplyr::filter(.data$gene == input$gene_id) %>%
+			dplyr::pull(.data$Level3)
+		if(length(Promoter_sub) == 0){check_omics$promoter=FALSE}
 		Sys.sleep(0.5)
 
 		output$step2_2_text = renderPrint({
@@ -223,26 +237,31 @@ server.modules_pcawg_cross_gene_o2m = function(input, output, session) {
 					   "\n(2) Mutation is ",
 					   ifelse(check_omics$mutation,"OK; ","missing; "),
 					   "\n(3) Fusion is ",
-					   ifelse(check_omics$fusion,"OK.","missing.")
+					   ifelse(check_omics$fusion,"OK; ","missing; "),
+					   "\n(4) miRNA is ",
+					   ifelse(check_omics$miRNA,"OK; ","missing; "),
+					   "\n(5) Promoter is ",
+					   ifelse(check_omics$promoter,"OK.","missing.")
 			))
 		})
 	})
 
 	plot_func = eventReactive(input$step3_plot,{
 		shiny::validate(
-			need(check_omics$mRNA, 
-				"Please load valid mRNA data in Step2.2"),
+			need(any(check_omics$mRNA, check_omics$mutation, check_omics$fusion, check_omics$miRNA, check_omics$promoter), 
+				"Please load valid data in Step2.3 (At least one omics must be available)"),
 		)
 		shinyjs::disable("step3_plot")
 		res = vis_pcawg_gene_cross_omics(input$gene_id,
 							 tumor_projects = cancer_choose$name,
 							 n_promoter = input$n_promoter,
 							 add_mean_promoter = input$add_mean_promoter,
-	promoter_type = input$promoter_type,
+							 promoter_type = input$promoter_type,
 							 return_list = TRUE)
-	shinyjs::enable("step3_plot")
+        shinyjs::enable("step3_plot")
 		res
 	})
+
 	output$funky_plot = renderPlot({plot_func()$plot})
 
 	# three download buttons

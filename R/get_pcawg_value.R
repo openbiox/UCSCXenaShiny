@@ -1,22 +1,31 @@
-# PCAWG -------------------------------------------------------------------
-
-# Not all gene data available
-# query_pancan_value("KRAS", database = "pcawg")
-# query_pancan_value("hsa-let-7c-3p", database = "pcawg", data_type = "miRNA")
-# query_pancan_value("hsa-let-7c-3p", database = "pcawg", data_type = "miRNA", norm = "UQ")
-# query_pancan_value("ENSG00000000419", database = "pcawg", data_type = "fusion") # gene symbol also work
-# query_pancan_value("tCa_MutLoad_MinEstimate", database = "pcawg", data_type = "APOBEC")
-# query_pancan_value("prmtr.10000", database = "pcawg", data_type = "promoter")
-# query_pancan_value("X:99891803:TSPAN6", database = "pcawg", data_type = "promoter")
-
 #' @describeIn get_pancan_value Fetch specimen-level gene expression value from PCAWG cohort
 #' @export
 get_pcawg_gene_value <- function(identifier) {
   host <- "pcawgHub"
   dataset <- "tophat_star_fpkm_uq.v2_aliquot_gl.sp.log"
 
-  expression <- get_data(dataset, identifier, host)
+  expression <- get_data(dataset, identifier, host, use_probeMap = FALSE)
   unit <- "log2(fpkm-uq+0.001)"
+  report_dataset_info(dataset)
+  res <- list(data = expression, unit = unit)
+  res
+}
+
+#' @describeIn get_pancan_value Fetch specimen-level miRNA expression value from PCAWG cohort
+#' @export
+get_pcawg_miRNA_value <- function(identifier, norm = c("TMM", "UQ")) {
+  host <- "pcawgHub"
+  norm <- match.arg(norm)
+
+  if (norm == "TMM") {
+    dataset <- "x3t2m1.mature.TMM.mirna.matrix.log"
+    unit <- "log2(cpm-TMM+0.1)"
+  } else {
+    dataset <- "x3t2m1.mature.UQ.mirna.matrix.log"
+    unit <- "log2(cpm-UQ+0.1)"
+  }
+
+  expression <- get_data(dataset, identifier, host, use_probeMap = FALSE)
   report_dataset_info(dataset)
   res <- list(data = expression, unit = unit)
   res
@@ -28,8 +37,8 @@ get_pcawg_fusion_value <- function(identifier) {
   host <- "pcawgHub"
   dataset <- "pcawg3_fusions_PKU_EBI.gene_centric.sp.xena"
 
-  expression <- get_data(dataset, identifier, host)
-  unit <- "binary fusion call, 1 fusion, 0 otherwise"
+  expression <- get_data(dataset, identifier, host, use_probeMap = FALSE)
+  unit <- "fusion status (1: detected, 0: not detected)"
   report_dataset_info(dataset)
   res <- list(data = expression, unit = unit)
   res
@@ -37,10 +46,9 @@ get_pcawg_fusion_value <- function(identifier) {
 
 #' @describeIn get_pancan_value Fetch specimen-level gene promoter activity value from PCAWG cohort
 #' @export
-get_pcawg_promoter_value <- function(identifier, type = c("raw", "relative", "outlier")) {
-  # promoter identifier prmtr.10000 or symbol are supported
-  # but the latter seems meaningless
-  host <- "pcawgHub"
+get_pcawg_promoter_value <- function(identifier, type = c("relative", "raw", "outlier")) {
+  host_name <- "pcawgHub"
+  host_url <- "https://pcawg.xenahubs.net"
   type <- match.arg(type)
 
   if (type == "raw") {
@@ -54,53 +62,43 @@ get_pcawg_promoter_value <- function(identifier, type = c("raw", "relative", "ou
     unit <- "-1 (low expression), 0 (normal), 1 (high expression)"
   }
 
-  if (!startsWith(identifier, "prmtr")) {
-    # Try parsing from location:symbol map
-    map <- load_data("pcawg_promoter_id")
-    id_map <- map[names(map) == identifier]
-    if (length(id_map) > 1) {
-      # query_pancan_value("19:12203078:ZNF788", database = "pcawg", data_type = "promoter")
-      # 存在极少数有多 id 情况，直接求和
-      expression <- purrr::reduce(
-        purrr::map(
-          as.character(id_map),
-          ~ get_data(dataset, ., host)
-        ), `+`
-      )
+  res <- check_exist_data(identifier, dataset, host_name)
+  if (res$ok) {
+    expression <- res$data
+  } else {
+    if (any(!startsWith(identifier, "prmtr"))) {
+      map <- load_data("pcawg_promoter_id")
+      id_map <- map[names(map) %in% identifier]
+      ids_to_query <- unique(c(as.character(id_map), identifier[startsWith(identifier, "prmtr")]))
     } else {
-      expression <- get_data(dataset, as.character(id_map), host)
+      ids_to_query <- identifier
     }
-  } else {
-    expression <- get_data(dataset, identifier, host)
+
+    if (length(ids_to_query) == 0) {
+      return(NULL)
+    }
+
+    # Use URL for direct fetch
+    query_list <- UCSCXenaTools::fetch_dense_values(host_url, dataset, ids_to_query, use_probeMap = FALSE)
+    expression <- as.data.frame(t(query_list))
+    if (length(ids_to_query) == 1) {
+      expression <- expression %>%
+        tibble::rownames_to_column("sampleID") %>%
+        dplyr::rename(data = 2)
+    }
+    save_data(expression, identifier, dataset, host_name)
   }
 
-
   report_dataset_info(dataset)
-  res <- list(data = expression, unit = unit)
-  res
-}
-
-#' @param norm the normalization method.
-#' @describeIn get_pancan_value Fetch specimen-level miRNA value from PCAWG cohort
-#' @export
-get_pcawg_miRNA_value <- function(identifier, norm = c("TMM", "UQ")) {
-  host <- "pcawgHub"
-  norm <- match.arg(norm)
-
-  if (norm == "TMM") {
-    dataset <- "x3t2m1.mature.TMM.mirna.matrix.log"
-    unit <- "log2(cpm-TMM+0.1)"
+  if (is.data.frame(expression) && "data" %in% colnames(expression)) {
+    res_data <- expression$data
+    names(res_data) <- expression$sampleID
+    res <- list(data = res_data, unit = unit)
   } else {
-    dataset <- "x3t2m1.mature.UQ.mirna.matrix.log"
-    unit <- "log2(cpm-uq+0.1)"
+    res <- list(data = expression, unit = unit)
   }
-
-  expression <- get_data(dataset, identifier, host)
-  report_dataset_info(dataset)
-  res <- list(data = expression, unit = unit)
   res
 }
-
 
 #' @describeIn get_pancan_value Fetch gene fusion value from PCAWG cohort
 #' @export
@@ -117,7 +115,7 @@ get_pcawg_APOBEC_mutagenesis_value <- function(identifier = c(
   host <- "pcawgHub"
   dataset <- "MAF_Aug31_2016_sorted_A3A_A3B_comparePlus.sp"
 
-  expression <- get_data(dataset, identifier, host)
+  expression <- get_data(dataset, identifier, host, use_probeMap = FALSE)
   unit <- ""
   report_dataset_info(dataset)
   res <- list(data = expression, unit = unit)
@@ -131,15 +129,17 @@ get_pcawg_mutation_status <- function(identifier) {
     stop("You need to update 'UCSCXenaTools' (>=1.3.2).", call. = FALSE)
   }
 
-  host <- "https://pcawg.xenahubs.net"
+  host_name <- "pcawgHub"
+  host_url <- "https://pcawg.xenahubs.net"
   dataset <- "October_2016_whitelist_2583.snv_mnv_indel.maf.coding.xena"
   report_dataset_info(dataset)
 
-  res <- check_exist_data(identifier, dataset, host)
+  res <- check_exist_data(identifier, dataset, host_name)
   if (res$ok) {
     data <- res$data
   } else {
-    query_list <- UCSCXenaTools::fetch_sparse_values(host, dataset, identifier)
+    # Use URL for direct fetch
+    query_list <- UCSCXenaTools::fetch_sparse_values(host_url, dataset, identifier)
     data <- as.data.frame(query_list$rows)
     data <- dplyr::full_join(
       dplyr::tibble(
@@ -148,7 +148,7 @@ get_pcawg_mutation_status <- function(identifier) {
       data,
       by = "sampleID"
     )
-    save_data(data, identifier, dataset, host)
+    save_data(data, identifier, dataset, host_name)
   }
 
   report_dataset_info(dataset)
@@ -158,24 +158,32 @@ get_pcawg_mutation_status <- function(identifier) {
 #' @describeIn get_pancan_value Fetch gene copy number value from PCAWG cohort
 #' @export
 get_pcawg_cn_value <- function(identifier) {
-  host <- "https://pcawg.xenahubs.net"
+  host_name <- "pcawgHub"
+  host_url <- "https://pcawg.xenahubs.net"
   dataset <- "20170119_final_consensus_copynumber_sp"
 
-  res <- check_exist_data(identifier, dataset, host)
+  res <- check_exist_data(identifier, dataset, host_name)
   if (res$ok) {
     data <- res$data
   } else {
-    query_list <- fetch_dense_values(host, dataset, identifier, use_probeMap = FALSE)
+    # Use URL for direct fetch
+    query_list <- UCSCXenaTools::fetch_dense_values(host_url, dataset, identifier, use_probeMap = FALSE)
     data <- as.data.frame(t(query_list))
     data <- data %>%
-      tibble::rownames_to_column("sampleID") %>%
-      dplyr::rename(data = 2)
-    save_data(data, identifier, dataset, host)
+      tibble::rownames_to_column("sampleID")
+    if (length(identifier) == 1) {
+      colnames(data)[2] <- "data"
+    }
+    save_data(data, identifier, dataset, host_name)
   }
 
   report_dataset_info(dataset)
-  res <- list(data = data$data, unit = "")
-  names(res$data) <- data$sampleID
+  if (length(identifier) == 1) {
+    res_data <- data$data
+    names(res_data) <- data$sampleID
+    res <- list(data = res_data, unit = "")
+  } else {
+    res <- list(data = data, unit = "")
+  }
   res
 }
-

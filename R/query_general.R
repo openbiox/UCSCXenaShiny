@@ -247,11 +247,6 @@ query_general_id <- function() {
 }
 
 
-
-
-
-
-
 #' Download data for shiny general analysis
 #'
 #' @param L1 level 1  main datatype
@@ -270,20 +265,20 @@ query_general_id <- function() {
 #' tcga_immune_value <- tcga_value_option[["Immune Infiltration"]]
 #' tcga_pathway_value <- tcga_value_option[["Pathway activity"]]
 #' tcga_phenotype_value <- tcga_value_option[["Phenotype data"]]
-#' 
-#' clinical_phe = tcga_phenotype_value[["Clinical Phenotype"]]
-#' x_data = UCSCXenaShiny:::query_general_value(
-#'            "Molecular profile", "mRNA Expression", "TP53", "toil",
-#'            tcga_index_value, tcga_immune_value, tcga_pathway_value,
-#'            clinical_phe)
 #'
-#' y_data = UCSCXenaShiny:::query_general_value(
-#'            "Immune Infiltration", "CIBERSORT", "Monocyte", "toil",
-#'            tcga_index_value, tcga_immune_value, tcga_pathway_value,
-#'            clinical_phe)
+#' clinical_phe <- tcga_phenotype_value[["Clinical Phenotype"]]
+#' x_data <- UCSCXenaShiny:::query_general_value(
+#'   "Molecular profile", "mRNA Expression", "TP53", "toil",
+#'   tcga_index_value, tcga_immune_value, tcga_pathway_value,
+#'   clinical_phe
+#' )
+#'
+#' y_data <- UCSCXenaShiny:::query_general_value(
+#'   "Immune Infiltration", "CIBERSORT", "Monocyte", "toil",
+#'   tcga_index_value, tcga_immune_value, tcga_pathway_value,
+#'   clinical_phe
+#' )
 #' }
-
-
 query_general_value <- function(L1, L2, L3,
                                 database = c("toil", "pcawg", "ccle"),
                                 tpc_value_nonomics = NULL,
@@ -334,7 +329,7 @@ query_general_value <- function(L1, L2, L3,
     }
   } else {
     if (is.null(tpc_value_nonomics)) {
-      if(database=="toil"){
+      if (database == "toil") {
         tpc_value_nonomics <- load_data(paste0("v2_tcga_value_nonomics"))
       } else {
         tpc_value_nonomics <- load_data(paste0("v2_", database, "_value_nonomics"))
@@ -403,13 +398,6 @@ query_general_value <- function(L1, L2, L3,
 }
 
 
-
-
-
-
-
-
-
 #' Quick molecule analysis and report generation
 #'
 #' @inheritParams query_pancan_value
@@ -428,7 +416,7 @@ mol_quick_analysis <- function(molecule, data_type, out_dir = ".", out_report = 
   print("##### Step1: Query the moleluce value... #####")
   mol_data <- query_pancan_value(molecule, data_type = data_type, database = "toil")
   if (is.list(mol_data)) mol_data <- mol_data[[1]]
-  
+
   if (all(is.na(mol_data))) {
     message("All NAs returned, return NULL instead.")
     return(NULL)
@@ -651,8 +639,6 @@ mol_quick_analysis <- function(molecule, data_type, out_dir = ".", out_report = 
   # phe_res = read.csv(file.path(tempdir(),"molecule_clinical_result.csv"))
   # sur_res = read.csv(file.path(tempdir(),"molecule_survival_result.csv"))
   # cor_res = read.csv(file.path(tempdir(),"molecule_correlation_result.csv"))
-
-
 
 
   if (out_report) {

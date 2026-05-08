@@ -74,7 +74,7 @@ ui.modules_ccle_cross_gene_o2m = function(id) {
 					h2("S3: Analyze & Visualize", align = "center") %>% 
 						helper(type = "markdown", size = "l", fade = TRUE, 
 					                   title = "Analyze & Visualize", 
-					                   content = "cross_gene"), 
+					                   content = "ccle_cross_gene"), 
 					style = "height:1100px",
 					shinyWidgets::actionBttn(
 						ns("step3_plot"), "Run (Visualize)",
@@ -186,7 +186,7 @@ server.modules_ccle_cross_gene_o2m = function(input, output, session) {
 		on.exit(removeNotification(id), add = TRUE)
 
 		dat_tmp = query_pancan_value(input$gene_id, "mRNA", database = "ccle")
-		if(is.null(dat_tmp$expression) || all(is.na(dat_tmp$expression))){check_omics$mRNA=FALSE}
+		if(is.null(dat_tmp$data) || all(is.na(dat_tmp$data))){check_omics$mRNA=FALSE}
 		Sys.sleep(0.5)
 
 		notify(h3("[2/4] Caching mutation data..."), id = id)
@@ -201,7 +201,7 @@ server.modules_ccle_cross_gene_o2m = function(input, output, session) {
 
 		notify(h3("[4/4] Caching protein data..."), id = id)
 		dat_tmp = query_pancan_value(input$gene_id, "protein", database = "ccle")
-		if(is.null(dat_tmp$expression) || all(is.na(dat_tmp$expression))){check_omics$protein=FALSE}
+		if(is.null(dat_tmp$data) || all(is.na(dat_tmp$data))){check_omics$protein=FALSE}
 		Sys.sleep(0.5)
 
 		output$step2_2_text = renderPrint({

@@ -49,7 +49,6 @@ NULL
 NULL
 
 
-
 #' ABSOLUTE Result of CCLE Database
 #' @docType data
 #' @name ccle_absolute

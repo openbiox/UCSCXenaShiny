@@ -93,9 +93,6 @@ colnames(ccle_info_fine)[1] <- "Sample"
 ccle_info_fine <- tibble(ccle_info_fine)
 
 
-
-
-
 usethis::use_data(ccle_info_fine, overwrite = TRUE)
 
 # document()

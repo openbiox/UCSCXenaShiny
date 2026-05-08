@@ -212,6 +212,11 @@ ui.page_pancan_tcga <- function() {
           br(),
           ui.modules_ccle_cross_gene_o2m("modules_ccle_cross_gene_o2m")
         ),
+        tabPanel(
+          "Pathway Cross-Omics Analysis",
+          br(),
+          ui.modules_ccle_cross_pw_o2m("modules_ccle_cross_pw_o2m")
+        ),
       )
     )
   )

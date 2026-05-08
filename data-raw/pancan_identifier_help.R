@@ -216,7 +216,6 @@ promoter_ref <- promoter_ref %>%
   dplyr::rename(Level3 = id)
 
 
-
 # fusion
 fusion <- data.table::fread("id_ref/gene_fusion_ids.txt", header = FALSE)
 
@@ -234,13 +233,11 @@ miRNA_ref <- miRNA %>%
   dplyr::rename(Level3 = V1)
 
 
-
 # MAF
 maf <- data.table::fread("id_ref/MAF.txt", header = FALSE)
 maf_ref <- maf %>%
   dplyr::mutate(Level2 = "APOBEC mutagenesis", .before = 1) %>%
   dplyr::rename(Level3 = V1)
-
 
 
 pcawg_identifier <- list(
@@ -252,11 +249,6 @@ pcawg_identifier <- list(
 )
 
 save(pcawg_identifier, file = "./id_ref/pcawg_identifier.rda")
-
-
-
-
-
 
 
 # gene
@@ -275,7 +267,6 @@ protein_ref <- data.table::fread("id_ref2/ids_protein.txt", header = FALSE)
 protein_ref <- protein_ref %>%
   dplyr::mutate(Level2 = "Protein expression", .before = 1) %>%
   dplyr::rename(Level3 = V1)
-
 
 
 # CNV

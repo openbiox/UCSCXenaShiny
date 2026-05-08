@@ -256,20 +256,22 @@ vis_unicox_tree <- function(Gene = "TP53", measure = "OS", data_type = "mRNA", u
   # For instance, patient-1 expressed GeneA, but not expressed GeneB, then
   # signature GeneA + GeneB will be NA for patient-1
   s <- data.frame(sample = names(t1), values = t1) %>%
-    dplyr::filter(!is.na(.data$values)) 
+    dplyr::filter(!is.na(.data$values))
   ## we use median cutoff here
   ss <- s %>%
-    dplyr::filter(!is.na(.data$values)) %>% 
+    dplyr::filter(!is.na(.data$values)) %>%
     dplyr::inner_join(tcga_surv, by = "sample") %>%
     dplyr::inner_join(tcga_gtex[, c("tissue", "sample")], by = "sample")
   sss <- split(ss, ss$tissue)
   # discard cancer types with constant values
-  sss = sss[sapply(sss, function(x){stats::sd(x$values)!=0})]
+  sss <- sss[sapply(sss, function(x) {
+    stats::sd(x$values) != 0
+  })]
   tissues <- names(sss)
   .f <- function(cancer) {
     sss_can <- sss[[cancer]]
-    # By default, cox analysis based on continuous molecule values. HR>0: Higher values, More risky. 
-    # Set use_optimal_cutoff as TRUE: Divide into 2 groups (Low/High) according the optimal cutoff. Then, 
+    # By default, cox analysis based on continuous molecule values. HR>0: Higher values, More risky.
+    # Set use_optimal_cutoff as TRUE: Divide into 2 groups (Low/High) according the optimal cutoff. Then,
     ## cox analysis based on discrete molecule groups. HR>0: 'High' Group are more risky.
     if (use_optimal_cutoff) {
       sss_can <- sss_can %>%
@@ -476,8 +478,9 @@ vis_pancan_anatomy <- function(Gene = "TP53",
 #' }
 #' @export
 vis_gene_immune_cor <- function(
-    Gene = "TP53", cor_method = "spearman",
-    data_type = "mRNA", Immune_sig_type = "Cibersort", Plot = "TRUE", opt_pancan = .opt_pancan) {
+  Gene = "TP53", cor_method = "spearman",
+  data_type = "mRNA", Immune_sig_type = "Cibersort", Plot = "TRUE", opt_pancan = .opt_pancan
+) {
   tcga_pan_immune_signature <- load_data("tcga_pan_immune_signature")
   tcga_gtex <- load_data("tcga_gtex")
 
@@ -577,8 +580,9 @@ vis_gene_immune_cor <- function(
 #' }
 #' @export
 vis_gene_tmb_cor <- function(
-    Gene = "TP53", cor_method = "spearman",
-    data_type = "mRNA", Plot = "TRUE", opt_pancan = .opt_pancan) {
+  Gene = "TP53", cor_method = "spearman",
+  data_type = "mRNA", Plot = "TRUE", opt_pancan = .opt_pancan
+) {
   tcga_tmb <- load_data("tcga_tmb")
   tcga_gtex <- load_data("tcga_gtex")
 
@@ -1142,7 +1146,6 @@ vis_gene_cor <- function(Gene1 = "CSF1R",
         size = 5, colour = "black"
       )
   }
-
 
 
   if (use_regline) p <- p + ggplot2::geom_smooth(method = stats::lm)
