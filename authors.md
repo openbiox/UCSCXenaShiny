@@ -23,16 +23,16 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/openbiox/UCSCXenaShiny/blob/v2.2.1/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/openbiox/UCSCXenaShiny/blob/master/DESCRIPTION)
 
 Wang S, Li S, Xiong Y, Zhao L, Gu K, Li Y, Zhao F (2026).
 *UCSCXenaShiny: Interactive Analysis of UCSC Xena Data*. R package
-version 2.2.1, <https://github.com/openbiox/UCSCXenaShiny>.
+version 2.2.1.9000, <https://github.com/openbiox/UCSCXenaShiny>.
 
     @Manual{,
       title = {UCSCXenaShiny: Interactive Analysis of UCSC Xena Data},
       author = {Shixiang Wang and Shensuo Li and Yi Xiong and Longfei Zhao and Kai Gu and Yin Li and Fei Zhao},
       year = {2026},
-      note = {R package version 2.2.1},
+      note = {R package version 2.2.1.9000},
       url = {https://github.com/openbiox/UCSCXenaShiny},
     }

@@ -1,8 +1,32 @@
 # Changelog
 
+## UCSCXenaShiny (development version)
+
+## UCSCXenaShiny 2.2.2
+
+- Added gene and pathway cross-omics analysis functions/modules for
+  PCAWG and CCLE.
+- Added
+  [`get_pcawg_mutation_status()`](https://openbiox.github.io/UCSCXenaShiny/reference/get_pancan_value.md)
+  to fetch mutation data for PCAWG.
+- Updated
+  [`query_pancan_value()`](https://openbiox.github.io/UCSCXenaShiny/reference/query_pancan_value.md)
+  to support mutation data for PCAWG and improved its robustness.
+- Fixed sample ID matching between mutation (Donor ID) and other omics
+  (Specimen ID) in PCAWG.
+- Improved data existence checks in Shiny modules to handle empty or NA
+  datasets gracefully.
+
 ## UCSCXenaShiny 2.2.1
 
 CRAN release: 2026-05-05
+
+- Added
+  [`get_nonomics_value()`](https://openbiox.github.io/UCSCXenaShiny/reference/get_nonomics_value.md)
+  function to fetch non-omics data.
+- Renamed quick analysis modules & Update README.
+- Added package logo.
+- Removed hiplot mirror switch from global settings.
 
 ## UCSCXenaShiny 2.2.0
 

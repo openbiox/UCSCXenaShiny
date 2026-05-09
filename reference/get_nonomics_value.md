@@ -40,9 +40,9 @@ dataframe
 
 ``` r
 if (FALSE) { # \dontrun{
-tcga_immune_xcell = get_nonomics_value(database = "toil", type = "immune", subtype = "XCELL")
+tcga_immune_xcell <- get_nonomics_value(database = "toil", type = "immune", subtype = "XCELL")
 
-tcga_pathway_kegg = get_nonomics_value(database = "toil", type = "pathway", subtype = "KEGG")
+tcga_pathway_kegg <- get_nonomics_value(database = "toil", type = "pathway", subtype = "KEGG")
 
 # Combined with sample information
 
@@ -52,6 +52,5 @@ head(tcga_surv)
 head(pcawg_info_fine)
 
 head(ccle_info_fine)
-
 } # }
 ```

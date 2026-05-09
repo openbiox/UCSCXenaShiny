@@ -477,10 +477,10 @@ importance.
   filtering or merging operations
 - [`query_toil_value_df()`](https://openbiox.github.io/UCSCXenaShiny/reference/query_toil_value_df.md)
   : Obtain ToilHub Info for Single Molecule
-- [`get_ccle_cn_value()`](https://openbiox.github.io/UCSCXenaShiny/reference/get_pancan_value.md)
-  [`get_ccle_gene_value()`](https://openbiox.github.io/UCSCXenaShiny/reference/get_pancan_value.md)
+- [`get_ccle_gene_value()`](https://openbiox.github.io/UCSCXenaShiny/reference/get_pancan_value.md)
   [`get_ccle_protein_value()`](https://openbiox.github.io/UCSCXenaShiny/reference/get_pancan_value.md)
   [`get_ccle_mutation_status()`](https://openbiox.github.io/UCSCXenaShiny/reference/get_pancan_value.md)
+  [`get_ccle_cn_value()`](https://openbiox.github.io/UCSCXenaShiny/reference/get_pancan_value.md)
   [`get_pancan_value()`](https://openbiox.github.io/UCSCXenaShiny/reference/get_pancan_value.md)
   [`get_pancan_gene_value()`](https://openbiox.github.io/UCSCXenaShiny/reference/get_pancan_value.md)
   [`get_pancan_transcript_value()`](https://openbiox.github.io/UCSCXenaShiny/reference/get_pancan_value.md)
@@ -490,10 +490,12 @@ importance.
   [`get_pancan_methylation_value()`](https://openbiox.github.io/UCSCXenaShiny/reference/get_pancan_value.md)
   [`get_pancan_miRNA_value()`](https://openbiox.github.io/UCSCXenaShiny/reference/get_pancan_value.md)
   [`get_pcawg_gene_value()`](https://openbiox.github.io/UCSCXenaShiny/reference/get_pancan_value.md)
+  [`get_pcawg_miRNA_value()`](https://openbiox.github.io/UCSCXenaShiny/reference/get_pancan_value.md)
   [`get_pcawg_fusion_value()`](https://openbiox.github.io/UCSCXenaShiny/reference/get_pancan_value.md)
   [`get_pcawg_promoter_value()`](https://openbiox.github.io/UCSCXenaShiny/reference/get_pancan_value.md)
-  [`get_pcawg_miRNA_value()`](https://openbiox.github.io/UCSCXenaShiny/reference/get_pancan_value.md)
   [`get_pcawg_APOBEC_mutagenesis_value()`](https://openbiox.github.io/UCSCXenaShiny/reference/get_pancan_value.md)
+  [`get_pcawg_mutation_status()`](https://openbiox.github.io/UCSCXenaShiny/reference/get_pancan_value.md)
+  [`get_pcawg_cn_value()`](https://openbiox.github.io/UCSCXenaShiny/reference/get_pancan_value.md)
   : Fetch Identifier Value from Pan-cancer Dataset
 - [`get_nonomics_value()`](https://openbiox.github.io/UCSCXenaShiny/reference/get_nonomics_value.md)
   : Fetch non-omics data of all samples from relevant databases
@@ -562,10 +564,12 @@ Functions to analyze and visualize data mainly from TCGA, PCAWG and CCLE
   : Visualize Single Gene Univariable Cox Result in PCAWG
 - [`vis_gene_cross_omics()`](https://openbiox.github.io/UCSCXenaShiny/reference/vis_gene_cross_omics.md)
   : Visualize cross-omics of one gene among pan-cancers
-- [`vis_pathway_cross_omics()`](https://openbiox.github.io/UCSCXenaShiny/reference/vis_pathway_cross_omics.md)
-  : Visualize cross-omics of one pathway among pan-cancers
-- [`calc_pw_mut_cnv()`](https://openbiox.github.io/UCSCXenaShiny/reference/calc_pw_mut_cnv.md)
-  : Prepare Mut/CNV data of pathways given specific samples
+- [`vis_ccle_gene_cross_omics()`](https://openbiox.github.io/UCSCXenaShiny/reference/vis_ccle_gene_cross_omics.md)
+  : Visualize cross-omics of one gene in CCLE
+- [`vis_pcawg_gene_cross_omics()`](https://openbiox.github.io/UCSCXenaShiny/reference/vis_pcawg_gene_cross_omics.md)
+  : Visualize cross-omics of one gene in PCAWG
+- [`vis_pcawg_pathway_cross_omics()`](https://openbiox.github.io/UCSCXenaShiny/reference/vis_pcawg_pathway_cross_omics.md)
+  : Visualize cross-omics of one pathway in PCAWG
 
 ## General Analysis and Visualiation
 

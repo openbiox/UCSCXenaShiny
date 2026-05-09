@@ -5,13 +5,13 @@ Identifier includes gene/probe etc.
 ## Usage
 
 ``` r
-get_ccle_cn_value(identifier)
-
-get_ccle_gene_value(identifier, norm = c("rpkm", "nc"))
+get_ccle_gene_value(identifier, norm = c("rpkm", "reads"))
 
 get_ccle_protein_value(identifier)
 
 get_ccle_mutation_status(identifier)
+
+get_ccle_cn_value(identifier)
 
 get_pancan_value(
   identifier,
@@ -43,11 +43,11 @@ get_pancan_miRNA_value(identifier)
 
 get_pcawg_gene_value(identifier)
 
+get_pcawg_miRNA_value(identifier, norm = c("TMM", "UQ"))
+
 get_pcawg_fusion_value(identifier)
 
-get_pcawg_promoter_value(identifier, type = c("raw", "relative", "outlier"))
-
-get_pcawg_miRNA_value(identifier, norm = c("TMM", "UQ"))
+get_pcawg_promoter_value(identifier, type = c("relative", "raw", "outlier"))
 
 get_pcawg_APOBEC_mutagenesis_value(
   identifier = c("tCa_MutLoad_MinEstimate", "APOBECtCa_enrich", "A3A_or_A3B",
@@ -57,6 +57,10 @@ get_pcawg_APOBEC_mutagenesis_value(
     "ytCa_rtCa_BH_Fisher_p-value", "ytCa_rtCa_Fisher_p-value", "ytCa_to_G+ytCa_to_T",
     "ytca+tgar")
 )
+
+get_pcawg_mutation_status(identifier)
+
+get_pcawg_cn_value(identifier)
 ```
 
 ## Arguments
@@ -68,7 +72,11 @@ get_pcawg_APOBEC_mutagenesis_value(
 
 - norm:
 
-  the normalization method.
+  a character string specifying the normalization type. For gene
+  expression, allowed values include `"tpm"`, `"fpkm"`, `"nc"` (norm
+  count); for transcript expression: `"tpm"`, `"fpkm"`, `"isopct"`; for
+  CCLE gene expression: `"rpkm"`, `"reads"`; for PCAWG miRNA expression:
+  `"TMM"`, `"UQ"`.
 
 - subtype:
 
@@ -125,8 +133,6 @@ a named vector or `list`.
 
 ## Functions
 
-- `get_ccle_cn_value()`: Fetch copy number value from CCLE dataset
-
 - `get_ccle_gene_value()`: Fetch gene expression value from CCLE dataset
 
 - `get_ccle_protein_value()`: Fetch gene protein expression value from
@@ -134,6 +140,8 @@ a named vector or `list`.
 
 - `get_ccle_mutation_status()`: Fetch gene mutation info from CCLE
   dataset
+
+- `get_ccle_cn_value()`: Fetch gene copy number value from CCLE dataset
 
 - `get_pancan_value()`: Fetch identifier value from pan-cancer dataset
 
@@ -161,17 +169,22 @@ a named vector or `list`.
 - `get_pcawg_gene_value()`: Fetch specimen-level gene expression value
   from PCAWG cohort
 
+- `get_pcawg_miRNA_value()`: Fetch specimen-level miRNA expression value
+  from PCAWG cohort
+
 - `get_pcawg_fusion_value()`: Fetch specimen-level gene fusion value
   from PCAWG cohort
 
 - `get_pcawg_promoter_value()`: Fetch specimen-level gene promoter
   activity value from PCAWG cohort
 
-- `get_pcawg_miRNA_value()`: Fetch specimen-level miRNA value from PCAWG
+- `get_pcawg_APOBEC_mutagenesis_value()`: Fetch gene fusion value from
+  PCAWG cohort
+
+- `get_pcawg_mutation_status()`: Fetch gene mutation info from PCAWG
   cohort
 
-- `get_pcawg_APOBEC_mutagenesis_value()`: Fetch specimen-level gene
-  fusion value from PCAWG cohort
+- `get_pcawg_cn_value()`: Fetch gene copy number value from PCAWG cohort
 
 ## Examples
 
