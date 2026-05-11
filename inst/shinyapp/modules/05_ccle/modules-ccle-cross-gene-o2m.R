@@ -22,7 +22,8 @@ ui.modules_ccle_cross_gene_o2m = function(id) {
 						selected = sort(unique(ccle_info_fine$Site_Primary)),
 						options = list(`actions-box` = TRUE)
 					),
-					br(),
+
+				    br(),
 
 					h4(strong("S1.2 Filter samples"),"[opt]") %>% 
 						helper(type = "markdown", size = "l", fade = TRUE, 
@@ -49,11 +50,7 @@ ui.modules_ccle_cross_gene_o2m = function(id) {
 						choices = NULL,
 						search = TRUE),
 					br(),
-					h4(strong("S2.2 Options [opt]")),
-					numericInput(ns("n_protein"), "Number of antibodies to show:", value = 0, min = 0, max = 15),
-					checkboxInput(ns("add_mean_protein"), "Add median protein expression", value = FALSE),
-					br(),
-					h4(strong("S2.3 Load mRNA/Mutation/CNV/Protein data")),
+					h4(strong("S2.2 Load mRNA/Mutation/CNV data")),
 					shinyWidgets::actionBttn(
 						ns("step2_2_load"), "Load",
 				        style = "gradient",
@@ -64,6 +61,26 @@ ui.modules_ccle_cross_gene_o2m = function(id) {
 					), 
 					br(),
 					verbatimTextOutput(ns("step2_2_text")),
+					br(),
+					h4(strong("S2.3 Load protein data")),
+					checkboxInput(ns("add_mean_protein"), "Add median protein expression", value = TRUE),
+					virtualSelectInput(
+						inputId = ns("protein_id"),
+						label = "Select specific antibodies:",
+						choices = NULL,
+						multiple = TRUE,
+						search = TRUE
+					),
+					shinyWidgets::actionBttn(
+						ns("step2_3_load"), "Load",
+				        style = "gradient",
+				        icon = icon("box"),
+				        color = "primary",
+				        block = TRUE,
+				        size = "sm"
+					), 
+					br(),
+					verbatimTextOutput(ns("step2_3_text")),
 					br()
 				)
 			),
@@ -121,6 +138,7 @@ ui.modules_ccle_cross_gene_o2m = function(id) {
 		)
 	)
 }
+
 
 server.modules_ccle_cross_gene_o2m = function(input, output, session) {
 	ns <- session$ns
@@ -180,28 +198,22 @@ server.modules_ccle_cross_gene_o2m = function(input, output, session) {
 		check_omics$mRNA <- TRUE
 		check_omics$mutation <- TRUE
 		check_omics$cnv <- TRUE
-		check_omics$protein <- TRUE
 
-		id <- notify(h3("[1/4] Caching mRNA data..."))
+		id <- notify(h3("[1/3] Caching mRNA data..."))
 		on.exit(removeNotification(id), add = TRUE)
 
 		dat_tmp = query_pancan_value(input$gene_id, "mRNA", database = "ccle")
 		if(is.null(dat_tmp$data) || all(is.na(dat_tmp$data))){check_omics$mRNA=FALSE}
 		Sys.sleep(0.5)
 
-		notify(h3("[2/4] Caching mutation data..."), id = id)
+		notify(h3("[2/3] Caching mutation data..."), id = id)
 		dat_tmp = query_pancan_value(input$gene_id, "mutation", database = "ccle")
 		if(is.null(dat_tmp$sampleID) || all(is.na(dat_tmp$sampleID))){check_omics$mutation=FALSE}
 		Sys.sleep(0.5)
 
-		notify(h3("[3/4] Caching CNV data..."), id = id)
+		notify(h3("[3/3] Caching CNV data..."), id = id)
 		dat_tmp = query_pancan_value(input$gene_id, "cnv", database = "ccle")
 		if(is.null(dat_tmp$data) || all(is.na(dat_tmp$data))){check_omics$cnv=FALSE}
-		Sys.sleep(0.5)
-
-		notify(h3("[4/4] Caching protein data..."), id = id)
-		dat_tmp = query_pancan_value(input$gene_id, "protein", database = "ccle")
-		if(is.null(dat_tmp$data) || all(is.na(dat_tmp$data))){check_omics$protein=FALSE}
 		Sys.sleep(0.5)
 
 		output$step2_2_text = renderPrint({
@@ -210,8 +222,43 @@ server.modules_ccle_cross_gene_o2m = function(input, output, session) {
 					   "\n(2) Mutation is ",
 					   ifelse(check_omics$mutation,"OK; ","missing; "),
 					   "\n(3) CNV is ",
-					   ifelse(check_omics$cnv,"OK; ","missing; "),
-					   "\n(4) Protein is ",
+					   ifelse(check_omics$cnv,"OK.","missing.")
+			))
+		})
+	})
+
+	candi_protein <- reactive({
+		Protein_all <- .all_ccle_proteins
+		Protein_sub <- Protein_all[grepl(paste0("^", input$gene_id), Protein_all, ignore.case = TRUE)]
+		if (input$gene_id == "TP53") Protein_sub <- unique(c(Protein_sub, Protein_all[grepl("^p53", Protein_all, ignore.case = TRUE)]))
+		sort(unique(Protein_sub))
+	})
+	observe({
+		updateVirtualSelect(
+			"protein_id",
+			choices = candi_protein(),
+			selected = candi_protein()[1:2]
+		)
+	})
+
+	observeEvent(input$step2_3_load, {
+		check_omics$protein <- TRUE
+		id <- notify(h3("Caching protein data..."))
+		on.exit(removeNotification(id), add = TRUE)
+		
+		if (length(input$protein_id) == 0 && !input$add_mean_protein) {
+			check_omics$protein <- FALSE
+		} else {
+			if (input$add_mean_protein) {
+				dat_tmp <- get_ccle_protein_value(candi_protein())
+			}
+			if (length(input$protein_id) > 0) {
+				dat_tmp <- get_ccle_protein_value(input$protein_id)
+			}
+		}
+
+		output$step2_3_text = renderPrint({
+			cat(paste0("Tips: \n(1) Protein is ", 
 					   ifelse(check_omics$protein,"OK.","missing.")
 			))
 		})
@@ -219,13 +266,13 @@ server.modules_ccle_cross_gene_o2m = function(input, output, session) {
 
 	plot_func = eventReactive(input$step3_plot,{
 		shiny::validate(
-			need(check_omics$mRNA, 
-				"Please load valid mRNA data in Step2.3"),
+			need(any(check_omics$mRNA, check_omics$mutation, check_omics$cnv, check_omics$protein), 
+				"Please load valid data in Step2.2 or Step2.3 (At least one omics must be available)"),
 		)
 		shinyjs::disable("step3_plot")
 		res = vis_ccle_gene_cross_omics(input$gene_id,
 							 tumor_projects = cancer_choose$name,
-							 n_protein = input$n_protein,
+							 n_protein = input$protein_id,
 							 add_mean_protein = input$add_mean_protein,
 							 return_list = TRUE)
         shinyjs::enable("step3_plot")

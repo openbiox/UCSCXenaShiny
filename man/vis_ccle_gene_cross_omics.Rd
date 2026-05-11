@@ -17,7 +17,7 @@ vis_ccle_gene_cross_omics(
 
 \item{tumor_projects}{Select specific CCLE tissues. Default NULL, indicating all.}
 
-\item{n_protein}{number of antibodies to show.}
+\item{n_protein}{specific antibody identifiers or number of sampling.}
 
 \item{add_mean_protein}{whether to add median protein expression.}
 

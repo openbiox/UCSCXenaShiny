@@ -4,7 +4,7 @@ get_pcawg_gene_value <- function(identifier) {
   host <- "pcawgHub"
   dataset <- "tophat_star_fpkm_uq.v2_aliquot_gl.sp.log"
 
-  expression <- get_data(dataset, identifier, host, use_probeMap = FALSE)
+  expression <- get_data(dataset, identifier, host)
   unit <- "log2(fpkm-uq+0.001)"
   report_dataset_info(dataset)
   res <- list(data = expression, unit = unit)
@@ -25,7 +25,7 @@ get_pcawg_miRNA_value <- function(identifier, norm = c("TMM", "UQ")) {
     unit <- "log2(cpm-UQ+0.1)"
   }
 
-  expression <- get_data(dataset, identifier, host, use_probeMap = FALSE)
+  expression <- get_data(dataset, identifier, host)
   report_dataset_info(dataset)
   res <- list(data = expression, unit = unit)
   res
@@ -37,7 +37,7 @@ get_pcawg_fusion_value <- function(identifier) {
   host <- "pcawgHub"
   dataset <- "pcawg3_fusions_PKU_EBI.gene_centric.sp.xena"
 
-  expression <- get_data(dataset, identifier, host, use_probeMap = FALSE)
+  expression <- get_data(dataset, identifier, host)
   unit <- "fusion status (1: detected, 0: not detected)"
   report_dataset_info(dataset)
   res <- list(data = expression, unit = unit)
@@ -78,25 +78,17 @@ get_pcawg_promoter_value <- function(identifier, type = c("relative", "raw", "ou
       return(NULL)
     }
 
-    # Use URL for direct fetch
-    query_list <- UCSCXenaTools::fetch_dense_values(host_url, dataset, ids_to_query, use_probeMap = FALSE)
+    # Use URL for direct fetch, check = FALSE to avoid 500
+    query_list <- UCSCXenaTools::fetch_dense_values(host_url, dataset, ids_to_query, use_probeMap = FALSE, check = FALSE)
     expression <- as.data.frame(t(query_list))
-    if (length(ids_to_query) == 1) {
-      expression <- expression %>%
-        tibble::rownames_to_column("sampleID") %>%
-        dplyr::rename(data = 2)
-    }
-    save_data(expression, identifier, dataset, host_name)
+    data <- expression %>%
+      tibble::rownames_to_column("sampleID")
+    save_data(data, identifier, dataset, host_name)
   }
 
   report_dataset_info(dataset)
-  if (is.data.frame(expression) && "data" %in% colnames(expression)) {
-    res_data <- expression$data
-    names(res_data) <- expression$sampleID
-    res <- list(data = res_data, unit = unit)
-  } else {
-    res <- list(data = expression, unit = unit)
-  }
+  # Consistently return a data frame with sampleID as first column
+  res <- list(data = data, unit = unit)
   res
 }
 
@@ -115,7 +107,7 @@ get_pcawg_APOBEC_mutagenesis_value <- function(identifier = c(
   host <- "pcawgHub"
   dataset <- "MAF_Aug31_2016_sorted_A3A_A3B_comparePlus.sp"
 
-  expression <- get_data(dataset, identifier, host, use_probeMap = FALSE)
+  expression <- get_data(dataset, identifier, host)
   unit <- ""
   report_dataset_info(dataset)
   res <- list(data = expression, unit = unit)
@@ -138,7 +130,7 @@ get_pcawg_mutation_status <- function(identifier) {
   if (res$ok) {
     data <- res$data
   } else {
-    # Use URL for direct fetch
+    # fetch_sparse_values usually doesn't have check arg, but let's just use it as is
     query_list <- UCSCXenaTools::fetch_sparse_values(host_url, dataset, identifier)
     data <- as.data.frame(query_list$rows)
     data <- dplyr::full_join(
@@ -166,8 +158,7 @@ get_pcawg_cn_value <- function(identifier) {
   if (res$ok) {
     data <- res$data
   } else {
-    # Use URL for direct fetch
-    query_list <- UCSCXenaTools::fetch_dense_values(host_url, dataset, identifier, use_probeMap = FALSE)
+    query_list <- UCSCXenaTools::fetch_dense_values(host_url, dataset, identifier, use_probeMap = FALSE, check = FALSE)
     data <- as.data.frame(t(query_list))
     data <- data %>%
       tibble::rownames_to_column("sampleID")

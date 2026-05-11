@@ -84,12 +84,6 @@ get_pcawg_cn_value(identifier)
 \item{identifier}{a length-1 character representing a gene symbol, ensembl gene id, or probe id.
 Gene symbol is highly recommended.}
 
-\item{norm}{a character string specifying the normalization type. For gene expression,
-allowed values include \code{"tpm"}, \code{"fpkm"}, \code{"nc"} (norm count);
-for transcript expression: \code{"tpm"}, \code{"fpkm"}, \code{"isopct"};
-for CCLE gene expression: \code{"rpkm"}, \code{"reads"};
-for PCAWG miRNA expression: \code{"TMM"}, \code{"UQ"}.}
-
 \item{subtype}{a length-1 chracter representing a regular expression for matching
 \code{DataSubtype} column of \link[UCSCXenaTools:XenaData]{UCSCXenaTools::XenaData}.}
 

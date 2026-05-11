@@ -2,11 +2,14 @@
 
 # UCSCXenaShiny 2.2.2
 
-- Added gene and pathway cross-omics analysis functions/modules for PCAWG and CCLE.
-- Added `get_pcawg_mutation_status()` to fetch mutation data for PCAWG.
-- Updated `query_pancan_value()` to support mutation data for PCAWG and improved its robustness.
-- Fixed sample ID matching between mutation (Donor ID) and other omics (Specimen ID) in PCAWG.
-- Improved data existence checks in Shiny modules to handle empty or NA datasets gracefully.
+- Added comprehensive gene and pathway cross-omics analysis for PCAWG and CCLE.
+- Standardized cross-omics visualization with TCGA standards (dynamic layouts, professional palettes).
+- Implemented flexible identifier selection (Transcript, CpG, Promoter, Antibody) in all cross-omics modules.
+- Added explicit 'Overall' median toggle to cross-omics analysis.
+- Resolved all dimension mismatch and logic errors in PCAWG/CCLE data joining.
+- Optimized remote data fetching with batch support and automatic retry logic.
+- Updated `query_pancan_value()` to support PCAWG mutation and improved robustness.
+- Fixed Specimen-to-Donor ID mapping for PCAWG mutation joins.
 
 # UCSCXenaShiny 2.2.1
 

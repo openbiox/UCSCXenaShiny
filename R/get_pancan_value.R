@@ -23,11 +23,6 @@ available_hosts <- function() {
 #' `XenaDatasets` of [UCSCXenaTools::XenaData].
 #' @param host a character vector representing host name(s), e.g. "toilHub".
 #' @param samples a character vector representing samples want to be returned.
-#' @param norm a character string specifying the normalization type. For gene expression,
-#' allowed values include \code{"tpm"}, \code{"fpkm"}, \code{"nc"} (norm count);
-#' for transcript expression: \code{"tpm"}, \code{"fpkm"}, \code{"isopct"};
-#' for CCLE gene expression: \code{"rpkm"}, \code{"reads"};
-#' for PCAWG miRNA expression: \code{"TMM"}, \code{"UQ"}.
 #' @param ... other parameters.
 #' @return a named vector or `list`.
 #'
@@ -77,7 +72,7 @@ get_pancan_value <- function(identifier, subtype = NULL, dataset = NULL, host = 
 
   res <- try_query_value(data[["XenaHosts"]], data[["XenaDatasets"]],
     identifiers = identifier, samples = samples,
-    check = FALSE, use_probeMap = TRUE, ...
+    check = FALSE, ...
   )
   res2 <- res[1, ]
   names(res2) <- colnames(res)

@@ -187,7 +187,7 @@ vis_gene_cross_omics <- function(gene = "TP53",
     }
     gene_methy_plot <- lapply(seq_along(cpg_sites), function(i) {
       opt_pancan <- .opt_pancan
-      if (cpg_sites[i] == gene) {
+      if (isTRUE(cpg_sites[i] == gene)) {
         opt_pancan$toil_methylation$aggr <- "NA"
       } else {
         opt_pancan$toil_methylation$aggr <- "mean"
@@ -273,7 +273,7 @@ vis_gene_cross_omics <- function(gene = "TP53",
 #'
 #' @param gene  a gene symbol identifier (e.g., "TP53")
 #' @param tumor_projects Select specific PCAWG projects. Default NULL, indicating all.
-#' @param n_promoter number of promoters to show.
+#' @param n_promoter specific promoter identifiers or number of sampling.
 #' @param add_mean_promoter whether to add median promoter activity.
 #' @param promoter_type one of "relative", "raw", "outlier".
 #' @param return_list TRUE returns a list including plot object and data. FALSE just returns plot.
@@ -300,22 +300,25 @@ vis_pcawg_gene_cross_omics <- function(gene = "TP53",
     dplyr::rename("Exp" = ".") %>%
     tibble::rownames_to_column("icgc_specimen_id") %>%
     dplyr::inner_join(pcawg_info2)
+
   gene_mrna_md <- gene_mrna %>%
     dplyr::group_by(.data$dcc_project_code, .data$type2) %>%
-    dplyr::summarise(Exp = median(.data$Exp)) %>%
+    dplyr::summarise(Exp = median(.data$Exp, na.rm = TRUE)) %>%
     as.data.frame() %>%
     tidyr::pivot_wider(id_cols = .data$dcc_project_code, names_from = .data$type2, values_from = .data$Exp)
+
   if (!"tumor" %in% colnames(gene_mrna_md)) gene_mrna_md$tumor <- NA
   if (!"normal" %in% colnames(gene_mrna_md)) gene_mrna_md$normal <- NA
-  all_vals <- c(gene_mrna_md$tumor, gene_mrna_md$normal)
-  min_v <- min(all_vals, na.rm = T)
-  max_v <- max(all_vals, na.rm = T)
-  if (max_v != min_v) {
-    gene_mrna_md$tumor <- (gene_mrna_md$tumor - min_v) / (max_v - min_v)
-    gene_mrna_md$normal <- (gene_mrna_md$normal - min_v) / (max_v - min_v)
+
+  # Normalize medians 0-1 for plotting
+  all_exp_vals <- c(gene_mrna_md$tumor, gene_mrna_md$normal)
+  if (max(all_exp_vals, na.rm = T) != min(all_exp_vals, na.rm = T)) {
+    gene_mrna_md$tumor <- (gene_mrna_md$tumor - min(all_exp_vals, na.rm = T)) / (max(all_exp_vals, na.rm = T) - min(all_exp_vals, na.rm = T))
+    gene_mrna_md$normal <- (gene_mrna_md$normal - min(all_exp_vals, na.rm = T)) / (max(all_exp_vals, na.rm = T) - min(all_exp_vals, na.rm = T))
   }
+
   gene_mrna_comp <- ggpubr::compare_means(Exp ~ type2, data = gene_mrna, group.by = "dcc_project_code", method = "wilcox.test")
-  gene_mrna_plot <- dplyr::left_join(gene_mrna_md, gene_mrna_comp[, c("dcc_project_code", "p")]) %>%
+  gene_mrna_plot <- dplyr::left_join(gene_mrna_md, gene_mrna_comp[, c("dcc_project_code", "p", "p.adj")]) %>%
     dplyr::rename("id" = "dcc_project_code") %>%
     dplyr::mutate(Label = case_when(p < 0.001 ~ "***", p < 0.01 ~ "**", p < 0.05 ~ "*", TRUE ~ "-")) %>%
     dplyr::select("id", "normal", "tumor", "Label")
@@ -334,7 +337,7 @@ vis_pcawg_gene_cross_omics <- function(gene = "TP53",
   }
   gene_mut_plot <- gene_mut_plot %>%
     dplyr::mutate(Mut_str = scales::percent(.data$Mut, accuracy = 0.1)) %>%
-    dplyr::select("dcc_project_code", "Ratio", "Mut_str")
+    dplyr::select("dcc_project_code", "Ratio", "Mut", "Mut_str")
 
   #### Omics--Fusion
   gene_fusion <- query_pancan_value(gene, "fusion", database = "pcawg")[[1]] %>%
@@ -348,29 +351,16 @@ vis_pcawg_gene_cross_omics <- function(gene = "TP53",
     as.data.frame() %>%
     dplyr::mutate(Fusion_str = scales::percent(.data$Fusion_ratio, accuracy = 0.1))
 
-  #### Omics--miRNA
-  gene_mi_res <- tryCatch(
-    {
-      query_pancan_value(gene, "miRNA", database = "pcawg")
-    },
-    error = function(e) NULL
-  )
-  if (!is.null(gene_mi_res)) {
-    gene_mi <- gene_mi_res[[1]] %>%
-      as.data.frame() %>%
-      dplyr::rename("mi" = ".") %>%
-      tibble::rownames_to_column("icgc_specimen_id") %>%
-      dplyr::inner_join(pcawg_info2)
-    gene_mi_plot <- gene_mi %>%
-      dplyr::group_by(.data$dcc_project_code) %>%
-      dplyr::summarise(mi = median(.data$mi, na.rm = TRUE)) %>%
-      as.data.frame()
-    if (max(gene_mi_plot$mi, na.rm = T) != min(gene_mi_plot$mi, na.rm = T)) {
-      gene_mi_plot$mi <- (gene_mi_plot$mi - min(gene_mi_plot$mi, na.rm = T)) / (max(gene_mi_plot$mi, na.rm = T) - min(gene_mi_plot$mi, na.rm = T))
-    }
-  } else {
-    gene_mi_plot <- data.frame(dcc_project_code = tumor_projects, mi = NA)
-  }
+  #### Omics--APOBEC
+  gene_apobec <- query_pancan_value("APOBECtCa_enrich", "APOBEC", database = "pcawg")[[1]] %>%
+    as.data.frame() %>%
+    dplyr::rename("APOBEC" = ".") %>%
+    tibble::rownames_to_column("icgc_specimen_id") %>%
+    dplyr::inner_join(pcawg_info2)
+  gene_apobec_plot <- gene_apobec %>%
+    dplyr::group_by(.data$dcc_project_code) %>%
+    dplyr::summarise(APOBEC = median(.data$APOBEC, na.rm = TRUE)) %>%
+    as.data.frame()
 
   #### Omics--Promoter
   Promoter_sub <- load_data("v2_tpc_id_help")$pcawg$id_pro %>%
@@ -382,74 +372,120 @@ vis_pcawg_gene_cross_omics <- function(gene = "TP53",
     set.seed(123)
     promoters_sle <- unique(sample(Promoter_sub, min(n_promoter, length(Promoter_sub))))
   } else {
-    promoters_sle <- NULL
+    promoters_sle <- character(0)
   }
 
-  if (length(promoters_sle) == 0 && !add_mean_promoter) {
-    gene_pro_n <- 0
-  } else {
-    if (add_mean_promoter) promoters_sle <- c(promoters_sle, gene)
-    gene_pro_plot <- lapply(seq_along(promoters_sle), function(i) {
-      if (promoters_sle[i] == gene) {
-        gene_pro_tmp <- get_pcawg_promoter_value(Promoter_sub, type = promoter_type)
-        if (is.null(gene_pro_tmp) || all(is.na(gene_pro_tmp[[1]]))) {
-          return(NULL)
-        }
-        gene_pro_tmp_val <- as.data.frame(gene_pro_tmp[[1]]) %>% rowMeans(na.rm = TRUE)
-        gene_pro_tmp_final <- list(data.frame(Pro = gene_pro_tmp_val) %>% tibble::rownames_to_column("icgc_specimen_id"))
-      } else {
-        gene_pro_tmp_res <- tryCatch(
-          {
-            get_pcawg_promoter_value(promoters_sle[i], type = promoter_type)
-          },
-          error = function(e) NULL
-        )
-        if (is.null(gene_pro_tmp_res) || all(is.na(gene_pro_tmp_res[[1]]))) {
-          return(NULL)
-        }
-        gene_pro_tmp_final <- list(as.data.frame(gene_pro_tmp_res[[1]]) %>% dplyr::rename("Pro" = 1) %>% tibble::rownames_to_column("icgc_specimen_id"))
-      }
-      gene_pro_df <- gene_pro_tmp_final[[1]] %>%
-        dplyr::inner_join(pcawg_info2) %>%
+  gene_pro_plot_list <- list()
+  if (isTRUE(add_mean_promoter)) {
+    gene_pro_tmp <- get_pcawg_promoter_value(Promoter_sub, type = promoter_type)
+    if (!is.null(gene_pro_tmp) && inherits(gene_pro_tmp$data, "data.frame") && nrow(gene_pro_tmp$data) > 0) {
+      df <- as.data.frame(gene_pro_tmp$data)
+      mean_vals <- rowMeans(df[, -1, drop = FALSE], na.rm = TRUE)
+      gene_pro_tmp_final <- data.frame(icgc_specimen_id = df$sampleID, Pro = mean_vals)
+      gene_pro_df <- gene_pro_tmp_final %>%
+        dplyr::inner_join(pcawg_info2, by = "icgc_specimen_id") %>%
         dplyr::group_by(.data$dcc_project_code) %>%
-        dplyr::summarise(Pro = median(.data$Pro, na.rm = TRUE))
-      colnames(gene_pro_df)[2] <- promoters_sle[i]
-      gene_pro_df %>% tibble::column_to_rownames("dcc_project_code")
-    })
-    gene_pro_plot <- gene_pro_plot[!sapply(gene_pro_plot, is.null)]
-    if (length(gene_pro_plot) == 0) {
-      gene_pro_n <- 0
-    } else {
-      gene_pro_plot <- do.call(cbind, gene_pro_plot) %>% tibble::rownames_to_column("dcc_project_code")
-      if (gene %in% colnames(gene_pro_plot)) colnames(gene_pro_plot)[which(colnames(gene_pro_plot) %in% gene)] <- "Pro_Overall"
-      gene_pro_n <- ncol(gene_pro_plot) - 1
+        dplyr::summarise(Pro_Overall = median(.data$Pro, na.rm = TRUE))
+      gene_pro_plot_list[["Pro_Overall"]] <- gene_pro_df
     }
+  }
+
+  if (length(promoters_sle) > 0) {
+    for (p in promoters_sle) {
+      gene_pro_tmp_res <- tryCatch(
+        {
+          get_pcawg_promoter_value(p, type = promoter_type)
+        },
+        error = function(e) NULL
+      )
+      if (!is.null(gene_pro_tmp_res) && inherits(gene_pro_tmp_res$data, "data.frame") && nrow(gene_pro_tmp_res$data) > 0) {
+        df <- as.data.frame(gene_pro_tmp_res$data)
+        gene_pro_tmp_final <- data.frame(icgc_specimen_id = df$sampleID, val = df[, 2])
+        gene_pro_df <- gene_pro_tmp_final %>%
+          dplyr::inner_join(pcawg_info2, by = "icgc_specimen_id") %>%
+          dplyr::group_by(.data$dcc_project_code) %>%
+          dplyr::summarise(val = median(.data$val, na.rm = TRUE))
+        colnames(gene_pro_df)[2] <- p
+        gene_pro_plot_list[[p]] <- gene_pro_df
+      }
+    }
+  }
+
+  if (length(gene_pro_plot_list) == 0) {
+    gene_pro_n <- 0
+    gene_pro_df_final <- NULL
+  } else {
+    # Combine and Scale
+    gene_pro_df_final <- data.frame(id = tumor_projects)
+    for (nm in names(gene_pro_plot_list)) {
+      sub_df <- gene_pro_plot_list[[nm]]
+      # Scale medians across projects to 0-1
+      val_col <- colnames(sub_df)[2]
+      if (max(sub_df[[val_col]], na.rm = T) != min(sub_df[[val_col]], na.rm = T)) {
+        sub_df[[val_col]] <- (sub_df[[val_col]] - min(sub_df[[val_col]], na.rm = T)) / (max(sub_df[[val_col]], na.rm = T) - min(sub_df[[val_col]], na.rm = T))
+      }
+      gene_pro_df_final <- dplyr::left_join(gene_pro_df_final, sub_df, by = c("id" = "dcc_project_code"))
+    }
+    gene_pro_n <- length(gene_pro_plot_list)
   }
 
   #### Ready for Plot
   gene_cross_dat <- data.frame(id = tumor_projects) %>%
-    dplyr::left_join(gene_mrna_plot) %>%
+    dplyr::left_join(gene_mrna_plot, by = "id") %>%
     dplyr::left_join(gene_mut_plot, by = c("id" = "dcc_project_code")) %>%
-    dplyr::left_join(gene_fusion_plot, by = c("id" = "dcc_project_code")) %>%
-    dplyr::left_join(gene_mi_plot, by = c("id" = "dcc_project_code"))
-  if (gene_pro_n > 0) gene_cross_dat <- dplyr::left_join(gene_cross_dat, gene_pro_plot, by = c("id" = "dcc_project_code"))
+    dplyr::left_join(gene_fusion_plot, by = c("id" = "dcc_project_code"))
+
+  # Dynamic Layers Check
+  has_apobec <- !all(is.na(gene_apobec_plot$APOBEC))
+  if (has_apobec) gene_cross_dat <- dplyr::left_join(gene_cross_dat, gene_apobec_plot, by = c("id" = "dcc_project_code"))
+
+  if (gene_pro_n > 0) gene_cross_dat <- dplyr::left_join(gene_cross_dat, gene_pro_df_final, by = "id")
+
   idx_1 <- which(sapply(gene_cross_dat$Ratio, is.null))
   for (i in idx_1) gene_cross_dat$Ratio[[i]] <- c(Mut = NA_real_, Wild = NA_real_)
 
+  display_cols <- c("id", "normal", "tumor", "Label", "Ratio", "Mut", "Mut_str", "Fusion_ratio", "Fusion_str")
+  if (has_apobec) display_cols <- c(display_cols, "APOBEC")
+  if (gene_pro_n > 0) display_cols <- c(display_cols, names(gene_pro_plot_list))
+
+  # Column Names & Groups
+  base_names <- c("", "Normal Exp", "Tumor Exp", "T vs. N(Wilcox)", "Mutation Dist", "Mutation PCT", "", "Fusion PCT", "")
+  base_groups <- c("PCAWG", rep("Expression Profile", 3), rep("Mutation Profile", 3), rep("Fusion Profile", 2))
+  base_geoms <- c("text", "bar", "bar", "text", "pie", "bar", "text", "bar", "text")
+  base_pals <- c(NA, "Tumor-Exp", "Tumor-Exp", NA, "Mut Status", "Mut-Ratio", NA, "Fusion-Ratio", NA)
+  base_widths <- c(5, 4, 4, 3, 2, 4, 4, 4, 4)
+
+  if (has_apobec) {
+    base_names <- c(base_names, "APOBEC Enrich")
+    base_groups <- c(base_groups, "APOBEC Profile")
+    base_geoms <- c(base_geoms, "bar")
+    base_pals <- c(base_pals, "APOBEC-Ratio")
+    base_widths <- c(base_widths, 4)
+  }
+  if (gene_pro_n > 0) {
+    base_names <- c(base_names, rep("Promoter", gene_pro_n))
+    base_groups <- c(base_groups, rep("Promoter Profile", gene_pro_n))
+    base_geoms <- c(base_geoms, rep("funkyrect", gene_pro_n))
+    base_pals <- c(base_pals, rep("Scale.Promoter.Level", gene_pro_n))
+    base_widths <- c(base_widths, rep(1.1, gene_pro_n))
+  }
+
   column_info <- data.frame(
-    id = colnames(gene_cross_dat),
-    name = c("", "Normal Exp", "Tumor Exp", "T vs. N(Wilcox)", "Mutation Dist", "Mutation PCT", "Fusion PCT", "", "miRNA Exp", rep("Promoter", gene_pro_n)),
-    group = c("PCAWG", rep("Expression Profile", 3), rep("Mutation Profile", 2), "Fusion Profile", "", "miRNA Profile", rep("Promoter Profile", gene_pro_n)),
-    geom = c("text", "bar", "bar", "text", "pie", "text", "bar", "text", "bar", rep("funkyrect", gene_pro_n)),
-    palette = c(NA, "Tumor-Exp", "Tumor-Exp", NA, "Mut Status", NA, "Fusion-Ratio", NA, "Scale.miRNA.Level", rep("Scale.Promoter.Level", gene_pro_n)),
-    width = c(5, 4, 4, 3, 2, 4, 4, 4, 4, rep(1.1, gene_pro_n))
+    id = display_cols,
+    name = base_names,
+    group = base_groups,
+    geom = base_geoms,
+    palette = base_pals,
+    width = base_widths
   )
+
   column_info$options <- NA
   for (i in seq_len(nrow(column_info))) column_info$options[i] <- list(list())
+  column_info$options[[1]] <- list(hjust = 0)
   column_info$options[[2]] <- list(scale = F, hjust = 1)
   column_info$options[[3]] <- list(scale = F)
-  column_info$options[[6]] <- list(label = "Mut_str", overlay = T)
-  column_info$options[[8]] <- list(label = "Fusion_str", overlay = T)
+  column_info$options[[7]] <- list(label = "Mut_str", overlay = T)
+  column_info$options[[9]] <- list(label = "Fusion_str", overlay = T)
 
   column_groups <- data.frame(
     level1 = c("PCAWG", rep(paste("Gene:", gene), length(unique(column_info$group)) - 1)),
@@ -457,9 +493,9 @@ vis_pcawg_gene_cross_omics <- function(gene = "TP53",
   )
   palettes <- list(
     palette1 = c("#66c2a5", "#66c2a5"), `Tumor-Exp` = RColorBrewer::brewer.pal(n = 9, name = "Greys")[1:6],
-    `Mut Status` = c(Mut = "red", Wild = "grey"), `Fusion-Ratio` = RColorBrewer::brewer.pal(n = 9, name = "Blues"),
-    `Scale.Promoter.Level` = RColorBrewer::brewer.pal(n = 9, name = "Greens"),
-    `Scale.miRNA.Level` = RColorBrewer::brewer.pal(n = 9, name = "Oranges")
+    `Mut Status` = c(Mut = "red", Wild = "grey"), `Mut-Ratio` = RColorBrewer::brewer.pal(n = 9, name = "YlOrRd"),
+    `Fusion-Ratio` = RColorBrewer::brewer.pal(n = 9, name = "Blues"), `APOBEC-Ratio` = RColorBrewer::brewer.pal(n = 9, name = "Purples"),
+    `Scale.Promoter.Level` = RColorBrewer::brewer.pal(n = 9, name = "Greens")
   )
   g <- funkyheatmap::funky_heatmap(gene_cross_dat, column_info = column_info, column_groups = column_groups, palettes = palettes)
   if (return_list) {
@@ -473,7 +509,7 @@ vis_pcawg_gene_cross_omics <- function(gene = "TP53",
 #'
 #' @param gene  a gene symbol identifier (e.g., "TP53")
 #' @param tumor_projects Select specific CCLE tissues. Default NULL, indicating all.
-#' @param n_protein number of antibodies to show.
+#' @param n_protein specific antibody identifiers or number of sampling.
 #' @param add_mean_protein whether to add median protein expression.
 #' @param return_list TRUE returns a list including plot object and data. FALSE just returns plot.
 #'
@@ -509,9 +545,10 @@ vis_ccle_gene_cross_omics <- function(gene = "TP53",
     dplyr::inner_join(ccle_info2)
   gene_mrna_plot <- gene_mrna %>%
     dplyr::group_by(.data$Site_Primary) %>%
-    dplyr::summarise(Exp = median(.data$Exp)) %>%
+    dplyr::summarise(Exp = median(.data$Exp, na.rm = TRUE)) %>%
     as.data.frame() %>%
     dplyr::rename("id" = "Site_Primary")
+
   if (max(gene_mrna_plot$Exp, na.rm = T) != min(gene_mrna_plot$Exp, na.rm = T)) {
     gene_mrna_plot$Exp <- (gene_mrna_plot$Exp - min(gene_mrna_plot$Exp, na.rm = T)) / (max(gene_mrna_plot$Exp, na.rm = T) - min(gene_mrna_plot$Exp, na.rm = T))
   }
@@ -530,7 +567,7 @@ vis_ccle_gene_cross_omics <- function(gene = "TP53",
   }
   gene_mut_plot <- gene_mut_plot %>%
     dplyr::mutate(Mut_str = scales::percent(.data$Mut, accuracy = 0.1)) %>%
-    dplyr::select("Site_Primary", "Ratio", "Mut_str")
+    dplyr::select("Site_Primary", "Ratio", "Mut", "Mut_str")
 
   #### Omics--CNV
   gene_cnv_res <- query_pancan_value(gene, "cnv", database = "ccle")
@@ -556,90 +593,130 @@ vis_ccle_gene_cross_omics <- function(gene = "TP53",
   }
   gene_cnv_plot <- gene_cnv_plot %>%
     dplyr::mutate(CNV_Gain_str = scales::percent(.data$CNV_Gain, accuracy = 0.1), CNV_Loss_str = scales::percent(.data$CNV_Loss, accuracy = 0.1)) %>%
-    dplyr::select("Site_Primary", "CNV_Pie", "CNV_Gain_str", "CNV_Loss_str")
+    dplyr::select("Site_Primary", "CNV_Pie", "CNV_Gain", "CNV_Gain_str", "CNV_Loss", "CNV_Loss_str")
 
   #### Omics--Protein
   Protein_all <- .all_ccle_proteins
   Protein_sub <- Protein_all[grepl(paste0("^", gene), Protein_all, ignore.case = TRUE)]
+  if (gene == "TP53") Protein_sub <- unique(c(Protein_sub, Protein_all[grepl("^p53", Protein_all, ignore.case = TRUE)]))
+
   if (inherits(n_protein, "character")) {
     prot_sle <- n_protein[n_protein %in% Protein_sub]
   } else if (inherits(n_protein, "numeric") && n_protein > 0) {
     set.seed(123)
     prot_sle <- unique(sample(Protein_sub, min(n_protein, length(Protein_sub))))
   } else {
-    prot_sle <- NULL
+    prot_sle <- character(0)
   }
 
-  if (length(prot_sle) == 0 && !add_mean_protein) {
-    gene_prot_n <- 0
-  } else {
-    if (add_mean_protein) prot_sle <- c(prot_sle, gene)
-    gene_prot_plot <- lapply(seq_along(prot_sle), function(i) {
-      if (prot_sle[i] == gene) {
-        if (length(Protein_sub) == 0) {
-          return(NULL)
-        }
-        gene_prot_tmp <- get_ccle_protein_value(Protein_sub)
-        if (is.null(gene_prot_tmp) || all(is.na(gene_prot_tmp[[1]]))) {
-          return(NULL)
-        }
-        gene_prot_tmp_val <- as.data.frame(gene_prot_tmp[[1]][, -1]) %>% rowMeans(na.rm = TRUE)
-        gene_prot_tmp_final <- list(data.frame(Prot = gene_prot_tmp_val) %>% tibble::rownames_to_column("Sample"))
-      } else {
-        gene_prot_res <- tryCatch(
-          {
-            get_ccle_protein_value(prot_sle[i])
-          },
-          error = function(e) NULL
-        )
-        if (is.null(gene_prot_res) || all(is.na(gene_prot_res[[1]]))) {
-          return(NULL)
-        }
-        gene_prot_tmp_final <- list(as.data.frame(gene_prot_res[[1]]) %>% dplyr::rename("Prot" = 1) %>% tibble::rownames_to_column("Sample"))
+  gene_prot_plot_list <- list()
+  if (isTRUE(add_mean_protein)) {
+    if (length(Protein_sub) > 0) {
+      gene_prot_tmp <- get_ccle_protein_value(Protein_sub)
+      if (!is.null(gene_prot_tmp) && inherits(gene_prot_tmp$data, "data.frame") && nrow(gene_prot_tmp$data) > 0) {
+        df <- as.data.frame(gene_prot_tmp$data)
+        mean_vals <- rowMeans(df[, -1, drop = FALSE], na.rm = TRUE)
+        gene_prot_tmp_final <- data.frame(Sample = df$sampleID, Prot = mean_vals)
+        gene_prot_df <- gene_prot_tmp_final %>%
+          dplyr::inner_join(ccle_info2, by = "Sample") %>%
+          dplyr::group_by(.data$Site_Primary) %>%
+          dplyr::summarise(Prot_Overall = median(.data$Prot, na.rm = TRUE))
+        gene_prot_plot_list[["Prot_Overall"]] <- gene_prot_df
       }
-      gene_prot_df <- gene_prot_tmp_final[[1]] %>%
-        dplyr::inner_join(ccle_info2) %>%
-        dplyr::group_by(.data$Site_Primary) %>%
-        dplyr::summarise(Prot = median(.data$Prot, na.rm = TRUE))
-      colnames(gene_prot_df)[2] <- prot_sle[i]
-      gene_prot_df %>% tibble::column_to_rownames("Site_Primary")
-    })
-    gene_prot_plot <- gene_prot_plot[!sapply(gene_prot_plot, is.null)]
-    if (length(gene_prot_plot) == 0) {
-      gene_prot_n <- 0
-    } else {
-      gene_prot_plot <- do.call(cbind, gene_prot_plot) %>% tibble::rownames_to_column("Site_Primary")
-      if (gene %in% colnames(gene_prot_plot)) colnames(gene_prot_plot)[which(colnames(gene_prot_plot) %in% gene)] <- "Prot_Overall"
-      gene_prot_n <- ncol(gene_prot_plot) - 1
     }
+  }
+
+  if (length(prot_sle) > 0) {
+    for (p in prot_sle) {
+      gene_prot_res <- tryCatch(
+        {
+          get_ccle_protein_value(p)
+        },
+        error = function(e) NULL
+      )
+      if (!is.null(gene_prot_res) && inherits(gene_prot_res$data, "data.frame") && nrow(gene_prot_res$data) > 0) {
+        df <- as.data.frame(gene_prot_res$data)
+        gene_prot_tmp_final <- data.frame(Sample = df$sampleID, val = df[, 2])
+        gene_prot_df <- gene_prot_tmp_final %>%
+          dplyr::inner_join(ccle_info2, by = "Sample") %>%
+          dplyr::group_by(.data$Site_Primary) %>%
+          dplyr::summarise(val = median(.data$val, na.rm = TRUE))
+        colnames(gene_prot_df)[2] <- p
+        gene_prot_plot_list[[p]] <- gene_prot_df
+      }
+    }
+  }
+
+  if (length(gene_prot_plot_list) == 0) {
+    gene_prot_n <- 0
+    gene_prot_df_final <- NULL
+  } else {
+    # Combine and Scale
+    gene_prot_df_final <- data.frame(id = tumor_projects)
+    for (nm in names(gene_prot_plot_list)) {
+      sub_df <- gene_prot_plot_list[[nm]]
+      val_col <- colnames(sub_df)[2]
+      if (max(sub_df[[val_col]], na.rm = T) != min(sub_df[[val_col]], na.rm = T)) {
+        sub_df[[val_col]] <- (sub_df[[val_col]] - min(sub_df[[val_col]], na.rm = T)) / (max(sub_df[[val_col]], na.rm = T) - min(sub_df[[val_col]], na.rm = T))
+      }
+      gene_prot_df_final <- dplyr::left_join(gene_prot_df_final, sub_df, by = c("id" = "Site_Primary"))
+    }
+    gene_prot_n <- length(gene_prot_plot_list)
   }
 
   #### Ready for Plot
   gene_cross_dat <- data.frame(id = tumor_projects) %>%
-    dplyr::left_join(gene_mrna_plot) %>%
+    dplyr::left_join(gene_mrna_plot, by = "id") %>%
     dplyr::left_join(gene_mut_plot, by = c("id" = "Site_Primary")) %>%
     dplyr::left_join(gene_cnv_plot, by = c("id" = "Site_Primary"))
-  if (gene_prot_n > 0) gene_cross_dat <- dplyr::left_join(gene_cross_dat, gene_prot_plot, by = c("id" = "Site_Primary"))
+
+  # Dynamic Protein Check
+  if (gene_prot_n > 0) gene_cross_dat <- dplyr::left_join(gene_cross_dat, gene_prot_df_final, by = "id")
+
   idx_1 <- which(sapply(gene_cross_dat$Ratio, is.null))
   for (i in idx_1) gene_cross_dat$Ratio[[i]] <- c(Mut = NA_real_, Wild = NA_real_)
   idx_2 <- which(sapply(gene_cross_dat$CNV_Pie, is.null))
   for (i in idx_2) gene_cross_dat$CNV_Pie[[i]] <- c(Gain = NA_real_, Neutral = NA_real_, Loss = NA_real_)
+
   gene_cross_dat$id_label <- shorten_ccle_site(gene_cross_dat$id)
 
-  base_cols <- c("id_label", "Exp", "Ratio", "Mut_str", "CNV_Pie", "CNV_Gain_str", "CNV_Loss_str")
-  display_cols <- if (gene_prot_n > 0) c(base_cols, colnames(gene_prot_plot)[-1]) else base_cols
+  display_cols <- c("id_label", "Exp", "Ratio", "Mut", "Mut_str", "CNV_Pie", "CNV_Gain", "CNV_Gain_str", "CNV_Loss", "CNV_Loss_str")
+  if (gene_prot_n > 0) display_cols <- c(display_cols, names(gene_prot_plot_list))
+
+  # Column Info Construction
+  base_names <- c("", "Median Exp", "Mutation Dist", "Mutation PCT", "", "CNV Dist", "CNV Gain", "", "CNV Loss", "")
+  base_groups <- c("CCLE", "Expression Profile", rep("Mutation Profile", 3), rep("CNV Profile", 5))
+  base_geoms <- c("text", "bar", "pie", "bar", "text", "pie", "bar", "text", "bar", "text")
+  base_pals <- c(NA, "Tumor-Exp", "Mut Status", "Mut-Ratio", NA, "CNV Status", "CNV-Amp", NA, "CNV-Del", NA)
+  base_widths <- c(5, 4, 2, 4, 4, 2, 4, 4, 4, 4)
+
+  if (gene_prot_n > 0) {
+    base_names <- c(base_names, rep("Protein", gene_prot_n))
+    base_groups <- c(base_groups, rep("Protein Profile", gene_prot_n))
+    base_geoms <- c(base_geoms, rep("funkyrect", gene_prot_n))
+    base_pals <- c(base_pals, rep("Scale.Protein.Level", gene_prot_n))
+    base_widths <- c(base_widths, rep(1.1, gene_prot_n))
+  }
+
   column_info <- data.frame(
     id = display_cols,
-    name = c("", "Median Exp", "Mutation Dist", "Mutation PCT", "CNV Dist", "Gain (>0.3)", "Loss (<-0.3)", rep("Protein", gene_prot_n)),
-    group = c("CCLE", "Expression Profile", rep("Mutation Profile", 2), rep("CNV Profile", 3), rep("Protein Profile", gene_prot_n)),
-    geom = c("text", "bar", "pie", "text", "pie", "text", "text", rep("funkyrect", gene_prot_n)),
-    palette = c(NA, "Tumor-Exp", "Mut Status", NA, "CNV Status", NA, NA, rep("Scale.Protein.Level", gene_prot_n)),
-    width = c(8, 4, 2, 4, 2, 4, 4, rep(1.1, gene_prot_n))
+    name = base_names,
+    group = base_groups,
+    geom = base_geoms,
+    palette = base_pals,
+    width = base_widths
   )
+
   column_info$options <- NA
   for (i in seq_len(nrow(column_info))) column_info$options[i] <- list(list())
   column_info$options[[1]] <- list(hjust = 0)
   column_info$options[[2]] <- list(scale = F)
+  column_info$options[[4]] <- list(scale = F)
+  column_info$options[[5]] <- list(label = "Mut_str", overlay = T)
+  column_info$options[[7]] <- list(scale = F)
+  column_info$options[[8]] <- list(label = "CNV_Gain_str", overlay = T)
+  column_info$options[[9]] <- list(scale = F)
+  column_info$options[[10]] <- list(label = "CNV_Loss_str", overlay = T)
 
   column_groups <- data.frame(
     level1 = c("CCLE", rep(paste("Gene:", gene), length(unique(column_info$group)) - 1)),
@@ -647,7 +724,9 @@ vis_ccle_gene_cross_omics <- function(gene = "TP53",
   )
   palettes <- list(
     palette1 = c("#66c2a5", "#66c2a5"), `Tumor-Exp` = RColorBrewer::brewer.pal(n = 9, name = "Greys")[1:6],
-    `Mut Status` = c(Mut = "red", Wild = "grey"), `CNV Status` = c("Gain" = "#e66101", "Neutral" = "#f7f7f7", "Loss" = "#5e3c99"),
+    `Mut Status` = c(Mut = "red", Wild = "grey"), `Mut-Ratio` = RColorBrewer::brewer.pal(n = 9, name = "YlOrRd"),
+    `CNV Status` = c("Gain" = "#e66101", "Neutral" = "#f7f7f7", "Loss" = "#5e3c99"),
+    `CNV-Amp` = RColorBrewer::brewer.pal(n = 9, name = "Oranges"), `CNV-Del` = RColorBrewer::brewer.pal(n = 9, name = "Purples"),
     `Scale.Protein.Level` = RColorBrewer::brewer.pal(n = 9, name = "Reds")
   )
   g <- funkyheatmap::funky_heatmap(gene_cross_dat, column_info = column_info, column_groups = column_groups, palettes = palettes)
@@ -694,7 +773,7 @@ vis_pcawg_pathway_cross_omics <- function(pw = "HALLMARK_ADIPOGENESIS",
     pw_mrna_plot$normal <- (pw_mrna_plot$normal - min_v) / (max_v - min_v)
   }
   pw_mrna_comp <- ggpubr::compare_means(Exp ~ type2, data = pw_mrna, group.by = "dcc_project_code", method = "wilcox.test")
-  pw_mrna_plot <- dplyr::left_join(pw_mrna_plot, pw_mrna_comp[, c("dcc_project_code", "p")]) %>%
+  pw_mrna_plot <- dplyr::left_join(pw_mrna_plot, pw_mrna_comp[, c("dcc_project_code", "p", "p.adj")]) %>%
     dplyr::rename("id" = "dcc_project_code") %>%
     dplyr::mutate(Label = case_when(p < 0.001 ~ "***", p < 0.01 ~ "**", p < 0.05 ~ "*", TRUE ~ "-")) %>%
     dplyr::select("id", "normal", "tumor", "Label")

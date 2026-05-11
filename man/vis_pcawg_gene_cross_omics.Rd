@@ -18,7 +18,7 @@ vis_pcawg_gene_cross_omics(
 
 \item{tumor_projects}{Select specific PCAWG projects. Default NULL, indicating all.}
 
-\item{n_promoter}{number of promoters to show.}
+\item{n_promoter}{specific promoter identifiers or number of sampling.}
 
 \item{add_mean_promoter}{whether to add median promoter activity.}
 

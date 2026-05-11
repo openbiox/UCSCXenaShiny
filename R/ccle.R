@@ -16,17 +16,26 @@ get_ccle_gene_value <- function(identifier, norm = c("rpkm", "reads")) {
   if (res$ok) {
     data <- res$data
   } else {
-    query_list <- UCSCXenaTools::fetch_dense_values(host_url, dataset, identifier, use_probeMap = FALSE)
+    # Use URL for direct fetch, and use_probeMap = TRUE for Gene Symbol to Ensembl mapping
+    # Set check = FALSE to avoid 500 errors on identifier validation
+    query_list <- UCSCXenaTools::fetch_dense_values(host_url, dataset, identifier, use_probeMap = TRUE, check = FALSE)
     data <- as.data.frame(t(query_list))
     data <- data %>%
-      tibble::rownames_to_column("sampleID") %>%
-      dplyr::rename(data = 2)
+      tibble::rownames_to_column("sampleID")
+    if (length(identifier) == 1) {
+      colnames(data)[2] <- "data"
+    }
     save_data(data, identifier, dataset, host_name)
   }
 
   report_dataset_info(dataset)
-  res <- list(data = data$data, unit = unit)
-  names(res$data) <- data$sampleID
+  if (length(identifier) == 1) {
+    res_data <- data$data
+    names(res_data) <- data$sampleID
+    res <- list(data = res_data, unit = unit)
+  } else {
+    res <- list(data = data, unit = unit)
+  }
   res
 }
 
@@ -41,28 +50,18 @@ get_ccle_protein_value <- function(identifier) {
   if (res$ok) {
     data <- res$data
   } else {
-    query_list <- UCSCXenaTools::fetch_dense_values(host_url, dataset, identifier, use_probeMap = FALSE)
+    query_list <- UCSCXenaTools::fetch_dense_values(host_url, dataset, identifier, use_probeMap = FALSE, check = FALSE)
     data <- as.data.frame(t(query_list))
     data <- data %>%
       tibble::rownames_to_column("sampleID")
-    if (length(identifier) == 1) {
-      colnames(data)[2] <- "data"
-    }
     save_data(data, identifier, dataset, host_name)
   }
 
   report_dataset_info(dataset)
-  unit <- "log(copy number/2)"
-  if (length(identifier) == 1) {
-    res_data <- data$data
-    names(res_data) <- data$sampleID
-    res <- list(data = res_data, unit = unit)
-  } else {
-    res <- list(data = data, unit = unit)
-  }
+  # Consistently return a data frame where the first column is sampleID
+  res <- list(data = data, unit = "norm_value")
   res
 }
-
 
 .all_ccle_proteins <- c(
   "14-3-3_beta", "14-3-3_epsilon_Caution", "14-3-3_zeta", "4E-BP1",
@@ -155,7 +154,7 @@ get_ccle_cn_value <- function(identifier) {
   if (res$ok) {
     data <- res$data
   } else {
-    query_list <- UCSCXenaTools::fetch_dense_values(host_url, dataset, identifier, use_probeMap = FALSE)
+    query_list <- UCSCXenaTools::fetch_dense_values(host_url, dataset, identifier, use_probeMap = FALSE, check = FALSE)
     data <- as.data.frame(t(query_list))
     data <- data %>%
       tibble::rownames_to_column("sampleID")
