@@ -92,7 +92,7 @@ get_pcawg_promoter_value <- function(identifier, type = c("relative", "raw", "ou
   res
 }
 
-#' @describeIn get_pancan_value Fetch gene fusion value from PCAWG cohort
+#' @describeIn get_pancan_value Fetch APOBEC mutagenesis value from PCAWG cohort
 #' @export
 get_pcawg_APOBEC_mutagenesis_value <- function(identifier = c(
                                                  "tCa_MutLoad_MinEstimate", "APOBECtCa_enrich",

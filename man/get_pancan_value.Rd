@@ -84,6 +84,8 @@ get_pcawg_cn_value(identifier)
 \item{identifier}{a length-1 character representing a gene symbol, ensembl gene id, or probe id.
 Gene symbol is highly recommended.}
 
+\item{norm}{normalization method.}
+
 \item{subtype}{a length-1 chracter representing a regular expression for matching
 \code{DataSubtype} column of \link[UCSCXenaTools:XenaData]{UCSCXenaTools::XenaData}.}
 
@@ -139,7 +141,7 @@ Identifier includes gene/probe etc.
 
 \item \code{get_pancan_cn_value()}: Fetch gene copy number value from pan-cancer dataset processed by GISTIC 2.0
 
-\item \code{get_pancan_methylation_value()}: Fetch gene expression value from CCLE dataset
+\item \code{get_pancan_methylation_value()}: Fetch methylation value from pan-cancer dataset
 
 \item \code{get_pancan_miRNA_value()}: Fetch miRNA expression value from pan-cancer dataset
 
@@ -151,7 +153,7 @@ Identifier includes gene/probe etc.
 
 \item \code{get_pcawg_promoter_value()}: Fetch specimen-level gene promoter activity value from PCAWG cohort
 
-\item \code{get_pcawg_APOBEC_mutagenesis_value()}: Fetch gene fusion value from PCAWG cohort
+\item \code{get_pcawg_APOBEC_mutagenesis_value()}: Fetch APOBEC mutagenesis value from PCAWG cohort
 
 \item \code{get_pcawg_mutation_status()}: Fetch gene mutation info from PCAWG cohort
 

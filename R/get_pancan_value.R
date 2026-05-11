@@ -23,6 +23,7 @@ available_hosts <- function() {
 #' `XenaDatasets` of [UCSCXenaTools::XenaData].
 #' @param host a character vector representing host name(s), e.g. "toilHub".
 #' @param samples a character vector representing samples want to be returned.
+#' @param norm normalization method.
 #' @param ... other parameters.
 #' @return a named vector or `list`.
 #'
@@ -331,7 +332,7 @@ get_pancan_cn_value <- function(identifier, gistic2 = TRUE, use_thresholded_data
 }
 
 
-#' @describeIn get_pancan_value Fetch gene expression value from CCLE dataset
+#' @describeIn get_pancan_value Fetch methylation value from pan-cancer dataset
 #' @param type methylation type, one of "450K" and "27K".
 #' for function `get_pcawg_promoter_value`, it can be one of
 #' "raw", "relative", "outlier".
