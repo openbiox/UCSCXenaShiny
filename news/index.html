@@ -41,11 +41,14 @@
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.2.2" id="ucscxenashiny-222">UCSCXenaShiny 2.2.2<a class="anchor" aria-label="anchor" href="#ucscxenashiny-222"></a></h2>
-<ul><li>Added gene and pathway cross-omics analysis functions/modules for PCAWG and CCLE.</li>
-<li>Added <code><a href="../reference/get_pancan_value.html">get_pcawg_mutation_status()</a></code> to fetch mutation data for PCAWG.</li>
-<li>Updated <code><a href="../reference/query_pancan_value.html">query_pancan_value()</a></code> to support mutation data for PCAWG and improved its robustness.</li>
-<li>Fixed sample ID matching between mutation (Donor ID) and other omics (Specimen ID) in PCAWG.</li>
-<li>Improved data existence checks in Shiny modules to handle empty or NA datasets gracefully.</li>
+<ul><li>Added comprehensive gene and pathway cross-omics analysis for PCAWG and CCLE.</li>
+<li>Standardized cross-omics visualization with TCGA standards (dynamic layouts, professional palettes).</li>
+<li>Implemented flexible identifier selection (Transcript, CpG, Promoter, Antibody) in all cross-omics modules.</li>
+<li>Added explicit ‘Overall’ median toggle to cross-omics analysis.</li>
+<li>Resolved all dimension mismatch and logic errors in PCAWG/CCLE data joining.</li>
+<li>Optimized remote data fetching with batch support and automatic retry logic.</li>
+<li>Updated <code><a href="../reference/query_pancan_value.html">query_pancan_value()</a></code> to support PCAWG mutation and improved robustness.</li>
+<li>Fixed Specimen-to-Donor ID mapping for PCAWG mutation joins.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.2.1" id="ucscxenashiny-221">UCSCXenaShiny 2.2.1<a class="anchor" aria-label="anchor" href="#ucscxenashiny-221"></a></h2><p class="text-muted">CRAN release: 2026-05-05</p>

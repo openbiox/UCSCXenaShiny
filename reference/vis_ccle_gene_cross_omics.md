@@ -26,7 +26,7 @@ vis_ccle_gene_cross_omics(
 
 - n_protein:
 
-  number of antibodies to show.
+  specific antibody identifiers or number of sampling.
 
 - add_mean_protein:
 

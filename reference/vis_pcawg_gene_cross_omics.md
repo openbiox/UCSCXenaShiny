@@ -27,7 +27,7 @@ vis_pcawg_gene_cross_omics(
 
 - n_promoter:
 
-  number of promoters to show.
+  specific promoter identifiers or number of sampling.
 
 - add_mean_promoter:
 

@@ -70,14 +70,6 @@ get_pcawg_cn_value(identifier)
   a length-1 character representing a gene symbol, ensembl gene id, or
   probe id. Gene symbol is highly recommended.
 
-- norm:
-
-  a character string specifying the normalization type. For gene
-  expression, allowed values include `"tpm"`, `"fpkm"`, `"nc"` (norm
-  count); for transcript expression: `"tpm"`, `"fpkm"`, `"isopct"`; for
-  CCLE gene expression: `"rpkm"`, `"reads"`; for PCAWG miRNA expression:
-  `"TMM"`, `"UQ"`.
-
 - subtype:
 
   a length-1 chracter representing a regular expression for matching
