@@ -1,0 +1,255 @@
+# UCSCXenaShiny app-layer bundle builder for the ShinyApps store (Route A).
+# Place at  fentouxungui/UCSCXenaShiny/.github/workflows/xenashiny-build-app-bundle.yml
+#           (on the DEFAULT branch = master).
+#
+# Produces, per platform:  xenashiny-<store-version>-<platform>.zip
+#   bundle/ +- manifest.json +- app/app.R +- rlib/<Pkg>/
+#
+# Fix history:
+#  v4: guarded the mirror lookup (a named-vector [[name]] throws "subscript out
+#      of bounds" when the name is absent, e.g. slickR has no mirror).
+#  v3: slickR was REMOVED from CRAN (archived 2025-06-17) -> install it from
+#      GitHub (yonicd/slickR) and add its CRAN imports to the closure.
+#  v2: remotes::install_github() resolves names via the GitHub API; unauthenticated
+#      Actions runners hit "HTTP 403 API rate limit exceeded" (symptom:
+#      "Failed to install 'unknown package' from GitHub"). Fixed by exporting
+#      GITHUB_PAT = ${{ secrets.GITHUB_TOKEN }} and installing GitHub pkgs
+#      individually with a gitee-mirror fallback.
+#
+# Notes:
+#  * Upstream DESCRIPTION version (e.g. 2.2.1.9000) is DECOUPLED from the store
+#    version (the Release tag, e.g. v0.1.0): the tarball is located by glob.
+#  * The Shiny app loads most runtime packages from inst/shinyapp/utils_pkgs.R
+#    via pacman::p_load(); those are added explicitly, plus the GitHub-only
+#    packages gganatogram, ggradar and slickR.
+#  * The dependency closure excludes only R *base*-priority packages.
+#  * app_run() returns a shinyApp object and never calls runApp().
+
+name: Build app bundle
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to attach bundles to"
+        required: false
+        type: string
+        default: "v0.1.0"
+
+permissions:
+  contents: write
+
+env:
+  APP_ID: xenashiny
+  APP_NAME: UCSCXenaShiny
+  APP_AUTHOR: "Shixiang Wang, Yi Xiong, Shensuo Li, Longfei Zhao, Kai Gu, Yuzhong Peng, Yin Li, Fei Zhao"
+  APP_DESC: "Interactive analysis and visualization of UCSC Xena cancer genomics data"
+  APP_HOMEPAGE: "https://github.com/fentouxungui/UCSCXenaShiny"
+  APP_LICENSE: "GPL-3.0-or-later"
+  R_VERSION: "4.6.1"
+
+jobs:
+  bundle:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: windows-latest, platform: "win-x64" }
+          - { os: macos-14,       platform: "mac-arm64" }
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ env.R_VERSION }}
+          use-public-rspm: true
+
+      - name: Install build helpers
+        shell: bash
+        run: Rscript -e 'install.packages(c("jsonlite","zip","digest","BiocManager","remotes"), repos="https://cloud.r-project.org")'
+
+      - name: Resolve store version
+        shell: bash
+        run: |
+          V="${{ github.event.release.tag_name }}${{ inputs.tag }}"
+          V="${V#v}"
+          if [ -z "$V" ]; then V=$(grep '^Version:' DESCRIPTION | awk '{print $2}'); fi
+          echo "VERSION=$V" >> "$GITHUB_ENV"
+
+      - name: Build source tarball
+        shell: bash
+        run: R CMD build --no-build-vignettes --no-manual .
+
+      - name: Install app + dependency closure into bundle/rlib
+        shell: Rscript {0}
+        env:
+          # Authenticate remotes' GitHub API calls (avoids HTTP 403 rate limits).
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          bundle <- file.path(getwd(), "bundle")
+          unlink(bundle, recursive = TRUE); dir.create(bundle, recursive = TRUE)
+          lib <- file.path(bundle, "rlib"); dir.create(lib, recursive = TRUE)
+          repos <- BiocManager::repositories()
+          options(repos = repos)
+
+          tb <- list.files(".", pattern = "^UCSCXenaShiny_.*[.]tar[.]gz$", full.names = TRUE)
+          if (length(tb) == 0) stop("no UCSCXenaShiny_*.tar.gz found -- did R CMD build run?")
+          tb <- tb[which.max(file.mtime(tb))]
+          cat("source tarball:", basename(tb), "\n")
+          cat("store bundle version (from tag):", Sys.getenv("VERSION"), "\n")
+          local_paths <- normalizePath(tb, winslash = "/", mustWork = TRUE)
+
+          read_desc <- function(p) {
+            td <- tempfile(); dir.create(td)
+            utils::untar(p, exdir = td)
+            dd <- list.files(td, pattern = "^DESCRIPTION$", recursive = TRUE, full.names = TRUE)[1]
+            read.dcf(dd)
+          }
+          dcfs <- lapply(local_paths, read_desc)
+          loc_names <- vapply(dcfs, function(d) d[1, "Package"], character(1))
+          declared <- unique(unlist(lapply(dcfs, function(d) {
+            fields <- intersect(c("Depends", "Imports", "LinkingTo"), colnames(d))
+            vals <- unlist(lapply(fields, function(f) if (is.na(d[1, f])) "" else d[1, f]))
+            parts <- trimws(unlist(strsplit(paste(vals, collapse = ","), ",")))
+            parts <- trimws(sub("[(].*[)]$", "", parts))
+            parts[nzchar(parts) & parts != "R"]
+          })))
+
+          # Runtime packages pulled in by inst/shinyapp/utils_pkgs.R (pacman::p_load)
+          # but absent from DESCRIPTION; without these the app fails to start.
+          #  * slickR, gganatogram, ggradar are GitHub-only (slickR was archived
+          #    from CRAN 2025-06-17); their CRAN deps are listed here so the
+          #    closure is self-contained (ggpolypath = gganatogram's Depends;
+          #    the rest are slickR's Imports).
+          extra_cran <- c(
+            "purrr","tidyr","stringr","magrittr","R.utils","data.table","dplyr",
+            "ggplot2","cowplot","patchwork","ggpubr","plotly","UpSetR","UCSCXenaTools",
+            "shiny","shinyBS","shinyjs","shinyWidgets","shinyalert","shinyFiles",
+            "shinyFeedback","shinythemes","shinyhelper","shinycssloaders",
+            "shinydashboard","shinydashboardPlus","survival","survminer","ezcox",
+            "waiter","colourpicker","DT","fs","RColorBrewer","ggcorrplot","ggstatsplot",
+            "zip","msigdbr","funkyheatmap","ggpolypath",
+            "htmlwidgets","xml2","checkmate","base64enc","htmltools","lifecycle",
+            "pacman","remotes"
+          )
+          github_extra <- c("jespermaag/gganatogram", "ricardo-bion/ggradar", "yonicd/slickR")
+          github_mirror <- c(
+            "jespermaag/gganatogram" = "https://gitee.com/XenaShiny/gganatogram",
+            "ricardo-bion/ggradar"   = "https://gitee.com/XenaShiny/ggradar"
+          )
+
+          db <- available.packages(repos = repos)
+          cat("available packages:", nrow(db), "\n")
+          seed <- unique(c(loc_names, declared, extra_cran))
+          closure <- unique(c(unlist(tools::package_dependencies(seed, db = db, recursive = TRUE)), declared, extra_cran))
+          base_pkgs <- rownames(installed.packages(priority = "base"))
+          closure <- setdiff(closure, c(loc_names, base_pkgs, basename(list.dirs(lib, recursive = FALSE))))
+          closure <- closure[closure %in% rownames(db)]
+          cat("closure packages to install:", length(closure), "\n")
+          if (length(closure)) {
+            install.packages(closure, lib = lib, repos = repos, type = "binary",
+                             dependencies = FALSE, Ncpus = 2)
+          }
+
+          # GitHub-only runtime packages, installed INDIVIDUALLY so one failure does
+          # not abort the whole step; fall back to a gitee mirror when one exists.
+          for (gh in github_extra) {
+            ok <- tryCatch({
+              remotes::install_github(gh, lib = lib, dependencies = NA,
+                                      upgrade = "never", build_vignettes = FALSE, quiet = FALSE)
+              TRUE
+            }, error = function(e) {
+              cat("GitHub install failed for", gh, ":", conditionMessage(e), "\n")
+              FALSE
+            })
+            mir <- if (gh %in% names(github_mirror)) github_mirror[[gh]] else NA_character_
+            if (!ok && !is.na(mir) && nzchar(mir)) {
+              cat("Falling back to mirror:", mir, "\n")
+              remotes::install_git(mir, lib = lib, dependencies = NA,
+                                   upgrade = "never", build_vignettes = FALSE, quiet = FALSE)
+            } else if (!ok) {
+              cat("No mirror configured for", gh, "-- will rely on the final check\n")
+            }
+          }
+
+          install.packages(local_paths, lib = lib, repos = NULL, type = "source", dependencies = FALSE)
+
+          present <- basename(list.dirs(lib, recursive = FALSE))
+          required <- unique(c(loc_names, setdiff(declared, base_pkgs),
+                               setdiff(extra_cran, base_pkgs),
+                               "gganatogram","ggradar","slickR"))
+          missing <- setdiff(required, present)
+          if (length(missing)) stop("packages missing from rlib: ", paste(missing, collapse = ", "))
+          cat("rlib packages:", length(present), "\n")
+
+      - name: Assemble app + manifest.json
+        shell: Rscript {0}
+        run: |
+          bundle <- file.path(getwd(), "bundle")
+          lib <- file.path(bundle, "rlib")
+          dir.create(file.path(bundle, "app"), recursive = TRUE, showWarnings = FALSE)
+          writeLines(c(
+            'library(UCSCXenaShiny)',
+            'options(shiny.launch.browser = FALSE, shiny.deprecation.messages = FALSE)',
+            'app_run()'
+          ), file.path(bundle, "app", "app.R"))
+
+          pkgs <- as.data.frame(installed.packages(lib.loc = lib))
+          man <- list(
+            schema = 1L,
+            id = Sys.getenv("APP_ID"), name = Sys.getenv("APP_NAME"), version = Sys.getenv("VERSION"),
+            author = Sys.getenv("APP_AUTHOR"), description = Sys.getenv("APP_DESC"),
+            homepage = Sys.getenv("APP_HOMEPAGE"), license = Sys.getenv("APP_LICENSE"),
+            runtime = "r-shiny", entry = "app/app.R",
+            platform = "${{ matrix.platform }}",
+            r_version = Sys.getenv("R_VERSION"), min_shell_version = "0.1.0",
+            notes = "Bundles the app's pacman::p_load() runtime closure; gganatogram, ggradar and slickR come from GitHub.",
+            packages = lapply(seq_len(nrow(pkgs)), function(i) list(
+              name = pkgs$Package[i], version = pkgs$Version[i],
+              path = file.path("rlib", pkgs$Package[i]), source = "cran"))
+          )
+          jsonlite::write_json(man, file.path(bundle, "manifest.json"), pretty = TRUE, auto_unbox = TRUE)
+
+      - name: Zip + sha256
+        shell: Rscript {0}
+        run: |
+          out <- sprintf("%s-%s-%s.zip", Sys.getenv("APP_ID"), Sys.getenv("VERSION"), "${{ matrix.platform }}")
+          bundle <- file.path(getwd(), "bundle")
+          old <- setwd(bundle); on.exit(setwd(old))
+          zip::zipr(out, files = list.files(".", all.files = TRUE, no.. = TRUE))
+          entries <- utils::unzip(out, list = TRUE)$Name
+          if (!any(grepl("^rlib/", entries))) stop("zip is missing rlib/ -- aborting")
+          setwd(old)
+          file.rename(file.path(bundle, out), out)
+          sha <- digest::digest(out, algo = "sha256", file = TRUE)
+          writeLines(sprintf('{"platform":"%s","file":"%s","sha256":"%s","size":%d}',
+                     "${{ matrix.platform }}", out, sha, file.size(out)),
+                     sprintf("meta-%s.json", "${{ matrix.platform }}"))
+          cat("bundle zip size:", file.size(out), "\n")
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bundle-${{ matrix.platform }}
+          path: |
+            *.zip
+            meta-*.json
+
+  release:
+    needs: bundle
+    if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v') || inputs.tag != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag || github.ref_name }}
+          files: artifacts/*.zip
